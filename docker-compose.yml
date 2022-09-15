@@ -1,0 +1,31 @@
+
+
+services:
+  front-end:
+    image: node:18-alpine
+    ports:
+      - 80:80
+    volumes:
+      - ./front:/front
+    command: npm start
+    working_dir: /front
+
+  database:
+    image: postgres:14
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: transcendence
+
+  back-end:
+    depends_on:
+      - database
+    image: node:18-alpine
+    ports:
+      - 3000:3000
+    volumes:
+      - ./back:/back
+    command: npm start
+    working_dir: /back
