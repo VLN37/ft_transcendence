@@ -8,6 +8,8 @@ services:
       - ./front:/front
     command: npm start
     working_dir: /front
+    environment:
+      - PORT=80
 
   database:
     image: postgres:14
