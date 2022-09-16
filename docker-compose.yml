@@ -27,5 +27,5 @@ services:
       - 3000:3000
     volumes:
       - ./back:/back
-    command: npm start
+    command: npm run start:dev
     working_dir: /back
