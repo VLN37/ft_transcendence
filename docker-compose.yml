@@ -1,8 +1,7 @@
-
-
 services:
   front-end:
     image: node:18-alpine
+    container_name: front-end
     ports:
       - 80:80
     volumes:
@@ -12,6 +11,7 @@ services:
 
   database:
     image: postgres:14
+    container_name: database
     ports:
       - 5432:5432
     environment:
@@ -23,6 +23,7 @@ services:
     depends_on:
       - database
     image: node:18-alpine
+    container_name: back
     ports:
       - 3000:3000
     volumes:
