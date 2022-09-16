@@ -1,0 +1,23 @@
+services:
+  front-end:
+    image: transcendence_front
+    build: ./front/
+    ports:
+      - 80:80
+
+  database:
+    image: postgres:14
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: transcendence
+
+  back-end:
+    depends_on:
+      - database
+    image: transcendence_back
+    build: ./back/
+    ports:
+      - 3000:3000
