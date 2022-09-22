@@ -21,8 +21,9 @@ export class UsersService {
 		return updatedUser
 	}
 
-	delete() {
-		return "delete"
+	delete(id: number) {
+		const deletedUser = this.usersRepository.delete({ id: id })
+		return deletedUser
 	}
 
 	get(): Promise<User[]> {

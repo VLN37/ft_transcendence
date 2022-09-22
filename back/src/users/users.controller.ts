@@ -15,9 +15,9 @@ export class UsersController {
 		return this.usersService.edit(id, user)
 	}
 
-	@Delete()
-	delete() {
-		return this.usersService.delete()
+	@Delete(':id')
+	delete(@Param('id') id: any) {
+		return this.usersService.delete(id)
 	}
 
 	@Get()
