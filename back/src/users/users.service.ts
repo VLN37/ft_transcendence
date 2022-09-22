@@ -11,16 +11,14 @@ export class UsersService {
 	) { }
 
 	create(user: User) {
-        const newUser = this.usersRepository.save(user)
+		const newUser = this.usersRepository.save(user)
 		return newUser
 	}
 
-	update() {
-		return "update"
-	}
-
-	edit() {
-		return "edit"
+	edit(id: number, user: User) {
+		this.usersRepository.update(id, user)
+		const updatedUser = this.usersRepository.findOneBy({ id: id })
+		return updatedUser
 	}
 
 	delete() {
@@ -29,6 +27,6 @@ export class UsersService {
 
 	get(): Promise<User[]> {
 		const users = this.usersRepository.find();
-        return users
+		return users
 	}
 }
