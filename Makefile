@@ -12,9 +12,6 @@ restart:
 	make down
 	docker-compose -f docker-compose.yml up -d
 
-rebuild:
-	docker-compose -f docker-compose.yml build --no-cache
-
 clean:
 	docker-compose -f docker-compose.yml down -v --rmi all --remove-orphans
 	rm -rf ./back/node_modules

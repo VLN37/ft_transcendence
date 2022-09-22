@@ -10,8 +10,9 @@ export class UsersService {
 		private usersRepository: Repository<User>,
 	) { }
 
-	create() {
-		return "create"
+	create(user: User) {
+        const newUser = this.usersRepository.save(user)
+		return newUser
 	}
 
 	update() {
@@ -26,7 +27,8 @@ export class UsersService {
 		return "delete"
 	}
 
-	get(): Promise<User> {
-		return this.usersRepository.findOneBy({ id: 1 });
+	get(): Promise<User[]> {
+		const users = this.usersRepository.find();
+        return users
 	}
 }

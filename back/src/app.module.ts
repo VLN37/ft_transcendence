@@ -3,6 +3,8 @@ import { UsersModule } from './users/users.module';
 import { TypeOrmModule } from "@nestjs/typeorm"
 import { User } from "./entities/user.entity"
 
+const environment = process.env.ENVIRONMENT;
+
 @Module({
 	imports: [
 		TypeOrmModule.forRoot({
@@ -13,7 +15,7 @@ import { User } from "./entities/user.entity"
 			password: 'pass',
 			database: 'transcendence',
 			entities: [User],
-			synchronize: false,
+			synchronize: environment != 'prod',
 		}),
 		UsersModule],
 	controllers: [],
