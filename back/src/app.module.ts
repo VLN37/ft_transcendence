@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { UsersModule } from './users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
+import { AuthModule } from './auth/auth.module';
 
 const environment = process.env.ENVIRONMENT;
 
@@ -18,6 +19,7 @@ const environment = process.env.ENVIRONMENT;
       synchronize: environment != 'prod',
     }),
     UsersModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [],
