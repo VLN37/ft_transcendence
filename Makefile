@@ -3,6 +3,7 @@ all: up
 up:
 	npm --prefix ./back install
 	npm --prefix ./front install
+	npm --prefix ./svelte-typescript-app install
 	docker-compose -f docker-compose.yml up -d
 
 down:

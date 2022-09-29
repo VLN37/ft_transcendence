@@ -6,7 +6,7 @@ services:
       - 80:80
     volumes:
       - ./svelte-typescript-app:/front
-    command: npm start
+    command: npm run dev
     working_dir: /front
     #environment:
       #- PORT=80
