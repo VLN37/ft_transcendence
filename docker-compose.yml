@@ -6,7 +6,7 @@ services:
       - 80:80
     volumes:
       - ./front:/front
-    command: npm run dev
+    command: npm run start
     working_dir: /front
     environment:
       - PORT=80
