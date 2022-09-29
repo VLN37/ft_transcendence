@@ -3,7 +3,6 @@ import logo from './logo.svg';
 import NeonButton from './components/NeonButton';
 import './App.css';
 
-
 function App() {
   return (
     <div className="App">
