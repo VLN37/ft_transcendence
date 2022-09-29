@@ -30,4 +30,9 @@ export class UsersService {
     const users = this.usersRepository.find();
     return users;
   }
+
+  findOne(id: number) {
+    const user = this.usersRepository.findBy({ id: id });
+    return user;
+  }
 }

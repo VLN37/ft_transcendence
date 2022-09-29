@@ -32,4 +32,9 @@ export class UsersController {
   get() {
     return this.usersService.get();
   }
+
+  @Get(':id')
+  findOne(@Param('id') id: any) {
+    return this.usersService.findOne(id);
+  }
 }
