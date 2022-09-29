@@ -5,11 +5,11 @@ services:
     ports:
       - 80:80
     volumes:
-      - ./svelte-typescript-app:/front
+      - ./front:/front
     command: npm run dev
     working_dir: /front
-    #environment:
-      #- PORT=80
+    environment:
+      - PORT=80
 
   database:
     image: postgres:14
