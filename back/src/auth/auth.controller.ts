@@ -1,4 +1,9 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 
 @Controller()
-export class AuthController {}
+export class AuthController {
+  @Get('auth-callback')
+  auth(@Query('code') que: any) {
+    return que;
+  }
+}
