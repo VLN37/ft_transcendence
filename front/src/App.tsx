@@ -1,11 +1,8 @@
-import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 // import NeonButton from './components/NeonButton';
 import Layout from './pages/Layout';
 import HomePage from './pages/home';
-
-import './App.css';
 import CommunityPage from './pages/community';
 import RankPage from './pages/rank';
 import ChatPage from './pages/chat';
