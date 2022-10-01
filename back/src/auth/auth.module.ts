@@ -2,13 +2,11 @@ import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { ConfigService } from '@nestjs/config';
+import { FortytwoStrategy } from './42.strategy';
 
 @Module({
-  imports: [
-    HttpModule,
-  ],
+  imports: [HttpModule],
   controllers: [AuthController],
-  providers: [AuthService, ConfigService],
+  providers: [AuthService, FortytwoStrategy],
 })
 export class AuthModule {}
