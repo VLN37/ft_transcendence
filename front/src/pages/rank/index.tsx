@@ -1,3 +1,3 @@
 export default function RankPage() {
-  return <div>this is the rank page</div>;
+  return <div className="page">this is the rank page</div>;
 }

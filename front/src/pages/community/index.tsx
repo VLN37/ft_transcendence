@@ -1,3 +1,3 @@
 export default function CommunityPage() {
-  return <div>this is the communism page</div>;
+  return <div className="page">this is the communism page</div>;
 }

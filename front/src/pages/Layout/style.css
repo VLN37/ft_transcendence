@@ -1,7 +1,40 @@
-
-div {
-    background-color: #112;
+.main-container {
+    display: flex;
+    flex-direction: column;
     color: #eee;
-    margin: 0;
+    background-color: #283850;
+    margin: 0 auto;
     height: 100%;
+    max-width: 80%;
+}
+
+.top-bar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+
+.nav-links {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    justify-items: stretch;
+}
+
+.nav-links li {
+    display: flex;
+    margin: 1rem 1rem;
+}
+
+.page {
+    display: flex;
+    flex: 1;
+    background-color: #061;
+}
+
+.match-finder {
+    position: fixed;
+    background-color: #ff0;
+    bottom: 0;
+    right: 10%;
 }
