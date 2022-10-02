@@ -32,9 +32,9 @@
     background-color: #061;
 }
 
-.match-finder {
+.match-finder-wrapper {
     position: fixed;
-    background-color: #ff0;
+    background-color: #f50;
     bottom: 0;
     right: 10%;
 }

@@ -34,7 +34,7 @@ export default function Layout() {
       </nav>
 
       <Outlet />
-      <div className="match-finder">
+      <div className="match-finder-wrapper">
         <MatchFinder />
       </div>
     </div>
