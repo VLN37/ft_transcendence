@@ -5,12 +5,17 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  nickname: string;
+  @Column({
+    type: 'varchar',
+    length: 10,
+    unique: true,
+    nullable: false,
+  })
+  login_intra: string;
 
-  @Column()
-  first_name: string;
-
-  @Column()
-  last_name: string;
+  @Column({
+    type: 'boolean',
+    default: false,
+  })
+  tfa_enabled: boolean;
 }
