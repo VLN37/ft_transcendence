@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../entities/user.entity';
@@ -41,6 +41,9 @@ export class UsersService {
   }
 
   async addFriend(userId: number, friendId: number) {
+    if (userId == friendId)
+      throw new BadRequestException("You can't be your own friend");
+
     const user = await this.usersRepository.findOne({
       where: {
         id: userId,
