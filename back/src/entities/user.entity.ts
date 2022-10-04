@@ -33,6 +33,6 @@ export class User {
   tfa_enabled: boolean;
 
   @ManyToMany(() => User)
-  @JoinTable()
+  @JoinTable({ name: 'friendships' })
   friends: User[];
 }
