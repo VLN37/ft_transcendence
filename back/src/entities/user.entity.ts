@@ -1,4 +1,10 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToMany,
+  JoinTable,
+} from 'typeorm';
 
 @Entity({ name: 'users' })
 export class User {
@@ -8,7 +14,7 @@ export class User {
   @Column({
     type: 'varchar',
     length: 10,
-    unique: true,
+    // unique: true,
     nullable: false,
   })
   login_intra: string;
@@ -18,4 +24,9 @@ export class User {
     default: false,
   })
   tfa_enabled: boolean;
+
+  @ManyToMany(() => User)
+  @JoinTable()
+  // users_friends_users
+  friends: User[];
 }

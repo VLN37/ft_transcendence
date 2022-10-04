@@ -10,8 +10,8 @@ export class UsersService {
     private usersRepository: Repository<User>,
   ) {}
 
-  create(user: User) {
-    const newUser = this.usersRepository.save(user);
+  async create(user: User) {
+    const newUser = await this.usersRepository.save(user);
     return newUser;
   }
 
@@ -27,12 +27,26 @@ export class UsersService {
   }
 
   get(): Promise<User[]> {
-    const users = this.usersRepository.find();
+    const users = this.usersRepository.find({
+      relations: {
+        friends: true,
+      },
+    });
     return users;
   }
 
   findOne(id: number) {
-    const user = this.usersRepository.findBy({ id: id });
+    const user = this.usersRepository.findOneBy({ id: id });
     return user;
+  }
+
+  async addFriend(user: User, friendId: number) {
+    const friend = await this.usersRepository.findOneBy({ id: friendId });
+
+    user.friends = [friend];
+    friend.friends = [user];
+
+    this.usersRepository.save(user);
+    this.usersRepository.save(friend);
   }
 }
