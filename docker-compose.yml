@@ -8,6 +8,8 @@ services:
       - ./front:/front
     command: npm run start
     working_dir: /front
+    env_file:
+      - ./front/.env
     environment:
       - PORT=80
 

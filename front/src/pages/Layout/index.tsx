@@ -4,7 +4,7 @@ import NeonButton from '../../components/NeonButton';
 
 import './style.css';
 
-export default function Layout() {
+export default function Layout({ setUser }: any) {
   return (
     <div className="main-container">
       <nav className="top-bar">
@@ -31,6 +31,7 @@ export default function Layout() {
           </li>
         </ul>
         <div>profile picture</div>
+        <button onClick={() => setUser(null)}>logout</button>
       </nav>
 
       <Outlet />
