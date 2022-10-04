@@ -3,6 +3,15 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../entities/user.entity';
 
+function byId(id: number) {
+  return {
+    where: { id },
+    relations: {
+      friends: true,
+    },
+  };
+}
+
 @Injectable()
 export class UsersService {
   constructor(
@@ -44,22 +53,8 @@ export class UsersService {
     if (userId == friendId)
       throw new BadRequestException("You can't be your own friend");
 
-    const user = await this.usersRepository.findOne({
-      where: {
-        id: userId,
-      },
-      relations: {
-        friends: true,
-      },
-    });
-    const friend = await this.usersRepository.findOne({
-      where: {
-        id: friendId,
-      },
-      relations: {
-        friends: true,
-      },
-    });
+    const user = await this.usersRepository.findOne(byId(userId));
+    const friend = await this.usersRepository.findOne(byId(friendId));
 
     user.friends.push(friend);
     friend.friends.push(user);
