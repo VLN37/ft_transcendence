@@ -20,9 +20,8 @@ export class UsersController {
 
   @Post(':id/friends')
   async addFriend(@Param('id') id: any, @Body() friend: any) {
-    const friendId = friend.id;
-    const user = await this.usersService.findOne(id);
-    return this.usersService.addFriend(user, friendId);
+    const friendId = friend.user_id;
+    return this.usersService.addFriend(id, friendId);
   }
 
   @Patch(':id')

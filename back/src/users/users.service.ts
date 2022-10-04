@@ -40,11 +40,26 @@ export class UsersService {
     return user;
   }
 
-  async addFriend(user: User, friendId: number) {
-    const friend = await this.usersRepository.findOneBy({ id: friendId });
+  async addFriend(userId: number, friendId: number) {
+    const user = await this.usersRepository.findOne({
+      where: {
+        id: userId,
+      },
+      relations: {
+        friends: true,
+      },
+    });
+    const friend = await this.usersRepository.findOne({
+      where: {
+        id: friendId,
+      },
+      relations: {
+        friends: true,
+      },
+    });
 
-    user.friends = [friend];
-    friend.friends = [user];
+    user.friends.push(friend);
+    friend.friends.push(user);
 
     this.usersRepository.save(user);
     this.usersRepository.save(friend);
