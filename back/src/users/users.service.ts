@@ -15,6 +15,7 @@ function byId(id: number) {
     relations: {
       friends: true,
       blocked: true,
+      friends_request: true,
     },
   };
 }
@@ -37,7 +38,12 @@ export class UsersService {
 
   edit(id: number, user: User) {
     this.usersRepository.update(id, user);
-    const updatedUser = this.usersRepository.findOneBy({ id: id });
+    const updatedUser = this.usersRepository.findOne(byId(id));
+    return updatedUser;
+  }
+
+  async update(user: User) {
+    const updatedUser = await this.usersRepository.save(user);
     return updatedUser;
   }
 
@@ -51,13 +57,14 @@ export class UsersService {
       relations: {
         friends: true,
         blocked: true,
+        friends_request: true,
       },
     });
     return users;
   }
 
-  findOne(id: number) {
-    const user = this.usersRepository.findOneBy({ id: id });
+  async findOne(id: number) {
+    const user = await this.usersRepository.findOne(byId(id));
     return user;
   }
 
@@ -91,22 +98,10 @@ export class UsersService {
     const userToUnblock = await this.usersRepository.findOne(byId(userId));
     if (!userToUnblock) throw new NotFoundException('User to block not found');
 
-    user.blocked = user.blocked.filter((userToUnblock) => userToUnblock.id != userId);
+    user.blocked = user.blocked.filter(
+      (userToUnblock) => userToUnblock.id != userId,
+    );
 
     return await this.usersRepository.save(user);
-  }
-
-  async addFriend(userId: number, friendId: number) {
-    if (userId == friendId)
-      throw new BadRequestException("You can't be your own friend");
-
-    const user = await this.usersRepository.findOne(byId(userId));
-    const friend = await this.usersRepository.findOne(byId(friendId));
-
-    user.friends.push(friend);
-    friend.friends.push(user);
-
-    this.usersRepository.save(user);
-    this.usersRepository.save(friend);
   }
 }

@@ -4,6 +4,7 @@ import { UsersModule } from './users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { AuthModule } from './auth/auth.module';
+import { FriendshipsModule } from './friendships/friendships.module';
 
 const environment = process.env.ENVIRONMENT;
 
@@ -24,6 +25,7 @@ const environment = process.env.ENVIRONMENT;
     }),
     UsersModule,
     AuthModule,
+    FriendshipsModule,
   ],
   controllers: [],
   providers: [],

@@ -37,6 +37,10 @@ export class User {
   blocked: User[];
 
   @ManyToMany(() => User)
+  @JoinTable({ name: 'friends_request' })
+  friends_request: User[];
+
+  @ManyToMany(() => User)
   @JoinTable({ name: 'friendships' })
   friends: User[];
 }

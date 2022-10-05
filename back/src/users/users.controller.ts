@@ -29,12 +29,6 @@ export class UsersController {
     return await this.usersService.unblockUser(id, user.user_id);
   }
 
-  @Post(':id/friends')
-  async addFriend(@Param('id') id: any, @Body() friend: any) {
-    const friendId = friend.user_id;
-    return this.usersService.addFriend(id, friendId);
-  }
-
   @Patch(':id')
   edit(@Param('id') id: any, @Body() user: any) {
     return this.usersService.edit(id, user);
