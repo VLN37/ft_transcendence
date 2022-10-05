@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Param, Post } from '@nestjs/common';
 import { FriendshipsService } from './friendships.service';
 
 @Controller('friends')
@@ -10,7 +10,7 @@ export class FriendshipsController {
     return await this.friendshipsService.add(id, user.user_id);
   }
 
-  @Post(':id/remove')
+  @Delete(':id/remove')
   async remove(@Param('id') id: any, @Body() user: any) {
     return await this.friendshipsService.remove(id, user.user_id);
   }
