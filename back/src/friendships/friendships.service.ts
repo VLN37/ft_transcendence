@@ -34,6 +34,12 @@ export class FriendshipsService {
         'You have already sent an invitation to this user',
       );
 
+    if (user.blocked.find((friendToAdd) => friendToAdd.id == friendId))
+      throw new BadRequestException('You blocked the user');
+
+    if (friendToAdd.blocked.find((_user) => _user.id == user.id))
+      throw new BadRequestException('User blocked you');
+
     friendToAdd.friends_request.push(user);
 
     return await this.usersService.update(friendToAdd);
@@ -55,7 +61,9 @@ export class FriendshipsService {
     if (
       !user.friends_request.find((friendToAdd) => friendToAdd.id == friendId) &&
       !user.friends.find((friendToAdd) => friendToAdd.id == friendId) &&
-      !friendToAdd.friends_request.find((friendToAdd) => friendToAdd.id == user.id)
+      !friendToAdd.friends_request.find(
+        (friendToAdd) => friendToAdd.id == user.id,
+      )
     )
       throw new NotFoundException(
         'The user is not on your friend/pending request list',
@@ -94,6 +102,12 @@ export class FriendshipsService {
     const friendToAdd = await this.usersService.findOne(friendId);
     if (!friendToAdd)
       throw new NotFoundException('User to accept as friend does not exist');
+
+    if (user.blocked.find((friendToAdd) => friendToAdd.id == friendId))
+      throw new BadRequestException('You blocked the user');
+
+    if (friendToAdd.blocked.find((_user) => _user.id == user.id))
+      throw new BadRequestException('User blocked you');
 
     user.friends_request = user.friends.filter(
       (user) => user.id != friendToAdd.id,
