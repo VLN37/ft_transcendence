@@ -9,4 +9,9 @@ export class FriendshipsController {
   async add(@Param('id') id: any, @Body() user: any) {
     return await this.friendshipsService.add(id, user.user_id);
   }
+
+  @Post(':id/remove')
+  async remove(@Param('id') id: any, @Body() user: any) {
+    return await this.friendshipsService.remove(id, user.user_id);
+  }
 }

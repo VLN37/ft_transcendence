@@ -22,7 +22,7 @@ export class FriendshipsService {
     if (user.friends_request.find((friendToAdd) => friendToAdd.id == friendId))
       throw new BadRequestException('User has already sent you an invite');
 
-    const friendToAdd = await await this.usersService.findOne(friendId);
+    const friendToAdd = await this.usersService.findOne(friendId);
     if (!friendToAdd)
       throw new NotFoundException('User to add as friend does not exist');
 
@@ -37,5 +37,42 @@ export class FriendshipsService {
     friendToAdd.friends_request.push(user);
 
     return await this.usersService.update(friendToAdd);
+  }
+
+  async remove(id: number, friendId: number) {
+    const user = await this.usersService.findOne(id);
+    if (!user) throw new NotFoundException('User not found');
+
+    if (id == friendId)
+      throw new BadRequestException("You can't remove yourself");
+
+    if (
+      !user.friends_request.find((friendToAdd) => friendToAdd.id == friendId) &&
+      !user.friends.find((friendToAdd) => friendToAdd.id == friendId)
+    )
+      throw new NotFoundException(
+        'The user is not on your friend/pending request list',
+      );
+
+    const friendToAdd = await this.usersService.findOne(friendId);
+    if (!friendToAdd)
+      throw new NotFoundException(
+        'User to remove from friend/pending request list does not exist',
+      );
+
+    user.friends = user.friends.filter((user) => user.id != friendToAdd.id);
+    user.friends_request = user.friends_request.filter(
+      (user) => user.id != friendToAdd.id,
+    );
+    friendToAdd.friends = friendToAdd.friends.filter(
+      (friendToAdd) => friendToAdd.id != user.id,
+    );
+    friendToAdd.friends_request = friendToAdd.friends_request.filter(
+      (friendToAdd) => friendToAdd.id != user.id,
+    );
+
+    this.usersService.update(friendToAdd);
+
+    return await this.usersService.update(user);
   }
 }
