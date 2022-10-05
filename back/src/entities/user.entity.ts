@@ -33,6 +33,10 @@ export class User {
   tfa_enabled: boolean;
 
   @ManyToMany(() => User)
+  @JoinTable({ name: 'blocked' })
+  blocked: User[];
+
+  @ManyToMany(() => User)
   @JoinTable({ name: 'friendships' })
   friends: User[];
 }

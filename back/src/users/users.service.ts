@@ -1,4 +1,8 @@
-import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException, Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { UserDto } from './dto/user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -9,6 +13,7 @@ function byId(id: number) {
     where: { id },
     relations: {
       friends: true,
+      blocked: true,
     },
   };
 }
@@ -45,6 +50,7 @@ export class UsersService {
     const users = this.usersRepository.find({
       relations: {
         friends: true,
+        blocked: true,
       },
     });
     return users;
@@ -53,6 +59,20 @@ export class UsersService {
   findOne(id: number) {
     const user = this.usersRepository.findOneBy({ id: id });
     return user;
+  }
+
+  async blockUser(id: number, userId: number) {
+    if (id == userId) throw new BadRequestException("You can't block yourself");
+
+    const user = await this.usersRepository.findOne(byId(id));
+    if (!user) throw new NotFoundException('User not found');
+
+    const userToBlock = await this.usersRepository.findOne(byId(userId));
+    if (!userToBlock) throw new NotFoundException('User to block not found');
+
+    user.blocked.push(userToBlock);
+
+    await this.usersRepository.save(user);
   }
 
   async addFriend(userId: number, friendId: number) {

@@ -19,6 +19,11 @@ export class UsersController {
     return this.usersService.create(dto);
   }
 
+  @Post(':id/block')
+  async blockUser(@Param('id') id: any, @Body() user: any) {
+    return await this.usersService.blockUser(id, user.user_id);
+  }
+
   @Post(':id/friends')
   async addFriend(@Param('id') id: any, @Body() friend: any) {
     const friendId = friend.user_id;
