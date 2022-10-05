@@ -1,4 +1,5 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
+import { UserDto } from './dto/user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../entities/user.entity';
@@ -19,9 +20,14 @@ export class UsersService {
     private usersRepository: Repository<User>,
   ) {}
 
-  async create(user: User) {
-    const newUser = await this.usersRepository.save(user);
-    return newUser;
+  async create(dto: UserDto) {
+      const newUser = await this.usersRepository.save({
+        login_intra: dto.login_intra,
+        tfa_enabled: dto.tfa_enabled,
+        status: dto.status,
+        }
+      );
+      return newUser;
   }
 
   edit(id: number, user: User) {
