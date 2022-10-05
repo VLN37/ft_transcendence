@@ -8,6 +8,11 @@ up:
 down:
 	docker-compose -f docker-compose.yml down
 
+test:
+	make restart \
+	&& echo -e "\nsleeping 10 to allow socket to start..." \
+	&& sleep 10 && npm --prefix ./back run test
+
 restart:
 	make down
 	docker-compose -f docker-compose.yml up -d
