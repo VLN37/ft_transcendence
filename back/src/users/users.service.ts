@@ -1,6 +1,7 @@
 import {
   BadRequestException,
-  ForbiddenException, Injectable,
+  ForbiddenException,
+  Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { UserDto } from './dto/user.dto';
@@ -26,13 +27,12 @@ export class UsersService {
   ) {}
 
   async create(dto: UserDto) {
-      const newUser = await this.usersRepository.save({
-        login_intra: dto.login_intra,
-        tfa_enabled: dto.tfa_enabled,
-        status: dto.status,
-        }
-      );
-      return newUser;
+    const newUser = await this.usersRepository.save({
+      login_intra: dto.login_intra,
+      tfa_enabled: dto.tfa_enabled,
+      status: dto.status,
+    });
+    return newUser;
   }
 
   edit(id: number, user: User) {
@@ -62,17 +62,20 @@ export class UsersService {
   }
 
   async blockUser(id: number, userId: number) {
-    if (id == userId) throw new BadRequestException("You can't block yourself");
-
     const user = await this.usersRepository.findOne(byId(id));
     if (!user) throw new NotFoundException('User not found');
+
+    if (id == userId) throw new BadRequestException("You can't block yourself");
+
+    if (user.blocked.find((userToBlock) => userToBlock.id == userId))
+      throw new BadRequestException('User has already been blocked ');
 
     const userToBlock = await this.usersRepository.findOne(byId(userId));
     if (!userToBlock) throw new NotFoundException('User to block not found');
 
     user.blocked.push(userToBlock);
 
-    await this.usersRepository.save(user);
+    return await this.usersRepository.save(user);
   }
 
   async addFriend(userId: number, friendId: number) {
