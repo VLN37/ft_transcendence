@@ -46,18 +46,19 @@ export class FriendshipsService {
     if (id == friendId)
       throw new BadRequestException("You can't remove yourself");
 
-    if (
-      !user.friends_request.find((friendToAdd) => friendToAdd.id == friendId) &&
-      !user.friends.find((friendToAdd) => friendToAdd.id == friendId)
-    )
-      throw new NotFoundException(
-        'The user is not on your friend/pending request list',
-      );
-
     const friendToAdd = await this.usersService.findOne(friendId);
     if (!friendToAdd)
       throw new NotFoundException(
         'User to remove from friend/pending request list does not exist',
+      );
+
+    if (
+      !user.friends_request.find((friendToAdd) => friendToAdd.id == friendId) &&
+      !user.friends.find((friendToAdd) => friendToAdd.id == friendId) &&
+      !friendToAdd.friends_request.find((friendToAdd) => friendToAdd.id == user.id)
+    )
+      throw new NotFoundException(
+        'The user is not on your friend/pending request list',
       );
 
     user.friends = user.friends.filter((user) => user.id != friendToAdd.id);
@@ -71,8 +72,42 @@ export class FriendshipsService {
       (friendToAdd) => friendToAdd.id != user.id,
     );
 
-    this.usersService.update(friendToAdd);
+    await this.usersService.update(friendToAdd);
+    await this.usersService.update(user);
 
-    return await this.usersService.update(user);
+    return user;
+  }
+
+  async accept(id: number, friendId: number) {
+    const user = await this.usersService.findOne(id);
+    if (!user) throw new NotFoundException('User not found');
+
+    if (id == friendId)
+      throw new BadRequestException("You can't accept yourself as friend");
+
+    if (user.friends.find((friendToAdd) => friendToAdd.id == friendId))
+      throw new BadRequestException('User is already your friend');
+
+    if (!user.friends_request.find((friendToAdd) => friendToAdd.id == friendId))
+      throw new BadRequestException('User not sent you an invite');
+
+    const friendToAdd = await this.usersService.findOne(friendId);
+    if (!friendToAdd)
+      throw new NotFoundException('User to accept as friend does not exist');
+
+    user.friends_request = user.friends.filter(
+      (user) => user.id != friendToAdd.id,
+    );
+    friendToAdd.friends_request = friendToAdd.friends.filter(
+      (friendToAdd) => friendToAdd.id != user.id,
+    );
+
+    friendToAdd.friends.push(JSON.parse(JSON.stringify(user)));
+    user.friends.push(JSON.parse(JSON.stringify(friendToAdd)));
+
+    await this.usersService.update(friendToAdd);
+    await this.usersService.update(user);
+
+    return user;
   }
 }
