@@ -30,10 +30,10 @@ export class FortytwoStrategy extends PassportStrategy(Strategy, '42') {
   }
 
   async validate(payload: any): Promise<any> {
-    return await this.http.get('https://api.intra.42.fr/v2/me',{
-      headers: { Authorization: `Bearer ${ payload }` },
-    });
+    // return await this.http.get('https://api.intra.42.fr/v2/me',{
+    //   headers: { Authorization: `Bearer ${ payload }` },
+    // });
     // console.log(data);
-    // return data;
+    return payload;
   }
 }

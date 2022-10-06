@@ -1,10 +1,14 @@
 import {
+  Headers,
   Controller,
   Get,
+  Param,
   Redirect,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { Request } from 'express';
 import { AuthService } from './auth.service';
 import { FortytwoGuard } from './guard/42.guard';
 
@@ -12,18 +16,19 @@ import { FortytwoGuard } from './guard/42.guard';
 export class AuthController {
   constructor(
     private authService: AuthService,
-    private config: ConfigService) { }
+    private config: ConfigService,
+  ) {}
 
   @Get()
   @Redirect('/')
   roots() {
-    return { url: this.config.get('INTRA_AUTH_URL') }
+    return { url: this.config.get('INTRA_AUTH_URL') };
   }
 
   @UseGuards(FortytwoGuard)
   @Get('auth-callback')
-  auth() {
-    console.log('OAUTH succesful');
-    return this.authService.auth(123);
+  auth(@Req() req: Request) {
+    // console.log(param);
+    return req.user;
   }
 }
