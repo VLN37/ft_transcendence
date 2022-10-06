@@ -4,32 +4,29 @@ import {
   HttpCode,
   Post,
   Query,
-  Redirect,
+  Req,
   UseGuards,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-
+import { Request } from 'express';
 import { AuthService } from './auth.service';
 import { FortytwoGuard } from './guard/42.guard';
+import { FortytwoLocalGuard } from './guard/42.guard2';
 
-@Controller()
+@Controller('/')
 export class AuthController {
-  constructor(
-    private authService: AuthService,
-    private config: ConfigService,
-  ) {}
+  constructor(private authService: AuthService) {}
 
+  @UseGuards(FortytwoLocalGuard)
   @Get()
-  @Redirect('/')
-  roots() {
-    return { url: this.config.get('INTRA_AUTH_URL') };
+  home() {
+    return this.authService.home();
   }
 
   @UseGuards(FortytwoGuard)
   @Get('auth-callback')
-  auth() {
-    console.log('OAUTH succesful');
-    return this.authService.auth('123');
+  auth(@Req() req: Request) {
+    console.log('auth-callback');
+    return JSON.stringify(req.user);
   }
 
   @Post('/auth/login')

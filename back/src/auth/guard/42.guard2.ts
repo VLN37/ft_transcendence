@@ -6,21 +6,21 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 
 @Injectable()
-export class FortytwoGuard extends AuthGuard('42') {
+export class FortytwoLocalGuard extends AuthGuard('local') {
   //handle request/response
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    console.log('canActivate');
     const request = context.switchToHttp().getRequest();
-    const result = (await super.canActivate(context)) as boolean; // THIS MUST BE CALLED FIRST
+    const result = (await super.canActivate(context)) as boolean;
+    (request.headers['token'] as any) = request.headers['authorization'];
+    if (!request.headers['authorization']) return false;
     return result;
   }
 
   //handle errors
   handleRequest(err, user, info) {
-    console.log('handleRequest');
-    if (err || !user) {
-      throw new BadRequestException();
-    }
+    // if (err || !user) {
+    //   throw new BadRequestException();
+    // }
     return user;
   }
 }

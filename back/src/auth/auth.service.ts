@@ -37,9 +37,12 @@ export class AuthService {
         Authorization: `Bearer ${token}`,
       },
     });
-
     console.log({ userResponse });
 
     return userResponse.json();
+  }
+
+  home() {
+    return 'kkkkkkkkkkkkkkkkkk';
   }
 }
