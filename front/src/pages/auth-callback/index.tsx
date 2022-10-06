@@ -26,6 +26,7 @@ const AuthCallback = ({ setUser }: any) => {
       const result = await response.json();
       console.log({ result });
       localStorage.setItem('RESULT', result);
+      setUser(result);
       setLoading(false);
       return true;
     }
