@@ -10,7 +10,7 @@ import {
 import { Request } from 'express';
 import { AuthService } from './auth.service';
 import { FortytwoGuard } from './guard/42.guard';
-import { FortytwoLocalGuard } from './guard/42.guard2';
+import { FortytwoLocalGuard } from './guard/local.guard';
 
 @Controller('/')
 export class AuthController {
