@@ -1,14 +1,45 @@
+import { useEffect, useState } from 'react';
 import { Navigate, useSearchParams } from 'react-router-dom';
 
 const AuthCallback = ({ setUser }: any) => {
+  const [loading, setLoading] = useState(true);
   const [params] = useSearchParams();
 
-  console.log({ code: params.get('code') });
+  useEffect(() => {
+    const code = params.get('code');
 
-  setUser({ id: 42, name: 'paulo' });
+    async function isCodeValid(code: string | null): Promise<boolean> {
+      setLoading(true);
+      if (!code || code.length != 64) return false;
+
+      const url = `http://localhost:3000/auth/login?code=${code}`;
+      console.log({ url });
+      const response = await fetch(url, {
+        method: 'POST',
+      });
+
+      console.log({ response });
+      if (!response.ok) {
+        return false;
+      }
+
+      const result = await response.json();
+      console.log({ result });
+      localStorage.setItem('RESULT', result);
+      setLoading(false);
+      return true;
+    }
+
+    isCodeValid(code);
+  }, []);
+
+  if (loading) {
+    return <div style={{ color: '#fff' }}>Carregando</div>;
+  } else {
+    return <Navigate to="/" />;
+  }
 
   // return <div>carai</div>;
-  return <Navigate to="/" />;
 };
 
 export default AuthCallback;

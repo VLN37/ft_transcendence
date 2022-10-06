@@ -1,14 +1,14 @@
 import {
-  Headers,
   Controller,
   Get,
-  Param,
+  HttpCode,
+  Post,
+  Query,
   Redirect,
   UseGuards,
-  Req,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Request } from 'express';
+
 import { AuthService } from './auth.service';
 import { FortytwoGuard } from './guard/42.guard';
 
@@ -27,8 +27,23 @@ export class AuthController {
 
   @UseGuards(FortytwoGuard)
   @Get('auth-callback')
-  auth(@Req() req: Request) {
-    // console.log(param);
-    return req.user;
+  auth() {
+    console.log('OAUTH succesful');
+    return this.authService.auth('123');
+  }
+
+  @Post('/auth/login')
+  @HttpCode(200)
+  async login(@Query('code') code: string) {
+    console.log({ code });
+
+    const result = await this.authService.auth(code);
+
+    const token = result.access_token;
+
+    const user = this.authService.getUserData(token);
+
+    console.log({ user });
+    return user;
   }
 }
