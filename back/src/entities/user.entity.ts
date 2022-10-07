@@ -20,13 +20,6 @@ export class User {
   login_intra: string;
 
   @Column({
-    type: 'varchar',
-    length: 10,
-    default: 'offline',
-  })
-  status: string;
-
-  @Column({
     type: 'boolean',
     default: false,
   })

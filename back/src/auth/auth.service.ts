@@ -10,6 +10,7 @@ export class AuthService {
       access_token: this.jwtService.sign(user, {
         secret: process.env.JWT_TOKEN,
       }),
+      token_type: 'bearer',
     };
   }
 
