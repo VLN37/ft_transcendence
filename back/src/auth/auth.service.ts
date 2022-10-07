@@ -6,7 +6,11 @@ export class AuthService {
   constructor(private jwtService: JwtService) {}
 
   auth2(user: any) {
-    return { access_token: this.jwtService.sign(user) };
+    return {
+      access_token: this.jwtService.sign(user, {
+        secret: process.env.JWT_TOKEN,
+      }),
+    };
   }
 
   async auth(code: string) {

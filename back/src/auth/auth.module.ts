@@ -7,13 +7,7 @@ import { FortytwoStrategy } from './strategy/42.strategy';
 import { JwtStrategy } from './strategy/jwt.strategy';
 
 @Module({
-  imports: [
-    HttpModule,
-    JwtModule.register({
-      secret: 'ovo',
-      signOptions: { expiresIn: '60s' },
-    }),
-  ],
+  imports: [HttpModule, JwtModule.register({})],
   controllers: [AuthController],
   providers: [AuthService, FortytwoStrategy, JwtStrategy],
 })
