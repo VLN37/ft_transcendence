@@ -1,7 +1,7 @@
 import {
   BadRequestException,
-  ForbiddenException,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { UserDto } from './dto/user.dto';
@@ -22,6 +22,8 @@ function byId(id: number) {
 
 @Injectable()
 export class UsersService {
+  private readonly logger = new Logger(UsersService.name);
+
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
@@ -30,15 +32,15 @@ export class UsersService {
   async create(dto: UserDto) {
     const newUser = await this.usersRepository.save({
       login_intra: dto.login_intra,
-      tfa_enabled: dto.tfa_enabled,
-      status: dto.status,
     });
+    this.logger.debug('User created', { newUser });
     return newUser;
   }
 
   edit(id: number, user: User) {
     this.usersRepository.update(id, user);
     const updatedUser = this.usersRepository.findOne(byId(id));
+    this.logger.debug('User updated', { updatedUser });
     return updatedUser;
   }
 
@@ -49,22 +51,25 @@ export class UsersService {
 
   delete(id: number) {
     const deletedUser = this.usersRepository.delete({ id: id });
+    this.logger.debug('User deleted', { deletedUser });
     return deletedUser;
   }
 
-  get(): Promise<User[]> {
-    const users = this.usersRepository.find({
+  async get(): Promise<User[]> {
+    const users = await this.usersRepository.find({
       relations: {
         friends: true,
         blocked: true,
         friends_request: true,
       },
     });
+    this.logger.debug('Returning users', { users });
     return users;
   }
 
   async findOne(id: number) {
     const user = await this.usersRepository.findOne(byId(id));
+    this.logger.debug('Returning user', { user });
     return user;
   }
 
@@ -81,6 +86,10 @@ export class UsersService {
     if (!userToBlock) throw new NotFoundException('User to block not found');
 
     user.blocked.push(userToBlock);
+
+    this.logger.log(
+      `User ${user.login_intra} blocked user ${userToBlock.login_intra}`,
+    );
 
     return await this.usersRepository.save(user);
   }
@@ -102,6 +111,9 @@ export class UsersService {
       (userToUnblock) => userToUnblock.id != userId,
     );
 
+    this.logger.log(
+      `User ${user.login_intra} unblocked user ${userToUnblock.login_intra}`,
+    );
     return await this.usersRepository.save(user);
   }
 }

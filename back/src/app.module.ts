@@ -1,10 +1,12 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { UsersModule } from './users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { AuthModule } from './auth/auth.module';
 import { FriendshipsModule } from './friendships/friendships.module';
+import { LoggerMiddleware } from './middlewares/LoggerMiddleware';
+import { UsersController } from './users/users.controller';
 
 const environment = process.env.ENVIRONMENT;
 
@@ -30,4 +32,8 @@ const environment = process.env.ENVIRONMENT;
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggerMiddleware).forRoutes(UsersController);
+  }
+}
