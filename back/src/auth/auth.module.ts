@@ -1,13 +1,20 @@
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
+import { JwtModule } from '@nestjs/jwt';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { FortytwoStrategy } from './strategy/42.strategy';
-import { LocalStrategy } from './strategy/local.strategy';
+import { JwtStrategy } from './strategy/jwt.strategy';
 
 @Module({
-  imports: [HttpModule],
+  imports: [
+    HttpModule,
+    JwtModule.register({
+      secret: 'ovo',
+      signOptions: { expiresIn: '60s' },
+    }),
+  ],
   controllers: [AuthController],
-  providers: [AuthService, FortytwoStrategy, LocalStrategy],
+  providers: [AuthService, FortytwoStrategy, JwtStrategy],
 })
 export class AuthModule {}

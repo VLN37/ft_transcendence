@@ -9,7 +9,6 @@ import { AuthGuard } from '@nestjs/passport';
 export class FortytwoGuard extends AuthGuard('42') {
   //handle request/response
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    console.log('canActivate');
     const request = context.switchToHttp().getRequest();
     const result = (await super.canActivate(context)) as boolean; // THIS MUST BE CALLED FIRST
     return result;
@@ -17,7 +16,6 @@ export class FortytwoGuard extends AuthGuard('42') {
 
   //handle errors
   handleRequest(err, user, info) {
-    console.log('handleRequest');
     if (err || !user) {
       throw new BadRequestException();
     }

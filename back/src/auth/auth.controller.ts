@@ -10,13 +10,13 @@ import {
 import { Request } from 'express';
 import { AuthService } from './auth.service';
 import { FortytwoGuard } from './guard/42.guard';
-import { FortytwoLocalGuard } from './guard/local.guard';
+import { JwtAuthGuard } from './guard/jwt.guard';
 
 @Controller('/')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @UseGuards(FortytwoLocalGuard)
+  @UseGuards(JwtAuthGuard)
   @Get()
   home() {
     return this.authService.home();
@@ -25,8 +25,7 @@ export class AuthController {
   @UseGuards(FortytwoGuard)
   @Get('auth-callback')
   auth(@Req() req: Request) {
-    console.log('auth-callback');
-    return JSON.stringify(req.user);
+    return this.authService.auth2(req.user);
   }
 
   @Post('/auth/login')

@@ -1,7 +1,14 @@
 import { Injectable } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
+  constructor(private jwtService: JwtService) {}
+
+  auth2(user: any) {
+    return { access_token: this.jwtService.sign(user) };
+  }
+
   async auth(code: string) {
     const tokenUrl = process.env.INTRA_TOKEN_URL;
     const clientId = process.env.CLIENT_ID;
@@ -43,6 +50,6 @@ export class AuthService {
   }
 
   home() {
-    return 'kkkkkkkkkkkkkkkkkk';
+    return { message: 'kkkkkkkkkkkkkkkkkk' };
   }
 }

@@ -1,26 +1,30 @@
 import {
   Injectable,
   ExecutionContext,
-  BadRequestException,
+  UnauthorizedException,
 } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { AuthGuard } from '@nestjs/passport';
 
 @Injectable()
-export class FortytwoLocalGuard extends AuthGuard('local') {
-  //handle request/response
+export class JwtAuthGuard extends AuthGuard('jwt') {
+  constructor(private jwtService: JwtService) {
+    super();
+  }
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const result = (await super.canActivate(context)) as boolean;
-    (request.headers['token'] as any) = request.headers['authorization'];
     if (!request.headers['authorization']) return false;
+    const token = this.jwtService.decode(request.headers['authorization'].split(' ')[1]);
+    // console.log(token);
     return result;
   }
 
   //handle errors
   handleRequest(err, user, info) {
-    // if (err || !user) {
-    //   throw new BadRequestException();
-    // }
+    if (err) {
+      throw new UnauthorizedException();
+    }
     return user;
   }
 }
