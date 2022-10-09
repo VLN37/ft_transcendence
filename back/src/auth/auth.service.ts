@@ -1,57 +1,50 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { IntraService } from 'src/intra/intra.service';
 
 @Injectable()
 export class AuthService {
-  constructor(private jwtService: JwtService) {}
+  private readonly logger = new Logger(AuthService.name);
+
+  constructor(
+    private jwtService: JwtService,
+    private intraService: IntraService,
+  ) {}
 
   auth2(user: any) {
     return {
       access_token: this.jwtService.sign(user, {
-        secret: process.env.JWT_TOKEN,
+        secret: process.env.JWT_SECRET,
       }),
       token_type: 'bearer',
     };
   }
 
-  async auth(code: string) {
-    const tokenUrl = process.env.INTRA_TOKEN_URL;
-    const clientId = process.env.CLIENT_ID;
-    const clientSecret = process.env.CLIENT_SECRET;
-    console.log({ clientId });
-    console.log({ clientSecret });
-    const response = await fetch(tokenUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        grant_type: 'authorization_code',
-        client_id: clientId,
-        client_secret: clientSecret,
-        redirect_uri: 'http://localhost/auth-callback',
-        code: code,
-      }),
-    });
+  async login(code: string) {
+    this.logger.warn('secret: ' + process.env.JWT_SECRET);
+    const token = await this.intraService.getUserToken(code);
 
-    console.log({ response });
+    const user = await this.intraService.getUserInfo(token.access_token);
+    this.logger.log('user fetched: ' + user.login);
 
-    const result = await response.json();
-
-    console.log({ result });
-    return result;
+    const payload = {
+      username: user.login,
+      sub: user.id,
+    };
+    const options = {
+      secret: process.env.JWT_SECRET,
+    };
+    return {
+      access_token: this.jwtService.sign(payload, options),
+      token_type: 'bearer',
+    };
   }
 
-  async getUserData(token: string) {
-    const userResponse = await fetch('https://api.intra.42.fr/v2/me', {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    console.log({ userResponse });
-
-    return userResponse.json();
+  async auth(code: string) {
+    const token = this.intraService.getUserToken(code);
+    if (!token) {
+      throw new UnauthorizedException('invalid code');
+    }
   }
 
   home() {

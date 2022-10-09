@@ -8,13 +8,17 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { Request } from 'express';
+import { IntraService } from 'src/intra/intra.service';
 import { AuthService } from './auth.service';
 import { FortytwoGuard } from './guard/42.guard';
 import { JwtAuthGuard } from './guard/jwt.guard';
 
 @Controller('/')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private intraService: IntraService,
+  ) {}
 
   @UseGuards(JwtAuthGuard)
   @Get()
@@ -33,11 +37,7 @@ export class AuthController {
   async login(@Query('code') code: string) {
     console.log({ code });
 
-    const result = await this.authService.auth(code);
-
-    const token = result.access_token;
-
-    const user = this.authService.getUserData(token);
+    const user = this.authService.login(code);
 
     console.log({ user });
     return user;
