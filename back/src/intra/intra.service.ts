@@ -1,13 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 
 @Injectable()
 export class IntraService {
+  private readonly logger = new Logger(IntraService.name);
+
   async getUserToken(code: string) {
     const tokenUrl = process.env.INTRA_TOKEN_URL;
     const clientId = process.env.CLIENT_ID;
     const clientSecret = process.env.CLIENT_SECRET;
-    console.log({ clientId });
-    console.log({ clientSecret });
+
     const response = await fetch(tokenUrl, {
       method: 'POST',
       headers: {
@@ -22,11 +23,9 @@ export class IntraService {
       }),
     });
 
-    console.log({ response });
-
     const result = await response.json();
 
-    console.log({ result });
+    this.logger.log({ result });
     return result;
   }
 
@@ -37,8 +36,9 @@ export class IntraService {
         Authorization: `Bearer ${access_token}`,
       },
     });
-    console.log({ userResponse });
 
-    return userResponse.json();
+    const result = await userResponse.json();
+    this.logger.log('returning info for user: ' + result.login);
+    return result;
   }
 }
