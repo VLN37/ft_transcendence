@@ -8,7 +8,7 @@ const AuthCallback = ({ setUser }: any) => {
   useEffect(() => {
     const code = params.get('code');
 
-    async function isCodeValid(code: string | null): Promise<boolean> {
+    async function validateCode(code: string | null): Promise<boolean> {
       setLoading(true);
       if (!code || code.length != 64) return false;
 
@@ -31,7 +31,7 @@ const AuthCallback = ({ setUser }: any) => {
       return true;
     }
 
-    isCodeValid(code);
+    validateCode(code);
   }, []);
 
   if (loading) {
