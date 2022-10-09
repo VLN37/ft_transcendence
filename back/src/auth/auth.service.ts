@@ -1,4 +1,4 @@
-import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { IntraService } from 'src/intra/intra.service';
 
@@ -27,9 +27,5 @@ export class AuthService {
       }),
       token_type: 'bearer',
     };
-  }
-
-  home() {
-    return { message: 'kkkkkkkkkkkkkkkkkk' };
   }
 }
