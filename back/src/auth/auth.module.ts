@@ -8,13 +8,7 @@ import { FortytwoStrategy } from './strategy/42.strategy';
 import { JwtStrategy } from './strategy/jwt.strategy';
 
 @Module({
-  imports: [
-    HttpModule,
-    JwtModule.register({
-      secret: process.env.JWT_SECRET,
-    }),
-    IntraModule,
-  ],
+  imports: [HttpModule, JwtModule.register({}), IntraModule],
   controllers: [AuthController],
   providers: [AuthService, FortytwoStrategy, JwtStrategy],
 })
