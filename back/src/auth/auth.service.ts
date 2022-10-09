@@ -21,7 +21,6 @@ export class AuthService {
   }
 
   async login(code: string) {
-    this.logger.warn('secret: ' + process.env.JWT_SECRET);
     const token = await this.intraService.getUserToken(code);
 
     const user = await this.intraService.getUserInfo(token.access_token);
