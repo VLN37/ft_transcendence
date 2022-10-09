@@ -11,15 +11,6 @@ export class AuthService {
     private intraService: IntraService,
   ) {}
 
-  auth2(user: any) {
-    return {
-      access_token: this.jwtService.sign(user, {
-        secret: process.env.JWT_SECRET,
-      }),
-      token_type: 'bearer',
-    };
-  }
-
   async login(code: string) {
     const token = await this.intraService.getUserToken(code);
 
@@ -30,20 +21,12 @@ export class AuthService {
       username: user.login,
       sub: user.id,
     };
-    const options = {
-      secret: process.env.JWT_SECRET,
-    };
     return {
-      access_token: this.jwtService.sign(payload, options),
+      access_token: this.jwtService.sign(payload, {
+        secret: process.env.JWT_SECRET,
+      }),
       token_type: 'bearer',
     };
-  }
-
-  async auth(code: string) {
-    const token = this.intraService.getUserToken(code);
-    if (!token) {
-      throw new UnauthorizedException('invalid code');
-    }
   }
 
   home() {
