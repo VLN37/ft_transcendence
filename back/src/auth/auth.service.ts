@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { IntraService } from 'src/intra/intra.service';
 
@@ -12,6 +12,8 @@ export class AuthService {
   ) {}
 
   async login(code: string) {
+    if (!code) throw new BadRequestException('No code provided');
+
     const token = await this.intraService.getUserToken(code);
 
     const user = await this.intraService.getUserInfo(token.access_token);
