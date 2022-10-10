@@ -31,7 +31,9 @@ export class UsersService {
 
   async create(dto: UserDto) {
     const newUser = await this.usersRepository.save({
+      id: dto.id,
       login_intra: dto.login_intra,
+      tfa_enabled: dto.tfa_enabled,
     });
     this.logger.debug('User created', { newUser });
     return newUser;

@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { IntraService } from 'src/intra/intra.service';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class AuthService {
@@ -9,6 +10,7 @@ export class AuthService {
   constructor(
     private jwtService: JwtService,
     private intraService: IntraService,
+    private usersService: UsersService,
   ) {}
 
   async login(code: string) {
@@ -16,8 +18,18 @@ export class AuthService {
 
     const token = await this.intraService.getUserToken(code);
 
+    if (!token.access_token) throw new BadRequestException('Invalid token');
+
     const user = await this.intraService.getUserInfo(token.access_token);
     this.logger.log('user fetched: ' + user.login);
+
+    const found = await this.usersService.findOne(user.id);
+    if (!found)
+      await this.usersService.create({
+        id: user.id,
+        login_intra: user.login,
+        tfa_enabled: false,
+      });
 
     const payload = {
       username: user.login,
