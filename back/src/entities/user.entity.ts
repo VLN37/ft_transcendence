@@ -2,7 +2,11 @@ import { Entity, Column, ManyToMany, JoinTable, PrimaryColumn } from 'typeorm';
 
 @Entity({ name: 'users' })
 export class User {
-  @PrimaryColumn()
+  @PrimaryColumn({
+    type: 'numeric',
+    unique: true,
+    nullable: false,
+  })
   id: number;
 
   @Column({
