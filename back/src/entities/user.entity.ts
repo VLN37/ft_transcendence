@@ -4,14 +4,17 @@ import {
   ManyToMany,
   JoinTable,
   OneToOne,
-  PrimaryGeneratedColumn,
+  JoinColumn,
+  PrimaryColumn,
 } from 'typeorm';
 import { Profile } from './profile.entity';
 
 @Entity({ name: 'users' })
 export class User {
-  @PrimaryGeneratedColumn({
+  @PrimaryColumn({
     type: 'int',
+    unique: true,
+    nullable: false,
   })
   id: number;
 

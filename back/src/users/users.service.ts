@@ -8,6 +8,7 @@ import { UserDto } from './dto/user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../entities/user.entity';
+import { ProfileService } from 'src/profile/profile.service';
 
 function byId(id: number) {
   return {
@@ -28,15 +29,21 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
+    private profileService: ProfileService,
   ) {}
 
-  async create(dto: UserDto) {
+  async create(dto: UserDto): Promise<UserDto> {
+    this.logger.debug(dto.profile);
     const newUser = await this.usersRepository.save({
       id: dto.id,
       login_intra: dto.login_intra,
       tfa_enabled: dto.tfa_enabled,
-      profile: dto.profile,
     });
+    if (dto.profile) {
+      dto.profile.user = structuredClone(newUser);
+      newUser.profile = await this.profileService.create(dto.profile);
+      await this.update(newUser);
+    }
     this.logger.debug('User created', { newUser });
     return newUser;
   }
