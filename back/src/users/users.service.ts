@@ -33,17 +33,15 @@ export class UsersService {
   ) {}
 
   async create(dto: UserDto): Promise<UserDto> {
-    this.logger.debug(dto.profile);
+    const profile = dto.profile
+      ? await this.profileService.create(dto.profile)
+      : null;
     const newUser = await this.usersRepository.save({
       id: dto.id,
       login_intra: dto.login_intra,
       tfa_enabled: dto.tfa_enabled,
+      profile: profile,
     });
-    if (dto.profile) {
-      dto.profile.user = structuredClone(newUser);
-      newUser.profile = await this.profileService.create(dto.profile);
-      await this.update(newUser);
-    }
     this.logger.debug('User created', { newUser });
     return newUser;
   }

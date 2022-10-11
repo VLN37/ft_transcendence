@@ -1,5 +1,4 @@
-import { Entity, Column, PrimaryColumn, OneToOne, JoinColumn } from 'typeorm';
-import { User } from './user.entity';
+import { Entity, Column, PrimaryColumn } from 'typeorm';
 
 export type UserStatus = 'OFFLINE' | 'ONLINE' | 'PLAYING';
 
@@ -56,8 +55,4 @@ export class Profile {
     default: 0,
   })
   mmr: number;
-
-  @OneToOne(() => User, (user) => user.profile)
-  @JoinColumn()
-  user: User;
 }

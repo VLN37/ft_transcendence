@@ -4,8 +4,8 @@ import {
   ManyToMany,
   JoinTable,
   OneToOne,
-  JoinColumn,
   PrimaryColumn,
+  JoinColumn,
 } from 'typeorm';
 import { Profile } from './profile.entity';
 
@@ -32,7 +32,8 @@ export class User {
   })
   tfa_enabled: boolean;
 
-  @OneToOne(() => Profile, (profile) => profile.user)
+  @OneToOne(() => Profile)
+  @JoinColumn({ name: 'profile_id' })
   profile: Profile;
 
   @ManyToMany(() => User)
