@@ -13,6 +13,7 @@ function byId(id: number) {
   return {
     where: { id },
     relations: {
+      profile: true,
       friends: true,
       blocked: true,
       friends_request: true,
@@ -34,6 +35,7 @@ export class UsersService {
       id: dto.id,
       login_intra: dto.login_intra,
       tfa_enabled: dto.tfa_enabled,
+      profile: dto.profile,
     });
     this.logger.debug('User created', { newUser });
     return newUser;
@@ -60,6 +62,7 @@ export class UsersService {
   async get(): Promise<User[]> {
     const users = await this.usersRepository.find({
       relations: {
+        profile: true,
         friends: true,
         blocked: true,
         friends_request: true,

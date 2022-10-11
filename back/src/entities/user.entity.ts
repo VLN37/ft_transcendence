@@ -1,9 +1,17 @@
-import { Entity, Column, ManyToMany, JoinTable, PrimaryColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  ManyToMany,
+  JoinTable,
+  PrimaryColumn,
+  OneToOne,
+} from 'typeorm';
+import { Profile } from './profile.entity';
 
 @Entity({ name: 'users' })
 export class User {
   @PrimaryColumn({
-    type: 'numeric',
+    type: 'int',
     unique: true,
     nullable: false,
   })
@@ -22,6 +30,9 @@ export class User {
     default: false,
   })
   tfa_enabled: boolean;
+
+  @OneToOne(() => Profile, (profile) => profile.user)
+  profile: Profile;
 
   @ManyToMany(() => User)
   @JoinTable({ name: 'blocked' })

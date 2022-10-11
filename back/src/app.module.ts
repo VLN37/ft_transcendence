@@ -7,6 +7,8 @@ import { AuthModule } from './auth/auth.module';
 import { FriendshipsModule } from './friendships/friendships.module';
 import { LoggerMiddleware } from './middlewares/LoggerMiddleware';
 import { UsersController } from './users/users.controller';
+import { Profile } from './entities/profile.entity';
+import { ProfileModule } from './profile/profile.module';
 
 const environment = process.env.ENVIRONMENT;
 
@@ -19,7 +21,7 @@ const environment = process.env.ENVIRONMENT;
       username: 'user',
       password: 'pass',
       database: 'transcendence',
-      entities: [User],
+      entities: [User, Profile],
       synchronize: environment != 'prod',
     }),
     ConfigModule.forRoot({
@@ -28,6 +30,7 @@ const environment = process.env.ENVIRONMENT;
     UsersModule,
     AuthModule,
     FriendshipsModule,
+    ProfileModule,
   ],
   controllers: [],
   providers: [],

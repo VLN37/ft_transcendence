@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 
 @Injectable()
 export class IntraService {
@@ -23,8 +23,9 @@ export class IntraService {
       }),
     });
 
-    const result = await response.json();
+    if (!response.ok) throw new UnauthorizedException('getUserToken');
 
+    const result = await response.json();
     this.logger.log({ result });
     return result;
   }
@@ -36,6 +37,8 @@ export class IntraService {
         Authorization: `Bearer ${access_token}`,
       },
     });
+
+    if (!userResponse.ok) throw new UnauthorizedException('getUserInfo');
 
     const result = await userResponse.json();
     this.logger.log('returning info for user: ' + result.login);
