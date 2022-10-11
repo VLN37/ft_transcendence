@@ -2,7 +2,6 @@ import { IsNotEmpty } from 'class-validator';
 import { Profile } from 'src/entities/profile.entity';
 
 export class UserDto {
-  @IsNotEmpty()
   id: number;
 
   @IsNotEmpty()
