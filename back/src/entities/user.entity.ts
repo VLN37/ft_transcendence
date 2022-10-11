@@ -32,7 +32,7 @@ export class User {
   })
   tfa_enabled: boolean;
 
-  @OneToOne(() => Profile)
+  @OneToOne(() => Profile, { eager: true })
   @JoinColumn({ name: 'profile_id' })
   profile: Profile;
 

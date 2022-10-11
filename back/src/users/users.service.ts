@@ -14,7 +14,6 @@ function byId(id: number) {
   return {
     where: { id },
     relations: {
-      profile: true,
       friends: true,
       blocked: true,
       friends_request: true,
@@ -67,7 +66,6 @@ export class UsersService {
   async get(): Promise<User[]> {
     const users = await this.usersRepository.find({
       relations: {
-        profile: true,
         friends: true,
         blocked: true,
         friends_request: true,
