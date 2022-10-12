@@ -1,9 +1,11 @@
 import {
+  IsBoolean,
   IsNotEmpty,
   IsNumber,
   IsOptional,
-  IsString } from 'class-validator';
-import { Profile } from 'src/entities/profile.entity';
+  IsString,
+} from 'class-validator';
+import { ProfileDto } from './profile.dto';
 
 export class UserDto {
   @IsNumber()
@@ -14,9 +16,10 @@ export class UserDto {
   @IsNotEmpty()
   login_intra: string;
 
+  @IsBoolean()
   @IsOptional()
-  tfa_enabled: boolean;
+  tfa_enabled: boolean = false;
 
   @IsOptional()
-  profile?: Profile;
+  profile?: ProfileDto;
 }
