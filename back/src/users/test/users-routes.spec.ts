@@ -15,6 +15,7 @@ function makeUser(name: string) {
   return {
     login_intra: name,
     tfa_enabled: false,
+    id: Number(faker.random.numeric(5)),
   }
 }
 

@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   Logger,
   NotFoundException,
@@ -32,6 +33,10 @@ export class UsersService {
   ) {}
 
   async create(dto: UserDto): Promise<UserDto> {
+    if (await this.usersRepository.findOne(byId(dto.id)) != null) {
+        console.log(this.usersRepository.findOne(byId(dto.id)));
+        throw(new ForbiddenException('Credentials taken'));
+    }
     const profile = dto.profile
       ? await this.profileService.create(dto.profile)
       : null;
