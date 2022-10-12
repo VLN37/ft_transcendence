@@ -15,6 +15,7 @@ function byId(id: number) {
   return {
     where: { id },
     relations: {
+      profile: true,
       friends: true,
       blocked: true,
       friends_request: true,
@@ -33,9 +34,9 @@ export class UsersService {
   ) {}
 
   async create(dto: UserDto): Promise<UserDto> {
-    if (await this.usersRepository.findOne(byId(dto.id)) != null) {
-        console.log(this.usersRepository.findOne(byId(dto.id)));
-        throw(new ForbiddenException('Credentials taken'));
+    if ((await this.usersRepository.findOne(byId(dto.id))) != null) {
+      console.log(this.usersRepository.findOne(byId(dto.id)));
+      throw new ForbiddenException('Credentials taken');
     }
     const profile = dto.profile
       ? await this.profileService.create(dto.profile)
@@ -71,6 +72,7 @@ export class UsersService {
   async get(): Promise<User[]> {
     const users = await this.usersRepository.find({
       relations: {
+        profile: true,
         friends: true,
         blocked: true,
         friends_request: true,
