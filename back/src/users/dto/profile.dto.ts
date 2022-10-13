@@ -3,6 +3,7 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  MaxLength,
 } from 'class-validator';
 import { UserStatus } from 'src/entities/profile.entity';
 
@@ -13,14 +14,17 @@ export class ProfileDto {
 
   @IsString()
   @IsNotEmpty()
+  @MaxLength(255)
   name: string;
 
   @IsString()
   @IsNotEmpty()
+  @MaxLength(50)
   nickname: string;
 
   @IsString()
   @IsOptional()
+  @MaxLength(255)
   avatar_path: string = null;
 
   @IsOptional()

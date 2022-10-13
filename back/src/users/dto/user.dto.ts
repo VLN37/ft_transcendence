@@ -4,6 +4,7 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  MaxLength,
 } from 'class-validator';
 import { ProfileDto } from './profile.dto';
 
@@ -14,6 +15,7 @@ export class UserDto {
 
   @IsString()
   @IsNotEmpty()
+  @MaxLength(10)
   login_intra: string;
 
   @IsBoolean()

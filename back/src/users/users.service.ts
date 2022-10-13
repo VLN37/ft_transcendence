@@ -1,6 +1,5 @@
 import {
   BadRequestException,
-  ForbiddenException,
   Injectable,
   Logger,
   NotFoundException,
@@ -34,19 +33,23 @@ export class UsersService {
   ) {}
 
   async create(dto: UserDto): Promise<UserDto> {
-    if ((await this.usersRepository.findOne(byId(dto.id))) != null) {
-      console.log(this.usersRepository.findOne(byId(dto.id)));
-      throw new ForbiddenException('Credentials taken');
-    }
-    const profile = dto.profile
-      ? await this.profileService.create(dto.profile)
-      : null;
-    const newUser = await this.usersRepository.save({
-      id: dto.id,
-      login_intra: dto.login_intra,
-      tfa_enabled: dto.tfa_enabled,
-      profile: profile,
-    });
+    if (await this.usersRepository.findOneBy({ id: dto.id }))
+      throw new BadRequestException(
+        `User: (id)=(${dto.id}) already exists.`,
+      );
+    const profile = await this.profileService.create(dto.profile);
+    const newUser = await this.usersRepository
+      .save({
+        id: dto.id,
+        login_intra: dto.login_intra,
+        tfa_enabled: dto.tfa_enabled,
+        profile: profile,
+      })
+      .catch((err: any) => {
+        throw new BadRequestException(
+          'User: ' + (err.driverError.detail ?? err),
+        );
+      });
     this.logger.debug('User created', { newUser });
     return newUser;
   }
