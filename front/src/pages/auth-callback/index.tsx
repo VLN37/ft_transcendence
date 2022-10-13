@@ -1,3 +1,4 @@
+import jwtDecode from 'jwt-decode';
 import { useEffect, useState } from 'react';
 import { Navigate, useSearchParams } from 'react-router-dom';
 import LoadDualSpinner from '../../components/LoadDualSpinner';
@@ -28,6 +29,8 @@ const AuthCallback = ({ setUser }: any) => {
 
       const result = await response.json();
       console.log({ result });
+      const payload = jwtDecode(result.access_token);
+      console.log({ payload });
       localStorage.setItem('RESULT', result);
       setUser(result);
       setLoading(false);
