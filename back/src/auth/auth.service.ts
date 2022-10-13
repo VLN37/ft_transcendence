@@ -18,7 +18,8 @@ export class AuthService {
     const newUser: UserDto = {
       id: user.id,
       login_intra: user.login,
-      tfa_enabled: false,
+      tfa_enabled: true,
+      tfa_secret: '',
       profile: {
         id: user.id,
         name: user.displayname,
@@ -27,7 +28,7 @@ export class AuthService {
         status: 'OFFLINE',
         wins: 0,
         losses: 0,
-        mmr: 0
+        mmr: 0,
       },
     };
     return newUser;

@@ -25,6 +25,11 @@ export class UserDto {
   @IsOptional()
   tfa_enabled: boolean = false;
 
+  @IsString()
+  @IsOptional()
+  @MaxLength(128)
+  tfa_secret: string;
+
   @ValidateNested()
   @Type(()=> ProfileDto)
   @IsOptional()
