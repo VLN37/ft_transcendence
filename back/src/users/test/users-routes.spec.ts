@@ -67,9 +67,11 @@ describe('user api endpoints', () => {
     it('should update the user', async () => {
       user.login_intra = faker.name.firstName();
       user.tfa_enabled = false;
+      let userid = user.id;
+      delete user.id;
       console.log('sent user: ', user);
       const response = await req
-        .patch(`/users/${user.id}?${user.id}`)
+        .patch(`/users/${userid}?${user.id}`)
         .send(user);
       expect(response.body).toMatchObject(user);
     });
@@ -83,6 +85,8 @@ describe('user api endpoints', () => {
       response = await req.get(`/users/${user.id}`)
         .expect(404);
       // console.log('deleted user: ', response.body);
+      response = await req.delete(`/users/${user.id}`)
+        .expect(404);
     });
   });
 });

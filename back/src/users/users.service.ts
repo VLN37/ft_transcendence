@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   Logger,
   NotFoundException,
@@ -54,7 +55,10 @@ export class UsersService {
   }
 
   async edit(id: number, user: User) {
+    if (user.hasOwnProperty('id'))
+      throw new ForbiddenException('you cannot change your intra ID');
     await this.usersRepository.update(id, user);
+    // const updatedUser = await this.usersRepository.save(user);
     const updatedUser = await this.usersRepository.findOne(byId(id));
     this.logger.debug('User updated', { updatedUser });
     return updatedUser;
@@ -65,7 +69,11 @@ export class UsersService {
     return updatedUser;
   }
 
-  delete(id: number) {
+  async delete(id: number) {
+    const user = await this.findOne(id);
+    if (!user)
+      throw new NotFoundException('this user does not exist');
+    console.log('DELETE USER', user);
     const deletedUser = this.usersRepository.delete({ id: id });
     this.logger.debug('User deleted', { deletedUser });
     return deletedUser;
@@ -88,6 +96,14 @@ export class UsersService {
     const user = await this.usersRepository.findOne(byId(id));
     // if (!user)
     //   throw new NotFoundException('User not found');
+    this.logger.debug('Returning user', { user });
+    return user;
+  }
+
+  async getSingleUser(id: number) {
+    const user = await this.usersRepository.findOne(byId(id));
+    if (!user)
+      throw new NotFoundException('User not found');
     this.logger.debug('Returning user', { user });
     return user;
   }
