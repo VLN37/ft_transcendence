@@ -54,9 +54,9 @@ export class UsersService {
     return newUser;
   }
 
-  edit(id: number, user: User) {
-    this.usersRepository.update(id, user);
-    const updatedUser = this.usersRepository.findOne(byId(id));
+  async edit(id: number, user: User) {
+    await this.usersRepository.update(id, user);
+    const updatedUser = await this.usersRepository.findOne(byId(id));
     this.logger.debug('User updated', { updatedUser });
     return updatedUser;
   }

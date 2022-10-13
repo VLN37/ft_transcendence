@@ -59,10 +59,12 @@ describe('user api endpoints', () => {
       expect(response.body).toMatchObject(user);
     });
     it('should update the user', async () => {
-      user.login_intra = 'batatovisk';
-      user.tfa_enabled = true;
+      user.login_intra = faker.name.firstName();
+      user.tfa_enabled = false;
       console.log('sent user: ', user);
-      const response = await req.patch(`/users/${user.id}`).send(user);
+      const response = await req
+        .patch(`/users/${user.id}?${user.id}`)
+        .send(user);
       expect(response.body).toMatchObject(user);
     })
   });
