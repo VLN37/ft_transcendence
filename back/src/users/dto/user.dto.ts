@@ -6,6 +6,7 @@ import {
   IsString,
   MaxLength,
 } from 'class-validator';
+import { User } from 'src/entities/user.entity';
 import { ProfileDto } from './profile.dto';
 
 export class UserDto {
@@ -24,4 +25,10 @@ export class UserDto {
 
   @IsOptional()
   profile?: ProfileDto;
+
+  @IsOptional()
+  friends?: User[];
+
+  @IsOptional()
+  blocked?: UserDto[];
 }

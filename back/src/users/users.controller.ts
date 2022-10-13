@@ -21,6 +21,7 @@ export class UsersController {
 
   @Post(':id/block')
   async blockUser(@Param('id') id: any, @Body() user: any) {
+    console.log('params', id, user);
     return await this.usersService.blockUser(id, user.user_id);
   }
 
