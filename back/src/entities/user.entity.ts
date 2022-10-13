@@ -21,7 +21,7 @@ export class User {
   @Column({
     type: 'varchar',
     length: 10,
-    unique: true,
+    // unique: true,
     nullable: false,
   })
   login_intra: string;
@@ -31,6 +31,14 @@ export class User {
     default: false,
   })
   tfa_enabled: boolean;
+
+  @Column({
+    type: 'varchar',
+    length: 128,
+    // unique: true,
+    nullable: true,
+  })
+  tfa_secret: string;
 
   @OneToOne(() => Profile)
   @JoinColumn({ name: 'profile_id' })

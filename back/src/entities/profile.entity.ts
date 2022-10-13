@@ -19,7 +19,7 @@ export class Profile {
   name: string;
 
   @Column({
-    unique: true,
+    // unique: true,
     type: 'varchar',
     length: 50,
     nullable: false,
