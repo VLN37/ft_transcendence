@@ -64,11 +64,6 @@ export class UsersService {
     return updatedUser;
   }
 
-  async update(user: User) {
-    const updatedUser = await this.usersRepository.save(user);
-    return updatedUser;
-  }
-
   async delete(id: number) {
     const user = await this.findOne(id);
     if (!user)
