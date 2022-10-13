@@ -32,7 +32,7 @@ export class UsersService {
     private profileService: ProfileService,
   ) {}
 
-  async create(dto: UserDto): Promise<UserDto> {
+  async create(dto: UserDto): Promise<User> {
     if (await this.usersRepository.findOneBy({ id: dto.id }))
       throw new BadRequestException(`User: (id)=(${dto.id}) already exists.`);
     const profile = await this.profileService.create(dto.profile);

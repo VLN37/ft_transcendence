@@ -1,11 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { Strategy } from 'passport-local';
 import { ExtractJwt } from 'passport-jwt';
+import { Strategy } from 'passport-local';
+import { UsersService } from 'src/users/users.service';
+
+import { TokenPayload } from '../dto/TokenPayload';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
-  constructor() {
+  constructor(private usersService: UsersService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
@@ -13,8 +16,22 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     });
   }
 
-  //validate user info after super call
-  async validate(payload): Promise<any> {
-    return payload;
+  // returns a user object to be assigned to the Request.user property
+  async validate(payload: TokenPayload): Promise<Express.User> {
+    const userId = payload.sub;
+
+    if (payload.tfa_enabled && !payload.is_tf_authenticated) {
+      return null;
+    }
+
+    const user = await this.usersService.findOne(userId);
+
+    const authUser: Express.User = {
+      id: userId,
+      login_intra: user.login_intra,
+      tfa_enabled: user.tfa_enabled,
+      tfa_secret: user.tfa_secret,
+    };
+    return authUser;
   }
 }
