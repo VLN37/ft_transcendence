@@ -4,11 +4,11 @@ import { UsersModule } from './users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { AuthModule } from './auth/auth.module';
-import { FriendshipsModule } from './friendships/friendships.module';
 import { LoggerMiddleware } from './middlewares/LoggerMiddleware';
 import { UsersController } from './users/users.controller';
 import { Profile } from './entities/profile.entity';
 import { ProfileModule } from './profile/profile.module';
+import { FriendsModule } from './friends/friends.module';
 
 const environment = process.env.ENVIRONMENT;
 
@@ -29,7 +29,7 @@ const environment = process.env.ENVIRONMENT;
     }),
     UsersModule,
     AuthModule,
-    FriendshipsModule,
+    FriendsModule,
     ProfileModule,
   ],
   controllers: [],
