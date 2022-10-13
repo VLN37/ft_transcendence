@@ -20,7 +20,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   async validate(payload: TokenPayload): Promise<Express.User> {
     const userId = payload.sub;
 
-    if (payload.tfa_enabled && !payload.is_tf_authenticated) {
+    if (payload.tfa_enabled && !payload.is_authenticated_twice) {
       return null;
     }
 

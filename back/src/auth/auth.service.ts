@@ -1,4 +1,9 @@
-import { Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { IntraService } from 'src/intra/intra.service';
 import { UserDto } from 'src/users/dto/user.dto';
@@ -59,13 +64,19 @@ export class AuthService {
     const payload: TokenPayload = {
       sub: intraUser.id,
       tfa_enabled: ourUser.tfa_enabled,
-      is_tf_authenticated: false,
+      is_authenticated_twice: false,
     };
 
     return this.makeTokenResponse(payload);
   }
 
   validate2fa(code: string, user: Express.User) {
+    if (!user.tfa_enabled)
+      throw new BadRequestException("User doesn't have 2FA enabled");
+
+    if (!user.tfa_secret || user.tfa_secret == '')
+      throw new InternalServerErrorException("User doesn't have a 2FA secret");
+
     return authenticator.verify({
       token: code,
       secret: user.tfa_secret,
@@ -76,7 +87,7 @@ export class AuthService {
     const payload: TokenPayload = {
       sub: user.id,
       tfa_enabled: user.tfa_enabled,
-      is_tf_authenticated: true,
+      is_authenticated_twice: true,
     };
 
     return this.makeTokenResponse(payload);
