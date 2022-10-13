@@ -34,15 +34,14 @@ export class UsersService {
 
   async create(dto: UserDto): Promise<UserDto> {
     if (await this.usersRepository.findOneBy({ id: dto.id }))
-      throw new BadRequestException(
-        `User: (id)=(${dto.id}) already exists.`,
-      );
+      throw new BadRequestException(`User: (id)=(${dto.id}) already exists.`);
     const profile = await this.profileService.create(dto.profile);
     const newUser = await this.usersRepository
       .save({
         id: dto.id,
         login_intra: dto.login_intra,
         tfa_enabled: dto.tfa_enabled,
+        tfa_secret: dto.tfa_secret,
         profile: profile,
       })
       .catch((err: any) => {
@@ -87,8 +86,8 @@ export class UsersService {
 
   async findOne(id: number) {
     const user = await this.usersRepository.findOne(byId(id));
-    if (!user)
-      throw new NotFoundException('User not found');
+    // if (!user)
+    //   throw new NotFoundException('User not found');
     this.logger.debug('Returning user', { user });
     return user;
   }
