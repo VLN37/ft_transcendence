@@ -12,6 +12,17 @@ import { ProfileModule } from './profile/profile.module';
 
 const environment = process.env.ENVIRONMENT;
 
+declare global {
+  namespace Express {
+    interface User {
+      id: number;
+      login_intra: string;
+      tfa_enabled: boolean;
+      tfa_secret?: string;
+    }
+  }
+}
+
 @Module({
   imports: [
     TypeOrmModule.forRoot({
