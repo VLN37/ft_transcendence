@@ -1,0 +1,51 @@
+.dual-ring {
+  display: block;
+  width: 64px;
+  height: 64px;
+  margin: 8px;
+  border-radius: 50%;
+  border: 6px solid #fff;
+  border-color: #fff ;
+  box-shadow:
+        0 0 8px #fff,
+        0 0 20px #faf,
+        0 0 30px #f09,
+        inset 0 0 30px #faf
+        ;
+  animation: lds-dual-ring 1.2s linear infinite;
+}
+
+@keyframes lds-dual-ring {
+  0% {
+      box-shadow:
+          0 0 8px #fff,
+          0 0 20px #faf,
+          0 0 30px #f09,
+          inset 0 0 30px #f4a,
+          inset 0 0 20px #f4f
+  }
+  33% {
+      box-shadow:
+          0 0 8px #fff,
+          0 0 20px #3bf,
+          0 0 30px #a8f,
+          inset 0 0 30px #a4f,
+          inset 0 0 20px #28d
+  }
+  66% {
+      box-shadow:
+          0 0 8px #fff,
+          0 0 20px #5f8,
+          0 0 30px #2d5,
+          inset 0 0 30px #4fa,
+          inset 0 0 20px #1a3
+  }
+  100% {
+      box-shadow:
+          0 0 8px #fff,
+          0 0 20px #faf,
+          0 0 30px #f09,
+          inset 0 0 30px #f4a,
+          inset 0 0 20px #f4f
+  }
+}

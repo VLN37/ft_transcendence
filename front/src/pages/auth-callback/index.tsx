@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Navigate, useSearchParams } from 'react-router-dom';
+import LoadDualSpinner from '../../components/LoadDualSpinner';
+
+import './style.css';
 
 const AuthCallback = ({ setUser }: any) => {
   const [loading, setLoading] = useState(true);
@@ -35,7 +38,11 @@ const AuthCallback = ({ setUser }: any) => {
   }, []);
 
   if (loading) {
-    return <div style={{ color: '#fff' }}>Carregando</div>;
+    return (
+      <div className="loading-wrapper">
+        <LoadDualSpinner />;
+      </div>
+    );
   } else {
     return <Navigate to="/" />;
   }
