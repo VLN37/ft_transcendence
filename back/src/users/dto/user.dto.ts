@@ -1,3 +1,4 @@
+import { Type } from 'class-transformer';
 import {
   IsBoolean,
   IsNotEmpty,
@@ -5,6 +6,7 @@ import {
   IsOptional,
   IsString,
   MaxLength,
+  ValidateNested,
 } from 'class-validator';
 import { User } from 'src/entities/user.entity';
 import { ProfileDto } from './profile.dto';
@@ -23,6 +25,8 @@ export class UserDto {
   @IsOptional()
   tfa_enabled: boolean = false;
 
+  @ValidateNested()
+  @Type(()=> ProfileDto)
   @IsOptional()
   profile?: ProfileDto;
 

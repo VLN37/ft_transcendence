@@ -6,6 +6,7 @@ import {
   Patch,
   Post,
   Delete,
+  Headers,
 } from '@nestjs/common';
 import { UserDto } from './dto/user.dto';
 import { UsersService } from './users.service';
