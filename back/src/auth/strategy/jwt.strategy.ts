@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { ExtractJwt } from 'passport-jwt';
-import { Strategy } from 'passport-local';
+import { ExtractJwt, Strategy } from 'passport-jwt';
 import { UsersService } from 'src/users/users.service';
 
 import { TokenPayload } from '../dto/TokenPayload';
@@ -25,6 +24,8 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     }
 
     const user = await this.usersService.findOne(userId);
+
+    if (user.tfa_enabled != payload.tfa_enabled) return null;
 
     const authUser: Express.User = {
       id: userId,
