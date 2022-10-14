@@ -64,10 +64,13 @@ export class UsersService {
     return updatedUser;
   }
 
+  async update(user: User) {
+    return await this.usersRepository.save(user);
+  }
+
   async delete(id: number) {
     const user = await this.findOne(id);
-    if (!user)
-      throw new NotFoundException('this user does not exist');
+    if (!user) throw new NotFoundException('this user does not exist');
     console.log('DELETE USER', user);
     const deletedUser = this.usersRepository.delete({ id: id });
     this.logger.debug('User deleted', { deletedUser });
@@ -89,16 +92,13 @@ export class UsersService {
 
   async findOne(id: number) {
     const user = await this.usersRepository.findOne(byId(id));
-    // if (!user)
-    //   throw new NotFoundException('User not found');
     this.logger.debug('Returning user', { user });
     return user;
   }
 
   async getSingleUser(id: number) {
     const user = await this.usersRepository.findOne(byId(id));
-    if (!user)
-      throw new NotFoundException('User not found');
+    if (!user) throw new NotFoundException('User not found');
     this.logger.debug('Returning user', { user });
     return user;
   }
