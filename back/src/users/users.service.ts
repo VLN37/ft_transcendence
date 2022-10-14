@@ -103,50 +103,6 @@ export class UsersService {
     return user;
   }
 
-  async blockUser(id: number, userId: number) {
-    const user = await this.usersRepository.findOne(byId(id));
-    if (!user) throw new NotFoundException('User not found');
-
-    if (id == userId) throw new BadRequestException("You can't block yourself");
-
-    if (user.blocked.find((userToBlock) => userToBlock.id == userId))
-      throw new BadRequestException('User has already been blocked');
-
-    const userToBlock = await this.usersRepository.findOne(byId(userId));
-    if (!userToBlock) throw new NotFoundException('User to block not found');
-
-    user.blocked.push(userToBlock);
-
-    this.logger.log(
-      `User ${user.login_intra} blocked user ${userToBlock.login_intra}`,
-    );
-
-    return await this.usersRepository.save(user);
-  }
-
-  async unblockUser(id: number, userId: number) {
-    const user = await this.usersRepository.findOne(byId(id));
-    if (!user) throw new NotFoundException('User not found');
-
-    if (id == userId)
-      throw new BadRequestException("You can't unblock yourself");
-
-    if (!user.blocked.find((userToBlock) => userToBlock.id == userId))
-      throw new BadRequestException('User was not blocked');
-
-    const userToUnblock = await this.usersRepository.findOne(byId(userId));
-    if (!userToUnblock) throw new NotFoundException('User to block not found');
-
-    user.blocked = user.blocked.filter(
-      (userToUnblock) => userToUnblock.id != userId,
-    );
-
-    this.logger.log(
-      `User ${user.login_intra} unblocked user ${userToUnblock.login_intra}`,
-    );
-    return await this.usersRepository.save(user);
-  }
-
   async set2faSecret(userId: number, secret?: string) {
     // FIX: check if user already has a secret
     const user = await this.usersRepository.findOneBy({ id: userId });
