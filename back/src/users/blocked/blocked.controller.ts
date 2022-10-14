@@ -1,4 +1,12 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  Param,
+  Post,
+} from '@nestjs/common';
 import { BlockedService } from './blocked.service';
 
 @Controller('/users/:from/blocked_users')
@@ -10,6 +18,7 @@ export class BlockedController {
     return await this.blockedService.get(from);
   }
 
+  @HttpCode(200)
   @Post()
   async block(@Param('from') from: number, @Body('user_id') to: number) {
     return await this.blockedService.block(from, to);

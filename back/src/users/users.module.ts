@@ -4,8 +4,8 @@ import { UsersService } from './users.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../entities/user.entity';
 import { ProfileModule } from 'src/profile/profile.module';
-import { BlockedService } from 'src/blocked/blocked.service';
-import { BlockedController } from 'src/blocked/blocked.controller';
+import { BlockedService } from 'src/users/blocked/blocked.service';
+import { BlockedController } from 'src/users/blocked/blocked.controller';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User]), ProfileModule],
