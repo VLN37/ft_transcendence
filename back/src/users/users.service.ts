@@ -33,7 +33,7 @@ export class UsersService {
     private profileService: ProfileService,
   ) {}
 
-  async create(dto: UserDto): Promise<UserDto> {
+  async create(dto: UserDto): Promise<User> {
     if (await this.usersRepository.findOneBy({ id: dto.id }))
       throw new BadRequestException(`User: (id)=(${dto.id}) already exists.`);
     const profile = await this.profileService.create(dto.profile);
@@ -145,5 +145,26 @@ export class UsersService {
       `User ${user.login_intra} unblocked user ${userToUnblock.login_intra}`,
     );
     return await this.usersRepository.save(user);
+  }
+
+  async set2faSecret(userId: number, secret?: string) {
+    // FIX: check if user already has a secret
+    const user = await this.usersRepository.findOneBy({ id: userId });
+
+    if (!user) throw new NotFoundException('User not found');
+
+    user.tfa_secret = secret;
+    this.usersRepository.save(user);
+  }
+
+  async set2faEnabled(userId: number, enable: boolean) {
+    const user = await this.usersRepository.findOneBy({
+      id: userId,
+    });
+
+    if (!user) throw new NotFoundException('User not found');
+
+    user.tfa_enabled = enable;
+    this.usersRepository.save(user);
   }
 }

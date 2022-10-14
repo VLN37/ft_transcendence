@@ -6,7 +6,7 @@ import { UsersService } from 'src/users/users.service';
 import { TokenPayload } from '../dto/TokenPayload';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
+export class Jwt2faStrategy extends PassportStrategy(Strategy, 'jwt-2fa') {
   constructor(private usersService: UsersService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -19,13 +19,9 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   async validate(payload: TokenPayload): Promise<Express.User> {
     const userId = payload.sub;
 
-    if (payload.tfa_enabled && !payload.is_authenticated_twice) {
-      return null;
-    }
+    console.log({ payload });
 
     const user = await this.usersService.findOne(userId);
-
-    if (user.tfa_enabled != payload.tfa_enabled) return null;
 
     const authUser: Express.User = {
       id: userId,

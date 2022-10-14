@@ -3,14 +3,6 @@ import { JwtAuthGuard } from 'src/auth/guard/jwt.guard';
 import { DashboardService } from './dashboard.service';
 import { Request as ExpressRequest } from 'express';
 
-declare global {
-  namespace Express {
-    interface User {
-      id: number;
-    }
-  }
-}
-
 @UseGuards(JwtAuthGuard)
 @Controller()
 export class DashboardController {

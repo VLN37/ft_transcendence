@@ -1,8 +1,6 @@
 import { Injectable, Logger, NestMiddleware } from '@nestjs/common';
 import { Request, Response } from 'express';
 
-type CallbackFn = (error: Error | null | undefined) => void;
-
 @Injectable()
 export class LoggerMiddleware implements NestMiddleware {
   private readonly logger = new Logger(LoggerMiddleware.name);
@@ -10,7 +8,15 @@ export class LoggerMiddleware implements NestMiddleware {
   constructor() {}
 
   use(req: Request, res: Response, next: (error?: any) => void) {
-    this.logger.log('Incoming request', { request: req.body });
+    const str = `Incoming request: ${req.method} ${req.path}`;
+    this.logger.log(str);
+
+    const contentLength = parseInt(req.header('Content-Length'));
+    if (contentLength > 0) {
+      this.logger.log({
+        body: req.body,
+      });
+    }
     next();
   }
 }

@@ -17,6 +17,11 @@ restart:
 	make down
 	docker-compose -f docker-compose.yml up -d
 
+pauloburro:
+	rm -rf ./node_modules/
+	rm -rf ./package.json
+	rm -rf ./package-lock.json
+
 clean:
 	docker-compose -f docker-compose.yml down -v --rmi all --remove-orphans
 	rm -rf ./back/node_modules
