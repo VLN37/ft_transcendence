@@ -2,12 +2,12 @@ import * as request from 'supertest';
 import { url, makeUsers, deleteUsers } from '../../../test/utils';
 
 describe('friends api endpoints', () => {
-  beforeAll(() => {
-    makeUsers(2);
+  beforeAll(async () => {
+    await makeUsers(2);
   });
 
-  afterAll(() => {
-    deleteUsers(2);
+  afterAll(async () => {
+    await deleteUsers(2);
   });
 
   it('user should have 0 friends', async () => {

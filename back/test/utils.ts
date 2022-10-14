@@ -4,7 +4,7 @@ import { UserDto } from 'src/users/dto/user.dto';
 
 export const url = 'http://localhost:3000';
 
-export function makeUsers(amount: number) {
+export async function makeUsers(amount: number) {
   for (var i = 1; i < amount + 1; i++) {
     const nick = faker.name.firstName();
     const newUser: UserDto = {
@@ -23,12 +23,16 @@ export function makeUsers(amount: number) {
         mmr: 0,
       },
     };
-    axios.post(url + '/users', newUser).catch(() => {});
+    try {
+      await axios.post(url + '/users', newUser);
+    } catch (error) {}
   }
 }
 
-export function deleteUsers(amount: number) {
+export async function deleteUsers(amount: number) {
   for (var i = 1; i < amount + 1; i++) {
-    axios.delete(url + '/users/' + i.toString()).catch(() => {});
+    try {
+      await axios.delete(url + '/users/' + i.toString());
+    } catch (error) {}
   }
 }
