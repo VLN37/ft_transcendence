@@ -6,15 +6,11 @@ import { UsersModule } from 'src/users/users.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './strategy/jwt.strategy';
+import { Jwt2faStrategy } from './strategy/jwt2fa.strategy';
 
 @Module({
-  imports: [
-    HttpModule,
-    JwtModule.register({}),
-    IntraModule,
-    UsersModule,
-  ],
+  imports: [HttpModule, JwtModule.register({}), IntraModule, UsersModule],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService, JwtStrategy, Jwt2faStrategy],
 })
 export class AuthModule {}

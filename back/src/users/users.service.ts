@@ -135,4 +135,25 @@ export class UsersService {
     );
     return await this.usersRepository.save(user);
   }
+
+  async set2faSecret(userId: number, secret?: string) {
+    // FIX: check if user already has a secret
+    const user = await this.usersRepository.findOneBy({ id: userId });
+
+    if (!user) throw new NotFoundException('User not found');
+
+    user.tfa_secret = secret;
+    this.usersRepository.save(user);
+  }
+
+  async set2faEnabled(userId: number, enable: boolean) {
+    const user = await this.usersRepository.findOneBy({
+      id: userId,
+    });
+
+    if (!user) throw new NotFoundException('User not found');
+
+    user.tfa_enabled = enable;
+    this.usersRepository.save(user);
+  }
 }

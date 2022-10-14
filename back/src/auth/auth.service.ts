@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Injectable,
   InternalServerErrorException,
   Logger,
@@ -9,6 +8,7 @@ import { IntraService } from 'src/intra/intra.service';
 import { UserDto } from 'src/users/dto/user.dto';
 import { UsersService } from 'src/users/users.service';
 import { authenticator } from 'otplib';
+import { toDataURL } from 'qrcode';
 import { TokenPayload } from './dto/TokenPayload';
 
 @Injectable()
@@ -25,8 +25,8 @@ export class AuthService {
     const newUser: UserDto = {
       id: user.id,
       login_intra: user.login,
-      tfa_enabled: true,
-      tfa_secret: '',
+      tfa_enabled: false,
+      tfa_secret: null,
       profile: {
         id: user.id,
         name: user.displayname,
@@ -71,9 +71,6 @@ export class AuthService {
   }
 
   validate2fa(code: string, user: Express.User) {
-    if (!user.tfa_enabled)
-      throw new BadRequestException("User doesn't have 2FA enabled");
-
     if (!user.tfa_secret || user.tfa_secret == '')
       throw new InternalServerErrorException("User doesn't have a 2FA secret");
 
@@ -91,5 +88,36 @@ export class AuthService {
     };
 
     return this.makeTokenResponse(payload);
+  }
+
+  async generata2faSecret(user: Express.User) {
+    const secret = authenticator.generateSecret(128);
+
+    const appName = 'Transcendence';
+    const otpAuthUrl = authenticator.keyuri(user.login_intra, appName, secret);
+
+    await this.usersService.set2faSecret(user.id, secret);
+
+    return {
+      secret,
+      otpAuthUrl,
+    };
+  }
+
+  async toggle2fa(userId: number, action: 'ENABLED' | 'DISABLED') {
+    const shouldEnable = action == 'ENABLED';
+
+    await this.usersService.set2faEnabled(userId, shouldEnable);
+
+    console.log('opa');
+
+    // TODO: create a new JWT token for the user
+    return {
+      state: action,
+    };
+  }
+
+  generateDataQrCode(otpAuthUrl: string) {
+    return toDataURL(otpAuthUrl);
   }
 }
