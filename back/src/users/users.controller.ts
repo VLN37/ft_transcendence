@@ -19,17 +19,6 @@ export class UsersController {
     return this.usersService.create(dto);
   }
 
-  @Post(':id/block')
-  async blockUser(@Param('id') id: any, @Body() user: any) {
-    console.log('params', id, user);
-    return await this.usersService.blockUser(id, user.user_id);
-  }
-
-  @Post(':id/unblock')
-  async unblockUser(@Param('id') id: any, @Body() user: any) {
-    return await this.usersService.unblockUser(id, user.user_id);
-  }
-
   @Patch(':id')
   edit(@Param('id') id: any, @Body() user: any) {
     return this.usersService.edit(id, user);
