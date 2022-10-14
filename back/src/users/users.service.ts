@@ -64,7 +64,7 @@ export class UsersService {
     return updatedUser;
   }
 
-  async update(user: User) {
+  async update(user: UserDto) {
     return await this.usersRepository.save(user);
   }
 
