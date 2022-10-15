@@ -20,14 +20,30 @@ export class FriendRequestsService {
     private usersRepository: Repository<User>,
   ) {}
 
-  //select * from users inner join friends_request on ("usersId_1"=users.id) where "usersId_2" = 1;
-  private async userSentPendingFriendRequests(id: number) {
+  private async userSentPendingFriendRequests(
+    id: number,
+  ): Promise<Partial<User[]>> {
     const users = await this.usersRepository.query(
-      `select * from users inner join friends_request on ("usersId_1"=users.id) where "usersId_2" = ${id};`,
+      `select users.*, profile.*
+        from users
+        inner join friends_request on ("usersId_1" = users.id)
+        inner join profile on (users.id = profile.id)
+        where "usersId_2" = ${id};`,
     );
-    return users.map((user) => {
+    return users.map((user): Partial<User> => {
       return {
         id: user.id,
+        login_intra: user.login_intra,
+        profile: {
+          id: user.profile_id,
+          avatar_path: user.avatar_path,
+          nickname: user.nickname,
+          status: user.status,
+          name: user.name,
+          losses: user.losses,
+          wins: user.wins,
+          mmr: user.mmr,
+        },
       };
     });
   }
@@ -51,6 +67,6 @@ export class FriendRequestsService {
     );
 
     await this.usersService.update(userToAdd);
-    return await this.userSentPendingFriendRequests(1);
+    return await this.userSentPendingFriendRequests(from);
   }
 }
