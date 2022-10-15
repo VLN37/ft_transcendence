@@ -36,7 +36,10 @@ export class UserDto {
   profile?: ProfileDto;
 
   @IsOptional()
-  friends?: User[];
+  friends?: UserDto[];
+
+  @IsOptional()
+  friend_requests?: UserDto[];
 
   @IsOptional()
   blocked?: UserDto[];
