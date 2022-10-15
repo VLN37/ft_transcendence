@@ -1,8 +1,6 @@
 .main-container {
     display: flex;
     flex-direction: column;
-    color: #eee;
-    background-color: #283850;
     margin: 0 auto;
     height: 100%;
     max-width: 80%;
@@ -29,12 +27,10 @@
 .page {
     display: flex;
     flex: 1;
-    background-color: #061;
 }
 
 .match-finder-wrapper {
     position: fixed;
-    background-color: #f50;
     bottom: 0;
     right: 10%;
 }
