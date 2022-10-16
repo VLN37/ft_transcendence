@@ -1,3 +1,4 @@
+import { Box } from '@chakra-ui/react';
 import { Link, Outlet } from 'react-router-dom';
 import MatchFinder from '../../components/MatchFinder';
 import NeonButton from '../../components/NeonButton';
@@ -6,7 +7,7 @@ import './style.css';
 
 export default function Layout({ setUser }: any) {
   return (
-    <div className="main-container">
+    <Box paddingX="10%">
       <nav className="top-bar">
         <ul className="nav-links">
           <li>
@@ -38,6 +39,6 @@ export default function Layout({ setUser }: any) {
       <div className="match-finder-wrapper">
         <MatchFinder />
       </div>
-    </div>
+    </Box>
   );
 }

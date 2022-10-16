@@ -43,7 +43,7 @@ const AuthCallback = ({ setUser }: any) => {
   if (loading) {
     return (
       <div className="loading-wrapper">
-        <LoadDualSpinner />;
+        <LoadDualSpinner />
       </div>
     );
   } else {
