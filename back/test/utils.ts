@@ -4,7 +4,7 @@ import { UserDto } from 'src/users/dto/user.dto';
 
 export const url = 'http://localhost:3000';
 
-export async function generateUsers(amount: number) {
+export function generateUsers(amount: number) {
   const users = [];
 
   for (let i = 0; i < amount; i++) {

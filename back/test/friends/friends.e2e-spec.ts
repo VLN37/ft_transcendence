@@ -49,6 +49,6 @@ describe('friends api endpoints', () => {
   });
 
   it('user should have 0 friends', async () => {
-    await request(app.getHttpServer()).get('users/1/friends').expect({});
+    await request(app.getHttpServer()).get('/users/1/friends').expect(users);
   });
 });
