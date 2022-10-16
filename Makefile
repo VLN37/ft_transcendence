@@ -1,17 +1,21 @@
 all: up
 
-up:
+up: install
+	docker-compose -f docker-compose.yml up -d
+
+install:
 	npm --prefix ./back install
 	npm --prefix ./front install
-	docker-compose -f docker-compose.yml up -d
 
 down:
 	docker-compose -f docker-compose.yml down
 
 test:
 	make restart \
+	&& docker-compose -f docker-compose.test.yml up -d \
 	&& echo -e "\nsleeping 10 to allow socket to start..." \
-	&& sleep 10 && npm --prefix ./back run test
+	&& sleep 10 && npm --prefix ./back run test friends
+	docker-compose -f docker-compose.test.yml down
 
 restart:
 	make down
