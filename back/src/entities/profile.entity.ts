@@ -2,7 +2,7 @@ import { Entity, Column, PrimaryColumn } from 'typeorm';
 
 export type UserStatus = 'OFFLINE' | 'ONLINE' | 'PLAYING';
 
-@Entity({ name: 'profile' })
+@Entity({ name: 'profiles' })
 export class Profile {
   @PrimaryColumn({
     type: 'int',
