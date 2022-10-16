@@ -1,11 +1,3 @@
-.main-container {
-    display: flex;
-    flex-direction: column;
-    margin: 0 auto;
-    height: 100%;
-    max-width: 80%;
-}
-
 .top-bar {
     display: flex;
     flex-direction: row;
