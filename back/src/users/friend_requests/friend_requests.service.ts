@@ -57,7 +57,7 @@ export class FriendRequestsService {
     const userToAdd = await this.usersService.findOne(to);
     if (!userToAdd) throw new NotFoundException('User to add not found');
 
-    if (userToAdd.friends_request.find((user) => user.id == to))
+    if (userToAdd.friends_request.find((user) => user.id == from))
       throw new BadRequestException('Friend request already been sent');
 
     userToAdd.friends_request.push(user);
@@ -67,6 +67,35 @@ export class FriendRequestsService {
     );
 
     await this.usersService.update(userToAdd);
+    return await this.userSentPendingFriendRequests(from);
+  }
+
+  async cancelRequest(from: number, to: number) {
+    const user = await this.usersService.findOne(from);
+    if (!user) throw new NotFoundException('User not found');
+
+    if (user.id == to)
+      throw new BadRequestException(
+        "You can't cancel a friend request sent to yourself",
+      );
+
+    const userToCancelRequest = await this.usersService.findOne(to);
+    if (!userToCancelRequest)
+      throw new NotFoundException('User pending friend request not found');
+
+    if (!userToCancelRequest.friends_request.find((user) => user.id == from))
+      throw new BadRequestException(
+        'You do not have a pending friend request with this user',
+      );
+
+    userToCancelRequest.friends_request =
+      userToCancelRequest.friends_request.filter((user) => user.id != from);
+
+    this.logger.log(
+      `User ${user.login_intra} cancel a pending friend request with ${userToCancelRequest.login_intra}`,
+    );
+
+    await this.usersService.update(userToCancelRequest);
     return await this.userSentPendingFriendRequests(from);
   }
 }

@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, HttpCode, Param, Post } from '@nestjs/common';
 import { FriendRequestsService } from './friend_requests.service';
 
 @Controller('/users/:from/friend_requests')
@@ -9,5 +9,10 @@ export class FriendRequestsController {
   @Post()
   async request(@Param('from') from: number, @Body('user_id') to: number) {
     return await this.friendRequestsService.request(from, to);
+  }
+
+  @Delete(':to')
+  async cancelRequest(@Param('from') from: number, @Param('to') to: number) {
+    return await this.friendRequestsService.cancelRequest(from, to);
   }
 }
