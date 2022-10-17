@@ -24,10 +24,10 @@ export class FriendRequestsService {
     id: number,
   ): Promise<Partial<User[]>> {
     const users = await this.usersRepository.query(
-      `select users.*, profile.*
+      `select users.*, profiles.*
         from users
         inner join friends_request on ("usersId_1" = users.id)
-        inner join profile on (users.id = profile.id)
+        inner join profiles on (users.id = profiles.id)
         where "usersId_2" = ${id};`,
     );
     return users.map((user): Partial<User> => {
