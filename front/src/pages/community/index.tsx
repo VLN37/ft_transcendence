@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 import {
   Box,
+  useToast,
   Table,
   Thead,
   Tbody,
@@ -9,6 +10,7 @@ import {
   Tr,
   Th,
   Td,
+  Button,
   TableCaption,
   TableContainer,
   Menu,
@@ -48,10 +50,40 @@ function UserBlock(props: any) {
   );
 }
 
+function AddToast() {
+  const toast = useToast();
+  return toast({ description: 'some text' })
+}
+
+function CustomToastExample() {
+  const toast = useToast()
+  return (
+    <Button
+      onClick={() =>
+        toast({
+          position: 'bottom-left',
+          render: () => (
+            <Box color='white' p={3} bg='blue.500'>
+              Hello World
+            </Box>
+          ),
+        })
+      }
+    >
+      Show Toast
+    </Button>
+  )
+}
+
 function MeuMenu(props: any) {
+  const toast = useToast();
   async function clickcallback() {
-    console.log('registrou');
-    return ;
+    console.log('added');
+    toast({
+      title: 'Friend request sent',
+      description: 'supimpa',
+      status: 'error',
+    });
   }
 
   return (
