@@ -18,6 +18,7 @@
     "test:users:block": "jest -- block.spec.ts",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
+    "db:seed": "node scripts/db_seed.js",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json --runInBand"
   },

@@ -2,6 +2,7 @@ all: up
 
 up: install
 	docker-compose -f docker-compose.yml up -d
+	npm --prefix ./back npm db:seed
 
 install:
 	npm --prefix ./back install
@@ -18,6 +19,9 @@ test:
 restart:
 	make down
 	docker-compose -f docker-compose.yml up -d
+
+seed:
+	npm --prefix ./back run db:seed
 
 pauloburro:
 	rm -rf ./node_modules/
