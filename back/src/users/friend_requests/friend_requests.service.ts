@@ -127,6 +127,68 @@ export class FriendRequestsService {
     return await this.userSentPendingFriendRequests(from);
   }
 
+  async acceptRequest(from: number, to: number) {
+    const user = await this.usersService.findOne(from);
+    if (!user) throw new NotFoundException('User not found');
+
+    if (user.id == to)
+      throw new BadRequestException(
+        "You can't accept a friend request sent to yourself",
+      );
+
+    const userToAcceptRequest = await this.usersService.findOne(to);
+    if (!userToAcceptRequest)
+      throw new NotFoundException('User pending friend request not found');
+
+    if (
+      user.friends.find((userToAcceptRequest) => userToAcceptRequest.id == to)
+    )
+      throw new BadRequestException('You are already friends');
+
+    if (
+      !user.friends_request.find(
+        (userToAcceptRequest) => userToAcceptRequest.id == to,
+      )
+    )
+      throw new BadRequestException(
+        'You do not have a pending friend request with this user',
+      );
+
+    user.friends_request = user.friends_request.filter(
+      (userToAcceptRequest) => userToAcceptRequest.id != to,
+    );
+
+    user.friends.push(await this.usersService.findOne(to));
+    userToAcceptRequest.friends.push(await this.usersService.findOne(from));
+
+    this.logger.log(
+      `User ${user.login_intra} accepted a pending friend request with ${userToAcceptRequest.login_intra}`,
+    );
+
+    await this.usersService.update(user);
+    await this.usersService.update(userToAcceptRequest);
+    return user.friends;
+  }
+
+  async updateRequest(from: number, to: number, status: string) {
+    const user = await this.usersService.findOne(from);
+    if (!user) throw new NotFoundException('User not found');
+
+    if (user.id == to)
+      throw new BadRequestException(
+        "You can't accept/decline a friend request sent to yourself",
+      );
+
+    const userToUpdateRequest = await this.usersService.findOne(to);
+    if (!userToUpdateRequest)
+      throw new NotFoundException('User pending friend request not found');
+
+    if (status == 'ACCEPTED') return await this.acceptRequest(from, to);
+    if (status == 'DECLINED') return await this.cancelRequest(from, to);
+
+    throw new BadRequestException('Invalid param, (ACCEPTED/DECLINED)');
+  }
+
   async pendingRequest(from: number, type: string) {
     const user = await this.usersService.findOne(from);
     if (!user) throw new NotFoundException('User not found');
@@ -134,6 +196,7 @@ export class FriendRequestsService {
     if (type == 'sent') return await this.userSentPendingFriendRequests(from);
     if (type == 'received')
       return await this.userReceivedPendingFriendRequests(from);
+
     throw new BadRequestException('Invalid param, (sent/received)');
   }
 }

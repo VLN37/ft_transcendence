@@ -6,6 +6,7 @@ import {
   HttpCode,
   Param,
   Post,
+  Put,
   Query,
 } from '@nestjs/common';
 import { FriendRequestsService } from './friend_requests.service';
@@ -23,6 +24,15 @@ export class FriendRequestsController {
   @Delete(':to')
   async cancelRequest(@Param('from') from: number, @Param('to') to: number) {
     return await this.friendRequestsService.cancelRequest(from, to);
+  }
+
+  @Put(':to')
+  async updateRequest(
+    @Param('from') from: number,
+    @Param('to') to: number,
+    @Body('status') status: string,
+  ) {
+    return await this.friendRequestsService.updateRequest(from, to, status);
   }
 
   @Get()
