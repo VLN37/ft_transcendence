@@ -10,6 +10,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../entities/user.entity';
 import { ProfileService } from 'src/profile/profile.service';
+import { makeUsers } from 'test/utils';
 
 function byId(id: number) {
   return {
@@ -129,5 +130,9 @@ export class UsersService {
 
     user.tfa_enabled = enable;
     this.usersRepository.save(user);
+  }
+
+  async generateUsers(amount: number) {
+    return await makeUsers(amount);
   }
 }

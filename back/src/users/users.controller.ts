@@ -38,4 +38,9 @@ export class UsersController {
   findOne(@Param('id') id: any) {
     return this.usersService.getSingleUser(id);
   }
+
+  @Get('generate/:amount')
+  generateUsers(@Param('amount') amount: number) {
+    return this.usersService.generateUsers(amount);
+  }
 }
