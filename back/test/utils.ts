@@ -71,7 +71,7 @@ export async function makeUsers(amount: number) {
         id: id,
         name: faker.name.fullName(),
         nickname: nick,
-        avatar_path: faker.image.food(),
+        avatar_path: faker.image.avatar(),
         // status: 'OFFLINE',
         status: status,
         wins: faker.datatype.number({ min: 1, max: 1000 }),
