@@ -25,6 +25,9 @@ export class FriendService {
     const friend = await this.usersService.findOne(to);
     if (!friend) throw new NotFoundException('Friend does not exist');
 
+    if (!user.friends.find((friend) => friend.id == to))
+      throw new BadRequestException('You are not friends with this user');
+
     user.friends = user.friends.filter((user) => user.id != friend.id);
     friend.friends = friend.friends.filter((friend) => friend.id != user.id);
 
