@@ -8,7 +8,6 @@ import {
   MaxLength,
   ValidateNested,
 } from 'class-validator';
-import { User } from 'src/entities/user.entity';
 import { ProfileDto } from './profile.dto';
 
 export class UserDto {
