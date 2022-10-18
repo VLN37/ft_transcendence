@@ -52,28 +52,42 @@ export function generateUsers(amount: number) {
 }
 
 export async function makeUsers(amount: number) {
-  for (var i = 1; i < amount + 1; i++) {
-    const nick = faker.name.firstName();
+  const statusArr = ['OFFLINE', 'ONLINE', 'PLAYING', 'SEARCHING'];
+  let users = [];
+  var i = 1;
+  for (; i < amount + 1; i++) {
+    const id = faker.datatype.number({ min: 1, max: 80000 });
+    const nick = faker.name.firstName().toLowerCase();
+
+    const status: any =
+      statusArr[faker.datatype.number({ min: 0, max: 3 })].toUpperCase();
+
     const newUser: UserDto = {
-      id: i,
+      id: id,
       login_intra: nick,
       tfa_enabled: false,
       tfa_secret: null,
       profile: {
-        id: i,
+        id: id,
         name: faker.name.fullName(),
         nickname: nick,
         avatar_path: faker.image.food(),
-        status: 'OFFLINE',
-        wins: 0,
-        losses: 0,
-        mmr: 0,
+        // status: 'OFFLINE',
+        status: status,
+        wins: faker.datatype.number({ min: 1, max: 1000 }),
+        losses: faker.datatype.number({ min: 1, max: 1000 }),
+        mmr: faker.datatype.number({ min: 1, max: 5000 }),
       },
     };
     try {
       await axios.post(url + '/users', newUser);
-    } catch (error) {}
+      users.push(newUser);
+    } catch (error) {
+      i--;
+      continue;
+    }
   }
+  return users;
 }
 
 export async function deleteUsers(amount: number) {
