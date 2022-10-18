@@ -26,7 +26,7 @@ export class FriendRequestsService {
     const users = await this.usersRepository.query(
       `select users.*, profiles.*
         from users
-        inner join friends_request on ("usersId_1" = users.id)
+        inner join friend_requests on ("usersId_1" = users.id)
         inner join profiles on (users.id = profiles.id)
         where "usersId_2" = ${id};`,
     );
@@ -54,7 +54,7 @@ export class FriendRequestsService {
     const users = await this.usersRepository.query(
       `select users.*, profiles.*
         from users
-        inner join friends_request on ("usersId_2" = users.id)
+        inner join friend_requests on ("usersId_2" = users.id)
         inner join profiles on (users.id = profiles.id)
         where "usersId_1" = ${id};`,
     );
@@ -86,10 +86,10 @@ export class FriendRequestsService {
     const userToAdd = await this.usersService.findOne(target);
     if (!userToAdd) throw new NotFoundException('User to add not found');
 
-    if (userToAdd.friends_request.find((user) => user.id == me))
+    if (userToAdd.friend_requests.find((user) => user.id == me))
       throw new BadRequestException('Friend request already been sent');
 
-    userToAdd.friends_request.push(user);
+    userToAdd.friend_requests.push(user);
 
     this.logger.log(
       `User ${user.login_intra} send a friend request to ${userToAdd.login_intra}`,
@@ -112,13 +112,13 @@ export class FriendRequestsService {
     if (!userToCancelRequest)
       throw new NotFoundException('User pending friend request not found');
 
-    if (!userToCancelRequest.friends_request.find((user) => user.id == me))
+    if (!userToCancelRequest.friend_requests.find((user) => user.id == me))
       throw new BadRequestException(
         'You do not have a pending friend request with this user',
       );
 
-    userToCancelRequest.friends_request =
-      userToCancelRequest.friends_request.filter((user) => user.id != me);
+    userToCancelRequest.friend_requests =
+      userToCancelRequest.friend_requests.filter((user) => user.id != me);
 
     this.logger.log(
       `User ${user.login_intra} cancel a pending friend request with ${userToCancelRequest.login_intra}`,
@@ -149,7 +149,7 @@ export class FriendRequestsService {
       throw new BadRequestException('You are already friends');
 
     if (
-      !user.friends_request.find(
+      !user.friend_requests.find(
         (userToAcceptRequest) => userToAcceptRequest.id == target,
       )
     )
@@ -157,7 +157,7 @@ export class FriendRequestsService {
         'You do not have a pending friend request with this user',
       );
 
-    user.friends_request = user.friends_request.filter(
+    user.friend_requests = user.friend_requests.filter(
       (userToAcceptRequest) => userToAcceptRequest.id != target,
     );
 

@@ -19,7 +19,7 @@ function byId(id: number) {
       profile: true,
       friends: true,
       blocked: true,
-      friends_request: true,
+      friend_requests: true,
     },
   };
 }
@@ -84,7 +84,7 @@ export class UsersService {
         profile: true,
         friends: true,
         blocked: true,
-        friends_request: true,
+        friend_requests: true,
       },
     });
     this.logger.debug('Returning users', { users });
