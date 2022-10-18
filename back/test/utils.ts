@@ -78,6 +78,9 @@ export async function makeUsers(amount: number) {
         losses: faker.datatype.number({ min: 1, max: 1000 }),
         mmr: faker.datatype.number({ min: 1, max: 5000 }),
       },
+      friends: [],
+      blocked: [],
+      friend_requests: [],
     };
     try {
       await axios.post(url + '/users', newUser);
