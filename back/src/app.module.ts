@@ -8,7 +8,6 @@ import { LoggerMiddleware } from './middlewares/LoggerMiddleware';
 import { UsersController } from './users/users.controller';
 import { Profile } from './entities/profile.entity';
 import { ProfileModule } from './profile/profile.module';
-import { FriendsModule } from './friends/friends.module';
 
 const environment = process.env.ENVIRONMENT;
 
@@ -40,7 +39,6 @@ declare global {
     }),
     UsersModule,
     AuthModule,
-    FriendsModule,
     ProfileModule,
   ],
   controllers: [],

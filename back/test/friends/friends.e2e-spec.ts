@@ -2,7 +2,7 @@ import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import * as request from 'supertest';
 import { getTestDbModule } from '../utils';
-import { FriendsModule } from 'src/friends/friends.module';
+import { FriendsModule } from 'src/users/friends/friends.module';
 
 describe('friends api endpoints', () => {
   let app: INestApplication;

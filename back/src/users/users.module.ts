@@ -8,11 +8,23 @@ import { BlockedService } from 'src/users/blocked/blocked.service';
 import { BlockedController } from 'src/users/blocked/blocked.controller';
 import { FriendRequestsController } from './friend_requests/friend_requests.controller';
 import { FriendRequestsService } from './friend_requests/friend_requests.service';
+import { FriendsController } from './friends/friends.controller';
+import { FriendService } from './friends/friends.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User]), ProfileModule],
-  controllers: [UsersController, BlockedController, FriendRequestsController],
-  providers: [UsersService, BlockedService, FriendRequestsService],
+  controllers: [
+    UsersController,
+    FriendsController,
+    BlockedController,
+    FriendRequestsController,
+  ],
+  providers: [
+    UsersService,
+    FriendService,
+    BlockedService,
+    FriendRequestsService,
+  ],
   exports: [UsersService],
 })
 export class UsersModule {}
