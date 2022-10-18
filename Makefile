@@ -28,8 +28,8 @@ pauloburro:
 
 clean:
 	docker-compose -f docker-compose.yml down -v --rmi all --remove-orphans
-	rm -rf ./back/node_modules
-	rm -rf ./front/node_modules
+	rm -rf ./back/node_modules ./back/dist
+	rm -rf ./front/node_modules ./front/dist
 
 fclean: clean
 	docker system prune --volumes --all --force
