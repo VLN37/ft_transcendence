@@ -11,35 +11,35 @@ import {
 } from '@nestjs/common';
 import { FriendRequestsService } from './friend_requests.service';
 
-@Controller('/users/:from/friend_requests')
+@Controller('/users/:me/friend_requests')
 export class FriendRequestsController {
   constructor(private readonly friendRequestsService: FriendRequestsService) {}
 
   @HttpCode(200)
   @Post()
-  async request(@Param('from') from: number, @Body('user_id') to: number) {
-    return await this.friendRequestsService.request(from, to);
+  async request(@Body('user_id') me: number, @Param('me') target: number) {
+    return await this.friendRequestsService.request(me, target);
   }
 
-  @Delete(':to')
-  async cancelRequest(@Param('from') from: number, @Param('to') to: number) {
-    return await this.friendRequestsService.cancelRequest(from, to);
+  @Delete(':target')
+  async cancelRequest(
+    @Param('me') me: number,
+    @Param('target') target: number,
+  ) {
+    return await this.friendRequestsService.cancelRequest(me, target);
   }
 
-  @Put(':to')
+  @Put(':target')
   async updateRequest(
-    @Param('from') from: number,
-    @Param('to') to: number,
+    @Param('me') me: number,
+    @Param('target') target: number,
     @Body('status') status: string,
   ) {
-    return await this.friendRequestsService.updateRequest(from, to, status);
+    return await this.friendRequestsService.updateRequest(me, target, status);
   }
 
   @Get()
-  async pendingRequest(
-    @Param('from') from: number,
-    @Query('type') type: string,
-  ) {
-    return await this.friendRequestsService.pendingRequest(from, type);
+  async pendingRequest(@Param('me') me: number, @Query('type') type: string) {
+    return await this.friendRequestsService.pendingRequest(me, type);
   }
 }

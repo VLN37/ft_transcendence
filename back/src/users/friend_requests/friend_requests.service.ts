@@ -76,16 +76,17 @@ export class FriendRequestsService {
     });
   }
 
-  async request(from: number, to: number) {
-    const user = await this.usersService.findOne(from);
+  async request(me: number, target: number) {
+    const user = await this.usersService.findOne(me);
     if (!user) throw new NotFoundException('User not found');
 
-    if (user.id == to) throw new BadRequestException("You can't add yourself");
+    if (user.id == target)
+      throw new BadRequestException("You can't add yourself");
 
-    const userToAdd = await this.usersService.findOne(to);
+    const userToAdd = await this.usersService.findOne(target);
     if (!userToAdd) throw new NotFoundException('User to add not found');
 
-    if (userToAdd.friends_request.find((user) => user.id == from))
+    if (userToAdd.friends_request.find((user) => user.id == me))
       throw new BadRequestException('Friend request already been sent');
 
     userToAdd.friends_request.push(user);
@@ -95,7 +96,7 @@ export class FriendRequestsService {
     );
 
     await this.usersService.update(userToAdd);
-    return await this.userSentPendingFriendRequests(from);
+    return await this.userSentPendingFriendRequests(me);
   }
 
   async cancelRequest(from: number, to: number) {
