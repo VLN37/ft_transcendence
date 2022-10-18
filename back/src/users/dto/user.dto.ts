@@ -30,7 +30,7 @@ export class UserDto {
   tfa_secret: string;
 
   @ValidateNested()
-  @Type(()=> ProfileDto)
+  @Type(() => ProfileDto)
   @IsOptional()
   profile?: ProfileDto;
 
