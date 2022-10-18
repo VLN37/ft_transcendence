@@ -1,10 +1,10 @@
-import { faker } from '@faker-js/faker';
+import { Faker, faker } from '@faker-js/faker';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import axios from 'axios';
 import { Profile } from 'src/entities/profile.entity';
 import { User } from 'src/entities/user.entity';
 import { UserDto } from 'src/users/dto/user.dto';
-import { getConnection } from 'typeorm';
+import { getConnection, Repository } from 'typeorm';
 
 export const url = 'http://localhost:3000';
 
@@ -23,28 +23,33 @@ export function getTestDbModule() {
   });
 }
 
-export function generateUsers(amount: number) {
+export function generateUser(id: number): UserDto {
+  const nick = faker.name.firstName();
+
+  return {
+    id: id ?? faker.datatype.number(30000),
+    login_intra: nick,
+    tfa_enabled: false,
+    tfa_secret: null,
+    profile: {
+      id: id,
+      name: faker.name.fullName(),
+      nickname: nick,
+      avatar_path: faker.image.food(),
+      status: 'OFFLINE',
+      wins: 0,
+      losses: 0,
+      mmr: 0,
+    },
+  };
+}
+
+export function generateUsers(amount: number): UserDto[] {
   const users = [];
 
   for (let i = 0; i < amount; i++) {
-    const nick = faker.name.firstName();
     const id = 20000 + i;
-    const newUser: UserDto = {
-      id: id,
-      login_intra: nick,
-      tfa_enabled: false,
-      tfa_secret: null,
-      profile: {
-        id: id,
-        name: faker.name.fullName(),
-        nickname: nick,
-        avatar_path: faker.image.food(),
-        status: 'OFFLINE',
-        wins: 0,
-        losses: 0,
-        mmr: 0,
-      },
-    };
+    const newUser: UserDto = generateUser(id);
     users.push(newUser);
   }
 

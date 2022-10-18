@@ -1,10 +1,13 @@
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
+import { getRepositoryToken } from '@nestjs/typeorm';
 import * as request from 'supertest';
 import { generateUsers, getTestDbModule } from '../utils';
 import { UsersService } from 'src/users/users.service';
 import { UsersModule } from 'src/users/users.module';
 import { UserDto } from 'src/users/dto/user.dto';
+import { User } from 'src/entities/user.entity';
+import { EntitySchema, Repository } from 'typeorm';
 
 describe('Users endpoints', () => {
   let app: INestApplication;
@@ -17,10 +20,12 @@ describe('Users endpoints', () => {
     }).compile();
 
     app = moduleRef.createNestApplication();
-    const usersService = app.get(UsersService);
+    const usersRepositoryToken = getRepositoryToken(User);
+    const usersRepository =
+      moduleRef.get<Repository<User>>(usersRepositoryToken);
 
     for (let i = 0; i < users.length; i++) {
-      await usersService.create(users[i]);
+      await usersRepository.save(users[i]);
     }
     await app.init();
   });
