@@ -1,6 +1,6 @@
 import { Entity, Column, PrimaryColumn } from 'typeorm';
 
-export type UserStatus = 'OFFLINE' | 'ONLINE' | 'PLAYING';
+export type UserStatus = 'OFFLINE' | 'ONLINE' | 'PLAYING' | 'SEARCHING';
 
 @Entity({ name: 'profiles' })
 export class Profile {
