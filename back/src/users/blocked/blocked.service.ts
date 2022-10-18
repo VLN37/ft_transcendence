@@ -4,33 +4,17 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { User } from 'src/entities/user.entity';
 import { UserDto } from 'src/users/dto/user.dto';
 import { UsersService } from 'src/users/users.service';
-import { Repository } from 'typeorm';
 
 @Injectable()
 export class BlockedService {
   private readonly logger = new Logger(UsersService.name);
 
-  constructor(
-    private usersService: UsersService,
-    @InjectRepository(User)
-    private usersRepository: Repository<User>,
-  ) {}
-
-  private async findUser(id: number): Promise<UserDto> {
-    return await this.usersRepository.findOne({
-      where: { id: id },
-      relations: ['blocked', 'blocked.profile'],
-    });
-  }
+  constructor(private usersService: UsersService) {}
 
   async get(from: number): Promise<UserDto[]> {
-    const user = await this.findUser(from);
-    if (user) return user.blocked;
-    throw new NotFoundException('User not found');
+    return (await this.usersService.tryFindOne(from)).blocked;
   }
 
   async block(from: number, to: number) {
@@ -53,7 +37,7 @@ export class BlockedService {
     );
 
     await this.usersService.update(user);
-    return await (await this.findUser(from)).blocked;
+    return (await this.usersService.tryFindOne(from)).blocked;
   }
 
   async unblock(from: number, to: number) {
@@ -78,7 +62,7 @@ export class BlockedService {
       `User ${user.login_intra} unblocked user ${userToUnblock.login_intra}`,
     );
 
-	await this.usersService.update(user);
-    return await (await this.findUser(from)).blocked;
+    await this.usersService.update(user);
+    return (await this.usersService.tryFindOne(from)).blocked;
   }
 }
