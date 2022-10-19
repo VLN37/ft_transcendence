@@ -74,7 +74,7 @@ export class UsersService {
     await this.usersRepository.delete({ id: id });
   }
 
-  async getAll(): Promise<User[]> {
+  async getAll(): Promise<UserDto[]> {
     const users = await this.usersRepository.find({
       relations: ['profile', 'friends'],
     });
