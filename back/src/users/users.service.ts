@@ -15,12 +15,7 @@ import { makeUsers } from 'test/utils';
 function byId(id: number) {
   return {
     where: { id },
-    relations: {
-      profile: true,
-      friends: true,
-      blocked: true,
-      friend_requests: true,
-    },
+    relations: ['profile'],
   };
 }
 
@@ -67,12 +62,11 @@ export class UsersService {
     return await makeUsers(amount);
   }
 
-  async edit(id: number, user: User) {
-    if (user.hasOwnProperty('id'))
-      throw new ForbiddenException('you cannot change your intra ID');
+  async edit(id: number, user: UserDto) {
+    const error = await this.userChangedForbiddenFields(id, user);
+    if (error) throw new ForbiddenException(`You cannot change user ${error}`);
     await this.usersRepository.update(id, user);
-    // const updatedUser = await this.usersRepository.save(user);
-    const updatedUser = await this.usersRepository.findOne(byId(id));
+    const updatedUser = await this.findUserById(id);
     this.logger.debug('User updated', { updatedUser });
     return updatedUser;
   }
@@ -142,5 +136,31 @@ export class UsersService {
 
     user.tfa_enabled = enable;
     this.usersRepository.save(user);
+  }
+
+  async findUserById(id: number, relations: string[] = []): Promise<UserDto> {
+    relations.unshift('profile');
+    const find = await this.usersRepository.findOne({
+      where: { id },
+      relations,
+    });
+    if (!find) throw new NotFoundException(`User id ${id} not found`);
+    delete find.tfa_enabled;
+    delete find.tfa_secret;
+    return find;
+  }
+
+  private async userChangedForbiddenFields(
+    id: number,
+    user: UserDto,
+  ): Promise<string> {
+    const find = await this.findUserById(id);
+    if (find.id != user?.id) return 'id';
+    if (find.login_intra != user?.login_intra) return 'login_intra';
+    if (find.tfa_secret != user?.tfa_secret) return 'tfa_secret';
+    if (find.profile.id != user?.profile?.id) return 'profile id';
+    if (find.profile.nickname != user?.profile?.nickname)
+      return 'profile nickname';
+    return '';
   }
 }

@@ -27,7 +27,7 @@ export class UsersController {
   }
 
   @Patch(':id')
-  edit(@Param('id') id: any, @Body() user: any) {
+  edit(@Param('id') id: number, @Body() user: UserDto) {
     return this.usersService.edit(id, user);
   }
 
