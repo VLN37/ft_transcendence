@@ -14,7 +14,7 @@ const AuthCallback = ({ setUser }: any) => {
 
     async function validateCode(code: string | null): Promise<boolean> {
       setLoading(true);
-      if (!code || code.length != 64) return false;
+      if (!code || code.length !== 64) return false;
 
       const url = `http://localhost:3000/auth/login?code=${code}`;
       console.log({ url });
@@ -29,9 +29,10 @@ const AuthCallback = ({ setUser }: any) => {
 
       const result = await response.json();
       console.log({ result });
-      const payload = jwtDecode(result.access_token);
+      const payload: any = jwtDecode(result.access_token);
       console.log({ payload });
       localStorage.setItem('RESULT', result);
+      localStorage.setItem('USERID', payload.sub.toString());
       setUser(result);
       setLoading(false);
       return true;

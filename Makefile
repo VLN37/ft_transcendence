@@ -2,7 +2,6 @@ all: up
 
 up: install
 	docker-compose -f docker-compose.yml up -d
-	npm --prefix ./back npm db:seed
 
 install:
 	npm --prefix ./back install
