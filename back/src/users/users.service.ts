@@ -76,12 +76,11 @@ export class UsersService {
 
   async get(): Promise<User[]> {
     const users = await this.usersRepository.find({
-      relations: {
-        profile: true,
-        friends: true,
-        blocked: true,
-        friend_requests: true,
-      },
+      relations: ['profile'],
+    });
+    users.map((user) => {
+      delete user.tfa_enabled;
+      delete user.tfa_secret;
     });
     this.logger.debug('Returning users', { users });
     return users;
@@ -141,7 +140,7 @@ export class UsersService {
     if (!find) throw new NotFoundException(`User with id=${id} not found`);
     delete find.tfa_enabled;
     delete find.tfa_secret;
-	this.logger.debug('Returning user', { find });
+    this.logger.debug('Returning user', { find });
     return find;
   }
 
