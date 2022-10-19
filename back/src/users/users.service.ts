@@ -63,7 +63,8 @@ export class UsersService {
   }
 
   async edit(id: number, user: UserDto) {
-    const error = await this.userChangedForbiddenFields(id, user);
+	const oldUser = await this.findUserById(id);
+    const error = await this.userChangedForbiddenFields(oldUser, user);
     if (error) throw new ForbiddenException(`You cannot change user ${error}`);
     await this.usersRepository.update(id, user);
     const updatedUser = await this.findUserById(id);
@@ -151,15 +152,14 @@ export class UsersService {
   }
 
   private async userChangedForbiddenFields(
-    id: number,
+    oldUser: UserDto,
     user: UserDto,
   ): Promise<string> {
-    const find = await this.findUserById(id);
-    if (find.id != user?.id) return 'id';
-    if (find.login_intra != user?.login_intra) return 'login_intra';
-    if (find.tfa_secret != user?.tfa_secret) return 'tfa_secret';
-    if (find.profile.id != user?.profile?.id) return 'profile id';
-    if (find.profile.nickname != user?.profile?.nickname)
+    if (oldUser.id != user?.id) return 'id';
+    if (oldUser.login_intra != user?.login_intra) return 'login_intra';
+    if (oldUser.tfa_secret != user?.tfa_secret) return 'tfa_secret';
+    if (oldUser.profile.id != user?.profile?.id) return 'profile id';
+    if (oldUser.profile.nickname != user?.profile?.nickname)
       return 'profile nickname';
     return '';
   }
