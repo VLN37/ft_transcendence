@@ -14,9 +14,16 @@ import { UsersService } from './users.service';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  //dev
   @Post()
   create(@Body() dto: UserDto) {
     return this.usersService.create(dto);
+  }
+
+  //dev
+  @Get('generate/:amount')
+  generateUsers(@Param('amount') amount: number) {
+    return this.usersService.generateUsers(amount);
   }
 
   @Patch(':id')
@@ -37,10 +44,5 @@ export class UsersController {
   @Get(':id')
   findOne(@Param('id') id: any) {
     return this.usersService.getSingleUser(id);
-  }
-
-  @Get('generate/:amount')
-  generateUsers(@Param('amount') amount: number) {
-    return this.usersService.generateUsers(amount);
   }
 }
