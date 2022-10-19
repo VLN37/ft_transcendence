@@ -17,6 +17,8 @@ test:
 
 restart:
 	make down
+	rm -rf ./back/dist
+	rm -rf ./front/dist
 	docker-compose -f docker-compose.yml up -d
 
 seed:
