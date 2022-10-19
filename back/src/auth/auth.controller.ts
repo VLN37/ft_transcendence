@@ -3,6 +3,7 @@ import {
   ConsoleLogger,
   Controller,
   Get,
+  HttpCode,
   InternalServerErrorException,
   Post,
   Put,
@@ -25,7 +26,8 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('login') // /auth/login
-  async login(@Query('code') code: string) {
+  @HttpCode(200)
+  async login(@Body('code') code: string) {
     console.log({ code });
 
     const jwt = await this.authService.login(code);
