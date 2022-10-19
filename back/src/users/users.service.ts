@@ -138,9 +138,10 @@ export class UsersService {
       where: { id },
       relations,
     });
-    if (!find) throw new NotFoundException(`User id ${id} not found`);
+    if (!find) throw new NotFoundException(`User with id=${id} not found`);
     delete find.tfa_enabled;
     delete find.tfa_secret;
+	this.logger.debug('Returning user', { find });
     return find;
   }
 
