@@ -68,17 +68,10 @@ export class UsersService {
     return updatedUser;
   }
 
-  async update(user: UserDto) {
-    return await this.usersRepository.save(user);
-  }
-
   async delete(id: number) {
-    const user = await this.findOne(id);
-    if (!user) throw new NotFoundException('this user does not exist');
-    console.log('DELETE USER', user);
-    const deletedUser = this.usersRepository.delete({ id: id });
-    this.logger.debug('User deleted', { deletedUser });
-    return deletedUser;
+    const user = await this.findUserById(id);
+    this.logger.debug('User deleted', { user });
+    await this.usersRepository.delete({ id: id });
   }
 
   async get(): Promise<User[]> {
@@ -133,6 +126,10 @@ export class UsersService {
 
     user.tfa_enabled = enable;
     this.usersRepository.save(user);
+  }
+
+  async update(user: UserDto) {
+    return await this.usersRepository.save(user);
   }
 
   async findUserById(id: number, relations: string[] = []): Promise<UserDto> {
