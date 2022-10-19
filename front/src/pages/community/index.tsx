@@ -6,21 +6,11 @@ import {
   Table,
   Thead,
   Tbody,
-  Tfoot,
   Tr,
   Th,
-  Td,
   Button,
-  TableCaption,
+  Image,
   TableContainer,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-  MenuItemOption,
-  MenuGroup,
-  MenuOptionGroup,
-  MenuDivider,
 } from '@chakra-ui/react'
 
 import UserBlock from '../../components/UserBlock';
@@ -31,6 +21,9 @@ interface UserDto {
   login_intra: string,
   tfa_enabled: boolean,
   tfa_secret: string,
+  profile: {
+    avatar_path: string,
+  }
 }
 
 const URL = 'http://localhost:3000/users';
@@ -74,6 +67,9 @@ export default function CommunityPage() {
     login_intra: '',
     id: 0,
     tfa_enabled: false,
+    profile: {
+      avatar_path: '',
+    }
   }]);
 
   useEffect(() => {
@@ -96,24 +92,26 @@ export default function CommunityPage() {
         <UserBlock
           login_intra={<RankMenu input={user.login_intra}></RankMenu>}
           id={user.id}
-          tfa_enabled={user.tfa_enabled} />)
+          tfa_enabled={user.tfa_enabled}
+          avatar_path={user.profile.avatar_path} />)
     return <div className="page">
       <TableContainer>
-        <Table variant='simple'>
+        <Table variant='striped'>
           <Thead>
             <Tr>
+              <Th>Avatar</Th>
               <Th>Login</Th>
               <Th>ID</Th>
               <Th>TFA</Th>
             </Tr>
           </Thead>
-            <Tbody>
-            {
-              !User[0].login_intra
-              ? <UserBlock />
-              : userList
-            }
-            </Tbody>
+          <Tbody>
+          {
+            !User[0].login_intra
+            ? <UserBlock />
+            : userList
+          }
+          </Tbody>
         </Table>
       </TableContainer>
     </div>;
