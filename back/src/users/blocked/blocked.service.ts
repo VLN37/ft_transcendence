@@ -13,7 +13,7 @@ export class BlockedService {
 
   constructor(private usersService: UsersService) {}
 
-  async get(from: number): Promise<UserDto[]> {
+  async get(from: number): Promise<Partial<UserDto>[]> {
     return (await this.usersService.tryFindOne(from)).blocked;
   }
 

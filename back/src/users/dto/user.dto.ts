@@ -35,11 +35,11 @@ export class UserDto {
   profile?: ProfileDto;
 
   @IsOptional()
-  friends?: UserDto[];
+  friends?: Partial<UserDto>[];
 
   @IsOptional()
-  friend_requests?: UserDto[];
+  friend_requests?: Partial<UserDto>[];
 
   @IsOptional()
-  blocked?: UserDto[];
+  blocked?: Partial<UserDto>[];
 }

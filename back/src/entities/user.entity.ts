@@ -46,13 +46,13 @@ export class User {
 
   @ManyToMany(() => User)
   @JoinTable({ name: 'blocked' })
-  blocked: User[];
+  blocked: Partial<User>[];
 
   @ManyToMany(() => User)
   @JoinTable({ name: 'friend_requests' })
-  friend_requests: User[];
+  friend_requests: Partial<User>[];
 
   @ManyToMany(() => User)
   @JoinTable({ name: 'friendships' })
-  friends: User[];
+  friends: Partial<User>[];
 }
