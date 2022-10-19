@@ -3,11 +3,9 @@ import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import * as request from 'supertest';
 import { generateUsers, getTestDbModule } from '../utils';
-import { UsersService } from 'src/users/users.service';
 import { UsersModule } from 'src/users/users.module';
-import { UserDto } from 'src/users/dto/user.dto';
 import { User } from 'src/entities/user.entity';
-import { EntitySchema, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 
 describe('Users endpoints', () => {
   let app: INestApplication;

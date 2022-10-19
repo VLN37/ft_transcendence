@@ -35,8 +35,16 @@ export class UsersService {
   ) {}
 
   async create(dto: UserDto): Promise<User> {
-    if (await this.usersRepository.findOneBy({ id: dto.id }))
+    const find = await this.usersRepository.findOne({
+      where: [{ id: dto.id }, { login_intra: dto.login_intra }],
+      relations: ['profile'],
+    });
+    if (find?.id == dto.id)
       throw new BadRequestException(`User: (id)=(${dto.id}) already exists.`);
+    if (find?.login_intra == dto.login_intra)
+      throw new BadRequestException(
+        `User: (login_intra)=(${dto.login_intra}) already exists.`,
+      );
     const profile = await this.profileService.create(dto.profile);
     const newUser = await this.usersRepository
       .save({
@@ -53,6 +61,10 @@ export class UsersService {
       });
     this.logger.debug('User created', { newUser });
     return newUser;
+  }
+
+  async generateUsers(amount: number) {
+    return await makeUsers(amount);
   }
 
   async edit(id: number, user: User) {
@@ -130,9 +142,5 @@ export class UsersService {
 
     user.tfa_enabled = enable;
     this.usersRepository.save(user);
-  }
-
-  async generateUsers(amount: number) {
-    return await makeUsers(amount);
   }
 }

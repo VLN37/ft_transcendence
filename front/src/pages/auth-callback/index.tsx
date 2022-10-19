@@ -2,6 +2,11 @@ import jwtDecode from 'jwt-decode';
 import { useEffect, useState } from 'react';
 import { Navigate, useSearchParams } from 'react-router-dom';
 import LoadDualSpinner from '../../components/LoadDualSpinner';
+import { TokenPayload } from '../../models/TokenPayload';
+import { User } from '../../models/User';
+
+import api from '../../services/api';
+import userStorage from '../../services/userStorage';
 
 import './style.css';
 
@@ -12,30 +17,29 @@ const AuthCallback = ({ setUser }: any) => {
   useEffect(() => {
     const code = params.get('code');
 
-    async function validateCode(code: string | null): Promise<boolean> {
+    async function validateCode(code: string | null): Promise<void> {
       setLoading(true);
-      if (!code || code.length !== 64) return false;
+      if (!code || code.length !== 64) throw new Error('invalid code');
 
-      const url = `http://localhost:3000/auth/login?code=${code}`;
-      console.log({ url });
-      const response = await fetch(url, {
-        method: 'POST',
-      });
+      try {
+        const token = await api.authenticate(code);
 
-      console.log({ response });
-      if (!response.ok) {
-        return false;
+        const payload = jwtDecode<TokenPayload>(token);
+        console.log({ payload });
+
+        const user: User = {
+          id: payload.sub,
+        };
+
+        userStorage.saveUser(user);
+
+        setUser(user);
+
+        setLoading(false);
+      } catch (e) {
+        console.error(e);
+        setLoading(false);
       }
-
-      const result = await response.json();
-      console.log({ result });
-      const payload: any = jwtDecode(result.access_token);
-      console.log({ payload });
-      localStorage.setItem('RESULT', result);
-      localStorage.setItem('USERID', payload.sub.toString());
-      setUser(result);
-      setLoading(false);
-      return true;
     }
 
     validateCode(code);
