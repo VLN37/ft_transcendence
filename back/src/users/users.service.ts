@@ -86,6 +86,14 @@ export class UsersService {
     return users;
   }
 
+  async getOne(id: number): Promise<UserDto> {
+    const user = await this.findUserById(id, ['friends']);
+    delete user.tfa_enabled;
+    delete user.tfa_secret;
+    this.logger.debug('Returning user', { user });
+    return user;
+  }
+
   async findOne(id: number) {
     const user = await this.usersRepository.findOne(byId(id));
     this.logger.debug('Returning user', { user });

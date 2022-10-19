@@ -32,7 +32,7 @@ export class UsersController {
   }
 
   @Delete(':id')
-  delete(@Param('id') id: any) {
+  delete(@Param('id') id: number) {
     return this.usersService.delete(id);
   }
 
@@ -42,7 +42,7 @@ export class UsersController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: any) {
-    return this.usersService.getSingleUser(id);
+  getOne(@Param('id') id: number) {
+    return this.usersService.getOne(id);
   }
 }
