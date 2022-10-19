@@ -52,7 +52,7 @@ const AuthCallback = ({ setUser }: any) => {
       </div>
     );
   } else {
-    return <Navigate to="/" />;
+    return <Navigate to="/" replace />;
   }
 
   // return <div>carai</div>;
