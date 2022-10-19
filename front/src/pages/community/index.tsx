@@ -23,6 +23,9 @@ import {
   MenuDivider,
 } from '@chakra-ui/react'
 
+import UserBlock from '../../components/UserBlock';
+import RankMenu from '../../components/RankMenu';
+
 interface UserDto {
   id: number,
   login_intra: string,
@@ -38,16 +41,6 @@ async function fetchUsers() {
   });
   console.log(response.body);
   return response.json();
-}
-
-function UserBlock(props: any) {
-  return (
-      <Tr>
-        <Td>{props.login_intra}</Td>
-        <Td>{props.id}</Td>
-        <Td>{props.tfa_enabled}</Td>
-      </Tr>
-  );
 }
 
 function AddToast() {
@@ -75,29 +68,6 @@ function CustomToastExample() {
   )
 }
 
-function MeuMenu(props: any) {
-  const toast = useToast();
-  async function clickcallback() {
-    console.log('added');
-    toast({
-      title: 'Friend request sent',
-      description: 'supimpa',
-      status: 'error',
-    });
-  }
-
-  return (
-    <Menu isLazy>
-      <MenuButton>{props.input}</MenuButton>
-      <MenuList>
-        {/* MenuItems are not rendered unless Menu is open */}
-        <MenuItem onClick={clickcallback} >addFriend</MenuItem>
-        <MenuItem>Open Closed Tab</MenuItem>
-        <MenuItem>Open File</MenuItem>
-      </MenuList>
-    </Menu>
-  )
-}
 
 export default function CommunityPage() {
   const [User, setUser] = useState([{
@@ -124,7 +94,7 @@ export default function CommunityPage() {
     const userList = User
       .map(user =>
         <UserBlock
-          login_intra={<MeuMenu input={user.login_intra}></MeuMenu>}
+          login_intra={<RankMenu input={user.login_intra}></RankMenu>}
           id={user.id}
           tfa_enabled={user.tfa_enabled} />)
     return <div className="page">
