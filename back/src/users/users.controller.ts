@@ -37,8 +37,8 @@ export class UsersController {
   }
 
   @Get()
-  get() {
-    return this.usersService.get();
+  getAll() {
+    return this.usersService.getAll();
   }
 
   @Get(':id')
