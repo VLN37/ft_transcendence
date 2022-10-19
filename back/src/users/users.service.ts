@@ -31,15 +31,11 @@ export class UsersService {
 
   async create(dto: UserDto): Promise<User> {
     const find = await this.usersRepository.findOne({
-      where: [{ id: dto.id }, { login_intra: dto.login_intra }],
+      where: { id: dto.id },
       relations: ['profile'],
     });
     if (find?.id == dto.id)
       throw new BadRequestException(`User: (id)=(${dto.id}) already exists.`);
-    if (find?.login_intra == dto.login_intra)
-      throw new BadRequestException(
-        `User: (login_intra)=(${dto.login_intra}) already exists.`,
-      );
     const profile = await this.profileService.create(dto.profile);
     const newUser = await this.usersRepository
       .save({
@@ -63,7 +59,7 @@ export class UsersService {
   }
 
   async edit(id: number, user: UserDto) {
-	const oldUser = await this.findUserById(id);
+    const oldUser = await this.findUserById(id);
     const error = await this.userChangedForbiddenFields(oldUser, user);
     if (error) throw new ForbiddenException(`You cannot change user ${error}`);
     await this.usersRepository.update(id, user);
