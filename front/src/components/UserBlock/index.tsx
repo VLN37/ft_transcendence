@@ -25,6 +25,7 @@ import {
 export default function UserBlock(props: any) {
   return (
     <Tr>
+      <Td>{props.rank}</Td>
       <Td>
         <Image
             borderRadius='full'
@@ -33,8 +34,8 @@ export default function UserBlock(props: any) {
         />
       </Td>
       <Td>{props.login_intra}</Td>
-      <Td>{props.id}</Td>
-      <Td>{props.tfa_enabled}</Td>
+      <Td>{props.wins}</Td>
+      <Td>{props.losses}</Td>
     </Tr>
   );
 }
