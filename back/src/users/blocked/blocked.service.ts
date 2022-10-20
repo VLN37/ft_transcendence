@@ -14,18 +14,16 @@ export class BlockedService {
   constructor(private usersService: UsersService) {}
 
   async get(from: number): Promise<Partial<UserDto>[]> {
-    return (await this.usersService.tryFindOne(from)).blocked;
+    return (await this.usersService.findUserById(from)).blocked;
   }
 
   async block(from: number, to: number) {
-    const user = await this.usersService.findOne(from);
-    if (!user) throw new NotFoundException('User not found');
+    const user = await this.usersService.findUserById(from);
 
     if (user.id == to)
       throw new BadRequestException("You can't block yourself");
 
-    const userToBlock = await this.usersService.findOne(to);
-    if (!userToBlock) throw new NotFoundException('User to block not found');
+    const userToBlock = await this.usersService.findUserById(to);
 
     if (user.blocked.find((userToBlock) => userToBlock.id == to))
       throw new BadRequestException('User has already been blocked');
@@ -37,19 +35,16 @@ export class BlockedService {
     );
 
     await this.usersService.update(user);
-    return (await this.usersService.tryFindOne(from)).blocked;
+    return (await this.usersService.findUserById(from)).blocked;
   }
 
   async unblock(from: number, to: number) {
-    const user = await this.usersService.findOne(from);
-    if (!user) throw new NotFoundException('User not found');
+    const user = await this.usersService.findUserById(from);
 
     if (user.id == to)
       throw new BadRequestException("You can't unblock yourself");
 
-    const userToUnblock = await this.usersService.findOne(to);
-    if (!userToUnblock)
-      throw new NotFoundException('User to unblock not found');
+    const userToUnblock = await this.usersService.findUserById(to);
 
     if (!user.blocked.find((userToUnblock) => userToUnblock.id == to))
       throw new BadRequestException('User was not blocked');
@@ -63,6 +58,6 @@ export class BlockedService {
     );
 
     await this.usersService.update(user);
-    return (await this.usersService.tryFindOne(from)).blocked;
+    return (await this.usersService.findUserById(from)).blocked;
   }
 }

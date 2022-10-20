@@ -1,13 +1,7 @@
-import {
-  BadRequestException,
-  Injectable,
-  Logger,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
-import { UserDto } from '../dto/user.dto';
 import { UsersService } from '../users.service';
 
 @Injectable()
@@ -77,14 +71,12 @@ export class FriendRequestsService {
   }
 
   async request(me: number, target: number) {
-    const user = await this.usersService.findOne(me);
-    if (!user) throw new NotFoundException('User not found');
+    const user = await this.usersService.findUserById(me);
 
     if (user.id == target)
       throw new BadRequestException("You can't add yourself");
 
-    const userToAdd = await this.usersService.findOne(target);
-    if (!userToAdd) throw new NotFoundException('User to add not found');
+    const userToAdd = await this.usersService.findUserById(target);
 
     if (userToAdd.friend_requests.find((user) => user.id == me))
       throw new BadRequestException('Friend request already been sent');
@@ -100,17 +92,14 @@ export class FriendRequestsService {
   }
 
   async cancelRequest(me: number, target: number) {
-    const user = await this.usersService.findOne(me);
-    if (!user) throw new NotFoundException('User not found');
+    const user = await this.usersService.findUserById(me);
 
     if (user.id == target)
       throw new BadRequestException(
         "You can't cancel a friend request sent to yourself",
       );
 
-    const userToCancelRequest = await this.usersService.findOne(target);
-    if (!userToCancelRequest)
-      throw new NotFoundException('User pending friend request not found');
+    const userToCancelRequest = await this.usersService.findUserById(target);
 
     if (!userToCancelRequest.friend_requests.find((user) => user.id == me))
       throw new BadRequestException(
@@ -129,17 +118,14 @@ export class FriendRequestsService {
   }
 
   async acceptRequest(me: number, target: number) {
-    const user = await this.usersService.findOne(me);
-    if (!user) throw new NotFoundException('User not found');
+    const user = await this.usersService.findUserById(me);
 
     if (user.id == target)
       throw new BadRequestException(
         "You can't accept a friend request sent to yourself",
       );
 
-    const userToAcceptRequest = await this.usersService.findOne(target);
-    if (!userToAcceptRequest)
-      throw new NotFoundException('User pending friend request not found');
+    const userToAcceptRequest = await this.usersService.findUserById(target);
 
     if (
       user.friends.find(
@@ -161,8 +147,8 @@ export class FriendRequestsService {
       (userToAcceptRequest) => userToAcceptRequest.id != target,
     );
 
-    user.friends.push(await this.usersService.findOne(target));
-    userToAcceptRequest.friends.push(await this.usersService.findOne(me));
+    user.friends.push(await this.usersService.findUserById(target));
+    userToAcceptRequest.friends.push(await this.usersService.findUserById(me));
 
     this.logger.log(
       `User ${user.login_intra} accepted a pending friend request with ${userToAcceptRequest.login_intra}`,
@@ -174,17 +160,14 @@ export class FriendRequestsService {
   }
 
   async updateRequest(me: number, target: number, status: string) {
-    const user = await this.usersService.findOne(me);
-    if (!user) throw new NotFoundException('User not found');
+    const user = await this.usersService.findUserById(me);
 
     if (user.id == target)
       throw new BadRequestException(
         "You can't accept/decline a friend request sent to yourself",
       );
 
-    const userToUpdateRequest = await this.usersService.findOne(target);
-    if (!userToUpdateRequest)
-      throw new NotFoundException('User pending friend request not found');
+    const userToUpdateRequest = await this.usersService.findUserById(target);
 
     if (status == 'ACCEPTED') return await this.acceptRequest(me, target);
     if (status == 'DECLINED') return await this.cancelRequest(me, target);
@@ -193,8 +176,7 @@ export class FriendRequestsService {
   }
 
   async pendingRequest(me: number, type: string) {
-    const user = await this.usersService.findOne(me);
-    if (!user) throw new NotFoundException('User not found');
+    await this.usersService.findUserById(me);
 
     if (type == 'sent') return await this.userSentPendingFriendRequests(me);
     if (type == 'received')

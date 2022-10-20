@@ -10,20 +10,17 @@ export class FriendService {
   constructor(private usersService: UsersService) {}
 
   async get(from: number) {
-    const user = await this.usersService.findOne(from);
-    if (user) return user.friends;
-    throw new NotFoundException('User not found');
+    const user = await this.usersService.findUserById(from);
+    return user.friends;
   }
 
   async del(from: number, to: number) {
-    const user = await this.usersService.findOne(from);
-    if (!user) throw new NotFoundException('User not found');
+    const user = await this.usersService.findUserById(from);
 
     if (user.id == to)
       throw new BadRequestException("You can't remove yourself");
 
-    const friend = await this.usersService.findOne(to);
-    if (!friend) throw new NotFoundException('Friend does not exist');
+    const friend = await this.usersService.findUserById(to);
 
     if (!user.friends.find((friend) => friend.id == to))
       throw new BadRequestException('You are not friends with this user');

@@ -21,7 +21,7 @@ export class Jwt2faStrategy extends PassportStrategy(Strategy, 'jwt-2fa') {
 
     console.log({ payload });
 
-    const user = await this.usersService.findOne(userId);
+    const user = await this.usersService.findUserById(userId);
 
     const authUser: Express.User = {
       id: userId,

@@ -101,26 +101,6 @@ export class UsersService {
     return user;
   }
 
-  async findOne(id: number) {
-    const user = await this.usersRepository.findOne(byId(id));
-    this.logger.debug('Returning user', { user });
-    return user;
-  }
-
-  async tryFindOne(id: number): Promise<UserDto> {
-    const user = await this.usersRepository.findOne(byId(id));
-    if (!user) throw new NotFoundException(`User ${id} not found`);
-    this.logger.debug('Returning user', { user });
-    return user;
-  }
-
-  async getSingleUser(id: number) {
-    const user = await this.usersRepository.findOne(byId(id));
-    if (!user) throw new NotFoundException('User not found');
-    this.logger.debug('Returning user', { user });
-    return user;
-  }
-
   async set2faSecret(userId: number, secret?: string) {
     // FIX: check if user already has a secret
     const user = await this.usersRepository.findOneBy({ id: userId });
@@ -152,6 +132,18 @@ export class UsersService {
       relations: ['profile', 'friends', 'blocked', 'friend_requests'],
     });
     if (!find) throw new NotFoundException(`User with id=${id} not found`);
+    delete find.tfa_enabled;
+    delete find.tfa_secret;
+    this.logger.debug('Returning user', { find });
+    return find;
+  }
+
+  async findOne(id: number): Promise<UserDto> {
+    const find = await this.usersRepository.findOne({
+      where: { id },
+      relations: ['profile', 'friends', 'blocked', 'friend_requests'],
+    });
+    if (!find) return;
     delete find.tfa_enabled;
     delete find.tfa_secret;
     this.logger.debug('Returning user', { find });
