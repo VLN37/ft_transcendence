@@ -26,7 +26,6 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('login') // /auth/login
-  @HttpCode(200)
   async login(@Body('code') code: string) {
     console.log({ code });
 
