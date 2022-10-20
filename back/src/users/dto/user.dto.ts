@@ -17,7 +17,7 @@ export class UserDto {
 
   @IsString()
   @IsNotEmpty()
-  @MaxLength(10)
+  @MaxLength(20)
   login_intra: string;
 
   @IsBoolean()
