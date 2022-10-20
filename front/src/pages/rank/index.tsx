@@ -1,3 +1,10 @@
-export default function RankPage() {
-  return <div className="page">this is the rank page</div>;
-}
+import RankTable from "../../components/RankTable";
+
+
+export default function CommunityPage() {
+    return (
+    <div className="page" >
+        <RankTable />
+    </div>
+    );
+  }
