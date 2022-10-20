@@ -6,6 +6,7 @@ import {
   Patch,
   Post,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { UserDto } from './dto/user.dto';
 import { UsersService } from './users.service';
@@ -37,8 +38,8 @@ export class UsersController {
   }
 
   @Get()
-  getAll() {
-    return this.usersService.getAll();
+  getAll(@Query('sort') sort: string, @Query('order') order: string) {
+    return this.usersService.getAll(sort, order);
   }
 
   @Get(':id')

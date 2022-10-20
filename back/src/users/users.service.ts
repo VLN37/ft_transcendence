@@ -79,9 +79,14 @@ export class UsersService {
     await this.usersRepository.delete({ id: id });
   }
 
-  async getAll(): Promise<UserDto[]> {
+  async getAll(sort: string = 'id', order: string = 'ASC'): Promise<UserDto[]> {
     const users = await this.usersRepository.find({
       relations: ['profile'],
+      order: {
+        profile: {
+          [sort]: order,
+        },
+      },
     });
     users.map((user) => {
       delete user.tfa_enabled;
