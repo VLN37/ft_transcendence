@@ -17,6 +17,13 @@ export class LoggerMiddleware implements NestMiddleware {
         body: req.body,
       });
     }
+
+    res.on('close', () => {
+      const strResponse =
+        `Returning response ${res.statusCode} for request ` +
+        `${req.method} ${req.path}`;
+      this.logger.log(strResponse);
+    });
     next();
   }
 }
