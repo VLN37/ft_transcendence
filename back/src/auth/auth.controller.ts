@@ -41,9 +41,9 @@ export class AuthController {
     const { otpAuthUrl } = await this.authService.generata2faSecret(req.user);
 
     const dataURL = await this.authService.generateDataQrCode(otpAuthUrl);
-    return res.setHeader('Content-type', 'text/html').send(`
-<img src="${dataURL}" />
-`);
+    return res
+      .setHeader('Content-type', 'text/html')
+      .send(`<img src="${dataURL}" />`);
     // return res.json({
     //   qrcode_data: dataURL,
     // });

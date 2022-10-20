@@ -14,7 +14,7 @@ class Api {
     console.log('Criando uma instancia da classe de API');
   }
 
-  async authenticate(code: string) {
+  async authenticate(code: string): Promise<string> {
     const response = await this.client.post<AuthenticationResponse>(
       '/auth/login',
       {
@@ -24,6 +24,21 @@ class Api {
 
     if (response.status != 201) {
       throw new Error('Authentication failed');
+    }
+
+    return response.data.access_token;
+  }
+
+  async authenticate2fa(tfaCode: string): Promise<string> {
+    const response = await this.client.post<AuthenticationResponse>(
+      '/auth/2fa',
+      {
+        tfa_code: tfaCode,
+      },
+    );
+
+    if (response.status != 201) {
+      throw new Error('2FA authentication failed');
     }
 
     return response.data.access_token;
