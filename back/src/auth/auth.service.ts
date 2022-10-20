@@ -91,7 +91,7 @@ export class AuthService {
   }
 
   async generata2faSecret(user: Express.User) {
-    const secret = authenticator.generateSecret(128);
+    const secret = authenticator.generateSecret(64);
 
     const appName = 'Transcendence';
     const otpAuthUrl = authenticator.keyuri(user.login_intra, appName, secret);
