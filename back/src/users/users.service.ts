@@ -50,6 +50,8 @@ export class UsersService {
           'User: ' + (err.driverError.detail ?? err),
         );
       });
+    delete newUser.tfa_enabled;
+    delete newUser.tfa_secret;
     this.logger.debug('User created', { newUser });
     return newUser;
   }
@@ -64,6 +66,9 @@ export class UsersService {
     if (error) throw new ForbiddenException(`You cannot change user ${error}`);
     await this.usersRepository.update(id, user);
     const updatedUser = await this.findUserById(id);
+    delete updatedUser.friends;
+    delete updatedUser.blocked;
+    delete updatedUser.friend_requests;
     this.logger.debug('User updated', { updatedUser });
     return updatedUser;
   }
@@ -76,7 +81,7 @@ export class UsersService {
 
   async getAll(): Promise<UserDto[]> {
     const users = await this.usersRepository.find({
-      relations: ['profile', 'friends'],
+      relations: ['profile'],
     });
     users.map((user) => {
       delete user.tfa_enabled;
@@ -87,9 +92,11 @@ export class UsersService {
   }
 
   async getOne(id: number): Promise<UserDto> {
-    const user = await this.findUserById(id, ['friends']);
+    const user = await this.findUserById(id);
     delete user.tfa_enabled;
     delete user.tfa_secret;
+    delete user.blocked;
+    delete user.friend_requests;
     this.logger.debug('Returning user', { user });
     return user;
   }
@@ -139,11 +146,10 @@ export class UsersService {
     return await this.usersRepository.save(user);
   }
 
-  async findUserById(id: number, relations: string[] = []): Promise<UserDto> {
-    relations.unshift('profile');
+  async findUserById(id: number): Promise<UserDto> {
     const find = await this.usersRepository.findOne({
       where: { id },
-      relations,
+      relations: ['profile', 'friends', 'blocked', 'friend_requests'],
     });
     if (!find) throw new NotFoundException(`User with id=${id} not found`);
     delete find.tfa_enabled;
