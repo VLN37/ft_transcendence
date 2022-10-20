@@ -46,7 +46,7 @@ function CustomToastExample() {
   )
 }
 
-export default function RankMenu(props: any) {
+export function RankMenu(props: any) {
   const url = `http://localhost:3000/users/${props.id}/friend_requests`;
   const toast = useToast();
 

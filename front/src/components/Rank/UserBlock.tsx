@@ -22,7 +22,7 @@ import {
   MenuDivider,
 } from '@chakra-ui/react'
 
-export default function UserBlock(props: any) {
+function UserBlock(props: any) {
   return (
     <Tr>
       <Td>{props.rank}</Td>
@@ -40,3 +40,5 @@ export default function UserBlock(props: any) {
     </Tr>
   );
 }
+
+export { UserBlock }

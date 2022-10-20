@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import UserBlock from '../UserBlock';
-import RankMenu from '../RankMenu';
+import {UserBlock, RankMenu } from './';
 import {
   Box,
   useToast,
@@ -60,7 +59,7 @@ function AddToast() {
   const toast = useToast();
   return toast({ description: 'some text' })
 }
-export default function RankTable() {
+export function RankTable() {
   const [User, setUser] = useState([{
     login_intra: '',
     id: 0,

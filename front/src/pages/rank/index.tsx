@@ -1,7 +1,9 @@
-import RankTable from "../../components/RankTable";
+import {
+    RankTable,
+} from "../../components/Rank/";
 
 
-export default function CommunityPage() {
+export default function RankPage() {
     return (
     <div className="page" >
         <RankTable />
