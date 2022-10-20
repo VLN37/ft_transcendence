@@ -97,6 +97,10 @@ export class UsersService {
     delete user.tfa_secret;
     delete user.blocked;
     delete user.friend_requests;
+    user.friends.map((user) => {
+      delete user.tfa_enabled;
+      delete user.tfa_secret;
+    });
     this.logger.debug('Returning user', { user });
     return user;
   }
@@ -129,11 +133,30 @@ export class UsersService {
   async findUserById(id: number): Promise<UserDto> {
     const find = await this.usersRepository.findOne({
       where: { id },
-      relations: ['profile', 'friends', 'blocked', 'friend_requests'],
+      relations: [
+        'profile',
+        'friends.profile',
+        'blocked.profile',
+        'friend_requests.profile',
+      ],
     });
     if (!find) throw new NotFoundException(`User with id=${id} not found`);
     delete find.tfa_enabled;
     delete find.tfa_secret;
+    this.logger.debug('Returning user', { find });
+    return find;
+  }
+
+  async findCompleteUserById(id: number): Promise<UserDto> {
+    const find = await this.usersRepository.findOne({
+      where: { id },
+      relations: [
+        'profile',
+        'friends.profile',
+        'blocked.profile',
+        'friend_requests.profile',
+      ],
+    });
     this.logger.debug('Returning user', { find });
     return find;
   }

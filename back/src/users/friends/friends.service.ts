@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 
 @Injectable()
@@ -11,6 +7,10 @@ export class FriendService {
 
   async get(from: number) {
     const user = await this.usersService.findUserById(from);
+    user.friends.map((user) => {
+      delete user.tfa_enabled;
+      delete user.tfa_secret;
+    });
     return user.friends;
   }
 
@@ -31,6 +31,10 @@ export class FriendService {
     await this.usersService.update(user);
     await this.usersService.update(friend);
 
-    return user;
+    user.friends.map((user) => {
+      delete user.tfa_enabled;
+      delete user.tfa_secret;
+    });
+    return user.friends;
   }
 }

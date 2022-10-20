@@ -9,23 +9,23 @@ import {
 } from '@nestjs/common';
 import { BlockedService } from './blocked.service';
 
-@Controller('/users/:from/blocked_users')
+@Controller('/users/:target/blocked_users')
 export class BlockedController {
   constructor(private readonly blockedService: BlockedService) {}
 
   @Get()
-  async get(@Param('from') from: number) {
-    return await this.blockedService.get(from);
+  async get(@Param('target') me: number) {
+    return await this.blockedService.get(me);
   }
 
   @HttpCode(200)
   @Post()
-  async block(@Param('from') from: number, @Body('user_id') to: number) {
-    return await this.blockedService.block(from, to);
+  async block(@Param('target') target: number, @Body('user_id') me: number) {
+    return await this.blockedService.block(me, target);
   }
 
-  @Delete(':to')
-  async unblock(@Param('from') from: number, @Param('to') to: number) {
-    return await this.blockedService.unblock(from, to);
+  @Delete(':me')
+  async unblock(@Param('target') me: number, @Param('me') target: number) {
+    return await this.blockedService.unblock(me, target);
   }
 }

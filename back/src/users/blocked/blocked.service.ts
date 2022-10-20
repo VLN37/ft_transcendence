@@ -1,9 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  Logger,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { UserDto } from 'src/users/dto/user.dto';
 import { UsersService } from 'src/users/users.service';
 
@@ -14,7 +9,12 @@ export class BlockedService {
   constructor(private usersService: UsersService) {}
 
   async get(from: number): Promise<Partial<UserDto>[]> {
-    return (await this.usersService.findUserById(from)).blocked;
+	const updatedUser = await this.usersService.findUserById(from);
+    updatedUser.blocked.map((user) => {
+      delete user.tfa_enabled;
+      delete user.tfa_secret;
+    });
+    return updatedUser.blocked;
   }
 
   async block(from: number, to: number) {
@@ -35,7 +35,13 @@ export class BlockedService {
     );
 
     await this.usersService.update(user);
-    return (await this.usersService.findUserById(from)).blocked;
+
+    const updatedUser = await this.usersService.findUserById(from);
+    updatedUser.blocked.map((user) => {
+      delete user.tfa_enabled;
+      delete user.tfa_secret;
+    });
+    return updatedUser.blocked;
   }
 
   async unblock(from: number, to: number) {
@@ -58,6 +64,12 @@ export class BlockedService {
     );
 
     await this.usersService.update(user);
-    return (await this.usersService.findUserById(from)).blocked;
+
+	const updatedUser = await this.usersService.findUserById(from);
+    updatedUser.blocked.map((user) => {
+      delete user.tfa_enabled;
+      delete user.tfa_secret;
+    });
+    return updatedUser.blocked;
   }
 }

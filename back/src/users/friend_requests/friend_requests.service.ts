@@ -78,6 +78,9 @@ export class FriendRequestsService {
 
     const userToAdd = await this.usersService.findUserById(target);
 
+    if (userToAdd.friends.find((user) => user.id == me))
+      throw new BadRequestException('You are already friends');
+
     if (userToAdd.friend_requests.find((user) => user.id == me))
       throw new BadRequestException('Friend request already been sent');
 
@@ -125,38 +128,36 @@ export class FriendRequestsService {
         "You can't accept a friend request sent to yourself",
       );
 
-    const userToAcceptRequest = await this.usersService.findUserById(target);
+    const userToAccept = await this.usersService.findUserById(target);
 
-    if (
-      user.friends.find(
-        (userToAcceptRequest) => userToAcceptRequest.id == target,
-      )
-    )
+    if (user.friends.find((userToAccept) => userToAccept.id == target))
       throw new BadRequestException('You are already friends');
 
-    if (
-      !user.friend_requests.find(
-        (userToAcceptRequest) => userToAcceptRequest.id == target,
-      )
-    )
+    if (!user.friend_requests.find((userToAccept) => userToAccept.id == target))
       throw new BadRequestException(
         'You do not have a pending friend request with this user',
       );
 
     user.friend_requests = user.friend_requests.filter(
-      (userToAcceptRequest) => userToAcceptRequest.id != target,
+      (userToAccept) => userToAccept.id != target,
     );
 
     user.friends.push(await this.usersService.findUserById(target));
-    userToAcceptRequest.friends.push(await this.usersService.findUserById(me));
+    userToAccept.friends.push(await this.usersService.findUserById(me));
 
     this.logger.log(
-      `User ${user.login_intra} accepted a pending friend request with ${userToAcceptRequest.login_intra}`,
+      `User ${user.login_intra} accepted a pending friend request with ${userToAccept.login_intra}`,
     );
 
     await this.usersService.update(user);
-    await this.usersService.update(userToAcceptRequest);
-    return user.friends;
+    await this.usersService.update(userToAccept);
+
+    const updatedUser = await this.usersService.findUserById(me);
+    updatedUser.friends.map((user) => {
+      delete user.tfa_enabled;
+      delete user.tfa_secret;
+    });
+    return updatedUser.friends;
   }
 
   async updateRequest(me: number, target: number, status: string) {
