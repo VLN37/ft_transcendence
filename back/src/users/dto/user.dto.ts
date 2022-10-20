@@ -26,7 +26,7 @@ export class UserDto {
 
   @IsString()
   @IsOptional()
-  @MaxLength(128)
+  @MaxLength(103)
   tfa_secret: string;
 
   @ValidateNested()
