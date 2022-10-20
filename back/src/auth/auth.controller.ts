@@ -1,19 +1,15 @@
 import {
   Body,
-  ConsoleLogger,
   Controller,
   Get,
-  HttpCode,
-  InternalServerErrorException,
+  Logger,
   Post,
   Put,
-  Query,
   Req,
   Res,
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
-import { throws } from 'assert';
 import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import { TFAPayload } from './dto/TFAPayload';
@@ -23,6 +19,8 @@ import { Jwt2faAuthGuard } from './guard/jwt2fa.guard';
 
 @Controller('/auth')
 export class AuthController {
+  private readonly logger = new Logger(AuthController.name);
+
   constructor(private authService: AuthService) {}
 
   @Post('login') // /auth/login
@@ -38,6 +36,9 @@ export class AuthController {
   @Get('2fa') // /auth/2fa
   @UseGuards(JwtAuthGuard)
   async generate2fa(@Req() req: Request, @Res() res: Response) {
+    this.logger.log(
+      'generating new 2FA QRCode for user ' + req.user.login_intra,
+    );
     const { otpAuthUrl } = await this.authService.generata2faSecret(req.user);
 
     const dataURL = await this.authService.generateDataQrCode(otpAuthUrl);
@@ -58,6 +59,10 @@ export class AuthController {
     const isValid = this.authService.validate2fa(code, user);
 
     if (!isValid) {
+      this.logger.debug(
+        `user ${user.login_intra} tried to enable 2FA with ` +
+          'a wrong authentication code',
+      );
       throw new UnauthorizedException('Wrong authentication code');
     }
 

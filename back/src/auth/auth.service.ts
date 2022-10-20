@@ -42,7 +42,7 @@ export class AuthService {
   }
 
   private makeTokenResponse(payload: TokenPayload) {
-    console.log({ payload });
+    this.logger.debug({ payload });
     return {
       access_token: this.jwtService.sign(payload, {
         secret: process.env.JWT_SECRET,
