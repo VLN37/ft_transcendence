@@ -23,10 +23,9 @@ export class IntraService {
       }),
     });
 
-    if (!response.ok) throw new UnauthorizedException('getUserToken');
-
     const result = await response.json();
     this.logger.log({ result });
+    if (!response.ok) throw new UnauthorizedException('getUserToken');
     return result;
   }
 
