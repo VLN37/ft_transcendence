@@ -34,6 +34,7 @@ export default function UserBlock(props: any) {
         />
       </Td>
       <Td>{props.login_intra}</Td>
+      <Td>{props.id}</Td>
       <Td>{props.wins}</Td>
       <Td>{props.losses}</Td>
     </Tr>

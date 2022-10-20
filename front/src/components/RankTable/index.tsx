@@ -93,7 +93,9 @@ export default function RankTable() {
         <UserBlock
           rank={index++}
           key={user.id}
-          login_intra={<RankMenu input={user.login_intra}></RankMenu>}
+          login_intra={
+          <RankMenu input={user.login_intra} id={user.id} />
+          }
           id={user.id}
           tfa_enabled={user.tfa_enabled}
           avatar_path={user.profile.avatar_path}
@@ -107,6 +109,7 @@ export default function RankTable() {
               <Th>Rank</Th>
               <Th>Avatar</Th>
               <Th>Login</Th>
+              <Th>ID</Th>
               <Th>Wins</Th>
               <Th>Losses</Th>
             </Tr>

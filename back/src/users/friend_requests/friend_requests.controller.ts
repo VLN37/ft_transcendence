@@ -18,6 +18,7 @@ export class FriendRequestsController {
   @HttpCode(200)
   @Post()
   async request(@Body('user_id') me: number, @Param('me') target: number) {
+    console.log('me', me);
     return await this.friendRequestsService.request(me, target);
   }
 
