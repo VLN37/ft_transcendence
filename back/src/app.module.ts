@@ -8,6 +8,11 @@ import { LoggerMiddleware } from './middlewares/LoggerMiddleware';
 import { UsersController } from './users/users.controller';
 import { Profile } from './entities/profile.entity';
 import { ProfileModule } from './profile/profile.module';
+import { AuthController } from './auth/auth.controller';
+import { DashboardController } from './dashboard/dashboard.controller';
+import { BlockedController } from './users/blocked/blocked.controller';
+import { FriendsController } from './users/friends/friends.controller';
+import { FriendRequestsController } from './users/friend_requests/friend_requests.controller';
 
 const environment = process.env.ENVIRONMENT;
 
@@ -46,6 +51,15 @@ declare global {
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(LoggerMiddleware).forRoutes(UsersController);
+    consumer
+      .apply(LoggerMiddleware)
+      .forRoutes(
+        UsersController,
+        AuthController,
+        DashboardController,
+        BlockedController,
+        FriendsController,
+        FriendRequestsController,
+      );
   }
 }
