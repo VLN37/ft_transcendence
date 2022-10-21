@@ -15,6 +15,7 @@ import { FriendsController } from './users/friends/friends.controller';
 import { FriendRequestsController } from './users/friend_requests/friend_requests.controller';
 
 const environment = process.env.ENVIRONMENT;
+const dbHost = process.env.DB_HOST;
 
 declare global {
   namespace Express {
@@ -31,7 +32,7 @@ declare global {
   imports: [
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'database',
+      host: dbHost ?? 'localhost',
       port: 5432,
       username: 'user',
       password: 'pass',
