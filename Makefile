@@ -1,6 +1,6 @@
-all: up
+all: install up
 
-up: install
+up:
 	docker-compose -f docker-compose.yml up -d
 
 install:
