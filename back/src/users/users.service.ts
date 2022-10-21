@@ -50,8 +50,6 @@ export class UsersService {
           'User: ' + (err.driverError.detail ?? err),
         );
       });
-    delete newUser.tfa_enabled;
-    delete newUser.tfa_secret;
     this.logger.debug('User created', { newUser });
     return newUser;
   }
