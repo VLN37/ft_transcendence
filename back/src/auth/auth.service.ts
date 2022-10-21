@@ -57,7 +57,7 @@ export class AuthService {
     const intraUser = await this.intraService.getUserInfo(token.access_token);
     this.logger.log('user fetched: ' + intraUser.login);
 
-    let ourUser = await this.usersService.findOne(intraUser.id);
+    let ourUser = await this.usersService.findCompleteUserById(intraUser.id);
     if (!ourUser)
       ourUser = await this.usersService.create(this.UserAdapter(intraUser));
 
@@ -83,7 +83,7 @@ export class AuthService {
   loginWith2fa(user: Express.User) {
     const payload: TokenPayload = {
       sub: user.id,
-      tfa_enabled: user.tfa_enabled,
+      tfa_enabled: true,
       is_authenticated_twice: true,
     };
 
@@ -104,15 +104,18 @@ export class AuthService {
     };
   }
 
-  async toggle2fa(userId: number, action: 'ENABLED' | 'DISABLED') {
+  async toggle2fa(user: Express.User, action: 'ENABLED' | 'DISABLED') {
     const shouldEnable = action == 'ENABLED';
 
-    await this.usersService.set2faEnabled(userId, shouldEnable);
+    await this.usersService.set2faEnabled(user.id, shouldEnable);
 
     console.log('opa');
 
     // TODO: create a new JWT token for the user
+    const result = this.loginWith2fa(user);
+    this.logger.debug('logando usuário dentro do 2fa toggle', { user });
     return {
+      ...result,
       state: action,
     };
   }

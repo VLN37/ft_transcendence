@@ -11,6 +11,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
+
 import { AuthService } from './auth.service';
 import { TFAPayload } from './dto/TFAPayload';
 import { ToggleTFAPayload } from './dto/ToggleTFAPayload';
@@ -56,6 +57,7 @@ export class AuthController {
     const code = body.tfa_code;
     const user = req.user;
 
+    this.logger.log('toggling 2fa for user ', { user });
     const isValid = this.authService.validate2fa(code, user);
 
     if (!isValid) {
@@ -66,7 +68,7 @@ export class AuthController {
       throw new UnauthorizedException('Wrong authentication code');
     }
 
-    return await this.authService.toggle2fa(user.id, body.state);
+    return await this.authService.toggle2fa(user, body.state);
   }
 
   @Post('2fa') // /auth/2fa

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { UsersService } from 'src/users/users.service';
@@ -7,6 +7,8 @@ import { TokenPayload } from '../dto/TokenPayload';
 
 @Injectable()
 export class Jwt2faStrategy extends PassportStrategy(Strategy, 'jwt-2fa') {
+  private readonly logger = new Logger(Jwt2faStrategy.name);
+
   constructor(private usersService: UsersService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -19,9 +21,9 @@ export class Jwt2faStrategy extends PassportStrategy(Strategy, 'jwt-2fa') {
   async validate(payload: TokenPayload): Promise<Express.User> {
     const userId = payload.sub;
 
-    console.log({ payload });
+    this.logger.log({ payload });
 
-    const user = await this.usersService.findUserById(userId);
+    const user = await this.usersService.findCompleteUserById(userId);
 
     const authUser: Express.User = {
       id: userId,

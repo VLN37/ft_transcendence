@@ -34,3 +34,5 @@ services:
       - ./back:/back
     command: npm run start:dev
     working_dir: /back
+    environment:
+      DB_HOST: database

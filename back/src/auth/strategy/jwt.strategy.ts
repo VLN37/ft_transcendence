@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { UsersService } from 'src/users/users.service';
@@ -7,6 +7,8 @@ import { TokenPayload } from '../dto/TokenPayload';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
+  private readonly logger = new Logger(UsersService.name);
+
   constructor(private usersService: UsersService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -19,13 +21,20 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   async validate(payload: TokenPayload): Promise<Express.User> {
     const userId = payload.sub;
 
+    this.logger.debug('printando payload', { payload });
     if (payload.tfa_enabled && !payload.is_authenticated_twice) {
       return null;
     }
 
-    const user = await this.usersService.findOne(userId);
+    const user = await this.usersService.findCompleteUserById(userId);
 
-    if (user.tfa_enabled != payload.tfa_enabled) return null;
+    this.logger.debug('printando usuário logando', { user });
+
+    if (user.tfa_enabled != payload.tfa_enabled) {
+      this.logger.debug('infelizmente, a gente é um lixo');
+
+      return null;
+    }
 
     const authUser: Express.User = {
       id: userId,
