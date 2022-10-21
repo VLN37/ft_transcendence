@@ -111,7 +111,6 @@ export class AuthService {
 
     console.log('opa');
 
-    // TODO: create a new JWT token for the user
     const result = this.loginWith2fa(user);
     this.logger.debug('logando usuário dentro do 2fa toggle', { user });
     return {
