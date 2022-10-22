@@ -10,6 +10,7 @@ import { UsersService } from 'src/users/users.service';
 import { authenticator } from 'otplib';
 import { toDataURL } from 'qrcode';
 import { TokenPayload } from './dto/TokenPayload';
+import { IntraUser } from 'src/users/dto/intraUser.dto';
 
 @Injectable()
 export class AuthService {
@@ -21,7 +22,7 @@ export class AuthService {
     private usersService: UsersService,
   ) {}
 
-  private UserAdapter(user: any): UserDto {
+  private UserAdapter(user: IntraUser): UserDto {
     const newUser: UserDto = {
       id: user.id,
       login_intra: user.login,

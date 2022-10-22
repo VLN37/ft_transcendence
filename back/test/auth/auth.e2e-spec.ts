@@ -9,9 +9,32 @@ import { AuthModule } from 'src/auth/auth.module';
 import { TokenPayload } from 'src/auth/dto/TokenPayload';
 import { User } from 'src/entities/user.entity';
 import { IntraService } from 'src/intra/intra.service';
+import { IntraUser } from 'src/users/dto/intraUser.dto';
 import * as request from 'supertest';
 import { getTestDbModule } from 'test/utils';
 import { Repository } from 'typeorm';
+
+function toUserEntity(intraUser: IntraUser): User {
+  return {
+    id: intraUser.id,
+    tfa_enabled: false,
+    tfa_secret: null,
+    login_intra: intraUser.login,
+    profile: {
+      id: intraUser.id,
+      name: intraUser.displayname,
+      nickname: intraUser.login,
+      avatar_path: intraUser.image_url,
+      status: 'OFFLINE',
+      wins: 0,
+      losses: 0,
+      mmr: 0,
+    },
+    blocked: [],
+    friend_requests: [],
+    friends: [],
+  };
+}
 
 describe('Authentication', () => {
   let app: INestApplication;
@@ -120,5 +143,71 @@ describe('Authentication', () => {
       message: 'Mocked internal server error exception',
       statusCode: 500,
     });
+  });
+
+  it("should return a '2fa disabled' token if user is new", async () => {
+    jest
+      .spyOn(intraServiceMock, 'getUserToken')
+      .mockImplementationOnce(async () => {
+        return {
+          access_token: 'abcdefg',
+        };
+      });
+    jest
+      .spyOn(intraServiceMock, 'getUserInfo')
+      .mockImplementationOnce(async () => {
+        return {
+          id: 42,
+          login: 'psergio-',
+          displayname: 'Paulo',
+          image_url: null,
+        };
+      });
+    const code = 'abcd';
+    const response = await request(app.getHttpServer())
+      .post('/auth/login')
+      .send({ code });
+
+    expect(response.status).toBe(201);
+    expect(intraServiceMock.getUserInfo).toHaveBeenCalled();
+    expect(response.body).toHaveProperty('access_token');
+    const payload = jwtService.verify<TokenPayload>(response.body.access_token);
+    expect(payload.tfa_enabled).toBe(false);
+  });
+
+  it("should return a '2fa enabled' token if user has it activated", async () => {
+    const intraUser = {
+      id: 42,
+      login: 'psergio-',
+      displayname: 'Paulo',
+      image_url: null,
+    };
+    jest
+      .spyOn(intraServiceMock, 'getUserToken')
+      .mockImplementationOnce(async () => {
+        return {
+          access_token: 'abcdefg',
+        };
+      });
+
+    jest.spyOn(intraServiceMock, 'getUserInfo').mockResolvedValue(intraUser);
+
+    const saved = await userRepository.save(toUserEntity(intraUser));
+    saved.tfa_enabled = true;
+    await userRepository.save(saved);
+
+    const code = 'abcd';
+    const response = await request(app.getHttpServer())
+      .post('/auth/login')
+      .send({ code });
+
+    expect(response.status).toBe(201);
+    expect(intraServiceMock.getUserInfo).toHaveBeenCalled();
+    expect(response.body).toHaveProperty('access_token');
+    const payload = jwtService.verify<TokenPayload>(response.body.access_token);
+    expect(payload).toHaveProperty('tfa_enabled');
+    expect(payload).toHaveProperty('is_authenticated_twice');
+    expect(payload.tfa_enabled).toBe(true);
+    expect(payload.is_authenticated_twice).toBe(false);
   });
 });
