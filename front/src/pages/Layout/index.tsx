@@ -36,7 +36,7 @@ export default function Layout({ setUser }: any) {
       </nav>
 
       <Outlet />
-      <div className="match-finder-wrapper">
+      <div className="match-finder-wrapper" >
         <MatchFinder />
       </div>
     </Box>
