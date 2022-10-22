@@ -1,11 +1,13 @@
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import * as request from 'supertest';
-import { generateUsers, getTestDbModule } from '../utils';
-import { UsersModule } from 'src/users/users.module';
 import { User } from 'src/entities/user.entity';
+import { UserDto } from 'src/users/dto/user.dto';
+import { UsersModule } from 'src/users/users.module';
+import * as request from 'supertest';
 import { Repository } from 'typeorm';
+
+import { generateUsers, getTestDbModule } from '../utils';
 
 describe('Users endpoints', () => {
   let app: INestApplication;
@@ -34,14 +36,19 @@ describe('Users endpoints', () => {
 
   describe('GET /users', () => {
     it('returns a list of all users', async () => {
+      const expectedUsers = users.map((user) => {
+        const { tfa_secret, tfa_enabled, ...rest } = user;
+        return rest;
+      });
+
       const response = await request(app.getHttpServer()).get('/users');
 
       expect(response.status).toBe(200);
 
       const resultUsers = response.body;
-      expect(resultUsers[0]).toMatchObject(users[0]);
-      expect(resultUsers[1]).toMatchObject(users[1]);
-      expect(resultUsers[2]).toMatchObject(users[2]);
+      expect(resultUsers[0]).toMatchObject(expectedUsers[0]);
+      expect(resultUsers[1]).toMatchObject(expectedUsers[1]);
+      expect(resultUsers[2]).toMatchObject(expectedUsers[2]);
     });
   });
 });

@@ -11,7 +11,7 @@ import { generateUsers, getTestDbModule } from '../utils';
 describe('friends api endpoints', () => {
   let app: INestApplication;
   let usersRepository: Repository<User>;
-  let users: UserDto[];
+  let users: Partial<UserDto>[];
 
   beforeAll(async () => {
     const testDbModule = getTestDbModule();
@@ -56,5 +56,6 @@ describe('friends api endpoints', () => {
       },
     });
     expect(user.friend_requests[0]).toBeDefined();
+    expect(user.friend_requests[0].id).toBe(senderId);
   });
 });
