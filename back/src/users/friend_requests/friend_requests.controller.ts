@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   HttpCode,
+  Logger,
   Param,
   Post,
   Put,
@@ -13,12 +14,14 @@ import { FriendRequestsService } from './friend_requests.service';
 
 @Controller('/users/:me/friend_requests')
 export class FriendRequestsController {
+  private readonly logger = new Logger(FriendRequestsController.name);
+
   constructor(private readonly friendRequestsService: FriendRequestsService) {}
 
   @HttpCode(200)
   @Post()
   async request(@Body('user_id') me: number, @Param('me') target: number) {
-    console.log('me', me);
+    this.logger.log('me', me);
     return await this.friendRequestsService.request(me, target);
   }
 
