@@ -1,4 +1,8 @@
-import { INestApplication, UnauthorizedException } from '@nestjs/common';
+import {
+  INestApplication,
+  InternalServerErrorException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { AuthModule } from 'src/auth/auth.module';
 import { IntraService } from 'src/intra/intra.service';
@@ -83,6 +87,28 @@ describe('Authentication', () => {
       error: 'Unauthorized',
       message: 'Mocked unauthorized exception',
       statusCode: 401,
+    });
+  });
+
+  it('should return 500 if client credentials are not valid', async () => {
+    jest
+      .spyOn(intraServiceMock, 'getUserToken')
+      .mockImplementationOnce(async () => {
+        throw new InternalServerErrorException(
+          'Mocked internal server error exception',
+        );
+      });
+    const code = 'abcd';
+    const response = await request(app.getHttpServer())
+      .post('/auth/login')
+      .send({ code });
+
+    expect(response.status).toBe(500);
+    expect(intraServiceMock.getUserInfo).not.toHaveBeenCalled();
+    expect(response.body).toEqual({
+      error: 'Internal Server Error',
+      message: 'Mocked internal server error exception',
+      statusCode: 500,
     });
   });
 });
