@@ -3,14 +3,20 @@ import {
   InternalServerErrorException,
   UnauthorizedException,
 } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { Test } from '@nestjs/testing';
 import { AuthModule } from 'src/auth/auth.module';
+import { TokenPayload } from 'src/auth/dto/TokenPayload';
+import { User } from 'src/entities/user.entity';
 import { IntraService } from 'src/intra/intra.service';
 import * as request from 'supertest';
 import { getTestDbModule } from 'test/utils';
+import { Repository } from 'typeorm';
 
 describe('Authentication', () => {
   let app: INestApplication;
+  let jwtService: JwtService;
+  let userRepository: Repository<User>;
   let intraServiceMock = {
     async getUserToken(code: string) {
       return {};
@@ -20,9 +26,14 @@ describe('Authentication', () => {
     },
   };
 
-  beforeAll(async () => {
+  beforeEach(async () => {
+    jest.clearAllMocks();
+    const secret = 'test secret';
+    process.env.JWT_SECRET = secret;
+
+    jwtService = new JwtService({ secret });
+
     const testDbModule = getTestDbModule();
-    process.env.JWT_SECRET = 'test secret';
     const moduleRef = await Test.createTestingModule({
       imports: [testDbModule, AuthModule],
     })
@@ -30,15 +41,14 @@ describe('Authentication', () => {
       .useValue(intraServiceMock)
       .compile();
 
+    userRepository = moduleRef.get('UserRepository');
+    await userRepository.delete({});
+
     app = moduleRef.createNestApplication();
     await app.init();
   });
 
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
-  afterAll(async () => {
+  afterEach(async () => {
     await app.close();
   });
 
