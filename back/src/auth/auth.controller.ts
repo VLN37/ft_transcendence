@@ -26,11 +26,9 @@ export class AuthController {
 
   @Post('login') // /auth/login
   async login(@Body('code') code: string) {
-    console.log({ code });
-
     const jwt = await this.authService.login(code);
 
-    console.log({ jwt });
+    this.logger.debug({ jwt });
     return jwt;
   }
 
