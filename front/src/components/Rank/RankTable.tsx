@@ -88,10 +88,22 @@ export function RankTable(props: any) {
   }, []);
 
 
+  function setter(value: ObjectKey) {
+    setType(value);
+  }
+
   useEffect(() => {
     console.log('prop: ', props.query);
   },
   [props.query]);
+
+  useEffect(() => {
+    const sorted = User.slice(0).sort((a: TableUser, b: TableUser) =>
+    a[type as keyof User] < b[type as keyof User] ? 1 : -1);
+    console.log('sorted: ', sorted);
+    setUser(sorted);
+  },
+  [type]);
 
   // if (!User[0].login_intra){
   //   return <div className="page">
@@ -124,10 +136,10 @@ export function RankTable(props: any) {
             <Tr>
               <Th>Rank</Th>
               <Th>Avatar</Th>
-              <Th>Login</Th>
-              <Th>ID</Th>
-              <Th>Wins</Th>
-              <Th>Losses</Th>
+              <Th onClick={()=> setType('login_intra' as ObjectKey)}>Login</Th>
+              <Th onClick={()=> setType('id' as ObjectKey)}>ID</Th>
+              <Th onClick={()=> setType('wins' as ObjectKey)}>Wins</Th>
+              <Th onClick={()=> setType('losses' as ObjectKey)}>Losses</Th>
             </Tr>
           </Thead>
           <Tbody>
