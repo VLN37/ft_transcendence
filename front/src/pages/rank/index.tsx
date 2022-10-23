@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -15,24 +16,34 @@ import {
 
 
 export default function RankPage() {
+  const [searchValue, setSearchValue] = useState('');
+  const [Search, setSearch] = useState('');
   function SearchForm() {
-    console.log('pesquisar');
+    console.log('value: ', searchValue);
+    setSearch(searchValue);
+    setSearchValue('');
   }
+
+  const handleChange = (event: any) => setSearchValue(event.target.value);
 
   return (
   <div>
   <Box marginLeft={'315px'} width='60%'>
     <InputGroup>
-      <Input placeholder='Search by login name' size='md'/>
+      <Input
+        placeholder='Search by login name'
+        value={searchValue}
+        onChange={handleChange}
+        size='md'/>
       <InputRightElement
-        children={<SearchIcon color='gray.300' onClick={SearchForm}/>}
+        children={<SearchIcon color='teal.600' onClick={SearchForm}/>}
       />
     </InputGroup>
   </Box>
   <Box marginLeft={'315px'} width='60%' bg='cyan.800'>
       {/* <Button>submit</Button> */}
       <div className="page" >
-          <RankTable />
+          <RankTable query={Search}/>
       </div>
   </Box>
   </div>

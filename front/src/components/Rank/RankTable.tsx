@@ -59,7 +59,8 @@ function AddToast() {
   const toast = useToast();
   return toast({ description: 'some text' })
 }
-export function RankTable() {
+export function RankTable(props: any) {
+  const [query, setQuery] = useState('');
   const [User, setUser] = useState([{
     login_intra: '',
     id: 0,
@@ -76,10 +77,14 @@ export function RankTable() {
       const result = await fetchUsers();
       setUser(result);
     }
-
+    console.log('mounted');
     fetchh();
   }, [])
 
+
+  useEffect(() => {
+    console.log('prop: ', props.query);
+  }, [props.query])
   // if (!User[0].login_intra){
   //   return <div className="page">
   //     <h1>esperando</h1>
