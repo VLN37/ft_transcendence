@@ -14,6 +14,7 @@ import {
   UseRadioGroupProps,
 } from '@chakra-ui/react'
 import { User } from "../../models/User";
+import { isErrored } from "stream";
 
 interface APIUser {
   login_intra: string,
@@ -49,26 +50,36 @@ async function fetchUsers() {
 
 export function RankTable(props: any) {
   type ObjectKey = keyof typeof User;
-  let teste = 'profile: wins' as ObjectKey;
+  let teste = 'wins' as ObjectKey;
   const [sort, setSort] = useState(0);
   const [type, setType] = useState(teste);
   const [User, setUser] = useState([{
     login_intra: '',
     id: 0,
     tfa_enabled: false,
-    profile: {
-      avatar_path: '',
-      nickname: '',
-      wins: 0,
-      losses: 0,
-    }
+    avatar_path: '',
+    nickname: '',
+    wins: 0,
+    losses: 0,
   }]);
 
   useEffect(() => {
     async function fetchh() {
-      const result = await fetchUsers();
-      const sorted = result.slice(0).sort((a: User, b: User) =>
-      a[type as keyof User] < b[type as keyof User] ? -1 : 1);
+      const result: APIUser[] = await fetchUsers();
+      const restructure: TableUser[] = result.map(user => {
+        let newuser: TableUser = {
+          login_intra: user.login_intra,
+          id: user.id,
+          tfa_enabled: user.tfa_enabled,
+          avatar_path: user.profile.avatar_path,
+          nickname: user.profile.nickname,
+          wins: user.profile.wins,
+          losses: user.profile.losses,
+        }
+        return newuser;
+      })
+      const sorted = restructure.slice(0).sort((a: TableUser, b: TableUser) =>
+      a[type as keyof User] < b[type as keyof User] ? 1 : -1);
       console.log('sorted: ', sorted);
       setUser(sorted);
     }
@@ -99,13 +110,13 @@ export function RankTable(props: any) {
           rank={index++}
           key={user.id}
           login_intra={
-            <RankMenu input={user.profile.nickname} id={user.id} />
+            <RankMenu input={user.nickname} id={user.id} />
           }
           id={user.id}
           tfa_enabled={user.tfa_enabled}
-          avatar_path={user.profile.avatar_path}
-          wins={user.profile.wins}
-          losses={user.profile.losses} />)
+          avatar_path={user.avatar_path}
+          wins={user.wins}
+          losses={user.losses} />)
     return (
       <TableContainer minWidth={'100%'} >
         <Table variant='striped'>
