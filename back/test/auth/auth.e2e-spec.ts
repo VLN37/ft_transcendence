@@ -40,12 +40,24 @@ describe('Authentication', () => {
   let app: INestApplication;
   let jwtService: JwtService;
   let userRepository: Repository<User>;
+
+  const intraAccessToken = {
+    access_token: 'abcdefg',
+  };
+
+  const defaultIntraUser = {
+    id: 42,
+    login: 'psergio-',
+    displayname: 'Paulo',
+    image_url: null,
+  };
+
   let intraServiceMock = {
     async getUserToken(code: string) {
-      return {};
+      return intraAccessToken;
     },
     async getUserInfo(access_token: string) {
-      return {};
+      return defaultIntraUser;
     },
   };
 
@@ -55,6 +67,8 @@ describe('Authentication', () => {
     process.env.JWT_SECRET = secret;
 
     jwtService = new JwtService({ secret });
+    jest.spyOn(intraServiceMock, 'getUserInfo');
+    jest.spyOn(intraServiceMock, 'getUserToken');
 
     const testDbModule = getTestDbModule();
     const moduleRef = await Test.createTestingModule({
@@ -76,23 +90,6 @@ describe('Authentication', () => {
   });
 
   it('should authenticate a user with the right code', async () => {
-    jest
-      .spyOn(intraServiceMock, 'getUserToken')
-      .mockImplementationOnce(async () => {
-        return {
-          access_token: 'abcdefg',
-        };
-      });
-    jest
-      .spyOn(intraServiceMock, 'getUserInfo')
-      .mockImplementationOnce(async () => {
-        return {
-          id: 42,
-          login: 'psergio-',
-          displayname: 'Paulo',
-          image_url: null,
-        };
-      });
     const code = 'abcd';
     const response = await request(app.getHttpServer())
       .post('/auth/login')
@@ -146,23 +143,6 @@ describe('Authentication', () => {
   });
 
   it("should return a '2fa disabled' token if user is new", async () => {
-    jest
-      .spyOn(intraServiceMock, 'getUserToken')
-      .mockImplementationOnce(async () => {
-        return {
-          access_token: 'abcdefg',
-        };
-      });
-    jest
-      .spyOn(intraServiceMock, 'getUserInfo')
-      .mockImplementationOnce(async () => {
-        return {
-          id: 42,
-          login: 'psergio-',
-          displayname: 'Paulo',
-          image_url: null,
-        };
-      });
     const code = 'abcd';
     const response = await request(app.getHttpServer())
       .post('/auth/login')
@@ -176,23 +156,7 @@ describe('Authentication', () => {
   });
 
   it("should return a '2fa enabled' token if user has it activated", async () => {
-    const intraUser = {
-      id: 42,
-      login: 'psergio-',
-      displayname: 'Paulo',
-      image_url: null,
-    };
-    jest
-      .spyOn(intraServiceMock, 'getUserToken')
-      .mockImplementationOnce(async () => {
-        return {
-          access_token: 'abcdefg',
-        };
-      });
-
-    jest.spyOn(intraServiceMock, 'getUserInfo').mockResolvedValue(intraUser);
-
-    const saved = await userRepository.save(toUserEntity(intraUser));
+    const saved = await userRepository.save(toUserEntity(defaultIntraUser));
     saved.tfa_enabled = true;
     await userRepository.save(saved);
 
