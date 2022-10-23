@@ -36,7 +36,10 @@ export default function RankPage() {
         onChange={handleChange}
         size='md'/>
       <InputRightElement
-        children={<SearchIcon color='teal.600' onClick={SearchForm}/>}
+        children={
+          <SearchIcon
+            color='teal.600'
+            onClick={() => SearchForm()}/>}
       />
     </InputGroup>
   </Box>

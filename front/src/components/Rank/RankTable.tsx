@@ -11,41 +11,33 @@ import {
   Button,
   Image,
   TableContainer,
+  UseRadioGroupProps,
 } from '@chakra-ui/react'
+import { User } from "../../models/User";
 
+interface APIUser {
+  login_intra: string,
+  id: number,
+  tfa_enabled: boolean,
+  profile: {
+    avatar_path: string,
+    nickname: string,
+    wins: number,
+    losses: number,
+  }
+}
 
+interface TableUser {
+  login_intra: string,
+  id: number,
+  tfa_enabled: boolean,
+  avatar_path: string,
+  nickname: string,
+  wins: number,
+  losses: number
+}
 
 const URL = 'http://localhost:3000/users';
-// interface UserDto {
-//   id: number,
-//   login_intra: string,
-//   tfa_enabled: boolean,
-//   tfa_secret: string,
-//   profile: {
-//     avatar_path: string,
-//     wins: number,
-//     losses: number,
-//   }
-// }
-function CustomToastExample() {
-  const toast = useToast()
-  return (
-    <Button
-      onClick={() =>
-        toast({
-          position: 'bottom-left',
-          render: () => (
-            <Box color='white' p={3} bg='blue.500'>
-              Hello World
-            </Box>
-          ),
-        })
-      }
-    >
-      Show Toast
-    </Button>
-  )
-}
 
 async function fetchUsers() {
   const response = await fetch(URL, {
@@ -55,18 +47,18 @@ async function fetchUsers() {
   return response.json();
 }
 
-function AddToast() {
-  const toast = useToast();
-  return toast({ description: 'some text' })
-}
 export function RankTable(props: any) {
-  const [query, setQuery] = useState('');
+  type ObjectKey = keyof typeof User;
+  let teste = 'profile: wins' as ObjectKey;
+  const [sort, setSort] = useState(0);
+  const [type, setType] = useState(teste);
   const [User, setUser] = useState([{
     login_intra: '',
     id: 0,
     tfa_enabled: false,
     profile: {
       avatar_path: '',
+      nickname: '',
       wins: 0,
       losses: 0,
     }
@@ -75,16 +67,21 @@ export function RankTable(props: any) {
   useEffect(() => {
     async function fetchh() {
       const result = await fetchUsers();
-      setUser(result);
+      const sorted = result.slice(0).sort((a: User, b: User) =>
+      a[type as keyof User] < b[type as keyof User] ? -1 : 1);
+      console.log('sorted: ', sorted);
+      setUser(sorted);
     }
     console.log('mounted');
     fetchh();
-  }, [])
+  }, []);
 
 
   useEffect(() => {
     console.log('prop: ', props.query);
-  }, [props.query])
+  },
+  [props.query]);
+
   // if (!User[0].login_intra){
   //   return <div className="page">
   //     <h1>esperando</h1>
@@ -92,13 +89,17 @@ export function RankTable(props: any) {
   // }
   // else {
     let index = 1;
+    // setType("wins");
+    // console.log('something: ', type);
+    // console.log('something: ', User[0][type]);
+    // setUser(sorted);
     const userList = User
       .map(user =>
         <UserBlock
           rank={index++}
           key={user.id}
           login_intra={
-          <RankMenu input={user.login_intra} id={user.id} />
+            <RankMenu input={user.profile.nickname} id={user.id} />
           }
           id={user.id}
           tfa_enabled={user.tfa_enabled}
