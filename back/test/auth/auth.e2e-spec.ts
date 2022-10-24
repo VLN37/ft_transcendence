@@ -12,7 +12,9 @@ import { IntraService } from 'src/intra/intra.service';
 import { IntraUser } from 'src/users/dto/intraUser.dto';
 import * as request from 'supertest';
 import { getTestDbModule } from 'test/utils';
+import { authenticator } from 'otplib';
 import { Repository } from 'typeorm';
+import { TFAPayload } from 'src/auth/dto/TFAPayload';
 
 function toUserEntity(intraUser: IntraUser): User {
   return {
@@ -103,7 +105,7 @@ describe('Authentication', () => {
   it("should return 401 if intra doesn't validate the code", async () => {
     jest
       .spyOn(intraServiceMock, 'getUserToken')
-      .mockImplementationOnce(async (code) => {
+      .mockImplementationOnce(async () => {
         throw new UnauthorizedException('Mocked unauthorized exception');
       });
     const code = 'abcd';
@@ -173,5 +175,39 @@ describe('Authentication', () => {
     expect(payload).toHaveProperty('is_authenticated_twice');
     expect(payload.tfa_enabled).toBe(true);
     expect(payload.is_authenticated_twice).toBe(false);
+  });
+
+  it('should 2f authenticate a user if he send the right code', async () => {
+    const saved = await userRepository.save(toUserEntity(defaultIntraUser));
+    const secret = authenticator.generateSecret(64);
+
+    saved.tfa_enabled = true;
+    saved.tfa_secret = secret;
+    await userRepository.save(saved);
+
+    const code = 'abcd';
+    const firstLoginResponse = await request(app.getHttpServer())
+      .post('/auth/login')
+      .send({ code });
+
+    const token = firstLoginResponse.body.access_token;
+
+    const otpCode = authenticator.generate(secret);
+
+    const response = await request(app.getHttpServer())
+      .post('/auth/2fa')
+      .auth(token, {
+        type: 'bearer',
+      })
+      .send({ tfa_code: otpCode } as TFAPayload);
+
+    expect(response.status).toBe(201);
+    expect(intraServiceMock.getUserInfo).toHaveBeenCalled();
+    expect(response.body).toHaveProperty('access_token');
+    const payload = jwtService.verify<TokenPayload>(response.body.access_token);
+    expect(payload).toHaveProperty('tfa_enabled');
+    expect(payload).toHaveProperty('is_authenticated_twice');
+    expect(payload.tfa_enabled).toBe(true);
+    expect(payload.is_authenticated_twice).toBe(true);
   });
 });
