@@ -38,7 +38,7 @@ export function RankTable(props: any) {
   // let teste = 'wins' as ObjectKey;
   const [type, setType] = useState<keyof TableUser>('wins');
   const [order, setOrder] = useState<'ASC' | 'DESC'>('ASC');
-  const [User, setUser] = useState([
+  const [userList, setUserList] = useState([
     {
       login_intra: '',
       id: 0,
@@ -71,8 +71,7 @@ export function RankTable(props: any) {
         };
         return newuser;
       });
-      const sorted = restructure.slice(0).sort(sortAscending);
-      setUser(sorted);
+      setUserList(restructure);
     }
     fetchh();
   }, []);
@@ -90,15 +89,15 @@ export function RankTable(props: any) {
   }, [props.query]);
 
   useEffect(() => {
-    const sorted = User.slice(0).sort(sortAscending);
-    setUser(sorted);
+    const sorted = userList.slice(0).sort(sortAscending);
+    setUserList(sorted);
   }, [type]);
 
   useEffect(() => {
     let sorted: TableUser[];
     const sortFn = order == 'ASC' ? sortAscending : sortDescending;
-    sorted = User.slice(0).sort(sortFn);
-    setUser(sorted);
+    sorted = userList.slice(0).sort(sortFn);
+    setUserList(sorted);
   }, [order]);
 
   function changeOrder() {
@@ -111,7 +110,7 @@ export function RankTable(props: any) {
   }
 
   const prevtype = usePrevious(type);
-  if (!User[0].login_intra) {
+  if (!userList[0].login_intra) {
     return (
       <div className="page">
         <h1>esperando</h1>
@@ -120,18 +119,6 @@ export function RankTable(props: any) {
   }
 
   let index = 1;
-  const userList = User.map((user) => (
-    <UserBlock
-      rank={index++}
-      key={user.id}
-      login_intra={<RankMenu input={user.nickname} id={user.id} />}
-      id={user.id}
-      tfa_enabled={user.tfa_enabled}
-      avatar_path={user.avatar_path}
-      wins={user.wins}
-      losses={user.losses}
-    />
-  ));
   return (
     <TableContainer minWidth={'100%'}>
       <Table variant="striped">
@@ -145,7 +132,26 @@ export function RankTable(props: any) {
             <Th onClick={() => tableOrdering('losses')}>Losses</Th>
           </Tr>
         </Thead>
-        <Tbody>{!User[0].login_intra ? <UserBlock /> : userList}</Tbody>
+        <Tbody>
+          {!userList[0].login_intra ? (
+            <UserBlock />
+          ) : (
+            userList
+              .filter((user) => user.login_intra.includes(props.query))
+              .map((user) => (
+                <UserBlock
+                  rank={index++}
+                  key={user.id}
+                  login_intra={<RankMenu input={user.nickname} id={user.id} />}
+                  id={user.id}
+                  tfa_enabled={user.tfa_enabled}
+                  avatar_path={user.avatar_path}
+                  wins={user.wins}
+                  losses={user.losses}
+                />
+              ))
+          )}
+        </Tbody>
       </Table>
     </TableContainer>
   );
