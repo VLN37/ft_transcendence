@@ -5,12 +5,7 @@ import { TableUser } from '../../models/TableUser';
 import { User } from '../../models/User';
 import api from '../../services/api';
 
-const URL = 'http://localhost:3000/users';
-
-async function fetchUsers() {}
-
 export function RankTable(props: any) {
-  // let teste = 'wins' as ObjectKey;
   const [type, setType] = useState<keyof TableUser>('wins');
   const [order, setOrder] = useState<'ASC' | 'DESC'>('ASC');
   const [userList, setUserList] = useState([
@@ -25,14 +20,8 @@ export function RankTable(props: any) {
     },
   ]);
 
-  const sortAscending = (a: TableUser, b: TableUser) =>
-    a[type] < b[type] ? 1 : -1;
-
-  const sortDescending = (a: TableUser, b: TableUser) =>
-    a[type] < b[type] ? -1 : 1;
-
   useEffect(() => {
-    async function fetchh() {
+    async function queryDatabase() {
       const result: User[] = await api.getRankedUsers();
       const restructure: TableUser[] = result.map((user) => {
         let newuser: TableUser = {
@@ -48,16 +37,9 @@ export function RankTable(props: any) {
       });
       setUserList(restructure);
     }
-    fetchh();
+    queryDatabase();
   }, []);
 
-  function usePrevious(value: keyof TableUser) {
-    const ref = useRef<keyof TableUser>();
-    useEffect(() => {
-      ref.current = value; //assign the value of ref to the argument
-    }, [value]); //this code will run when the value of 'value' changes
-    return ref.current; // but in the end, it doesn't even matter
-  }
 
   useEffect(() => {
     console.log('prop: ', props.query);
@@ -75,24 +57,31 @@ export function RankTable(props: any) {
     setUserList(sorted);
   }, [order]);
 
+  const sortAscending = (a: TableUser, b: TableUser) =>
+    a[type] < b[type] ? 1 : -1;
+
+  const sortDescending = (a: TableUser, b: TableUser) =>
+    a[type] < b[type] ? -1 : 1;
+
   function changeOrder() {
     order === 'ASC' ? setOrder('DESC') : setOrder('ASC');
   }
 
+  // tsx files need 'T extends any' ts files only 'T'
+  function usePrevious<T extends unknown>(value: T): T | undefined {
+    const ref = useRef<T>();
+    useEffect(() => {
+      ref.current = value; //assign the value of ref to the argument
+    }, [value]); //this code will run when the value of 'value' changes
+    return ref.current; // but in the end, it doesn't even matter
+  }
+
   function tableOrdering(value: keyof TableUser) {
-    if (type === prevtype) changeOrder();
+    if (type === usePrevious(type)) changeOrder();
     setType(value);
   }
 
-  const prevtype = usePrevious(type);
-  if (!userList[0].login_intra) {
-    return (
-      <div className="page">
-        <h1>esperando</h1>
-      </div>
-    );
-  }
-
+  let i = 0;
   return (
     <TableContainer minWidth={'100%'}>
       <Table variant="striped">
@@ -107,13 +96,13 @@ export function RankTable(props: any) {
           </Tr>
         </Thead>
         <Tbody>
-          {!userList[0].login_intra ? (
-            <UserBlock />
-          ) : (
-            userList
+          {
+          !userList[0].login_intra
+          ? <UserBlock user={userList[0]}/>
+          : userList
               .filter((user) => user.login_intra.includes(props.query))
-              .map((user) => <UserBlock user={user} />)
-          )}
+              .map((user) => <UserBlock key={++i} user={user} />)
+          }
         </Tbody>
       </Table>
     </TableContainer>

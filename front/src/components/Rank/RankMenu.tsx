@@ -50,7 +50,7 @@ export function RankMenu(props: any) {
   const url = `http://localhost:3000/users/${props.id}/friend_requests`;
   const toast = useToast();
 
-  async function clickcallback() {
+  async function clickCallback() {
     const id = localStorage.getItem('USERID');
     if (id == null)
       return;
@@ -78,9 +78,9 @@ export function RankMenu(props: any) {
       <MenuButton>{props.input}</MenuButton>
       <MenuList>
         {/* MenuItems are not rendered unless Menu is open */}
-        <MenuItem onClick={clickcallback} >addFriend</MenuItem>
-        <MenuItem>Open Closed Tab</MenuItem>
-        <MenuItem>Open File</MenuItem>
+        <MenuItem onClick={clickCallback} >addFriend</MenuItem>
+        {/* <MenuItem>Open Closed Tab</MenuItem> */}
+        {/* <MenuItem>Open File</MenuItem> */}
       </MenuList>
     </Menu>
   )
