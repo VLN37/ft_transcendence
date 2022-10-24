@@ -23,4 +23,10 @@ export class ChannelsService {
     this.logger.debug('Channel created', { newChannel });
     return newChannel;
   }
+
+  async getAll(): Promise<ChannelDto[]> {
+    const channels = await this.channelsRepository.find({});
+    this.logger.debug('Returning channels', { channels });
+    return channels;
+  }
 }
