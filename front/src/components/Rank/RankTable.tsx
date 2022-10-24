@@ -72,10 +72,8 @@ export function RankTable(props: any) {
         return newuser;
       });
       const sorted = restructure.slice(0).sort(sortAscending);
-      console.log('sorted: ', sorted);
       setUser(sorted);
     }
-    console.log('mounted');
     fetchh();
   }, []);
 
@@ -93,17 +91,13 @@ export function RankTable(props: any) {
 
   useEffect(() => {
     const sorted = User.slice(0).sort(sortAscending);
-    console.log('sorted: ', sorted);
     setUser(sorted);
   }, [type]);
 
   useEffect(() => {
     let sorted: TableUser[];
-    console.log('prevtype: ', prevtype);
-    console.log('type: ', type);
     const sortFn = order == 'ASC' ? sortAscending : sortDescending;
     sorted = User.slice(0).sort(sortFn);
-    console.log('sorted: ', sorted);
     setUser(sorted);
   }, [order]);
 
@@ -114,8 +108,6 @@ export function RankTable(props: any) {
   function tableOrdering(value: keyof TableUser) {
     if (type === prevtype) changeOrder();
     setType(value);
-    console.log('value: ', value);
-    console.log('order: ', order);
   }
 
   const prevtype = usePrevious(type);
