@@ -11,6 +11,7 @@ import { Repository } from 'typeorm';
 import { User } from '../entities/user.entity';
 import { ProfileService } from 'src/profile/profile.service';
 import { makeUsers } from 'test/utils';
+import { JwtService } from '@nestjs/jwt';
 
 function byId(id: number) {
   return {
@@ -27,6 +28,7 @@ export class UsersService {
     @InjectRepository(User)
     private usersRepository: Repository<User>,
     private profileService: ProfileService,
+    private jwtService: JwtService,
   ) {}
 
   async create(dto: UserDto): Promise<User> {
@@ -92,6 +94,25 @@ export class UsersService {
     });
     this.logger.debug('Returning users', { users });
     return users;
+  }
+
+  async getMe(token: string): Promise<UserDto> {
+    let id: number;
+    token = token.replace('Bearer ', '');
+    try {
+      id = this.jwtService.decode(token)['sub'];
+    } catch (error) {
+      throw new ForbiddenException(
+        'User token format invalid, cannot read property id',
+      );
+    }
+    const user = await this.findCompleteUserById(id);
+    user.friends.map((user) => {
+      delete user.tfa_enabled;
+      delete user.tfa_secret;
+    });
+    this.logger.debug('Returning my user', { user });
+    return user;
   }
 
   async getOne(id: number): Promise<UserDto> {

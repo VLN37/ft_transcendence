@@ -7,6 +7,7 @@ import {
   Post,
   Delete,
   Query,
+  Headers,
 } from '@nestjs/common';
 import { UserDto } from './dto/user.dto';
 import { UsersService } from './users.service';
@@ -40,6 +41,11 @@ export class UsersController {
   @Get()
   getAll(@Query('sort') sort: string, @Query('order') order: string) {
     return this.usersService.getAll(sort, order);
+  }
+
+  @Get('me')
+  getMe(@Headers('Authorization') token: string) {
+    return this.usersService.getMe(token);
   }
 
   @Get(':id')

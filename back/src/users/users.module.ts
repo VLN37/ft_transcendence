@@ -10,6 +10,7 @@ import { FriendRequestsController } from './friend_requests/friend_requests.cont
 import { FriendRequestsService } from './friend_requests/friend_requests.service';
 import { FriendsController } from './friends/friends.controller';
 import { FriendService } from './friends/friends.service';
+import { JwtService } from '@nestjs/jwt';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User]), ProfileModule],
@@ -24,6 +25,7 @@ import { FriendService } from './friends/friends.service';
     FriendService,
     BlockedService,
     FriendRequestsService,
+    JwtService,
   ],
   exports: [UsersService],
 })
