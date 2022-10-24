@@ -1,20 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { UserBlock, RankMenu } from './';
-import {
-  Box,
-  useToast,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Button,
-  Image,
-  TableContainer,
-  UseRadioGroupProps,
-} from '@chakra-ui/react';
+import { Table, Thead, Tbody, Tr, Th, TableContainer } from '@chakra-ui/react';
 import { User } from '../../models/User';
-import { isErrored } from 'stream';
 
 interface APIUser {
   login_intra: string;
@@ -51,7 +38,6 @@ async function fetchUsers() {
 export function RankTable(props: any) {
   type ObjectKey = keyof typeof User;
   let teste = 'wins' as ObjectKey;
-  const [sort, setSort] = useState(0);
   const [type, setType] = useState(teste);
   const [order, setOrder] = useState('ASC');
   const [User, setUser] = useState([
