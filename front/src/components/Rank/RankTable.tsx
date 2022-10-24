@@ -76,9 +76,9 @@ export function RankTable(props: any) {
     return ref.current; // but in the end, it doesn't even matter
   }
 
-
+  const prevtype = UsePrevious(type);
   function tableOrdering(value: keyof TableUser) {
-    if (type === UsePrevious(type)) changeOrder();
+    if (type === prevtype) changeOrder();
     setType(value);
   }
 
