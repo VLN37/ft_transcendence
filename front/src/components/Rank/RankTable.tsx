@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import {UserBlock, RankMenu } from './';
 import {
   Box,
@@ -53,6 +53,7 @@ export function RankTable(props: any) {
   let teste = 'wins' as ObjectKey;
   const [sort, setSort] = useState(0);
   const [type, setType] = useState(teste);
+  const [order, setOrder] = useState('ASC');
   const [User, setUser] = useState([{
     login_intra: '',
     id: 0,
@@ -88,8 +89,12 @@ export function RankTable(props: any) {
   }, []);
 
 
-  function setter(value: ObjectKey) {
-    setType(value);
+  function usePrevious(value: any) {
+    const ref = useRef();
+    useEffect(() => {
+      ref.current = value; //assign the value of ref to the argument
+    },[value]); //this code will run when the value of 'value' changes
+    return ref.current; //in the end, return the current ref value.
   }
 
   useEffect(() => {
@@ -105,11 +110,21 @@ export function RankTable(props: any) {
   },
   [type]);
 
-  // if (!User[0].login_intra){
-  //   return <div className="page">
-  //     <h1>esperando</h1>
-  //   </div>;
-  // }
+  useEffect(() => {
+    console.log('prevtype: ', prevtype);
+    console.log('type: ', type);
+    if (prevtype === type)
+      return;
+    order === 'ASC' ? setOrder('DESC') : setOrder('ASC');
+    console.log('order: ', order);
+  }, [type]);
+
+  const prevtype = usePrevious(type);
+  if (!User[0].login_intra){
+    return <div className="page">
+      <h1>esperando</h1>
+    </div>;
+  }
   // else {
     let index = 1;
     // setType("wins");
