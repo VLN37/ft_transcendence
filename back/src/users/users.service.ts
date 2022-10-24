@@ -98,8 +98,8 @@ export class UsersService {
 
   async getMe(token: string): Promise<UserDto> {
     let id: number;
-    token = token.replace('Bearer ', '');
     try {
+      token = token.replace('Bearer ', '');
       id = this.jwtService.decode(token)['sub'];
     } catch (error) {
       throw new ForbiddenException(
@@ -107,6 +107,7 @@ export class UsersService {
       );
     }
     const user = await this.findCompleteUserById(id);
+    if (!user) throw new NotFoundException(`User with id=${id} not found`);
     user.friends.map((user) => {
       delete user.tfa_enabled;
       delete user.tfa_secret;
