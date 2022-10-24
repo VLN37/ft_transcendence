@@ -37,8 +37,8 @@ async function fetchUsers() {
 
 export function RankTable(props: any) {
   type ObjectKey = keyof typeof User;
-  let teste = 'wins' as ObjectKey;
-  const [type, setType] = useState(teste);
+  // let teste = 'wins' as ObjectKey;
+  const [type, setType] = useState('wins' as ObjectKey);
   const [order, setOrder] = useState('ASC');
   const [User, setUser] = useState([
     {
@@ -100,25 +100,20 @@ export function RankTable(props: any) {
   }, [type]);
 
   useEffect(() => {
+    let sorted: TableUser[];
     console.log('prevtype: ', prevtype);
     console.log('type: ', type);
     if (order === 'ASC') {
-      const sorted = User.slice(0).sort((a: TableUser, b: TableUser) =>
+      sorted = User.slice(0).sort((a: TableUser, b: TableUser) =>
         a[type as keyof User] < b[type as keyof User] ? 1 : -1,
       );
-      console.log('sorted: ', sorted);
-      setUser(sorted);
     } else {
-      const sorted = User.slice(0).sort((a: TableUser, b: TableUser) =>
+      sorted = User.slice(0).sort((a: TableUser, b: TableUser) =>
         a[type as keyof User] < b[type as keyof User] ? -1 : 1,
       );
-      console.log('sorted: ', sorted);
-      setUser(sorted);
     }
-    // if (prevtype === type)
-    //   return;
-    // order === 'ASC' ? setOrder('DESC') : setOrder('ASC');
-    // console.log('order: ', order);
+    console.log('sorted: ', sorted);
+    setUser(sorted);
   }, [order]);
 
   function changeOrder() {
@@ -126,8 +121,9 @@ export function RankTable(props: any) {
   }
 
   function tableOrdering(value: ObjectKey) {
-    if (type === prevtype) changeOrder();
-    else setType(value);
+    if (type === prevtype)
+      changeOrder();
+    setType(value);
     console.log('value: ', value);
     console.log('order: ', order);
   }
@@ -140,12 +136,8 @@ export function RankTable(props: any) {
       </div>
     );
   }
-  // else {
+
   let index = 1;
-  // setType("wins");
-  // console.log('something: ', type);
-  // console.log('something: ', User[0][type]);
-  // setUser(sorted);
   const userList = User.map((user) => (
     <UserBlock
       rank={index++}
