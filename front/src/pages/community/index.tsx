@@ -1,3 +1,10 @@
+import { Container } from '@chakra-ui/react';
+import { ChannelTable } from '../../components/ChannelTable/ChannelTable';
+
 export default function CommunityPage() {
-  return <div className="page">this is the communism page</div>;
+  return (
+    <Container maxW="1200px" maxHeight={'90vh'} overflowY={'auto'}>
+      <ChannelTable />
+    </Container>
+  );
 }

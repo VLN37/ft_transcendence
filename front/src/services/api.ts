@@ -1,4 +1,5 @@
 import axios, { AxiosHeaders } from 'axios';
+import { Channel } from '../models/Channel';
 import { User } from '../models/User';
 
 interface AuthenticationResponse {
@@ -52,6 +53,12 @@ class Api {
         order: 'DESC',
       },
     });
+    console.log(response.data);
+    return response.data;
+  }
+
+  async getChannels(): Promise<Channel[]> {
+    const response = await this.client.get<Channel[]>('/channels', {});
     console.log(response.data);
     return response.data;
   }
