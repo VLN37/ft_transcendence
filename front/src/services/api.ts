@@ -46,12 +46,12 @@ class Api {
   }
 
   async getRankedUsers(): Promise<User[]> {
-    // const response = await fetch(URL, {
-    //   method: 'GET',
-    // });
-    // console.log(response.body);
-    // return response.json();
-    const response = await this.client.get<User[]>('/users');
+    const response = await this.client.get<User[]>('/users', {
+      params: {
+        sort: 'mmr',
+        order: 'DESC',
+      },
+    });
     console.log(response.data);
     return response.data;
   }
