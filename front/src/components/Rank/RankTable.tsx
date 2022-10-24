@@ -79,8 +79,8 @@ export function RankTable(props: any) {
     fetchh();
   }, []);
 
-  function usePrevious(value: any) {
-    const ref = useRef();
+  function usePrevious(value: keyof TableUser) {
+    const ref = useRef<keyof TableUser>();
     useEffect(() => {
       ref.current = value; //assign the value of ref to the argument
     }, [value]); //this code will run when the value of 'value' changes
