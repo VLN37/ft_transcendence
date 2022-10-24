@@ -68,7 +68,7 @@ export function RankTable(props: any) {
   }
 
   // tsx files need 'T extends any' ts files only 'T'
-  function usePrevious<T extends unknown>(value: T): T | undefined {
+  function UsePrevious<T extends unknown>(value: T): T | undefined {
     const ref = useRef<T>();
     useEffect(() => {
       ref.current = value; //assign the value of ref to the argument
@@ -76,8 +76,9 @@ export function RankTable(props: any) {
     return ref.current; // but in the end, it doesn't even matter
   }
 
+
   function tableOrdering(value: keyof TableUser) {
-    if (type === usePrevious(type)) changeOrder();
+    if (type === UsePrevious(type)) changeOrder();
     setType(value);
   }
 
