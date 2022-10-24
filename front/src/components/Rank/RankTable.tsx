@@ -113,11 +113,36 @@ export function RankTable(props: any) {
   useEffect(() => {
     console.log('prevtype: ', prevtype);
     console.log('type: ', type);
-    if (prevtype === type)
-      return;
+    if (order === 'ASC') {
+      const sorted = User.slice(0).sort((a: TableUser, b: TableUser) =>
+      a[type as keyof User] < b[type as keyof User] ? 1 : -1);
+      console.log('sorted: ', sorted);
+      setUser(sorted);
+    }
+    else {
+      const sorted = User.slice(0).sort((a: TableUser, b: TableUser) =>
+      a[type as keyof User] < b[type as keyof User] ? -1 : 1);
+      console.log('sorted: ', sorted);
+      setUser(sorted);
+    }
+    // if (prevtype === type)
+    //   return;
+    // order === 'ASC' ? setOrder('DESC') : setOrder('ASC');
+    // console.log('order: ', order);
+  }, [order]);
+
+  function changeOrder() {
     order === 'ASC' ? setOrder('DESC') : setOrder('ASC');
+  }
+
+  function tableOrdering(value: ObjectKey) {
+    if (type === prevtype)
+    changeOrder();
+    else
+    setType(value);
+    console.log('value: ', value);
     console.log('order: ', order);
-  }, [type]);
+  }
 
   const prevtype = usePrevious(type);
   if (!User[0].login_intra){
@@ -151,10 +176,10 @@ export function RankTable(props: any) {
             <Tr>
               <Th>Rank</Th>
               <Th>Avatar</Th>
-              <Th onClick={()=> setType('login_intra' as ObjectKey)}>Login</Th>
-              <Th onClick={()=> setType('id' as ObjectKey)}>ID</Th>
-              <Th onClick={()=> setType('wins' as ObjectKey)}>Wins</Th>
-              <Th onClick={()=> setType('losses' as ObjectKey)}>Losses</Th>
+              <Th onClick={() => tableOrdering('login_intra' as ObjectKey)}>Login</Th>
+              <Th onClick={() => tableOrdering('id' as ObjectKey)}>ID</Th>
+              <Th onClick={() => tableOrdering('wins' as ObjectKey)}>Wins</Th>
+              <Th onClick={() => tableOrdering('losses' as ObjectKey)}>Losses</Th>
             </Tr>
           </Thead>
           <Tbody>
