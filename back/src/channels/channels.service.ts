@@ -1,3 +1,4 @@
+import { faker } from '@faker-js/faker';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Channel } from 'src/entities/channel.entity';
@@ -12,6 +13,21 @@ export class ChannelsService {
     @InjectRepository(Channel)
     private channelsRepository: Repository<Channel>,
   ) {}
+
+  async generateChannels(amount: number) {
+    const statusArr = ['PUBLIC', 'PRIVATE', 'PROTECTED'];
+
+    for (let i = 0; i < amount; i++) {
+      const status: any = statusArr[faker.datatype.number({ min: 0, max: 2 })];
+      await this.channelsRepository.save({
+        name: faker.name.jobArea().toLocaleLowerCase(),
+        owner_id: i,
+        type: status,
+        password: null,
+      });
+    }
+    return this.getAll();
+  }
 
   async create(dto: ChannelDto) {
     const newChannel = await this.channelsRepository.save({
