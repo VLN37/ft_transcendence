@@ -36,9 +36,8 @@ async function fetchUsers() {
 }
 
 export function RankTable(props: any) {
-  type ObjectKey = keyof typeof User;
   // let teste = 'wins' as ObjectKey;
-  const [type, setType] = useState('wins' as ObjectKey);
+  const [type, setType] = useState<keyof TableUser>('wins');
   const [order, setOrder] = useState('ASC');
   const [User, setUser] = useState([
     {
@@ -51,6 +50,12 @@ export function RankTable(props: any) {
       losses: 0,
     },
   ]);
+
+  const sortAscending = (a: TableUser, b: TableUser) =>
+    a[type] < b[type] ? 1 : -1;
+
+  const sortDescending = (a: TableUser, b: TableUser) =>
+    a[type] < b[type] ? -1 : 1;
 
   useEffect(() => {
     async function fetchh() {
@@ -67,11 +72,7 @@ export function RankTable(props: any) {
         };
         return newuser;
       });
-      const sorted = restructure
-        .slice(0)
-        .sort((a: TableUser, b: TableUser) =>
-          a[type as keyof User] < b[type as keyof User] ? 1 : -1,
-        );
+      const sorted = restructure.slice(0).sort(sortAscending);
       console.log('sorted: ', sorted);
       setUser(sorted);
     }
@@ -84,7 +85,7 @@ export function RankTable(props: any) {
     useEffect(() => {
       ref.current = value; //assign the value of ref to the argument
     }, [value]); //this code will run when the value of 'value' changes
-    return ref.current; //in the end, return the current ref value.
+    return ref.current; // but in the end, it doesn't even matter
   }
 
   useEffect(() => {
@@ -92,9 +93,7 @@ export function RankTable(props: any) {
   }, [props.query]);
 
   useEffect(() => {
-    const sorted = User.slice(0).sort((a: TableUser, b: TableUser) =>
-      a[type as keyof User] < b[type as keyof User] ? 1 : -1,
-    );
+    const sorted = User.slice(0).sort(sortAscending);
     console.log('sorted: ', sorted);
     setUser(sorted);
   }, [type]);
@@ -104,13 +103,9 @@ export function RankTable(props: any) {
     console.log('prevtype: ', prevtype);
     console.log('type: ', type);
     if (order === 'ASC') {
-      sorted = User.slice(0).sort((a: TableUser, b: TableUser) =>
-        a[type as keyof User] < b[type as keyof User] ? 1 : -1,
-      );
+      sorted = User.slice(0).sort(sortAscending);
     } else {
-      sorted = User.slice(0).sort((a: TableUser, b: TableUser) =>
-        a[type as keyof User] < b[type as keyof User] ? -1 : 1,
-      );
+      sorted = User.slice(0).sort(sortDescending);
     }
     console.log('sorted: ', sorted);
     setUser(sorted);
@@ -120,9 +115,8 @@ export function RankTable(props: any) {
     order === 'ASC' ? setOrder('DESC') : setOrder('ASC');
   }
 
-  function tableOrdering(value: ObjectKey) {
-    if (type === prevtype)
-      changeOrder();
+  function tableOrdering(value: keyof TableUser) {
+    if (type === prevtype) changeOrder();
     setType(value);
     console.log('value: ', value);
     console.log('order: ', order);
@@ -157,12 +151,10 @@ export function RankTable(props: any) {
           <Tr>
             <Th>Rank</Th>
             <Th>Avatar</Th>
-            <Th onClick={() => tableOrdering('login_intra' as ObjectKey)}>
-              Login
-            </Th>
-            <Th onClick={() => tableOrdering('id' as ObjectKey)}>ID</Th>
-            <Th onClick={() => tableOrdering('wins' as ObjectKey)}>Wins</Th>
-            <Th onClick={() => tableOrdering('losses' as ObjectKey)}>Losses</Th>
+            <Th onClick={() => tableOrdering('login_intra')}>Login</Th>
+            <Th onClick={() => tableOrdering('id')}>ID</Th>
+            <Th onClick={() => tableOrdering('wins')}>Wins</Th>
+            <Th onClick={() => tableOrdering('losses')}>Losses</Th>
           </Tr>
         </Thead>
         <Tbody>{!User[0].login_intra ? <UserBlock /> : userList}</Tbody>
