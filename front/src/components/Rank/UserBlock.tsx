@@ -1,44 +1,23 @@
-import {
-  Box,
-  useToast,
-  Table,
-  Thead,
-  Tbody,
-  Tfoot,
-  Tr,
-  Th,
-  Td,
-  Button,
-  Image,
-  TableCaption,
-  TableContainer,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-  MenuItemOption,
-  MenuGroup,
-  MenuOptionGroup,
-  MenuDivider,
-} from '@chakra-ui/react'
+import { Tr, Td, Image } from '@chakra-ui/react';
+import { RankMenu } from './RankMenu';
 
-function UserBlock(props: any) {
+function UserBlock(props: { user?: any }) {
   return (
     <Tr>
-      <Td>{props.rank}</Td>
+      <Td>{props.user.rank}</Td>
       <Td>
         <Image
-            borderRadius='full'
-            boxSize='65px'
-            src={props.avatar_path}
+          borderRadius="full"
+          boxSize="65px"
+          src={props.user.avatar_path}
         />
       </Td>
-      <Td>{props.login_intra}</Td>
-      <Td>{props.id}</Td>
-      <Td>{props.wins}</Td>
-      <Td>{props.losses}</Td>
+      <Td>{<RankMenu input={props.user.nickname} id={props.user.id} />}</Td>
+      <Td>{props.user.id}</Td>
+      <Td>{props.user.wins}</Td>
+      <Td>{props.user.losses}</Td>
     </Tr>
   );
 }
 
-export { UserBlock }
+export { UserBlock };

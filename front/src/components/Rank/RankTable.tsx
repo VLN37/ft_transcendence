@@ -1,38 +1,13 @@
 import { useEffect, useState, useRef } from 'react';
-import { UserBlock, RankMenu } from './';
+import { UserBlock } from './';
 import { Table, Thead, Tbody, Tr, Th, TableContainer } from '@chakra-ui/react';
-
-interface APIUser {
-  login_intra: string;
-  id: number;
-  tfa_enabled: boolean;
-  profile: {
-    avatar_path: string;
-    nickname: string;
-    wins: number;
-    losses: number;
-  };
-}
-
-interface TableUser {
-  login_intra: string;
-  id: number;
-  tfa_enabled: boolean;
-  avatar_path: string;
-  nickname: string;
-  wins: number;
-  losses: number;
-}
+import { TableUser } from '../../models/TableUser';
+import { User } from '../../models/User';
+import api from '../../services/api';
 
 const URL = 'http://localhost:3000/users';
 
-async function fetchUsers() {
-  const response = await fetch(URL, {
-    method: 'GET',
-  });
-  console.log(response.body);
-  return response.json();
-}
+async function fetchUsers() {}
 
 export function RankTable(props: any) {
   // let teste = 'wins' as ObjectKey;
@@ -58,7 +33,7 @@ export function RankTable(props: any) {
 
   useEffect(() => {
     async function fetchh() {
-      const result: APIUser[] = await fetchUsers();
+      const result: User[] = await api.getRankedUsers();
       const restructure: TableUser[] = result.map((user) => {
         let newuser: TableUser = {
           login_intra: user.login_intra,
@@ -118,7 +93,6 @@ export function RankTable(props: any) {
     );
   }
 
-  let index = 1;
   return (
     <TableContainer minWidth={'100%'}>
       <Table variant="striped">
@@ -138,18 +112,7 @@ export function RankTable(props: any) {
           ) : (
             userList
               .filter((user) => user.login_intra.includes(props.query))
-              .map((user) => (
-                <UserBlock
-                  rank={index++}
-                  key={user.id}
-                  login_intra={<RankMenu input={user.nickname} id={user.id} />}
-                  id={user.id}
-                  tfa_enabled={user.tfa_enabled}
-                  avatar_path={user.avatar_path}
-                  wins={user.wins}
-                  losses={user.losses}
-                />
-              ))
+              .map((user) => <UserBlock user={user} />)
           )}
         </Tbody>
       </Table>

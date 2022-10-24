@@ -1,4 +1,5 @@
 import axios, { AxiosHeaders } from 'axios';
+import { User } from '../models/User';
 
 interface AuthenticationResponse {
   access_token: string;
@@ -42,6 +43,17 @@ class Api {
     }
 
     return response.data.access_token;
+  }
+
+  async getRankedUsers(): Promise<User[]> {
+    // const response = await fetch(URL, {
+    //   method: 'GET',
+    // });
+    // console.log(response.body);
+    // return response.json();
+    const response = await this.client.get<User[]>('/users');
+    console.log(response.data);
+    return response.data;
   }
 
   setToken(token: string) {

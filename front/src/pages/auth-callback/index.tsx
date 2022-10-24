@@ -58,11 +58,20 @@ const AuthCallback = ({ setUser }: any) => {
     setIsModalOpen(false);
   };
 
-  const finishLogin = (payload: any) => {
+  const finishLogin = (payload: TokenPayload) => {
     console.log({ payload });
 
+    // FIXME: create another user interface for saving in the global state
     const user: User = {
       id: payload.sub,
+      login_intra: 'a',
+      tfa_enabled: payload.tfa_enabled,
+      profile: {
+        wins: 0,
+        avatar_path: '',
+        losses: 0,
+        nickname: 'kkkk',
+      },
     };
 
     userStorage.saveUser(user);
