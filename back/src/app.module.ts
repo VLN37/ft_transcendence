@@ -13,6 +13,8 @@ import { DashboardController } from './dashboard/dashboard.controller';
 import { BlockedController } from './users/blocked/blocked.controller';
 import { FriendsController } from './users/friends/friends.controller';
 import { FriendRequestsController } from './users/friend_requests/friend_requests.controller';
+import { Channel } from './entities/channel.entity';
+import { ChannelsModule } from './channels/channels.module';
 
 const environment = process.env.ENVIRONMENT;
 const dbHost = process.env.DB_HOST;
@@ -37,7 +39,7 @@ declare global {
       username: 'user',
       password: 'pass',
       database: 'transcendence',
-      entities: [User, Profile],
+      entities: [User, Profile, Channel],
       synchronize: environment != 'prod',
     }),
     ConfigModule.forRoot({
@@ -46,6 +48,7 @@ declare global {
     UsersModule,
     AuthModule,
     ProfileModule,
+    ChannelsModule,
   ],
   controllers: [],
   providers: [],
