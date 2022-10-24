@@ -1,7 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { UserBlock, RankMenu } from './';
 import { Table, Thead, Tbody, Tr, Th, TableContainer } from '@chakra-ui/react';
-import { User } from '../../models/User';
 
 interface APIUser {
   login_intra: string;
@@ -38,7 +37,7 @@ async function fetchUsers() {
 export function RankTable(props: any) {
   // let teste = 'wins' as ObjectKey;
   const [type, setType] = useState<keyof TableUser>('wins');
-  const [order, setOrder] = useState('ASC');
+  const [order, setOrder] = useState<'ASC' | 'DESC'>('ASC');
   const [User, setUser] = useState([
     {
       login_intra: '',
@@ -102,11 +101,8 @@ export function RankTable(props: any) {
     let sorted: TableUser[];
     console.log('prevtype: ', prevtype);
     console.log('type: ', type);
-    if (order === 'ASC') {
-      sorted = User.slice(0).sort(sortAscending);
-    } else {
-      sorted = User.slice(0).sort(sortDescending);
-    }
+    const sortFn = order == 'ASC' ? sortAscending : sortDescending;
+    sorted = User.slice(0).sort(sortFn);
     console.log('sorted: ', sorted);
     setUser(sorted);
   }, [order]);
