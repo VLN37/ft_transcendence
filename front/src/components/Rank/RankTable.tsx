@@ -40,7 +40,6 @@ export function RankTable(props: any) {
     queryDatabase();
   }, []);
 
-
   useEffect(() => {
     console.log('prop: ', props.query);
   }, [props.query]);
@@ -82,7 +81,6 @@ export function RankTable(props: any) {
     setType(value);
   }
 
-  let i = 0;
   return (
     <TableContainer minWidth={'100%'}>
       <Table variant="striped">
@@ -97,13 +95,13 @@ export function RankTable(props: any) {
           </Tr>
         </Thead>
         <Tbody>
-          {
-          !userList[0].login_intra
-          ? <UserBlock user={userList[0]}/>
-          : userList
+          {!userList[0].login_intra ? (
+            <UserBlock user={userList[0]} />
+          ) : (
+            userList
               .filter((user) => user.login_intra.includes(props.query))
-              .map((user) => <UserBlock key={++i} user={user} />)
-          }
+              .map((user, i) => <UserBlock key={i} user={user} />)
+          )}
         </Tbody>
       </Table>
     </TableContainer>
