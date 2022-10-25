@@ -11,6 +11,7 @@ import {
   Button,
 } from '@chakra-ui/react';
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Channel } from '../../models/Channel';
 import Api from '../../services/api';
 
@@ -50,9 +51,11 @@ export function ChannelTable() {
                 <Td>{channel.owner_id}</Td>
                 <Td>2</Td>
                 <Td>
-                  <Button colorScheme={'blue'} size={'lg'}>
-                    join
-                  </Button>
+                  <Link to={'/chat?id=' + channel.id}>
+                    <Button colorScheme={'blue'} size={'lg'}>
+                      join
+                    </Button>
+                  </Link>
                 </Td>
               </Tr>
             );
