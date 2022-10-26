@@ -1,4 +1,4 @@
-import { ArrowRightIcon, SearchIcon } from '@chakra-ui/icons';
+import { ArrowRightIcon } from '@chakra-ui/icons';
 import {
   Box,
   Center,
@@ -11,10 +11,11 @@ import {
   Image,
   IconButton,
 } from '@chakra-ui/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import io from 'socket.io-client';
 
-function Message(props: any) {
+function MessageComponent(props: any) {
   return (
     <Flex>
       <Box padding={'1rem'}>
@@ -53,23 +54,67 @@ function InputMessage() {
     <>
       <Flex alignItems={'center'}>
         <Textarea
+          id="message"
           size={'lg'}
           padding={'1rem'}
           placeholder="Here is a sample placeholder"
         />
         <Box padding={'1rem'}>
-          <IconButton aria-label="Search database" icon={<ArrowRightIcon />} />
+          <IconButton
+            aria-label="Send message"
+            icon={<ArrowRightIcon />}
+            onClick={() => sendMessage()}
+          />
         </Box>
       </Flex>
     </>
   );
 }
 
+const socket = io('http://localhost:3000');
+
+interface Message {
+  id: string;
+  name: string;
+  text: string;
+}
+
+interface Payload {
+  name: string;
+  text: string;
+}
+
+function sendMessage() {
+  const text = (document.getElementById('message') as HTMLInputElement).value;
+  (document.getElementById('message') as HTMLInputElement).value = '';
+  const message: Payload = {
+    name: 'namae',
+    text: text,
+  };
+  socket.emit('mensagem', message);
+  console.log('message sent');
+}
+
 export default function ChatPage() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const [messages, setMessages] = useState<Message[]>([]);
+
+  socket.on('mensagem', (message: Message) => {
+    const newMessage: Message = {
+      id: message.id,
+      name: message.name,
+      text: message.text,
+    };
+    setMessages([...messages, newMessage]);
+    console.log('message received');
+  });
+
+  useEffect(() => {
+    document.getElementById('bottom')?.scrollIntoView();
+  }, [messages, searchParams]);
 
   return (
-    <Container maxW="1200px" maxHeight={'80vh'} overflowY={'auto'}>
+    <Container maxW="1200px" maxHeight={'80vh'}>
       <Center paddingY={'0.5rem'} color="white">
         <Text fontSize="3xl">{'CHANNEL #' + searchParams.get('id')}</Text>
       </Center>
@@ -87,14 +132,19 @@ export default function ChatPage() {
           colSpan={5}
           rowSpan={5}
           bg="gray.700"
-          overflowY={'auto'}
+          overflowY={'scroll'}
           borderRadius={'5px'}
         >
-          <Message
-            name={'Jovikovich'}
-            image={'https://bit.ly/dan-abramov'}
-            text={'kkkkkkkkkkkkkkkkkkkkkkkkkkkk'}
-          />
+          {messages.map((message) => {
+            return (
+              <MessageComponent
+                name={message.name}
+                image={'https://bit.ly/dan-abramov'}
+                text={message.text}
+              />
+            );
+          })}
+          <div id="bottom" />
         </GridItem>
         <GridItem colSpan={5} rowSpan={1} bg="gray.700" borderRadius={'5px'}>
           <InputMessage />
