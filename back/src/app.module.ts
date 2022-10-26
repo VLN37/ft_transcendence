@@ -15,6 +15,7 @@ import { FriendsController } from './users/friends/friends.controller';
 import { FriendRequestsController } from './users/friend_requests/friend_requests.controller';
 import { Channel } from './entities/channel.entity';
 import { ChannelsModule } from './channels/channels.module';
+import { ChannelsSocketGateway } from './channels-socket.gateway';
 
 const environment = process.env.ENVIRONMENT;
 const dbHost = process.env.DB_HOST;
@@ -51,7 +52,7 @@ declare global {
     ChannelsModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [ChannelsSocketGateway],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

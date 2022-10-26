@@ -42,7 +42,8 @@ export class ChannelsService {
 
   async getAll(): Promise<ChannelDto[]> {
     const channels = await this.channelsRepository.find({});
-    this.logger.debug('Returning channels', { channels });
+    // this.logger.debug('Returning channels', { channels });
+    this.logger.debug('Returning channels');
     return channels;
   }
 }
