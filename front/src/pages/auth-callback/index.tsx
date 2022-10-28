@@ -27,13 +27,14 @@ const AuthCallback = ({ setUser }: any) => {
       try {
         const token = await api.authenticate(code);
         api.setToken(token);
-
+        localStorage.setItem('selfkey', token);
         const payload = jwtDecode<TokenPayload>(token);
 
         if (payload.tfa_enabled && !payload.is_authenticated_twice) {
           start2faFlow();
           return;
         }
+        api.getAvatar();
         finishLogin(payload);
       } catch (e) {
         console.error(e);
@@ -68,7 +69,7 @@ const AuthCallback = ({ setUser }: any) => {
       tfa_enabled: payload.tfa_enabled,
       profile: {
         wins: 0,
-        avatar_path: '',
+        avatar_path: 'https://bit.ly/3gS8TwM',
         losses: 0,
         nickname: 'kkkk',
       },

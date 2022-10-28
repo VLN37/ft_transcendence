@@ -16,6 +16,17 @@ class Api {
     console.log('Criando uma instancia da classe de API');
   }
 
+  async getAvatar(): Promise<string> {
+    const response = await this.client.get('/users/me',
+    {
+      headers: {
+        Authorization: 'Bearer ' + localStorage.getItem('selfkey'),
+      }
+    })
+    console.log(response.data);
+    return response.data.profile.avatar_path;
+  }
+
   async authenticate(code: string): Promise<string> {
     const response = await this.client.post<AuthenticationResponse>(
       '/auth/login',
