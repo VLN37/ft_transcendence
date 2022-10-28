@@ -1,4 +1,4 @@
-import { Box } from '@chakra-ui/react';
+import { Box, Image } from '@chakra-ui/react';
 import { Link, Outlet } from 'react-router-dom';
 import MatchFinder from '../../components/MatchFinder';
 import NeonButton from '../../components/NeonButton';
@@ -6,6 +6,8 @@ import NeonButton from '../../components/NeonButton';
 import './style.css';
 
 export default function Layout({ setUser }: any) {
+  const link = JSON.parse(localStorage.getItem('user') || '')
+                   .profile.avatar_path || '';
   return (
     <Box paddingX="10%">
       <nav className="top-bar">
@@ -31,7 +33,14 @@ export default function Layout({ setUser }: any) {
             </Link>
           </li>
         </ul>
-        <div>profile picture</div>
+        <div>
+          <Image
+            marginTop={'15px'}
+            borderRadius="full"
+            boxSize="65px"
+            src={link}
+          />
+        </div>
         <button onClick={() => setUser(null)}>logout</button>
       </nav>
 

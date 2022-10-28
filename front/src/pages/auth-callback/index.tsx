@@ -69,7 +69,7 @@ const AuthCallback = ({ setUser }: any) => {
       tfa_enabled: payload.tfa_enabled,
       profile: {
         wins: 0,
-        avatar_path: 'https://bit.ly/3gS8TwM',
+        avatar_path: 'https://bit.ly/3gSNdAq',
         losses: 0,
         nickname: 'kkkk',
       },
