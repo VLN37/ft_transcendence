@@ -9,6 +9,9 @@ import {
   ModalContent,
   ModalOverlay,
   useDisclosure,
+  Grid,
+  GridItem,
+  Switch,
 } from '@chakra-ui/react'
 
 export function Profile() {
@@ -23,13 +26,20 @@ export function Profile() {
       boxSize="65px"
       src={link}
     />
-    <Modal isOpen={isOpen} onClose={onClose} size={"xl"}>
+    <Modal isOpen={isOpen} onClose={onClose} size={"3xl"}>
         <ModalOverlay />
         <ModalContent>
-          {/* <ModalCloseButton></ModalCloseButton> */}
+          <ModalCloseButton></ModalCloseButton>
           <ModalHeader>Profile</ModalHeader>
           <ModalBody>
-            <p>mimimi</p>
+            <Grid templateColumns={'repeat(5, 1 fr)'}>
+              <GridItem colStart={1} >Nickname</GridItem>
+              <GridItem colStart={5}><Button>change</Button></GridItem>
+            </Grid>
+            <Grid templateColumns={'repeat(5, 1 fr)'}>
+              <GridItem colStart={1} >2FA<Switch></Switch></GridItem>
+              <GridItem colStart={5}><Button>change</Button></GridItem>
+            </Grid>
           </ModalBody>
           <ModalFooter>
             <Button onClick={onClose}>close</Button>
