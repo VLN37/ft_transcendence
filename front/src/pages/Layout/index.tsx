@@ -2,6 +2,7 @@ import { Box, Image } from '@chakra-ui/react';
 import { Link, Outlet } from 'react-router-dom';
 import MatchFinder from '../../components/MatchFinder';
 import NeonButton from '../../components/NeonButton';
+import { Profile } from '../../components/Profile/profile';
 
 import './style.css';
 
@@ -33,14 +34,7 @@ export default function Layout({ setUser }: any) {
             </Link>
           </li>
         </ul>
-        <div>
-          <Image
-            marginTop={'15px'}
-            borderRadius="full"
-            boxSize="65px"
-            src={link}
-          />
-        </div>
+        <Profile />
         <button onClick={() => setUser(null)}>logout</button>
       </nav>
 
