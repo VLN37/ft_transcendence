@@ -37,8 +37,8 @@ export function Profile() {
               <GridItem colStart={5}><Button>change</Button></GridItem>
             </Grid>
             <Grid templateColumns={'repeat(5, 1 fr)'}>
-              <GridItem colStart={1} >2FA<Switch></Switch></GridItem>
-              <GridItem colStart={5}><Button>change</Button></GridItem>
+              <GridItem colStart={1} >2FA</GridItem>
+              <GridItem colStart={5}><Switch></Switch></GridItem>
             </Grid>
           </ModalBody>
           <ModalFooter>
