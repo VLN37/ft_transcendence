@@ -1,4 +1,4 @@
-import axios, { AxiosHeaders } from 'axios';
+import axios, { Axios, AxiosError, AxiosHeaders } from 'axios';
 import { Channel } from '../models/Channel';
 import { User } from '../models/User';
 
@@ -6,6 +6,12 @@ interface AuthenticationResponse {
   access_token: string;
   token_type: string;
 }
+
+export type ErrorResponse = {
+  statusCode: number;
+  message?: string;
+  error: string;
+};
 
 class Api {
   private client = axios.create({
@@ -17,12 +23,11 @@ class Api {
   }
 
   async getAvatar(): Promise<string> {
-    const response = await this.client.get('/users/me',
-    {
+    const response = await this.client.get('/users/me', {
       headers: {
         Authorization: 'Bearer ' + localStorage.getItem('selfkey'),
-      }
-    })
+      },
+    });
     console.log(response.data);
     return response.data.profile.avatar_path;
   }
@@ -72,6 +77,22 @@ class Api {
     const response = await this.client.get<Channel[]>('/channels', {});
     console.log(response.data);
     return response.data;
+  }
+
+  async findMatch(type: string): Promise<boolean | ErrorResponse> {
+    return this.client
+      .post('/match-making', {
+        type,
+      })
+      .then((response) => {
+        return response.data;
+      })
+      .catch((error: Error | AxiosError) => {
+        if (axios.isAxiosError(error)) {
+          return error.response?.data;
+        }
+        return error;
+      });
   }
 
   setToken(token: string) {
