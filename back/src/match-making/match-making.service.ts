@@ -37,10 +37,6 @@ export class MatchMakingService {
           `removing user ${user.login_intra} from the ${type} queue`,
         );
         queue.splice(i, 1);
-      } else {
-        this.logger.warn(
-          `user ${user.login_intra} not found in the ${type} queue`,
-        );
       }
     });
   }
