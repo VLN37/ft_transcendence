@@ -16,6 +16,7 @@ import { FriendRequestsController } from './users/friend_requests/friend_request
 import { Channel } from './entities/channel.entity';
 import { ChannelsModule } from './channels/channels.module';
 import { ChannelsSocketGateway } from './channels-socket.gateway';
+import { MatchMakingModule } from './match-making/match-making.module';
 
 const environment = process.env.ENVIRONMENT;
 const dbHost = process.env.DB_HOST;
@@ -50,6 +51,7 @@ declare global {
     AuthModule,
     ProfileModule,
     ChannelsModule,
+    MatchMakingModule,
   ],
   controllers: [],
   providers: [ChannelsSocketGateway],

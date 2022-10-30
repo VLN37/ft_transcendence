@@ -1,4 +1,5 @@
 import axios, { Axios, AxiosError, AxiosHeaders } from 'axios';
+import { io } from 'socket.io-client';
 import { Channel } from '../models/Channel';
 import { User } from '../models/User';
 
@@ -14,11 +15,27 @@ export type ErrorResponse = {
 };
 
 class Api {
+  private readonly MATCH_MAKING_NAMESPACE = 'match-making';
+
   private client = axios.create({
     baseURL: 'http://localhost:3000',
   });
 
+  private matchMakingSocket = io(
+    `http://localhost:3000/${this.MATCH_MAKING_NAMESPACE}`,
+  );
+
   constructor() {
+    this.matchMakingSocket.on('connect', () => {
+      console.log(
+        `${this.MATCH_MAKING_NAMESPACE} socket connected to the server`,
+      );
+    });
+    this.matchMakingSocket.on('disconnect', () => {
+      console.log(`connection for socket ${this.MATCH_MAKING_NAMESPACE} lost`);
+    });
+
+    const sock = this.matchMakingSocket.connect();
     console.log('Criando uma instancia da classe de API');
   }
 
@@ -79,20 +96,34 @@ class Api {
     return response.data;
   }
 
-  async findMatch(type: string): Promise<boolean | ErrorResponse> {
-    return this.client
-      .post('/match-making', {
-        type,
-      })
-      .then((response) => {
-        return response.data;
-      })
-      .catch((error: Error | AxiosError) => {
-        if (axios.isAxiosError(error)) {
-          return error.response?.data;
-        }
-        return error;
-      });
+  findMatch(type: string): boolean {
+    if (this.matchMakingSocket.connected) {
+      const msgPayload = {
+        message: 'test',
+        matchType: type,
+      };
+      const callback = () => {
+        console.log('request for enqueueing sent');
+      };
+
+      this.matchMakingSocket.emit('enqueue', msgPayload, callback);
+      return true;
+    } else {
+      throw new Error('Not connected to the server');
+    }
+  }
+
+  stopFindingMatch() {
+    if (this.matchMakingSocket.connected) {
+      const callback = () => {
+        console.log('request for dequeueing sent');
+      };
+
+      this.matchMakingSocket.emit('dequeue', callback);
+      return true;
+    } else {
+      throw new Error('Not connected to the server');
+    }
   }
 
   setToken(token: string) {

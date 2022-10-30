@@ -14,7 +14,7 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import { useState } from 'react';
-import api, { ErrorResponse } from '../../services/api';
+import api from '../../services/api';
 
 import NeonButton from '../NeonButton';
 import './style.css';
@@ -30,11 +30,16 @@ export default function MatchFinder() {
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
+  const stopFinding = () => {
+    api.stopFindingMatch();
+    setIsSearching(false);
+  };
+
   const handleMatchFinderClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
     if (isSearching) {
-      setIsSearching(false);
+      stopFinding();
     } else {
       onOpen();
     }
@@ -47,22 +52,27 @@ export default function MatchFinder() {
     setMatchType(nextValue as MatchType);
   };
 
+  const onMatchFindResponse = (data: any) => {
+    console.log('server responded via ws: ' + data);
+  };
+
   const handleFindClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setIsSearching(true);
-    api.findMatch(matchType).then((result) => {
-      if (result) {
-        toast({
-          id: toastId,
-          title: 'Failed to enqueue for matchmaking',
-          status: 'error',
-          isClosable: true,
-          description: (result as ErrorResponse).message || '',
-          duration: 5000,
-        });
-        setIsSearching(false);
-      }
-    });
+    try {
+      const result = api.findMatch(matchType);
+    } catch (e) {
+      toast({
+        id: toastId,
+        title: 'Failed to enqueue for matchmaking',
+        status: 'error',
+        isClosable: true,
+        description: (e as Error).message || '',
+        duration: 5000,
+      });
+      setIsSearching(false);
+    }
+
     onClose();
   };
 
