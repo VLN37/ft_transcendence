@@ -1,5 +1,7 @@
 import { Logger } from '@nestjs/common';
 import {
+  ConnectedSocket,
+  MessageBody,
   OnGatewayConnection,
   SubscribeMessage,
   WebSocketGateway,
@@ -23,6 +25,13 @@ export class ChannelsSocketGateway {
   @WebSocketServer() server: Server;
   private readonly logger = new Logger(ChannelsSocketGateway.name);
 
+  @SubscribeMessage('createRoom')
+  createRoom(client: Socket, data: string) {
+    this.logger.debug('Room ' + data + ' created');
+    client.join('1');
+	this.server.to('1').emit('createRoom', 'kkkkkkkkkkkkk');
+  }
+
   @SubscribeMessage('mensagem')
   handleMessage(client: Socket, data: Message): void {
     this.logger.debug('Received a message from ' + client.id);
@@ -31,11 +40,11 @@ export class ChannelsSocketGateway {
       name: data.name,
       text: data.text,
     };
-	const message2: Payload = {
-		id: client.id,
-		name: data.name,
-		text: 'roommmmmmmmmmm',
-	  };
+    const message2: Payload = {
+      id: client.id,
+      name: data.name,
+      text: 'roommmmmmmmmmm',
+    };
     this.logger.debug('Sending a message to ' + client.id);
     this.server.emit('mensagem', message);
     // this.server.to(client.id).emit('mensagem', message2);

@@ -85,6 +85,7 @@ interface Payload {
 }
 
 function sendMessage() {
+  socket.emit('createRoom', 1);
   const text = (document.getElementById('message') as HTMLInputElement).value;
   (document.getElementById('message') as HTMLInputElement).value = '';
   const message: Payload = {
@@ -98,6 +99,10 @@ function sendMessage() {
 export default function ChatPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [messages, setMessages] = useState<Message[]>([]);
+
+  socket.on('createRoom', (data) => {
+    console.log('Message from room: ' + data);
+  });
 
   socket.on('mensagem', (message: Message) => {
     const newMessage: Message = {
