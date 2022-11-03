@@ -1,5 +1,5 @@
-import axios, { Axios, AxiosError, AxiosHeaders } from 'axios';
-import { io } from 'socket.io-client';
+import axios from 'axios';
+import { io, Socket } from 'socket.io-client';
 import { Channel } from '../models/Channel';
 import { User } from '../models/User';
 
@@ -16,6 +16,7 @@ export type ErrorResponse = {
 
 class Api {
   private readonly MATCH_MAKING_NAMESPACE = 'match-making';
+  private readonly CHANNEL_NAMESPACE = 'channel';
 
   private client = axios.create({
     baseURL: 'http://localhost:3000',
@@ -25,28 +26,34 @@ class Api {
     `http://localhost:3000/${this.MATCH_MAKING_NAMESPACE}`,
   );
 
+  private channelSocket: Socket;
+
   constructor() {
+    this.channelSocket = io(`http://localhost:3000/${this.CHANNEL_NAMESPACE}`);
     this.matchMakingSocket.on('connect', () => {
       console.log(
         `${this.MATCH_MAKING_NAMESPACE} socket connected to the server`,
       );
     });
     this.matchMakingSocket.on('disconnect', () => {
-      console.log(`connection for socket ${this.MATCH_MAKING_NAMESPACE} lost`);
+      console.log(`Connection for socket ${this.MATCH_MAKING_NAMESPACE} lost`);
     });
 
     const sock = this.matchMakingSocket.connect();
-    console.log('Criando uma instancia da classe de API');
+    console.log('Creating API class instance');
   }
 
-  async getAvatar(): Promise<string> {
-    const response = await this.client.get('/users/me', {
-      headers: {
-        Authorization: 'Bearer ' + localStorage.getItem('selfkey'),
-      },
-    });
-    console.log(response.data);
-    return response.data.profile.avatar_path;
+  connectToChannel(room: string) {
+    this.channelSocket.emit('join', room);
+    console.log(`Client connected to the room ${room}`);
+  }
+
+  sendMessage(data: any) {
+    this.channelSocket.emit('chat', data);
+  }
+
+  listenMessage(callback: any) {
+    this.channelSocket.on('chat', callback);
   }
 
   async authenticate(code: string): Promise<string> {

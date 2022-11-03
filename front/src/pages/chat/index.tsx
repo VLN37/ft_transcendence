@@ -14,7 +14,8 @@ import {
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import io from 'socket.io-client';
+import api from '../../services/api';
+import userStorage from '../../services/userStorage';
 
 function ChannelTitle(props: any) {
   return (
@@ -81,28 +82,27 @@ function InputMessage(props: any) {
   );
 }
 
-const socket = io('http://localhost:3000');
-
 interface Message {
   id: string;
   name: string;
   text: string;
-}
-
-interface Payload {
-  name: string;
-  text: string;
+  room: string;
+  avatar: string;
 }
 
 function sendMessage() {
-  socket.emit('createRoom', 1);
+  const params = new URLSearchParams(window.location.search);
+  const room = params.get('id') || '';
   const text = (document.getElementById('message') as HTMLInputElement).value;
   (document.getElementById('message') as HTMLInputElement).value = '';
-  const message: Payload = {
-    name: 'namae',
+  const message: Message = {
+    id: userStorage.getUser()?.id?.toString() || '',
+    name: userStorage.getUser()?.profile?.nickname || '',
     text: text,
+    room: room,
+    avatar: userStorage.getUser()?.profile?.avatar_path || '',
   };
-  socket.emit('mensagem', message);
+  api.sendMessage(message);
   console.log('message sent');
 }
 
@@ -110,15 +110,13 @@ export default function ChatPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [messages, setMessages] = useState<Message[]>([]);
 
-  socket.on('createRoom', (data) => {
-    console.log('Message from room: ' + data);
-  });
-
-  socket.on('mensagem', (message: Message) => {
+  api.listenMessage((message: Message) => {
     const newMessage: Message = {
       id: message.id,
       name: message.name,
       text: message.text,
+      room: message.room,
+      avatar: message.avatar,
     };
     setMessages([...messages, newMessage]);
     console.log('message received');
@@ -154,7 +152,7 @@ export default function ChatPage() {
             return (
               <MessageComponent
                 name={message.name}
-                image={'https://bit.ly/dan-abramov'}
+                image={message.avatar}
                 text={message.text}
               />
             );

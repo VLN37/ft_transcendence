@@ -11,12 +11,18 @@ import {
   Button,
 } from '@chakra-ui/react';
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Channel } from '../../models/Channel';
 import Api from '../../services/api';
 
 export function ChannelTable() {
   const [channelArr, setChannels] = useState<Channel[]>([]);
+  let navigate = useNavigate();
+
+  const redirect = (room: number) => {
+    Api.connectToChannel(room.toString());
+    navigate('/chat?id=' + room.toString());
+  };
 
   useEffect(() => {
     Api.getChannels().then((channels) => setChannels(channels));
@@ -51,11 +57,13 @@ export function ChannelTable() {
                 <Td>{channel.owner_id}</Td>
                 <Td>2</Td>
                 <Td>
-                  <Link to={'/chat?id=' + channel.id}>
-                    <Button colorScheme={'blue'} size={'lg'}>
-                      join
-                    </Button>
-                  </Link>
+                  <Button
+                    onClick={() => redirect(channel.id)}
+                    colorScheme={'blue'}
+                    size={'lg'}
+                  >
+                    join
+                  </Button>
                 </Td>
               </Tr>
             );

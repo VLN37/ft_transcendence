@@ -34,7 +34,6 @@ const AuthCallback = ({ setUser }: any) => {
           start2faFlow();
           return;
         }
-        api.getAvatar();
         finishLogin(payload);
       } catch (e) {
         console.error(e);
