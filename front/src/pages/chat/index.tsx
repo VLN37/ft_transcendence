@@ -10,10 +10,19 @@ import {
   Textarea,
   Image,
   IconButton,
+  Spacer,
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import io from 'socket.io-client';
+
+function ChannelTitle(props: any) {
+  return (
+    <Center paddingY={'0.5rem'} color="white">
+      <Text fontSize="3xl">{props.children}</Text>
+    </Center>
+  );
+}
 
 function MessageComponent(props: any) {
   return (
@@ -42,22 +51,23 @@ function MessageComponent(props: any) {
 
 function Users() {
   return (
-    <>
+    <Box padding={2}>
       <h1>USERS1</h1>
       <h1>USERS2</h1>
-    </>
+    </Box>
   );
 }
 
-function InputMessage() {
+function InputMessage(props: any) {
   return (
     <>
-      <Flex alignItems={'center'}>
+      <Flex h={'100%'} alignItems={'center'}>
         <Textarea
           id="message"
           size={'lg'}
           padding={'1rem'}
-          placeholder="Here is a sample placeholder"
+          marginX={'0.5rem'}
+          placeholder={props.placeholder}
         />
         <Box padding={'1rem'}>
           <IconButton
@@ -119,26 +129,26 @@ export default function ChatPage() {
   }, [messages, searchParams]);
 
   return (
-    <Container maxW="1200px" maxHeight={'80vh'}>
-      <Center paddingY={'0.5rem'} color="white">
-        <Text fontSize="3xl">{'CHANNEL #' + searchParams.get('id')}</Text>
-      </Center>
+    <Container maxW="1200px" h={'80vh'} maxHeight={'80vh'}>
       <Grid
-        templateAreas={`"friends" "content" "send"`}
-        h="70vh"
-        templateRows="repeat(6, 1fr)"
-        templateColumns="repeat(6, 1fr)"
-        gap={5}
+        gridTemplateColumns={'repeat(10, 1fr)'}
+        gridTemplateRows={'repeat(12, 1fr)'}
+        gridColumnGap={'10px'}
+        gridRowGap={'10px'}
+        h={'100%'}
       >
-        <GridItem colSpan={1} rowSpan={6} bg="gray.700" borderRadius={'5px'}>
+        <GridItem borderRadius={'5px'} rowSpan={1} colSpan={10}>
+          <ChannelTitle>{'CHANNEL #' + searchParams.get('id')}</ChannelTitle>
+        </GridItem>
+        <GridItem borderRadius={'5px'} rowSpan={11} colSpan={2} bg="gray.700">
           <Users />
         </GridItem>
         <GridItem
-          colSpan={5}
-          rowSpan={5}
+          borderRadius={'5px'}
+          rowSpan={9}
+          colSpan={8}
           bg="gray.700"
           overflowY={'scroll'}
-          borderRadius={'5px'}
         >
           {messages.map((message) => {
             return (
@@ -149,10 +159,12 @@ export default function ChatPage() {
               />
             );
           })}
-          <div id="bottom" />
+          <Spacer id="bottom" />
         </GridItem>
-        <GridItem colSpan={5} rowSpan={1} bg="gray.700" borderRadius={'5px'}>
-          <InputMessage />
+        <GridItem borderRadius={'5px'} rowSpan={2} colSpan={8} bg="gray.700">
+          <InputMessage
+            placeholder={'Message CHANNEL #' + searchParams.get('id')}
+          />
         </GridItem>
       </Grid>
     </Container>
