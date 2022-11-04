@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { io, Socket } from 'socket.io-client';
+
 import { Channel } from '../models/Channel';
 import { User } from '../models/User';
 
@@ -22,24 +23,13 @@ class Api {
     baseURL: 'http://localhost:3000',
   });
 
-  private matchMakingSocket = io(
-    `http://localhost:3000/${this.MATCH_MAKING_NAMESPACE}`,
-  );
+  private matchMakingSocket?: Socket;
+  private token?: string;
 
   private channelSocket: Socket;
 
   constructor() {
     this.channelSocket = io(`http://localhost:3000/${this.CHANNEL_NAMESPACE}`);
-    this.matchMakingSocket.on('connect', () => {
-      console.log(
-        `${this.MATCH_MAKING_NAMESPACE} socket connected to the server`,
-      );
-    });
-    this.matchMakingSocket.on('disconnect', () => {
-      console.log(`Connection for socket ${this.MATCH_MAKING_NAMESPACE} lost`);
-    });
-
-    const sock = this.matchMakingSocket.connect();
     console.log('Creating API class instance');
   }
 
@@ -103,42 +93,56 @@ class Api {
     return response.data;
   }
 
-  findMatch(type: string): boolean {
-    if (this.matchMakingSocket.connected) {
-      const msgPayload = {
-        message: 'test',
-        matchType: type,
-      };
-      const callback = () => {
-        console.log('request for enqueueing sent');
-      };
+  findMatch(type: 'CLASSIC' | 'TURBO', onResponse: Function) {
+    const url = `http://localhost:3000/${this.MATCH_MAKING_NAMESPACE}`;
+    const options = {
+      auth: {
+        token: this.token,
+      },
+      query: {
+        type: type,
+      },
+    };
 
-      this.matchMakingSocket.emit('enqueue', msgPayload, callback);
-      return true;
-    } else {
-      throw new Error('Not connected to the server');
-    }
+    this.matchMakingSocket = io(url, options);
+
+    this.matchMakingSocket.on('connect', () => {
+      console.log(
+        `${this.MATCH_MAKING_NAMESPACE} socket connected to the server`,
+      );
+    });
+
+    this.matchMakingSocket.on('disconnect', () => {
+      console.log(`connection for socket ${this.MATCH_MAKING_NAMESPACE} lost`);
+    });
+
+    this.matchMakingSocket.on('connect_error', (err) => {
+      console.error(err);
+    });
+
+    this.matchMakingSocket.on('match-found', (matchData) => {
+      console.log(matchData);
+    });
+
+    // this.matchMakingSocket.connect();
   }
 
   stopFindingMatch() {
-    if (this.matchMakingSocket.connected) {
-      const callback = () => {
-        console.log('request for dequeueing sent');
-      };
-
-      this.matchMakingSocket.emit('dequeue', callback);
-      return true;
-    } else {
-      throw new Error('Not connected to the server');
+    if (this.matchMakingSocket?.connected) {
+      this.matchMakingSocket.disconnect();
     }
   }
 
   setToken(token: string) {
     this.client.defaults.headers['Authorization'] = `Bearer ${token}`;
+    this.token = token;
+    // this.matchMakingSocket.connect();
   }
 
   removeToken() {
     this.client.defaults.headers['Authorization'] = null;
+    if (this.matchMakingSocket) this.matchMakingSocket.auth = {};
+    this.token = undefined;
   }
 }
 

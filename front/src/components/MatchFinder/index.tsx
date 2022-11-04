@@ -53,14 +53,14 @@ export default function MatchFinder() {
   };
 
   const onMatchFindResponse = (data: any) => {
-    console.log('server responded via ws: ' + data);
+    console.log('server responded via ws: ' + { data });
   };
 
   const handleFindClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setIsSearching(true);
     try {
-      const result = api.findMatch(matchType);
+      const result = api.findMatch(matchType, onMatchFindResponse);
     } catch (e) {
       toast({
         id: toastId,
