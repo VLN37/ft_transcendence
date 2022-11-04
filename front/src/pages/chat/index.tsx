@@ -18,7 +18,7 @@ import userStorage from '../../services/userStorage';
 
 function ChannelTitle(props: any) {
   return (
-    <Center paddingY={'0.5rem'} color="white">
+    <Center color="white">
       <Text fontSize="3xl">{props.children}</Text>
     </Center>
   );
