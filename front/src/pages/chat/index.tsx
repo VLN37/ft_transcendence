@@ -2,7 +2,6 @@ import { ArrowRightIcon } from '@chakra-ui/icons';
 import {
   Box,
   Center,
-  Container,
   Flex,
   Grid,
   GridItem,
@@ -126,44 +125,42 @@ export default function ChatPage() {
   }, [messages, searchParams]);
 
   return (
-    <Container maxW="1200px" h={'80vh'} maxHeight={'80vh'}>
-      <Grid
-        gridTemplateColumns={'repeat(10, 1fr)'}
-        gridTemplateRows={'repeat(12, 1fr)'}
-        gridColumnGap={'10px'}
-        gridRowGap={'10px'}
-        h={'100%'}
+    <Grid
+      gridTemplateColumns={'repeat(10, 1fr)'}
+      gridTemplateRows={'repeat(12, 1fr)'}
+      gridColumnGap={'10px'}
+      gridRowGap={'10px'}
+      h={'100%'}
+    >
+      <GridItem borderRadius={'5px'} rowSpan={1} colSpan={10}>
+        <ChannelTitle>{'CHANNEL #' + searchParams.get('id')}</ChannelTitle>
+      </GridItem>
+      <GridItem borderRadius={'5px'} rowSpan={11} colSpan={2} bg="gray.700">
+        <Users />
+      </GridItem>
+      <GridItem
+        borderRadius={'5px'}
+        rowSpan={9}
+        colSpan={8}
+        bg="gray.700"
+        overflowY={'scroll'}
       >
-        <GridItem borderRadius={'5px'} rowSpan={1} colSpan={10}>
-          <ChannelTitle>{'CHANNEL #' + searchParams.get('id')}</ChannelTitle>
-        </GridItem>
-        <GridItem borderRadius={'5px'} rowSpan={11} colSpan={2} bg="gray.700">
-          <Users />
-        </GridItem>
-        <GridItem
-          borderRadius={'5px'}
-          rowSpan={9}
-          colSpan={8}
-          bg="gray.700"
-          overflowY={'scroll'}
-        >
-          {messages.map((message) => {
-            return (
-              <MessageComponent
-                name={message.name}
-                image={message.avatar}
-                text={message.text}
-              />
-            );
-          })}
-          <Spacer id="bottom" />
-        </GridItem>
-        <GridItem borderRadius={'5px'} rowSpan={2} colSpan={8} bg="gray.700">
-          <InputMessage
-            placeholder={'Message CHANNEL #' + searchParams.get('id')}
-          />
-        </GridItem>
-      </Grid>
-    </Container>
+        {messages.map((message) => {
+          return (
+            <MessageComponent
+              name={message.name}
+              image={message.avatar}
+              text={message.text}
+            />
+          );
+        })}
+        <Spacer id="bottom" />
+      </GridItem>
+      <GridItem borderRadius={'5px'} rowSpan={2} colSpan={8} bg="gray.700">
+        <InputMessage
+          placeholder={'Message CHANNEL #' + searchParams.get('id')}
+        />
+      </GridItem>
+    </Grid>
   );
 }

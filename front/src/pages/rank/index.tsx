@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react';
 import {
   Box,
-  Button,
   Input,
   InputGroup,
   InputRightElement,
-  IconButton,
+  Container,
 } from '@chakra-ui/react';
 import { SearchIcon } from '@chakra-ui/icons';
 import { RankTable } from '../../components/Rank/';
@@ -21,27 +20,27 @@ export default function RankPage() {
 
   return (
     <div>
-      <Box marginLeft={'315px'} width="60%">
-        <InputGroup>
-          <Input
-            placeholder="Search by login name"
-            value={searchValue}
-            onChange={handleChange}
-            size="md"
-          />
-          <InputRightElement
-            children={
-              <SearchIcon color="teal.600" onClick={handleSearchClick} />
-            }
-          />
-        </InputGroup>
-      </Box>
-      <Box marginLeft={'315px'} width="60%" bg="cyan.800">
-        {/* <Button>submit</Button> */}
-        <div className="page">
+      <Container maxW="100%" maxHeight={'90vh'} overflowY={'auto'}>
+        <Box>
+          <InputGroup>
+            <Input
+              placeholder="Search by login name"
+              value={searchValue}
+              onChange={handleChange}
+              size="md"
+            />
+            <InputRightElement
+              children={
+                <SearchIcon color="teal.600" onClick={handleSearchClick} />
+              }
+            />
+          </InputGroup>
+        </Box>
+        <Box bg="cyan.800">
+          {/* <Button>submit</Button> */}
           <RankTable query={searchValue} />
-        </div>
-      </Box>
+        </Box>
+      </Container>
     </div>
   );
 }

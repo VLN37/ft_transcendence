@@ -1,4 +1,4 @@
-import { Box, Image } from '@chakra-ui/react';
+import { Container } from '@chakra-ui/react';
 import { Link, Outlet } from 'react-router-dom';
 import MatchFinder from '../../components/MatchFinder';
 import NeonButton from '../../components/NeonButton';
@@ -7,10 +7,10 @@ import { Profile } from '../../components/Profile/profile';
 import './style.css';
 
 export default function Layout({ setUser }: any) {
-  const link = JSON.parse(localStorage.getItem('user') || '')
-                   .profile.avatar_path || '';
+  const link =
+    JSON.parse(localStorage.getItem('user') || '').profile.avatar_path || '';
   return (
-    <Box paddingX="10%">
+    <Container maxW="1200px" h={'80vh'} maxHeight={'80vh'}>
       <nav className="top-bar">
         <ul className="nav-links">
           <li>
@@ -39,9 +39,9 @@ export default function Layout({ setUser }: any) {
       </nav>
 
       <Outlet />
-      <div className="match-finder-wrapper" >
+      <div className="match-finder-wrapper">
         <MatchFinder />
       </div>
-    </Box>
+    </Container>
   );
 }
