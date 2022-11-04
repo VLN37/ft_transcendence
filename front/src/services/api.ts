@@ -93,6 +93,11 @@ class Api {
     return response.data;
   }
 
+  async getUser(id: string): Promise<User> {
+    const response = await this.client.get(`/users/${id}`, {});
+    return response.data;
+  }
+
   findMatch(type: 'CLASSIC' | 'TURBO', onResponse: Function) {
     const url = `http://localhost:3000/${this.MATCH_MAKING_NAMESPACE}`;
     const options = {

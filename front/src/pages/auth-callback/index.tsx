@@ -61,22 +61,13 @@ const AuthCallback = ({ setUser }: any) => {
   const finishLogin = (payload: TokenPayload) => {
     console.log({ payload });
 
-    // FIXME: create another user interface for saving in the global state
-    const user: User = {
-      id: payload.sub,
-      login_intra: 'a',
-      tfa_enabled: payload.tfa_enabled,
-      profile: {
-        wins: 0,
-        avatar_path: 'https://bit.ly/3gSNdAq',
-        losses: 0,
-        nickname: 'kkkk',
-      },
-    };
-
-    userStorage.saveUser(user);
-    setUser(user);
-    setLoading(false);
+    api.getUser('me').then((user) => {
+      if (!user.profile.avatar_path)
+        user.profile.avatar_path = 'https://bit.ly/3gSNdAq';
+      userStorage.saveUser(user);
+      setUser(user);
+      setLoading(false);
+    });
   };
 
   const onClose = () => {
