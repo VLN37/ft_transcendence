@@ -12,6 +12,7 @@ import {
   Flex,
   Box,
   useToast,
+  Spinner,
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import api from '../../services/api';
@@ -102,8 +103,8 @@ export default function MatchFinder() {
         <Flex alignItems={'center'}>
           <Box>{isSearching ? 'FINDING MATCH' : 'PLAY PONG'}</Box>
           {isSearching && (
-            <Box px={4} fontSize="110%">
-              X
+            <Box px={4}>
+              <Spinner />
             </Box>
           )}
         </Flex>

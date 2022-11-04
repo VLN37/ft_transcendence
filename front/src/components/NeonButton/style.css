@@ -1,42 +1,38 @@
 .neon-text {
-    font-size: 2rem;
-    color: #fff;
-    text-shadow:
-        0 0 4px #fff,
-        0 0 10px #faf,
-        0 0 10px #f09
-        ;
-    font-family: 'Michroma', sans-serif;
+	font-size: 1.7rem;
+	color: #fff;
+	text-shadow:
+		0 0 4px #fff,
+		0 0 10px #faf,
+		0 0 10px #f09;
+	font-family: 'Michroma', sans-serif;
 }
 
 .neon-border {
-    transition: all 0.2s;
-    background: transparent;
-    border: solid 3px #fff;
-    border-radius: 4px;
-    padding: 4px 8px;
-    box-shadow:
-        0 0 4px #fff,
-        0 0 14px #f37,
-        inset 0 0 7px #f07
-        ;
-    cursor: pointer;
+	transition: all 0.2s;
+	background: transparent;
+	border: solid 3px #fff;
+	border-radius: 4px;
+	padding: 4px 8px;
+	box-shadow:
+		0 0 4px #fff,
+		0 0 14px #f37,
+		inset 0 0 7px #f07;
+	cursor: pointer;
 }
 
 .neon-border:hover {
-    box-shadow:
-        0 0 4px #fff,
-        0 0 14px #f3f,
-        inset 0 0 7px #f0f
-        ;
+	box-shadow:
+		0 0 4px #fff,
+		0 0 14px #f3f,
+		inset 0 0 7px #f0f;
 }
 
 .neon-text:hover {
-    font-size: 2rem;
-    color: #fff;
-    text-shadow:
-        0 0 4px #fff,
-        0 0 10px #faf,
-        0 0 10px #f09
-        ;
+	/* font-size: 2rem; */
+	color: #fff;
+	text-shadow:
+		0 0 4px #fff,
+		0 0 10px #faf,
+		0 0 10px #f09;
 }

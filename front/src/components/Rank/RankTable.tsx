@@ -1,6 +1,14 @@
 import { useEffect, useState, useRef } from 'react';
 import { UserBlock } from './';
-import { Table, Thead, Tbody, Tr, Th, TableContainer } from '@chakra-ui/react';
+import {
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  TableContainer,
+  Box,
+} from '@chakra-ui/react';
 import { TableUser } from '../../models/TableUser';
 import { User } from '../../models/User';
 import api from '../../services/api';
@@ -82,28 +90,31 @@ export function RankTable(props: any) {
   }
 
   return (
-    <TableContainer minWidth={'100%'}>
-      <Table variant="striped">
-        <Thead>
-          <Tr>
-            <Th>Rank</Th>
-            <Th>Avatar</Th>
-            <Th onClick={() => tableOrdering('login_intra')}>Login</Th>
-            <Th onClick={() => tableOrdering('id')}>ID</Th>
-            <Th onClick={() => tableOrdering('wins')}>Wins</Th>
-            <Th onClick={() => tableOrdering('losses')}>Losses</Th>
-          </Tr>
-        </Thead>
-        <Tbody>
-          {!userList[0].login_intra ? (
-            <UserBlock user={userList[0]} />
-          ) : (
-            userList
-              .filter((user) => user.login_intra.includes(props.query))
-              .map((user, i) => <UserBlock key={i} user={user} />)
-          )}
-        </Tbody>
-      </Table>
-    </TableContainer>
+    <>
+      <TableContainer overflowY={'scroll'} h={'100%'} maxHeight={'100%'}>
+        <Table variant="striped">
+          <Thead>
+            <Tr>
+              <Th>Rank</Th>
+              <Th>Avatar</Th>
+              <Th onClick={() => tableOrdering('login_intra')}>Login</Th>
+              <Th onClick={() => tableOrdering('id')}>ID</Th>
+              <Th onClick={() => tableOrdering('wins')}>Wins</Th>
+              <Th onClick={() => tableOrdering('losses')}>Losses</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {!userList[0].login_intra ? (
+              <UserBlock user={userList[0]} />
+            ) : (
+              userList
+                .filter((user) => user.login_intra.includes(props.query))
+                .map((user, i) => <UserBlock key={i} user={user} />)
+            )}
+          </Tbody>
+        </Table>
+      </TableContainer>
+      <Box bg={'gray.800'} padding={'1rem'} />
+    </>
   );
 }

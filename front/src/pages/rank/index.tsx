@@ -19,28 +19,22 @@ export default function RankPage() {
   const handleChange = (event: any) => setSearchValue(event.target.value);
 
   return (
-    <div>
-      <Container maxW="100%" maxHeight={'90vh'} overflowY={'auto'}>
-        <Box>
-          <InputGroup>
-            <Input
-              placeholder="Search by login name"
-              value={searchValue}
-              onChange={handleChange}
-              size="md"
-            />
-            <InputRightElement
-              children={
-                <SearchIcon color="teal.600" onClick={handleSearchClick} />
-              }
-            />
-          </InputGroup>
-        </Box>
-        <Box bg="cyan.800">
-          {/* <Button>submit</Button> */}
-          <RankTable query={searchValue} />
-        </Box>
-      </Container>
-    </div>
+    <>
+      <InputGroup>
+        <Input
+          placeholder="Search by login name"
+          value={searchValue}
+          onChange={handleChange}
+          size="md"
+        />
+        <InputRightElement
+          children={<SearchIcon color="teal.600" onClick={handleSearchClick} />}
+        />
+      </InputGroup>
+      <Box bg="cyan.800" maxW="100%" maxHeight={'100%'} overflowY={'auto'}>
+        {/* <Button>submit</Button> */}
+        <RankTable query={searchValue} />
+      </Box>
+    </>
   );
 }

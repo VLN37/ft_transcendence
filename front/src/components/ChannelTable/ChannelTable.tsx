@@ -29,47 +29,49 @@ export function ChannelTable() {
   }, []);
 
   return (
-    <TableContainer>
-      <Input placeholder="Search channel room" />
-      <Table variant="striped">
-        <Thead>
-          <Tr>
-            <Th>chat room</Th>
-            <Th>visibility</Th>
-            <Th>protected</Th>
-            <Th>owner</Th>
-            <Th>users</Th>
-          </Tr>
-        </Thead>
-        <Tbody>
-          {channelArr.map((channel) => {
-            return (
-              <Tr key={channel.id}>
-                <Td>{channel.id}</Td>
-                <Td>{channel.type}</Td>
-                <Td>
-                  {channel.type == 'PROTECTED' ? (
-                    <LockIcon boxSize={'2rem'} />
-                  ) : (
-                    <UnlockIcon boxSize={'2rem'} />
-                  )}
-                </Td>
-                <Td>{channel.owner_id}</Td>
-                <Td>2</Td>
-                <Td>
-                  <Button
-                    onClick={() => redirect(channel.id)}
-                    colorScheme={'blue'}
-                    size={'lg'}
-                  >
-                    join
-                  </Button>
-                </Td>
-              </Tr>
-            );
-          })}
-        </Tbody>
-      </Table>
-    </TableContainer>
+    <>
+      <Input placeholder="Search channel room"/>
+      <TableContainer overflowY={'scroll'} h={'100%'} maxHeight={'100%'} paddingBottom={'2rem'}>
+        <Table variant="striped">
+          <Thead>
+            <Tr>
+              <Th>chat room</Th>
+              <Th>visibility</Th>
+              <Th>protected</Th>
+              <Th>owner</Th>
+              <Th>users</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {channelArr.map((channel) => {
+              return (
+                <Tr key={channel.id}>
+                  <Td>{channel.id}</Td>
+                  <Td>{channel.type}</Td>
+                  <Td>
+                    {channel.type == 'PROTECTED' ? (
+                      <LockIcon boxSize={'2rem'} />
+                    ) : (
+                      <UnlockIcon boxSize={'2rem'} />
+                    )}
+                  </Td>
+                  <Td>{channel.owner_id}</Td>
+                  <Td>2</Td>
+                  <Td>
+                    <Button
+                      onClick={() => redirect(channel.id)}
+                      colorScheme={'blue'}
+                      size={'lg'}
+                    >
+                      join
+                    </Button>
+                  </Td>
+                </Tr>
+              );
+            })}
+          </Tbody>
+        </Table>
+      </TableContainer>
+    </>
   );
 }
