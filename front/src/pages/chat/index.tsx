@@ -8,9 +8,9 @@ import {
   GridItem,
   Text,
   Textarea,
-  Image,
   IconButton,
   Spacer,
+  Avatar,
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
@@ -27,22 +27,21 @@ function ChannelTitle(props: any) {
 
 function MessageComponent(props: any) {
   return (
-    <Flex>
-      <Box padding={'1rem'}>
-        <Image
-          border={'2px'}
+    <Flex paddingY={'1rem'} alignItems={'flex-start'}>
+      <Box paddingX={'1rem'}>
+        <Avatar
+          showBorder
           borderColor={'green.500'}
-          borderRadius="5px"
-          boxSize={'80px'}
+          borderRadius={'5px'}
+          size={'md'}
           src={props.image}
-          alt={props.name}
         />
         <Text paddingTop={'0.1rem'} fontWeight={'bold'} align={'center'}>
           {props.name}
         </Text>
       </Box>
-      <Flex alignItems={'center'}>
-        <Text padding={'0.2rem'} mt={'-1rem'}>
+      <Flex paddingRight={'1rem'} paddingTop={'0.7rem'} alignItems={'center'}>
+        <Text wordBreak={'break-word'} padding={'0.2rem'} mt={'-1rem'}>
           {props.text}
         </Text>
       </Flex>
