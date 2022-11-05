@@ -156,20 +156,26 @@ export class UsersService {
   }
 
   async findUserById(id: number): Promise<UserDto> {
-    const find = await this.usersRepository.findOne({
-      where: { id },
-      relations: [
-        'profile',
-        'friends.profile',
-        'blocked.profile',
-        'friend_requests.profile',
-      ],
-    });
-    if (!find) throw new NotFoundException(`User with id=${id} not found`);
-    delete find.tfa_enabled;
-    delete find.tfa_secret;
-    this.logger.debug('Returning user', { find });
-    return find;
+    try {
+      const find = await this.usersRepository.findOne({
+        where: { id },
+        relations: [
+          'profile',
+          'friends.profile',
+          'blocked.profile',
+          'friend_requests.profile',
+        ],
+      });
+      if (!find) throw new NotFoundException(`User with id=${id} not found`);
+      delete find.tfa_enabled;
+      delete find.tfa_secret;
+      this.logger.debug('Returning user', { find });
+      return find;
+    } catch (error) {
+      throw new BadRequestException(
+        `Failed to process request with id '${id}'`,
+      );
+    }
   }
 
   async findCompleteUserById(id: number): Promise<UserDto> {

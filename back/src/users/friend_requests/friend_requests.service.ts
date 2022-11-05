@@ -45,29 +45,33 @@ export class FriendRequestsService {
   private async userReceivedPendingFriendRequests(
     id: number,
   ): Promise<Partial<User[]>> {
-    const users = await this.usersRepository.query(
-      `select users.*, profiles.*
-        from users
-        inner join friend_requests on ("usersId_2" = users.id)
-        inner join profiles on (users.id = profiles.id)
-        where "usersId_1" = ${id};`,
-    );
-    return users.map((user): Partial<User> => {
-      return {
-        id: user.id,
-        login_intra: user.login_intra,
-        profile: {
-          id: user.profile_id,
-          avatar_path: user.avatar_path,
-          nickname: user.nickname,
-          status: user.status,
-          name: user.name,
-          losses: user.losses,
-          wins: user.wins,
-          mmr: user.mmr,
-        },
-      };
-    });
+    try {
+      const users = await this.usersRepository.query(
+        `select users.*, profiles.*
+			  from users
+			  inner join friend_requests on ("usersId_2" = users.id)
+			  inner join profiles on (users.id = profiles.id)
+			  where "usersId_1" = ${id};`,
+      );
+      return users.map((user): Partial<User> => {
+        return {
+          id: user.id,
+          login_intra: user.login_intra,
+          profile: {
+            id: user.profile_id,
+            avatar_path: user.avatar_path,
+            nickname: user.nickname,
+            status: user.status,
+            name: user.name,
+            losses: user.losses,
+            wins: user.wins,
+            mmr: user.mmr,
+          },
+        };
+      });
+    } catch (error) {
+      throw new BadRequestException(`Failed to process request with id ${id}`);
+    }
   }
 
   async request(me: number, target: number) {
