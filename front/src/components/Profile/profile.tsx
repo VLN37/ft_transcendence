@@ -16,31 +16,46 @@ import {
   Input,
   InputGroup,
   InputRightElement,
+  InputLeftElement,
+  InputLeftAddon,
 } from '@chakra-ui/react';
 import { useState } from 'react';
 
-function SendButton() {
-  return <Button></Button>;
-}
-
 function InputFileUpload() {
-  const [value, setValue] = useState('');
-  const handleChange = (event: any) => setValue(event.target.value);
+  const [value, setValue] = useState<File | null>(null);
 
-  const fileUpload = () => console.log('uploading ', value);
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files != null) setValue(event.target.files[0]);
+  };
+
+  // const fileUpload = () => {
+  //   const formdata = new FormData();
+  //   if (value) formdata.append('File', value);
+  //   const content = await value?.text();
+  //   console.log(formdata);
+  //   console.log(content);
+  //   console.log('oi');
+  // };
+
+  async function fileUpload() {
+    const formdata = new FormData();
+    const content = await value?.text();
+    if (content) formdata.append('File', content);
+    console.log(formdata);
+    // console.log(content);
+    // console.log('oi');
+  }
 
   return (
-    <InputGroup size="md">
-      <Input
-        value={value}
-        onChange={handleChange}
-        type="file"
-        accept=".jpg, .png"
-      ></Input>
+    <div>
+      <InputGroup>
+      <InputLeftAddon>Change Avatar</InputLeftAddon>
+      <Input onChange={handleChange} type="file" accept=".jpg, .png"></Input>
       <InputRightElement
-        children={<DownloadIcon onClick={fileUpload} />}
+        children={<DownloadIcon onClick={fileUpload}></DownloadIcon>}
       ></InputRightElement>
-    </InputGroup>
+      </InputGroup>
+    </div>
   );
 }
 
@@ -77,8 +92,8 @@ export function Profile() {
               </GridItem>
             </Grid>
             <Grid templateColumns={'repeat(5, 1 fr)'}>
-              <GridItem colStart={1}>Change avatar</GridItem>
-              <GridItem colStart={2}>
+              <GridItem colStart={1}></GridItem>
+              <GridItem colStart={1}>
                 <InputFileUpload />
               </GridItem>
             </Grid>
