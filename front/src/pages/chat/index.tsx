@@ -39,8 +39,8 @@ function MessageComponent(props: any) {
           {props.name}
         </Text>
       </Box>
-      <Flex paddingRight={'1rem'} paddingTop={'0.7rem'} alignItems={'center'}>
-        <Text wordBreak={'break-word'} padding={'0.2rem'} mt={'-1rem'}>
+      <Flex paddingRight={'1rem'} alignItems={'center'}>
+        <Text wordBreak={'break-word'} paddingX={'0.2rem'}>
           {props.text}
         </Text>
       </Flex>
