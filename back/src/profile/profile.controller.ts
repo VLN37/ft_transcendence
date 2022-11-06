@@ -12,7 +12,7 @@ import { ProfileService } from './profile.service';
 
 MulterModule.register({
   dest: './',
-})
+});
 
 @Controller('profile')
 export class ProfileController {
@@ -22,18 +22,9 @@ export class ProfileController {
 
   @Post('/avatar')
   @UseInterceptors(FileInterceptor('avatar'))
-  uploadAvatar(
-    @Req() req: any,
-    @Body() body: any,
-    @Body('avatar') content: string,
-    @UploadedFile() file: Express.Multer.File,
-  ) {
-    // console.log('req', req);
-    console.log('body ->', body);
-    console.log('avatar ->', content);
-    console.log(file);
+  uploadAvatar(@UploadedFile() file: Express.Multer.File) {
     this.logger.log('Incoming avatar upload request');
-    this.ProfileService.saveAvatar(content);
+    this.ProfileService.saveAvatar(file);
     return 'ta la';
   }
 }
