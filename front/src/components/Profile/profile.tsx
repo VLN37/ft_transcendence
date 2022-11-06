@@ -40,10 +40,8 @@ function InputFileUpload() {
 
   async function fileUpload() {
     const formdata = new FormData();
-    const content = await value?.text();
-    // console.log(content);
     formdata.append('stuff', 'oi');
-    if (content) formdata.append('avatar', content);
+    if (value) formdata.append('avatar', value);
     await api.uploadAvatar(formdata);
   }
 
@@ -51,7 +49,7 @@ function InputFileUpload() {
     <div>
       <InputGroup>
       <InputLeftAddon>Change Avatar</InputLeftAddon>
-      <Input onChange={handleChange} type="file" accept=".jpg, .png"></Input>
+      <Input onChange={handleChange} type="file" accept=".jpg, .png, .txt"></Input>
       <InputRightElement
         children={<DownloadIcon onClick={fileUpload}></DownloadIcon>}
       ></InputRightElement>

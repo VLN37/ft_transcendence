@@ -36,9 +36,12 @@ class Api {
   async uploadAvatar(body: FormData) {
     console.log('upload: ', body);
     console.log('upload: ', body.get('avatar'));
-    const stuff = body.get('avatar');
+    const stuff = { avatar: body.get('avatar') }
+    const config = { headers: {
+      'Content-Type': 'multipart/form-data',
+    }};
     const response = await this.client.post<any>(
-      '/profile/avatar', stuff
+      '/profile/avatar', body
     );
     if (response.status != 201)
       throw new Error('Upload failed');
