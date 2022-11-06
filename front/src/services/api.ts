@@ -33,6 +33,17 @@ class Api {
     console.log('Creating API class instance');
   }
 
+  async uploadAvatar(body: FormData) {
+    console.log('upload: ', body);
+    console.log('upload: ', body.get('avatar'));
+    const stuff = body.get('avatar');
+    const response = await this.client.post<any>(
+      '/profile/avatar', stuff
+    );
+    if (response.status != 201)
+      throw new Error('Upload failed');
+  }
+
   connectToChannel(room: string) {
     this.channelSocket.emit('join', room);
     console.log(`Client connected to the room ${room}`);

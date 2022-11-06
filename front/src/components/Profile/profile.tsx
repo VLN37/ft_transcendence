@@ -20,6 +20,7 @@ import {
   InputLeftAddon,
 } from '@chakra-ui/react';
 import { useState } from 'react';
+import api from '../../services/api';
 
 function InputFileUpload() {
   const [value, setValue] = useState<File | null>(null);
@@ -40,10 +41,10 @@ function InputFileUpload() {
   async function fileUpload() {
     const formdata = new FormData();
     const content = await value?.text();
-    if (content) formdata.append('File', content);
-    console.log(formdata);
     // console.log(content);
-    // console.log('oi');
+    formdata.append('stuff', 'oi');
+    if (content) formdata.append('avatar', content);
+    await api.uploadAvatar(formdata);
   }
 
   return (

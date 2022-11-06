@@ -23,4 +23,9 @@ export class ProfileService {
     this.logger.debug('Profile: created', { newProfile });
     return newProfile;
   }
+
+  async saveAvatar(image: string) {
+    console.log(image);
+    return 'lol';
+  }
 }
