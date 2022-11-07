@@ -10,14 +10,15 @@ import { ProfileService } from './profile.service';
 import { diskStorage } from 'multer';
 
 function editFileName(req, file: Express.Multer.File, callback) {
+  //FIXME: error does not reach front end api
   if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
     return callback(new Error('Only image files are allowed!'), false);
   }
-  console.log(file.filename);
+  // console.log(file.filename);
   const name = file.originalname.split('.')[0];
   const fileExt = file.originalname.split('.').pop();
   const filename = name + '.' + fileExt;
-  console.log(filename);
+  // console.log(filename);
   callback(null, filename);
 }
 
