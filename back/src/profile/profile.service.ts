@@ -25,8 +25,7 @@ export class ProfileService {
   }
 
   async saveAvatar(image: Express.Multer.File) {
-    this.logger.debug('Received object')
-    console.log(image);
+    this.logger.debug('Received object', image)
     return 'lol';
   }
 }
