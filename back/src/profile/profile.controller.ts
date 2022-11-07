@@ -8,6 +8,7 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ProfileService } from './profile.service';
 import { diskStorage } from 'multer';
+import { faker } from '@faker-js/faker';
 
 function editFileName(req, file: Express.Multer.File, callback) {
   //FIXME: error does not reach front end api
@@ -15,10 +16,10 @@ function editFileName(req, file: Express.Multer.File, callback) {
     return callback(new Error('Only image files are allowed!'), false);
   }
   // console.log(file.filename);
-  const name = file.originalname.split('.')[0];
+  const name = faker.random.alphaNumeric(20);
   const fileExt = file.originalname.split('.').pop();
   const filename = name + '.' + fileExt;
-  // console.log(filename);
+  console.log(filename);
   callback(null, filename);
 }
 

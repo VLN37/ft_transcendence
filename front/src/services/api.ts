@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { io, Socket } from 'socket.io-client';
 
 import { Channel } from '../models/Channel';
@@ -34,17 +34,21 @@ class Api {
   }
 
   async uploadAvatar(body: FormData) {
-    console.log('upload: ', body);
-    console.log('upload: ', body.get('avatar'));
-    const stuff = { avatar: body.get('avatar') }
-    const config = { headers: {
-      'Content-Type': 'multipart/form-data',
-    }};
-    const response = await this.client.post<any>(
-      '/profile/avatar', body
-    );
-    if (response.status != 201)
-      throw new Error('Upload failed');
+    // console.log('upload: ', body);
+    // console.log('upload: ', body.get('avatar'));
+    // const stuff = { avatar: body.get('avatar') };
+    const config = {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    };
+    const response = await this.client
+      .post<any>('/profile/avatar', body)
+      .catch((error: AxiosError) => {
+        return error.response;
+      });
+    console.log(response);
+    return response;
   }
 
   connectToChannel(room: string) {

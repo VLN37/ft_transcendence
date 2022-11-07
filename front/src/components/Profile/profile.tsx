@@ -18,41 +18,51 @@ import {
   InputRightElement,
   InputLeftElement,
   InputLeftAddon,
+  useToast,
 } from '@chakra-ui/react';
+import { AxiosResponse } from 'axios';
 import { useState } from 'react';
 import api from '../../services/api';
 
 function InputFileUpload() {
   const [value, setValue] = useState<File | null>(null);
+  const toast = useToast();
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files != null) setValue(event.target.files[0]);
   };
 
-  // const fileUpload = () => {
-  //   const formdata = new FormData();
-  //   if (value) formdata.append('File', value);
-  //   const content = await value?.text();
-  //   console.log(formdata);
-  //   console.log(content);
-  //   console.log('oi');
-  // };
-
   async function fileUpload() {
     const formdata = new FormData();
-    formdata.append('stuff', 'oi');
     if (value) formdata.append('avatar', value);
-    await api.uploadAvatar(formdata);
+
+    const response:
+      | AxiosResponse<any, any>
+      | AxiosResponse<unknown, any>
+      | undefined = await api.uploadAvatar(formdata);
+    if (!response)
+      return;
+    const status = response.status == 201 ? 'success' : 'error';
+    const message = response.status == 201 ? '' : 'invalid file type';
+    toast({
+      title: 'Avatar request sent',
+      status: status,
+      description:  message,
+    });
   }
 
   return (
     <div>
       <InputGroup>
-      <InputLeftAddon>Change Avatar</InputLeftAddon>
-      <Input onChange={handleChange} type="file" accept=".jpg, .png, .txt"></Input>
-      <InputRightElement
-        children={<DownloadIcon onClick={fileUpload}></DownloadIcon>}
-      ></InputRightElement>
+        <InputLeftAddon>Change Avatar</InputLeftAddon>
+        <Input
+          onChange={handleChange}
+          type="file"
+          accept=".jpg, .png, .txt"
+        ></Input>
+        <InputRightElement
+          children={<DownloadIcon onClick={fileUpload}></DownloadIcon>}
+        ></InputRightElement>
       </InputGroup>
     </div>
   );
