@@ -24,12 +24,10 @@ class Api {
   });
 
   private matchMakingSocket?: Socket;
+  private channelSocket?: Socket;
   private token?: string;
 
-  private channelSocket: Socket;
-
   constructor() {
-    this.channelSocket = io(`http://localhost:3000/${this.CHANNEL_NAMESPACE}`);
     console.log('Creating API class instance');
   }
 
@@ -55,16 +53,16 @@ class Api {
   }
 
   connectToChannel(room: string) {
-    this.channelSocket.emit('join', room);
+    this.channelSocket?.emit('join', room);
     console.log(`Client connected to the room ${room}`);
   }
 
   sendMessage(data: any) {
-    this.channelSocket.emit('chat', data);
+    this.channelSocket?.emit('chat', data);
   }
 
   listenMessage(callback: any) {
-    this.channelSocket.on('chat', callback);
+    this.channelSocket?.on('chat', callback);
   }
 
   async authenticate(code: string): Promise<string> {
@@ -162,6 +160,9 @@ class Api {
   setToken(token: string) {
     this.client.defaults.headers['Authorization'] = `Bearer ${token}`;
     this.token = token;
+    this.channelSocket = io(`http://localhost:3000/${this.CHANNEL_NAMESPACE}`, {
+      auth: { token },
+    });
     // this.matchMakingSocket.connect();
   }
 
@@ -169,6 +170,7 @@ class Api {
     this.client.defaults.headers['Authorization'] = null;
     if (this.matchMakingSocket) this.matchMakingSocket.auth = {};
     this.token = undefined;
+	this.channelSocket?.disconnect();
   }
 }
 
