@@ -42,13 +42,16 @@ class Api {
         'Content-Type': 'multipart/form-data',
       },
     };
-    const response = await this.client
-      .post<any>('/profile/avatar', body)
-      .catch((error: AxiosError) => {
-        return error.response;
-      });
-    console.log(response);
-    return response;
+    try {
+      const response = await this.client
+       .post<any>('/profile/avatar', body, config);
+       console.log(response);
+       return response;
+    }
+    catch (err) {
+      console.log ('catch', err);
+      return (err as AxiosError).response;
+    }
   }
 
   connectToChannel(room: string) {

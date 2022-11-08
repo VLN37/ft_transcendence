@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Controller,
   Logger,
   Post,
@@ -12,9 +13,7 @@ import { faker } from '@faker-js/faker';
 
 function editFileName(req, file: Express.Multer.File, callback) {
   //FIXME: error does not reach front end api
-  if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
-    return callback(new Error('Only image files are allowed!'), false);
-  }
+
   // console.log(file.filename);
   const name = faker.random.alphaNumeric(20);
   const fileExt = file.originalname.split('.').pop();
@@ -39,6 +38,9 @@ export class ProfileController {
     }),
   )
   uploadAvatar(@UploadedFile() file: Express.Multer.File) {
+    console.log(file);
+    if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/))
+      throw new BadRequestException("Invalid file type");
     this.logger.log('Incoming avatar upload request');
     this.ProfileService.saveAvatar(file);
     return 'ta la';

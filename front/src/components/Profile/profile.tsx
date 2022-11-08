@@ -36,14 +36,11 @@ function InputFileUpload() {
     const formdata = new FormData();
     if (value) formdata.append('avatar', value);
 
-    const response:
-      | AxiosResponse<any, any>
-      | AxiosResponse<unknown, any>
-      | undefined = await api.uploadAvatar(formdata);
+    const response: any = await api.uploadAvatar(formdata);
     if (!response)
       return;
     const status = response.status == 201 ? 'success' : 'error';
-    const message = response.status == 201 ? '' : 'invalid file type';
+    const message = response.status == 201 ? '' : response.data.message;
     toast({
       title: 'Avatar request sent',
       status: status,
