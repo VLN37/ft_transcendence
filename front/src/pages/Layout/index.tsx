@@ -8,6 +8,7 @@ import { Profile } from '../../components/Profile/profile';
 import './style.css';
 
 export default function Layout({ setUser }: any) {
+  console.log('layout', process.env.HOSTNAME);
   const link =
     JSON.parse(localStorage.getItem('user') || '').profile.avatar_path || '';
   return (

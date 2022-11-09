@@ -16,6 +16,7 @@ import { FriendRequestsController } from './users/friend_requests/friend_request
 import { Channel } from './entities/channel.entity';
 import { ChannelsModule } from './channels/channels.module';
 import { MatchMakingModule } from './match-making/match-making.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
 
 const environment = process.env.ENVIRONMENT;
 const dbHost = process.env.DB_HOST;
@@ -45,6 +46,9 @@ declare global {
     }),
     ConfigModule.forRoot({
       isGlobal: true,
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: './uploads'
     }),
     UsersModule,
     AuthModule,

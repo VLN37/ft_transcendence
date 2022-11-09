@@ -63,7 +63,7 @@ const AuthCallback = ({ setUser }: any) => {
 
     api.getUser('me').then((user) => {
       if (!user.profile.avatar_path)
-        user.profile.avatar_path = 'https://bit.ly/3gSNdAq';
+        user.profile.avatar_path = 'gatinho.jfif';
       userStorage.saveUser(user);
       setUser(user);
       setLoading(false);

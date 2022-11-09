@@ -50,7 +50,7 @@ function InputFileUpload() {
     toast({
       title: 'Avatar request sent',
       status: status,
-      description:  message,
+      description: message,
     });
   }
 
@@ -74,6 +74,7 @@ function InputFileUpload() {
 export function Profile() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const link =
+    process.env.REACT_APP_HOSTNAME +
     JSON.parse(localStorage.getItem('user') || '').profile.avatar_path || '';
   return (
     <div>
