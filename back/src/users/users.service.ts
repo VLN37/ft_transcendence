@@ -112,7 +112,6 @@ export class UsersService {
       delete user.tfa_enabled;
       delete user.tfa_secret;
     });
-    this.logger.debug('Returning my user', { user });
     return user;
   }
 

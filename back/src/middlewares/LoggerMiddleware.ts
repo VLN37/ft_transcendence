@@ -30,12 +30,9 @@ export class LoggerMiddleware implements NestMiddleware {
 }
 
 export function editFileName(req, file: Express.Multer.File, callback) {
-  //FIXME: error does not reach front end api
-
-  // console.log(file.filename);
   const name = faker.random.alphaNumeric(20);
   const fileExt = file.originalname.split('.').pop();
   const filename = name + '.' + fileExt;
-  console.log(filename);
+  // console.log(file.filename);
   callback(null, filename);
 }
