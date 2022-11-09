@@ -32,7 +32,7 @@ services:
       - 3000:3000
     volumes:
       - ./back:/back
-    command: npm run start:dev
+    command: npm run start:hot
     working_dir: /back
     environment:
       DB_HOST: database
