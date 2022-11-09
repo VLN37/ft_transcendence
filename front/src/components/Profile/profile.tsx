@@ -79,8 +79,8 @@ export function Profile() {
       <Image
         onClick={onOpen}
         marginTop={'15px'}
-        borderRadius="full"
-        boxSize="65px"
+        borderRadius='full'
+        boxSize='65px'
         src={link}
       />
       <Modal isOpen={isOpen} onClose={onClose} size={'3xl'}>
@@ -89,7 +89,7 @@ export function Profile() {
           <ModalCloseButton></ModalCloseButton>
           <ModalHeader>Profile</ModalHeader>
           <ModalBody>
-            <Image src={link}></Image>
+            <Image src={link} boxSize='200px'></Image>
             <Grid templateColumns={'repeat(5, 1 fr)'}>
               <GridItem colStart={1}>Nickname</GridItem>
               <GridItem colStart={5}>
