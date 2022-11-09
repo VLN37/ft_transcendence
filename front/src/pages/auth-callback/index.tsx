@@ -62,8 +62,8 @@ const AuthCallback = ({ setUser }: any) => {
     console.log({ payload });
 
     api.getUser('me').then((user) => {
-      if (!user.profile.avatar_path)
-        user.profile.avatar_path = 'gatinho.jfif';
+      const link = process.env.REACT_APP_HOSTNAME + user.profile.avatar_path;
+      localStorage.setItem('avatar', link);
       userStorage.saveUser(user);
       setUser(user);
       setLoading(false);

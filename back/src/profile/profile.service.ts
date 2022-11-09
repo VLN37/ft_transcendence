@@ -19,6 +19,8 @@ export class ProfileService {
 
   async create(profile: ProfileDto) {
     if (!profile) return null;
+    if (!profile.avatar_path)
+      profile.avatar_path = 'avatars/gatinho.jpeg';
     const newProfile = await this.profileRepository
       .save(profile)
       .catch((err: any) => {
@@ -36,7 +38,7 @@ export class ProfileService {
     let user: UserDto = await this.usersService.getMe(token);
     if (user.profile.avatar_path)
       fs.unlink(user.profile.avatar_path, err => console.log(err));
-    user.profile.avatar_path = image.filename;
+    user.profile.avatar_path = 'avatars/' + image.filename;
     this.logger.debug(user);
     console.log(user);
     //FIX ME: USERSSERVICE.EDIT DOES NOT QUERY ACROSS MANY-TO-MANY

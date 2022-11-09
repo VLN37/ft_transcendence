@@ -16,11 +16,9 @@ import {
   Input,
   InputGroup,
   InputRightElement,
-  InputLeftElement,
   InputLeftAddon,
   useToast,
 } from '@chakra-ui/react';
-import { AxiosResponse } from 'axios';
 import { useState } from 'react';
 import api from '../../services/api';
 import userStorage from '../../services/userStorage';
@@ -42,9 +40,10 @@ function InputFileUpload() {
     const message = response.status == 201 ? '' : response.data.message;
     if (response.status == 201) {
       api.getUser('me').then((user) => {
-        console.log(response.data);
-        console.log(user);
+        const link = process.env.REACT_APP_HOSTNAME + user.profile.avatar_path;
+        user.profile.avatar_path = link;
         userStorage.saveUser(response.data);
+        localStorage.setItem('avatar', link);
       });
     }
     toast({
@@ -73,9 +72,8 @@ function InputFileUpload() {
 
 export function Profile() {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const link =
-    process.env.REACT_APP_HOSTNAME +
-    JSON.parse(localStorage.getItem('user') || '').profile.avatar_path || '';
+  const link = localStorage.getItem('avatar') || '';
+
   return (
     <div>
       <Image

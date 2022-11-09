@@ -48,7 +48,8 @@ declare global {
       isGlobal: true,
     }),
     ServeStaticModule.forRoot({
-      rootPath: './uploads'
+      rootPath: './uploads',
+      serveRoot: '/avatars',
     }),
     UsersModule,
     AuthModule,
