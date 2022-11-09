@@ -38,6 +38,11 @@ export class ProfileService {
       fs.unlink(user.profile.avatar_path, err => console.log(err));
     user.profile.avatar_path = image.filename;
     this.logger.debug(user);
+    console.log(user);
+    //FIX ME: USERSSERVICE.EDIT DOES NOT QUERY ACROSS MANY-TO-MANY
+    delete user.friends;
+    delete user.friend_requests;
+    delete user.blocked;
     await this.usersService.edit(user.id, user);
     return user;
   }
