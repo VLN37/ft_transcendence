@@ -13,13 +13,6 @@ import { ProfileService } from 'src/profile/profile.service';
 import { makeUsers } from 'test/utils';
 import { JwtService } from '@nestjs/jwt';
 
-function byId(id: number) {
-  return {
-    where: { id },
-    relations: ['profile'],
-  };
-}
-
 @Injectable()
 export class UsersService {
   private readonly logger = new Logger(UsersService.name);
@@ -64,10 +57,14 @@ export class UsersService {
     const oldUser = await this.findUserById(id);
     const error = await this.userChangedForbiddenFields(oldUser, user);
     if (error) throw new ForbiddenException(`You cannot change user ${error}`);
-    //FIXME: update does not work, only save
-    // await this.usersRepository.update(id, user);
-    await this.usersRepository.save(user);
-    const updatedUser = await this.findUserById(id);
+    delete user.friends;
+    delete user.blocked;
+    delete user.friend_requests;
+    await this.usersRepository.save(user).catch((err: any) => {
+      throw new BadRequestException('User: ' + (err.driverError.detail ?? err));
+    });
+    const updatedUser = await this.findCompleteUserById(id);
+    delete updatedUser.tfa_secret;
     delete updatedUser.friends;
     delete updatedUser.blocked;
     delete updatedUser.friend_requests;
@@ -109,11 +106,9 @@ export class UsersService {
       );
     }
     const user = await this.findCompleteUserById(id);
+    delete user.tfa_secret;
     if (!user) throw new NotFoundException(`User with id=${id} not found`);
-    user.friends.map((user) => {
-      delete user.tfa_enabled;
-      delete user.tfa_secret;
-    });
+    this.logger.debug('Returning my user', { user });
     return user;
   }
 
@@ -188,6 +183,19 @@ export class UsersService {
         'blocked.profile',
         'friend_requests.profile',
       ],
+    });
+    if (!find) return null;
+    find.friends.map((user) => {
+      delete user.tfa_enabled;
+      delete user.tfa_secret;
+    });
+    find.blocked.map((user) => {
+      delete user.tfa_enabled;
+      delete user.tfa_secret;
+    });
+    find.friend_requests.map((user) => {
+      delete user.tfa_enabled;
+      delete user.tfa_secret;
     });
     this.logger.debug('Returning user', { find });
     return find;

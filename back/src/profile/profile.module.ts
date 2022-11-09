@@ -6,7 +6,6 @@ import { ProfileController } from './profile.controller';
 import { ProfileService } from './profile.service';
 import { editFileName } from 'src/middlewares/LoggerMiddleware';
 import { diskStorage } from 'multer';
-import { UsersService } from 'src/users/users.service';
 import { UsersModule } from 'src/users/users.module';
 
 

@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Controller,
   Logger,
   Post,
@@ -9,7 +8,6 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ProfileService } from './profile.service';
-import * as fs from 'fs';
 
 @Controller('profile')
 export class ProfileController {

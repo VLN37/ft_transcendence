@@ -41,10 +41,6 @@ export class ProfileService {
     user.profile.avatar_path = 'avatars/' + image.filename;
     this.logger.debug(user);
     console.log(user);
-    //FIX ME: USERSSERVICE.EDIT DOES NOT QUERY ACROSS MANY-TO-MANY
-    delete user.friends;
-    delete user.friend_requests;
-    delete user.blocked;
     await this.usersService.edit(user.id, user);
     return user;
   }
