@@ -32,8 +32,10 @@ function InputFileUpload() {
   };
 
   async function fileUpload() {
+    if (!value)
+      return;
     const formdata = new FormData();
-    if (value) formdata.append('avatar', value);
+    formdata.append('avatar', value);
 
     const response: any = await api.uploadAvatar(formdata);
     const status = response.status == 201 ? 'success' : 'error';
