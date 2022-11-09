@@ -42,7 +42,8 @@ function InputFileUpload() {
       api.getUser('me').then((user) => {
         const link = process.env.REACT_APP_HOSTNAME + user.profile.avatar_path;
         user.profile.avatar_path = link;
-        userStorage.saveUser(response.data);
+        console.log('user', user);
+        userStorage.saveUser(user);
         localStorage.setItem('avatar', link);
       });
     }

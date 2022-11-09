@@ -1,7 +1,9 @@
 import { Tr, Td, Image } from '@chakra-ui/react';
 import { RankMenu } from './RankMenu';
 
-function UserBlock(props: { user?: any }) {
+function UserBlock(props: any) {
+  console.log('userblock', props.user.avatar_path);
+
   return (
     <Tr>
       <Td>{props.user.rank}</Td>
@@ -9,7 +11,7 @@ function UserBlock(props: { user?: any }) {
         <Image
           borderRadius="full"
           boxSize="65px"
-          src={props.user.avatar_path}
+          src={props.path}
         />
       </Td>
       <Td>{<RankMenu input={props.user.nickname} id={props.user.id} />}</Td>

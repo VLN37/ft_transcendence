@@ -109,7 +109,13 @@ export function RankTable(props: any) {
             ) : (
               userList
                 .filter((user) => user.login_intra.includes(props.query))
-                .map((user, i) => <UserBlock key={i} user={user} />)
+                .map((user, i) => (
+                  <UserBlock
+                    key={i}
+                    user={user}
+                    path={process.env.REACT_APP_HOSTNAME + user.avatar_path}
+                  />
+                ))
             )}
           </Tbody>
         </Table>
