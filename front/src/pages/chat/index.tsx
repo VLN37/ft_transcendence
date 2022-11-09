@@ -145,12 +145,13 @@ export default function ChatPage() {
         bg="gray.700"
         overflowY={'scroll'}
       >
-        {messages.map((message) => {
+        {messages.map((message, index) => {
           return (
             <MessageComponent
               name={message.name}
               image={message.avatar}
               text={message.text}
+              key={index}
             />
           );
         })}

@@ -41,18 +41,23 @@ class Api {
       },
     };
     try {
-      const response = await this.client
-       .post<any>('/profile/avatar', body, config);
-       console.log(response);
-       return response;
-    }
-    catch (err) {
-      console.log ('catch', err);
+      const response = await this.client.post<any>(
+        '/profile/avatar',
+        body,
+        config,
+      );
+      console.log(response);
+      return response;
+    } catch (err) {
+      console.log('catch', err);
       return (err as AxiosError).response;
     }
   }
 
   connectToChannel(room: string) {
+    this.channelSocket = io(`http://localhost:3000/${this.CHANNEL_NAMESPACE}`, {
+      auth: { token: this.token },
+    });
     this.channelSocket?.emit('join', room);
     console.log(`Client connected to the room ${room}`);
   }
@@ -160,9 +165,6 @@ class Api {
   setToken(token: string) {
     this.client.defaults.headers['Authorization'] = `Bearer ${token}`;
     this.token = token;
-    this.channelSocket = io(`http://localhost:3000/${this.CHANNEL_NAMESPACE}`, {
-      auth: { token },
-    });
     // this.matchMakingSocket.connect();
   }
 
@@ -170,7 +172,7 @@ class Api {
     this.client.defaults.headers['Authorization'] = null;
     if (this.matchMakingSocket) this.matchMakingSocket.auth = {};
     this.token = undefined;
-	this.channelSocket?.disconnect();
+    this.channelSocket?.disconnect();
   }
 }
 
