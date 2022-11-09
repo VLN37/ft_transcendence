@@ -4,12 +4,18 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Profile } from 'src/entities/profile.entity';
 import { ProfileController } from './profile.controller';
 import { ProfileService } from './profile.service';
+import { editFileName } from 'src/middlewares/LoggerMiddleware';
+import { diskStorage } from 'multer';
+
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Profile]),
     MulterModule.register({
-      dest: './uploads',
+      storage: diskStorage({
+        destination: './uploads',
+        filename: editFileName,
+      }),
     }),
   ],
   controllers: [ProfileController],
