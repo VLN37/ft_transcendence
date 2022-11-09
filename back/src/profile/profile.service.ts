@@ -5,7 +5,7 @@ import { ProfileDto } from 'src/users/dto/profile.dto';
 import { UserDto } from 'src/users/dto/user.dto';
 import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
-
+import * as fs from 'fs';
 @Injectable()
 export class ProfileService {
   private readonly logger = new Logger(ProfileService.name);
@@ -29,7 +29,21 @@ export class ProfileService {
   }
 
   async saveAvatar(token: string, image: Express.Multer.File) {
-    const user: UserDto = await this.usersService.getMe(token);
-    return 'lol';
+    if (!image.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
+      fs.unlink(image.path, (err) => console.log(err));
+      throw new BadRequestException('Invalid file type');
+    }
+    let user: UserDto = await this.usersService.getMe(token);
+    if (user.profile.avatar_path)
+      fs.unlink(user.profile.avatar_path, err => console.log(err));
+    user.profile.avatar_path = image.path;
+    this.logger.debug(user);
+    console.log(user);
+    //FIX ME: USERSSERVICE.EDIT DOES NOT QUERY ACROSS MANY-TO-MANY
+    delete user.friends;
+    delete user.friend_requests;
+    delete user.blocked;
+    await this.usersService.edit(user.id, user);
+    return user;
   }
 }

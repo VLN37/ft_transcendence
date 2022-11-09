@@ -10,7 +10,6 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ProfileService } from './profile.service';
 import * as fs from 'fs';
-import { UsersService } from 'src/users/users.service';
 
 @Controller('profile')
 export class ProfileController {
@@ -26,11 +25,7 @@ export class ProfileController {
   ) {
     this.logger.log('Incoming avatar upload request');
     this.logger.debug(file);
-    if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
-      throw new BadRequestException('Invalid file type');
-    }
     console.log('token', token);
-    fs.unlink(file.path, (err) => console.log(err));
     return this.ProfileService.saveAvatar(token, file);
   }
 }

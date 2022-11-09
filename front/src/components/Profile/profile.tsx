@@ -23,6 +23,7 @@ import {
 import { AxiosResponse } from 'axios';
 import { useState } from 'react';
 import api from '../../services/api';
+import userStorage from '../../services/userStorage';
 
 function InputFileUpload() {
   const [value, setValue] = useState<File | null>(null);
@@ -39,6 +40,13 @@ function InputFileUpload() {
     const response: any = await api.uploadAvatar(formdata);
     const status = response.status == 201 ? 'success' : 'error';
     const message = response.status == 201 ? '' : response.data.message;
+    if (response.status == 201) {
+      api.getUser('me').then((user) => {
+        console.log(response.data);
+        console.log(user);
+        userStorage.saveUser(response.data);
+      });
+    }
     toast({
       title: 'Avatar request sent',
       status: status,

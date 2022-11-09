@@ -64,7 +64,9 @@ export class UsersService {
     const oldUser = await this.findUserById(id);
     const error = await this.userChangedForbiddenFields(oldUser, user);
     if (error) throw new ForbiddenException(`You cannot change user ${error}`);
-    await this.usersRepository.update(id, user);
+    //FIXME: update does not work, only save
+    // await this.usersRepository.update(id, user);
+    await this.usersRepository.save(user);
     const updatedUser = await this.findUserById(id);
     delete updatedUser.friends;
     delete updatedUser.blocked;
