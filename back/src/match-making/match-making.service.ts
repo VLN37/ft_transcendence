@@ -1,4 +1,6 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { WebSocketServer } from '@nestjs/websockets';
+import { Server } from 'socket.io';
 import { UsersService } from 'src/users/users.service';
 import { MatchType, MATCH_TYPES } from './dto/AppendToQueueDTO';
 
@@ -30,18 +32,22 @@ export class MatchMakingService {
   private memoryQueue = new MemoryQueue();
   private memoryMatches: MemoryMatch[] = [];
 
+  @WebSocketServer()
+  private server: Server;
+
   constructor(private usersService: UsersService) {}
 
   // PERF: we could save the queue the user is on in the database for better dequeueing
   enqueue(user: Express.User, matchType: MatchType) {
     const queue = this.memoryQueue[matchType];
-    this.logger.log(
-      `user ${user.login_intra} is entering the ${matchType} match-making queue`,
-    );
 
     if (queue.some((enqueuedUser) => enqueuedUser.id === user.id)) {
       throw new Error('User is already in a queue');
     }
+    this.logger.log(
+      `user ${user.login_intra} is entering the ${matchType} match-making queue`,
+    );
+
     queue.push(user);
 
     if (this.isMatchAvailable(queue)) {

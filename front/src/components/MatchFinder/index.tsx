@@ -13,7 +13,16 @@ import {
   Box,
   useToast,
   Spinner,
+  AlertDialog,
+  AlertDialogOverlay,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogCloseButton,
+  AlertDialogBody,
+  AlertDialogFooter,
+  Button,
 } from '@chakra-ui/react';
+import React from 'react';
 import { useState } from 'react';
 import api from '../../services/api';
 
@@ -29,7 +38,17 @@ export default function MatchFinder() {
   const [matchType, setMatchType] = useState<MatchType>('TURBO');
   const [isSearching, setIsSearching] = useState(false);
 
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const cancelRef = React.useRef(null);
+  const {
+    isOpen: isDrawerOpen,
+    onOpen: openDrawer,
+    onClose: closeDrawer,
+  } = useDisclosure();
+  const {
+    isOpen: isAlertOpen,
+    onOpen: openAlert,
+    onClose: closeAlert,
+  } = useDisclosure();
 
   const stopFinding = () => {
     api.stopFindingMatch();
@@ -42,7 +61,7 @@ export default function MatchFinder() {
     if (isSearching) {
       stopFinding();
     } else {
-      onOpen();
+      openDrawer();
     }
   };
 
@@ -55,13 +74,14 @@ export default function MatchFinder() {
 
   const onMatchFindResponse = (data: any) => {
     console.log('server responded via ws: ' + { data });
+    openAlert();
   };
 
   const handleFindClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setIsSearching(true);
     try {
-      const result = api.findMatch(matchType, onMatchFindResponse);
+      api.findMatch(matchType, onMatchFindResponse);
     } catch (e) {
       toast({
         id: toastId,
@@ -74,12 +94,43 @@ export default function MatchFinder() {
       setIsSearching(false);
     }
 
-    onClose();
+    closeDrawer();
   };
 
   return (
     <div className="match-finder">
-      <Drawer isOpen={isOpen} size="md" onClose={onClose} placement="right">
+      <AlertDialog
+        motionPreset="slideInBottom"
+        leastDestructiveRef={cancelRef}
+        onClose={closeAlert}
+        isOpen={isAlertOpen}
+        isCentered
+      >
+        <AlertDialogOverlay />
+
+        <AlertDialogContent>
+          <AlertDialogHeader>Discard Changes?</AlertDialogHeader>
+          <AlertDialogCloseButton />
+          <AlertDialogBody>
+            Are you sure you want to discard all of your notes? 44 words will be
+            deleted.
+          </AlertDialogBody>
+          <AlertDialogFooter>
+            <Button ref={cancelRef} onClick={closeAlert}>
+              No
+            </Button>
+            <Button colorScheme="red" ml={3}>
+              Yes
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+      <Drawer
+        isOpen={isDrawerOpen}
+        size="md"
+        onClose={closeDrawer}
+        placement="right"
+      >
         <DrawerOverlay />
         <DrawerContent>
           <DrawerHeader>Search for a match</DrawerHeader>
