@@ -68,6 +68,12 @@ export class MatchMakingGateway
     try {
       const user: UserDto = client.handshake.auth['user'];
       this.matchMakingService.enqueue(user, type);
+      client.join(user.login_intra); // only the user
+      setTimeout(() => {
+        this.server.in(user.login_intra).emit('match-found', {
+          data: 'Achamo',
+        });
+      }, 3000);
     } catch (e) {
       throw new WsException(e);
     }
