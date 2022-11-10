@@ -40,7 +40,7 @@ export class MatchMakingService {
     );
 
     if (queue.some((enqueuedUser) => enqueuedUser.id === user.id)) {
-      throw new BadRequestException('User is already in a queue');
+      throw new Error('User is already in a queue');
     }
     queue.push(user);
 
@@ -67,7 +67,7 @@ export class MatchMakingService {
   }
 
   private createMatch(queue: Express.User[]) {
-    const [user1, user2, ..._] = queue;
+    const [user1, user2] = queue;
     this.logger.debug(
       `Creating a match between users ${user1.login_intra} and ${user2.login_intra}`,
     );
