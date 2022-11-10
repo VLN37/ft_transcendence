@@ -1,16 +1,21 @@
 import { Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import {
+  ConnectedSocket,
+  MessageBody,
   OnGatewayConnection,
   OnGatewayDisconnect,
   OnGatewayInit,
+  SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
   WsException,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { TokenPayload } from 'src/auth/dto/TokenPayload';
+import { UserDto } from 'src/users/dto/user.dto';
 import { UsersService } from 'src/users/users.service';
+import { MatchType, MATCH_TYPES } from './dto/AppendToQueueDTO';
 import { MatchMakingService } from './match-making.service';
 
 @WebSocketGateway({
@@ -39,14 +44,8 @@ export class MatchMakingGateway
       this.validateConnection(socket)
         .then((user) => {
           this.logger.debug('user validated');
-          const type = socket.handshake.query.type;
-
-          if (type != 'CLASSIC' && type != 'TURBO') {
-            this.logger.error('invalid queue type: ' + type);
-            return next(new Error('Invalid queue type'));
-          }
-
           socket.handshake.auth['user'] = user;
+
           next();
         })
         .catch((err) => {
@@ -56,19 +55,45 @@ export class MatchMakingGateway
   }
 
   async handleConnection(client: Socket) {
-    const user = client.handshake.auth['user'];
-    const type = client.handshake.query.type as 'CLASSIC' | 'TURBO';
-    this.logger.debug(`new connection from client ${client.id}`);
-    this.matchMakingService.enqueue(user, type);
+    this.logger.debug(
+      `new connection from client ${client.handshake.auth.user.login_intra}`,
+    );
+  }
+
+  @SubscribeMessage('enqueue')
+  enqueue(
+    @MessageBody('type') type: MatchType,
+    @ConnectedSocket() client: Socket,
+  ) {
+    try {
+      const user: UserDto = client.handshake.auth['user'];
+      this.matchMakingService.enqueue(user, type);
+    } catch (e) {
+      throw new WsException(e);
+    }
+  }
+
+  private dequeueUser(client: Socket) {
+    try {
+      const user = client.handshake.auth['user'];
+      this.matchMakingService.dequeue(user);
+    } catch (e) {
+      throw new WsException(e);
+    }
+  }
+
+  @SubscribeMessage('dequeue')
+  dequeue(@ConnectedSocket() client: Socket) {
+    this.dequeueUser(client);
   }
 
   handleDisconnect(client: Socket) {
-    const user = client.handshake.auth['user'];
-    this.matchMakingService.dequeue(user);
+    this.dequeueUser(client);
     this.logger.debug(`client ${client.id} disconnected`);
   }
 
   private validateConnection(client: Socket) {
+    this.logger.debug('validating ws user connection');
     const token = client.handshake.auth.token;
     try {
       const payload = this.jwtService.verify<TokenPayload>(token, {

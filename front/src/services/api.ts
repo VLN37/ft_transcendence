@@ -122,14 +122,42 @@ class Api {
     return response.data;
   }
 
-  findMatch(type: 'CLASSIC' | 'TURBO', onResponse: Function) {
+  findMatch(
+    type: 'CLASSIC' | 'TURBO',
+    onMatchFound: Function,
+    onError?: Function,
+  ) {
+    console.log('match type: ' + type);
+
+    const matchFound = 'match-found';
+    const error = 'match-error';
+    this.matchMakingSocket?.once(matchFound, (matchData) => {
+      console.log('match found', matchData);
+      this.matchMakingSocket?.removeAllListeners(error);
+      onMatchFound(matchData);
+    });
+
+    this.matchMakingSocket?.once(error, (matchData) => {
+      console.log('match error', matchData);
+      this.matchMakingSocket?.removeAllListeners(matchFound);
+      onError?.call(matchData);
+    });
+
+    this.matchMakingSocket?.emit('enqueue', { type });
+  }
+
+  stopFindingMatch() {
+    if (this.matchMakingSocket?.connected) {
+      console.log('dequeueing user');
+      this.matchMakingSocket.emit('dequeue');
+    }
+  }
+
+  private connectToMatchMakingCoordinator() {
     const url = `http://localhost:3000/${this.MATCH_MAKING_NAMESPACE}`;
     const options = {
       auth: {
         token: this.token,
-      },
-      query: {
-        type: type,
       },
     };
 
@@ -146,26 +174,14 @@ class Api {
     });
 
     this.matchMakingSocket.on('connect_error', (err) => {
-      console.error(err);
+      console.error('error connecting to the server', err);
     });
-
-    this.matchMakingSocket.on('match-found', (matchData) => {
-      console.log(matchData);
-    });
-
-    // this.matchMakingSocket.connect();
-  }
-
-  stopFindingMatch() {
-    if (this.matchMakingSocket?.connected) {
-      this.matchMakingSocket.disconnect();
-    }
   }
 
   setToken(token: string) {
     this.client.defaults.headers['Authorization'] = `Bearer ${token}`;
     this.token = token;
-    // this.matchMakingSocket.connect();
+    this.connectToMatchMakingCoordinator();
   }
 
   removeToken() {
