@@ -2,7 +2,6 @@ import { Tr, Td, Image } from '@chakra-ui/react';
 import { RankMenu } from './RankMenu';
 
 function UserBlock(props: any) {
-  console.log('userblock', props.user.avatar_path);
 
   return (
     <Tr>

@@ -32,9 +32,6 @@ class Api {
   }
 
   async uploadAvatar(body: FormData) {
-    // console.log('upload: ', body);
-    // console.log('upload: ', body.get('avatar'));
-    // const stuff = { avatar: body.get('avatar') };
     const config = {
       headers: {
         'Content-Type': 'multipart/form-data',
@@ -46,10 +43,9 @@ class Api {
         body,
         config,
       );
-      console.log(response);
+      // console.log(response);
       return response;
     } catch (err) {
-      console.log('catch', err);
       return (err as AxiosError).response;
     }
   }
@@ -129,7 +125,7 @@ class Api {
         order: 'DESC',
       },
     });
-    console.log(response.data);
+    // console.log(response.data);
     return response.data;
   }
 

@@ -12,7 +12,6 @@ import { RankTable } from '../../components/Rank/';
 export default function RankPage() {
   const [searchValue, setSearchValue] = useState('');
   function handleSearchClick() {
-    console.log('value: ', searchValue);
     setSearchValue(searchValue);
   }
 

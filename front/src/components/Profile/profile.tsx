@@ -47,8 +47,6 @@ function InputFileUpload(props: any) {
     if (response.status == 201) {
       api.getUser('me').then((user) => {
         const link = process.env.REACT_APP_HOSTNAME + user.profile.avatar_path;
-        user.profile.avatar_path = link;
-        console.log('user', user);
         userStorage.saveUser(user);
         localStorage.setItem('avatar', link);
         props.setAvatar(link);
@@ -143,7 +141,7 @@ export function Profile() {
             <Stack spacing={4}>
               <Grid templateColumns={'repeat(5, 1 fr)'}>
                 <GridItem colStart={1}>
-                  <Image src={link} boxSize="200px"></Image>
+                  <Image src={avatar} boxSize="200px"></Image>
                 </GridItem>
                 <GridItem colStart={2}>
                   <Stat>
@@ -158,7 +156,7 @@ export function Profile() {
                 <GridItem colStart={3}>
                   <Stat>
                     <StatLabel>Nickname</StatLabel>
-                    <StatNumber>{user.profile.nickname}</StatNumber>
+                    <StatNumber>{nickname}</StatNumber>
                     <StatLabel>MMR</StatLabel>
                     <StatNumber>{user.profile.mmr}</StatNumber>
                     <StatLabel>Status</StatLabel>

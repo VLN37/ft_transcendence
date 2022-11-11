@@ -5,8 +5,6 @@ import NeonButton from '../../components/NeonButton';
 export default function LoginPage({ user }: any) {
   const authorizationUrl = process.env.REACT_APP_INTRA_AUTHORIZATION_URL;
 
-  console.log('enviroment: ' + process.env.NODE_ENV);
-
   return (
     <Box paddingX="10%">
       <h2>Welcome to PONG Transcendence</h2>

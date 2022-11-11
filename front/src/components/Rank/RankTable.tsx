@@ -49,7 +49,6 @@ export function RankTable(props: any) {
   }, []);
 
   useEffect(() => {
-    console.log('prop: ', props.query);
   }, [props.query]);
 
   useEffect(() => {
