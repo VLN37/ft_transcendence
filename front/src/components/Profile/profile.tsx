@@ -19,6 +19,9 @@ import {
   InputLeftAddon,
   useToast,
   Stack,
+  Stat,
+  StatLabel,
+  StatNumber,
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import { emptyUser, User } from '../../models/User';
@@ -137,22 +140,38 @@ export function Profile() {
           <ModalHeader>Profile</ModalHeader>
           <ModalBody>
             <Stack spacing={4}>
-              <Image src={link} boxSize="200px"></Image>
               <Grid templateColumns={'repeat(5, 1 fr)'}>
                 <GridItem colStart={1}>
-                  <NicknameUpdate user={user} />
+                  <Image src={link} boxSize="200px"></Image>
+                </GridItem>
+                <GridItem colStart={2}>
+                  <Stat>
+                    <StatLabel>Login</StatLabel>
+                    <StatNumber>{user.login_intra}</StatNumber>
+                    <StatLabel>Wins</StatLabel>
+                    <StatNumber>{user.profile.wins}</StatNumber>
+                    <StatLabel>Losses</StatLabel>
+                    <StatNumber>{user.profile.losses}</StatNumber>
+                  </Stat>
+                </GridItem>
+                <GridItem colStart={3}>
+                  <Stat>
+                    <StatLabel>Nickname</StatLabel>
+                    <StatNumber>{user.profile.nickname}</StatNumber>
+                    <StatLabel>MMR</StatLabel>
+                    <StatNumber>{user.profile.mmr}</StatNumber>
+                    <StatLabel>Status</StatLabel>
+                    <StatNumber>{user.profile.status}</StatNumber>
+                  </Stat>
                 </GridItem>
               </Grid>
               <Grid templateColumns={'repeat(5, 1 fr)'}>
-                <GridItem colStart={1}></GridItem>
                 <GridItem colStart={1}>
-                  <InputFileUpload />
-                </GridItem>
-              </Grid>
-              <Grid templateColumns={'repeat(5, 1 fr)'}>
-                <GridItem colStart={1}>2FA</GridItem>
-                <GridItem colStart={5} alignContent='right'>
-                  <Switch ></Switch>
+                  <Stack spacing={4}>
+                    <NicknameUpdate user={user} />
+                    <InputFileUpload />
+                    <Switch>2FA</Switch>
+                  </Stack>
                 </GridItem>
               </Grid>
             </Stack>
