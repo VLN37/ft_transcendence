@@ -86,8 +86,7 @@ function NicknameUpdate(props: { user: User }) {
   };
 
   async function UploadName() {
-    if (name === props.user.profile.nickname)
-      return;
+    if (name === props.user.profile.nickname) return;
     const response: any = await api.uploadNickname(props.user, name);
     const status = response.status == 200 ? 'success' : 'error';
     const message = response.status == 200 ? '' : response.data.message;
@@ -106,11 +105,7 @@ function NicknameUpdate(props: { user: User }) {
     <div>
       <InputGroup size="md">
         <InputLeftAddon children="Change Name"></InputLeftAddon>
-        <Input
-          onChange={handleChange}
-          type="text"
-          placeholder={name}
-        ></Input>
+        <Input onChange={handleChange} type="text" placeholder={name}></Input>
         <InputRightElement
           children={<DownloadIcon onClick={UploadName}></DownloadIcon>}
         ></InputRightElement>
@@ -123,6 +118,9 @@ export function Profile() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const link = localStorage.getItem('avatar') || '';
   const user: User = userStorage.getUser() || emptyUser();
+  const [avatar, setAvatar] = useState<string>(
+    localStorage.getItem('avatar') || '',
+  );
 
   return (
     <div>
@@ -131,7 +129,7 @@ export function Profile() {
         marginTop={'15px'}
         borderRadius="full"
         boxSize="65px"
-        src={link}
+        src={avatar}
       />
       <Modal isOpen={isOpen} onClose={onClose} size={'3xl'}>
         <ModalOverlay />
