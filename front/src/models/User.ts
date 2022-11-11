@@ -9,3 +9,17 @@ export interface User {
     losses: number;
   };
 }
+
+export function emptyUser(): User {
+  return {
+    login_intra: '',
+    id: 0,
+    tfa_enabled: false,
+    profile: {
+      avatar_path: '',
+      nickname: '',
+      wins: 0,
+      losses: 0,
+    }
+  }
+}
