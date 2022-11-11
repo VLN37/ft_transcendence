@@ -20,6 +20,10 @@ export class ChannelsService {
 
   async generateChannels(amount: number) {
     const statusArr = ['PUBLIC', 'PRIVATE', 'PROTECTED'];
+    let users = await this.usersService.getAll();
+    users = users.filter((user, i) => {
+      if (i < 4) return user;
+    });
 
     for (let i = 0; i < amount; i++) {
       const status: any = statusArr[faker.datatype.number({ min: 0, max: 2 })];
@@ -27,7 +31,8 @@ export class ChannelsService {
         name: faker.name.jobArea().toLocaleLowerCase(),
         owner_id: i,
         type: status,
-        password: null,
+        password: await this.hashPass("12345678"),
+        allowed_users: users,
       });
     }
     return this.getAll();
@@ -55,7 +60,9 @@ export class ChannelsService {
   }
 
   async getAll(): Promise<ChannelDto[]> {
-    const channels = await this.channelsRepository.find({});
+    const channels = await this.channelsRepository.find({
+      relations: ['allowed_users.profile'],
+    });
     // this.logger.debug('Returning channels', { channels });
     this.logger.debug('Returning channels');
     return channels;

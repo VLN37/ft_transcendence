@@ -29,6 +29,7 @@ export class ChannelsController {
   }
 
   @Get()
+  @UseInterceptors(ChannelsInterceptor)
   getAll() {
     return this.channelsService.getAll();
   }
