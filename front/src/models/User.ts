@@ -3,6 +3,7 @@ export interface User {
   id: number;
   tfa_enabled: boolean;
   profile: {
+    name: string,
     avatar_path: string;
     nickname: string;
     wins: number;
@@ -16,6 +17,7 @@ export function emptyUser(): User {
     id: 0,
     tfa_enabled: false,
     profile: {
+      name: '',
       avatar_path: '',
       nickname: '',
       wins: 0,
