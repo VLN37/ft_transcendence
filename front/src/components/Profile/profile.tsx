@@ -18,8 +18,10 @@ import {
   InputRightElement,
   InputLeftAddon,
   useToast,
+  Stack,
 } from '@chakra-ui/react';
 import { useState } from 'react';
+import { emptyUser, User } from '../../models/User';
 import api from '../../services/api';
 import userStorage from '../../services/userStorage';
 
@@ -32,8 +34,7 @@ function InputFileUpload() {
   };
 
   async function fileUpload() {
-    if (!value)
-      return;
+    if (!value) return;
     const formdata = new FormData();
     formdata.append('avatar', value);
 
@@ -58,8 +59,8 @@ function InputFileUpload() {
 
   return (
     <div>
-      <InputGroup>
-        <InputLeftAddon>Change Avatar</InputLeftAddon>
+      <InputGroup size="md">
+        <InputLeftAddon children="Change avatar"></InputLeftAddon>
         <Input
           onChange={handleChange}
           type="file"
@@ -73,17 +74,60 @@ function InputFileUpload() {
   );
 }
 
+function NicknameUpdate(props: { user: User }) {
+  const [name, setName] = useState<string>(props.user.profile.nickname);
+  const toast = useToast();
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setName(event.target.value);
+  };
+
+  async function UploadName() {
+    if (name === props.user.profile.nickname)
+      return;
+    const response: any = await api.uploadNickname(props.user, name);
+    const status = response.status == 200 ? 'success' : 'error';
+    const message = response.status == 200 ? '' : response.data.message;
+    if (response.status == 200) {
+      props.user.profile.nickname = name;
+      userStorage.saveUser(props.user);
+    }
+    toast({
+      title: 'Nickname change request sent',
+      status: status,
+      description: message,
+    });
+  }
+
+  return (
+    <div>
+      <InputGroup size="md">
+        <InputLeftAddon children="Change Name"></InputLeftAddon>
+        <Input
+          onChange={handleChange}
+          type="text"
+          placeholder={name}
+        ></Input>
+        <InputRightElement
+          children={<DownloadIcon onClick={UploadName}></DownloadIcon>}
+        ></InputRightElement>
+      </InputGroup>
+    </div>
+  );
+}
+
 export function Profile() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const link = localStorage.getItem('avatar') || '';
+  const user: User = userStorage.getUser() || emptyUser();
 
   return (
     <div>
       <Image
         onClick={onOpen}
         marginTop={'15px'}
-        borderRadius='full'
-        boxSize='65px'
+        borderRadius="full"
+        boxSize="65px"
         src={link}
       />
       <Modal isOpen={isOpen} onClose={onClose} size={'3xl'}>
@@ -92,25 +136,26 @@ export function Profile() {
           <ModalCloseButton></ModalCloseButton>
           <ModalHeader>Profile</ModalHeader>
           <ModalBody>
-            <Image src={link} boxSize='200px'></Image>
-            <Grid templateColumns={'repeat(5, 1 fr)'}>
-              <GridItem colStart={1}>Nickname</GridItem>
-              <GridItem colStart={5}>
-                <Button>change</Button>
-              </GridItem>
-            </Grid>
-            <Grid templateColumns={'repeat(5, 1 fr)'}>
-              <GridItem colStart={1}>2FA</GridItem>
-              <GridItem colStart={5}>
-                <Switch></Switch>
-              </GridItem>
-            </Grid>
-            <Grid templateColumns={'repeat(5, 1 fr)'}>
-              <GridItem colStart={1}></GridItem>
-              <GridItem colStart={1}>
-                <InputFileUpload />
-              </GridItem>
-            </Grid>
+            <Stack spacing={4}>
+              <Image src={link} boxSize="200px"></Image>
+              <Grid templateColumns={'repeat(5, 1 fr)'}>
+                <GridItem colStart={1}>
+                  <NicknameUpdate user={user} />
+                </GridItem>
+              </Grid>
+              <Grid templateColumns={'repeat(5, 1 fr)'}>
+                <GridItem colStart={1}></GridItem>
+                <GridItem colStart={1}>
+                  <InputFileUpload />
+                </GridItem>
+              </Grid>
+              <Grid templateColumns={'repeat(5, 1 fr)'}>
+                <GridItem colStart={1}>2FA</GridItem>
+                <GridItem colStart={5} alignContent='right'>
+                  <Switch ></Switch>
+                </GridItem>
+              </Grid>
+            </Stack>
           </ModalBody>
           <ModalFooter>
             <Button onClick={onClose}>close</Button>
