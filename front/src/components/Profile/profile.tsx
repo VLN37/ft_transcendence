@@ -28,7 +28,7 @@ import { emptyUser, User } from '../../models/User';
 import api from '../../services/api';
 import userStorage from '../../services/userStorage';
 
-function InputFileUpload() {
+function InputFileUpload(props: any) {
   const [value, setValue] = useState<File | null>(null);
   const toast = useToast();
 
@@ -51,6 +51,7 @@ function InputFileUpload() {
         console.log('user', user);
         userStorage.saveUser(user);
         localStorage.setItem('avatar', link);
+        props.setAvatar(link);
       });
     }
     toast({
@@ -77,7 +78,7 @@ function InputFileUpload() {
   );
 }
 
-function NicknameUpdate(props: { user: User }) {
+function NicknameUpdate(props: { user: User, setNickname: any }) {
   const [name, setName] = useState<string>(props.user.profile.nickname);
   const toast = useToast();
 
@@ -93,6 +94,7 @@ function NicknameUpdate(props: { user: User }) {
     if (response.status == 200) {
       props.user.profile.nickname = name;
       userStorage.saveUser(props.user);
+      props.setNickname(name);
     }
     toast({
       title: 'Nickname change request sent',
@@ -118,6 +120,7 @@ export function Profile() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const link = localStorage.getItem('avatar') || '';
   const user: User = userStorage.getUser() || emptyUser();
+  const [nickname, setNickname] = useState<string>(user.profile.nickname);
   const [avatar, setAvatar] = useState<string>(
     localStorage.getItem('avatar') || '',
   );
@@ -166,8 +169,8 @@ export function Profile() {
               <Grid templateColumns={'repeat(5, 1 fr)'}>
                 <GridItem colStart={1}>
                   <Stack spacing={4}>
-                    <NicknameUpdate user={user} />
-                    <InputFileUpload />
+                    <NicknameUpdate user={user} setNickname={setNickname} />
+                    <InputFileUpload setAvatar={setAvatar}/>
                     <Switch>2FA</Switch>
                   </Stack>
                 </GridItem>
