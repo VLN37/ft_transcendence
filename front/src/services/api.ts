@@ -54,6 +54,28 @@ class Api {
     }
   }
 
+  async uploadNickname(user: User, name: string) {
+    user.profile.nickname = name;
+    try {
+      const response = await this.client.patch<any>(`/users/${user.id}`, {
+        id: user.id,
+        login_intra: user.login_intra,
+        profile: {
+          id: user.id,
+          name: user.profile.name,
+          nickname: name,
+          avatar_path: user.profile.avatar_path,
+        }
+      });
+      return response;
+    }
+    catch(err) {
+      console.log('catch', err);
+      return (err as AxiosError).response;
+    }
+
+  }
+
   connectToChannel(room: string) {
     this.channelSocket = io(`http://localhost:3000/${this.CHANNEL_NAMESPACE}`, {
       auth: { token: this.token },
