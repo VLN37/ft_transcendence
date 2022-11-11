@@ -237,8 +237,6 @@ export class UsersService {
     if (oldUser.login_intra != user?.login_intra) return 'login_intra';
     if (oldUser.tfa_secret != user?.tfa_secret) return 'tfa_secret';
     if (oldUser.profile.id != user?.profile?.id) return 'profile id';
-    if (oldUser.profile.nickname != user?.profile?.nickname)
-      return 'profile nickname';
     return '';
   }
 }
