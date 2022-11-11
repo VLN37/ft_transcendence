@@ -12,7 +12,6 @@ import { ChannelsInterceptor } from './channels.interceptor';
 import { ChannelsService } from './channels.service';
 import { ChannelDto } from './dto/channel.dto';
 
-@UseGuards(JwtAuthGuard)
 @Controller('channels')
 export class ChannelsController {
   constructor(private readonly channelsService: ChannelsService) {}
@@ -22,12 +21,14 @@ export class ChannelsController {
     return this.channelsService.generateChannels(amount);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post()
   @UseInterceptors(ChannelsInterceptor)
   create(@Body() dto: ChannelDto) {
     return this.channelsService.create(dto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get()
   @UseInterceptors(ChannelsInterceptor)
   getAll() {
