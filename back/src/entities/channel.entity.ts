@@ -1,4 +1,11 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { User } from './user.entity';
 
 export type ChannelType = 'PUBLIC' | 'PRIVATE' | 'PROTECTED';
 
@@ -32,4 +39,8 @@ export class Channel {
     nullable: true,
   })
   password: string;
+
+  @ManyToMany(() => User)
+  @JoinTable({ name: 'allowed_users' })
+  allowed_users: Partial<User>[];
 }

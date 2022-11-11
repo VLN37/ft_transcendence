@@ -6,6 +6,7 @@ import { ChannelsService } from './channels.service';
 import { ChannelsSocketGateway } from './channels.gateway';
 import { UsersModule } from 'src/users/users.module';
 import { JwtModule } from '@nestjs/jwt';
+import { ChannelsInterceptor } from './channels.interceptor';
 
 @Module({
   imports: [
@@ -14,7 +15,7 @@ import { JwtModule } from '@nestjs/jwt';
     UsersModule,
   ],
   controllers: [ChannelsController],
-  providers: [ChannelsService, ChannelsSocketGateway],
+  providers: [ChannelsService, ChannelsSocketGateway, ChannelsInterceptor],
   exports: [],
 })
 export class ChannelsModule {}

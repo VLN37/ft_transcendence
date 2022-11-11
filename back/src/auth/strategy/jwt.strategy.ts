@@ -27,7 +27,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     }
 
     const user = await this.usersService.findCompleteUserById(userId);
-
+    if (!user) return null;
     this.logger.debug('printando usuário logando', { user });
 
     if (user.tfa_enabled != payload.tfa_enabled) {

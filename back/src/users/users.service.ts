@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { UserDto } from './dto/user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { User } from '../entities/user.entity';
 import { ProfileService } from 'src/profile/profile.service';
 import { makeUsers } from 'test/utils';
@@ -211,6 +211,22 @@ export class UsersService {
     delete find.tfa_secret;
     this.logger.debug('Returning user', { find });
     return find;
+  }
+
+  async findMany(users_id: number[]): Promise<UserDto[]> {
+    if (!users_id) return [];
+    const users = await this.usersRepository.find({
+      relations: ['profile'],
+      where: { id: In(users_id) },
+    });
+    if (users.length != users_id.length)
+      throw new BadRequestException('User not found in database');
+    users.map((user) => {
+      delete user.tfa_enabled;
+      delete user.tfa_secret;
+    });
+    this.logger.debug('Returning users', { users });
+    return users;
   }
 
   private async userChangedForbiddenFields(
