@@ -52,7 +52,7 @@ export class IntraServiceMock {
         id: faker.datatype.number({ min: 15000, max: 500000 }),
         login: faker.random.alpha(8),
         displayname: faker.name.fullName(),
-        image_url: faker.internet.avatar(),
+        image_url: 'avatars/gatinho.jpeg',
       };
       this.users[access_token] = user;
     }
