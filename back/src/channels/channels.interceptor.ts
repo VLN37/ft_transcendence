@@ -6,14 +6,35 @@ import {
 } from '@nestjs/common';
 import { isArray } from 'class-validator';
 import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class ChannelsInterceptor implements NestInterceptor {
-  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
+  constructor(private usersService: UsersService) {}
+
+  async intercept(
+    context: ExecutionContext,
+    next: CallHandler,
+  ): Promise<Observable<any>> {
+    const request = context.switchToHttp().getRequest();
+    const id = (await this.usersService.getMe(request.headers['authorization']))
+      .id;
+    console.log(id);
     return next.handle().pipe(
-      tap((data) => {
+      map((data) => {
         if (isArray(data)) {
+          //   data.some((channel, i) => {
+          //     if (
+          //       channel.owner_id != id &&
+          //       channel.type == 'PRIVATE' &&
+          //       !channel.allowed_users.find((user) => user.id == id)
+          //     )
+          //       delete data[i];
+          //   });
+
+          //   data = data.filter((channel) => channel);
+
           data.map((channel) => {
             delete channel.password;
             if (channel.type == 'PUBLIC' || channel.type == 'PROTECTED')
@@ -23,7 +44,7 @@ export class ChannelsInterceptor implements NestInterceptor {
               delete user.tfa_secret;
             });
           });
-          return;
+          return data;
         }
         delete data.password;
         if (data.type == 'PUBLIC' || data.type == 'PROTECTED')
@@ -32,6 +53,7 @@ export class ChannelsInterceptor implements NestInterceptor {
           delete user.tfa_enabled;
           delete user.tfa_secret;
         });
+        return data;
       }),
     );
   }
