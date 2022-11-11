@@ -8,6 +8,8 @@ export interface User {
     nickname: string;
     wins: number;
     losses: number;
+    status: string;
+    mmr: number;
   };
 }
 
@@ -22,6 +24,8 @@ export function emptyUser(): User {
       nickname: '',
       wins: 0,
       losses: 0,
+      status: 'OFFLINE',
+      mmr: 0,
     }
   }
 }
