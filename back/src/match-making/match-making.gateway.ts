@@ -98,14 +98,16 @@ export class MatchMakingGateway
     this.logger.debug(`client ${client.id} disconnected`);
   }
 
-  private validateConnection(client: Socket) {
+  private async validateConnection(client: Socket) {
     this.logger.debug('validating ws user connection');
     const token = client.handshake.auth.token;
     try {
       const payload = this.jwtService.verify<TokenPayload>(token, {
         secret: process.env.JWT_SECRET,
       });
-      return this.usersService.findCompleteUserById(payload.sub);
+      const user = await this.usersService.findCompleteUserById(payload.sub);
+      if (!user) throw new Error();
+      return user;
     } catch {
       throw new WsException('Token invalid or expired');
     }
