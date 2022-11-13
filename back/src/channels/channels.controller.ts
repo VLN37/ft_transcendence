@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
@@ -8,7 +9,10 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guard/jwt.guard';
-import { ChannelsInterceptor } from './channels.interceptor';
+import {
+  ChannelsDeleteInterceptor,
+  ChannelsInterceptor,
+} from './channels.interceptor';
 import { ChannelsService } from './channels.service';
 import { ChannelDto } from './dto/channel.dto';
 
@@ -40,5 +44,13 @@ export class ChannelsController {
   @UseInterceptors(ChannelsInterceptor)
   getOne(@Param('id') id: number) {
     return this.channelsService.getOne(id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete(':id')
+  @UseInterceptors(ChannelsDeleteInterceptor)
+  delete(@Param('id') id: number) {
+    //TODO: disconnect all users from this channel/socket
+    return this.channelsService.delete(id);
   }
 }

@@ -9,6 +9,7 @@ import { isArray } from 'class-validator';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { UsersService } from 'src/users/users.service';
+import { ChannelsService } from './channels.service';
 
 @Injectable()
 export class ChannelsInterceptor implements NestInterceptor {
@@ -52,11 +53,9 @@ export class ChannelsInterceptor implements NestInterceptor {
           data.owner_id != id &&
           data.allowed_users.find((users) => users.id != id)
         ) {
-          {
-            throw new ForbiddenException(
-              `You don't have permission to view this channel`,
-            );
-          }
+          throw new ForbiddenException(
+            `You don't have permission to view this channel`,
+          );
         }
         delete data.password;
         if (data.type == 'PUBLIC' || data.type == 'PROTECTED')
@@ -65,6 +64,35 @@ export class ChannelsInterceptor implements NestInterceptor {
           delete user.tfa_enabled;
           delete user.tfa_secret;
         });
+        return data;
+      }),
+    );
+  }
+}
+
+@Injectable()
+export class ChannelsDeleteInterceptor implements NestInterceptor {
+  constructor(
+    private channelsService: ChannelsService,
+    private usersService: UsersService,
+  ) {}
+
+  async intercept(
+    context: ExecutionContext,
+    next: CallHandler,
+  ): Promise<Observable<any>> {
+    const request = context.switchToHttp().getRequest();
+    const id = (await this.usersService.getMe(request.headers['authorization']))
+      .id;
+    const channel_id = request.path.split('/')[2] || 0;
+    const owner_id = (await this.channelsService.getOne(channel_id)).owner_id;
+    if (owner_id != id) {
+      throw new ForbiddenException(
+        `You don't have permission to delete this channel`,
+      );
+    }
+    return next.handle().pipe(
+      map((data) => {
         return data;
       }),
     );

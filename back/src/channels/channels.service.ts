@@ -83,6 +83,13 @@ export class ChannelsService {
     return channel;
   }
 
+  async delete(id: number) {
+    //TODO: disconnect all users from this channel/socket
+    const channel = await this.getOne(id);
+    this.logger.debug('Channel deleted', { channel });
+    await this.channelsRepository.delete({ id: id });
+  }
+
   private validateChannel(channel: ChannelDto) {
     if (channel.type == 'PUBLIC') {
       if (channel.password) return 'Public channels cannot have password';
