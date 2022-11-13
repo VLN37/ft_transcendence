@@ -3,6 +3,7 @@ import {
   NestInterceptor,
   ExecutionContext,
   CallHandler,
+  ForbiddenException,
 } from '@nestjs/common';
 import { isArray } from 'class-validator';
 import { Observable } from 'rxjs';
@@ -45,6 +46,17 @@ export class ChannelsInterceptor implements NestInterceptor {
             });
           });
           return data;
+        }
+        if (
+          data.type == 'PRIVATE' &&
+          data.owner_id != id &&
+          data.allowed_users.find((users) => users.id != id)
+        ) {
+          {
+            throw new ForbiddenException(
+              `You don't have permission to view this channel`,
+            );
+          }
         }
         delete data.password;
         if (data.type == 'PUBLIC' || data.type == 'PROTECTED')

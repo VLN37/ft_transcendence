@@ -1,5 +1,10 @@
 import { faker } from '@faker-js/faker';
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { isArray } from 'class-validator';
 import { Channel } from 'src/entities/channel.entity';
@@ -31,7 +36,7 @@ export class ChannelsService {
         name: faker.name.jobArea().toLocaleLowerCase(),
         owner_id: i,
         type: status,
-        password: await this.hashPass("12345678"),
+        password: await this.hashPass('12345678'),
         allowed_users: users,
       });
     }
@@ -66,6 +71,16 @@ export class ChannelsService {
     // this.logger.debug('Returning channels', { channels });
     this.logger.debug('Returning channels');
     return channels;
+  }
+
+  async getOne(id: number): Promise<ChannelDto> {
+    const channel = await this.channelsRepository.findOne({
+      where: { id },
+      relations: ['allowed_users.profile'],
+    });
+    if (!channel) throw new NotFoundException('Channel not found');
+    this.logger.debug('Returning channel', { channel });
+    return channel;
   }
 
   private validateChannel(channel: ChannelDto) {

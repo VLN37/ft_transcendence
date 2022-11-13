@@ -34,4 +34,11 @@ export class ChannelsController {
   getAll() {
     return this.channelsService.getAll();
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get(':id')
+  @UseInterceptors(ChannelsInterceptor)
+  getOne(@Param('id') id: number) {
+    return this.channelsService.getOne(id);
+  }
 }
