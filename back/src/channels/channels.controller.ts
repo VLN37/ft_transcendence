@@ -11,6 +11,7 @@ import {
 import { JwtAuthGuard } from 'src/auth/guard/jwt.guard';
 import {
   ChannelsDeleteInterceptor,
+  ChannelsGetAllInterceptor,
   ChannelsInterceptor,
 } from './channels.interceptor';
 import { ChannelsService } from './channels.service';
@@ -34,7 +35,7 @@ export class ChannelsController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  @UseInterceptors(ChannelsInterceptor)
+  @UseInterceptors(ChannelsGetAllInterceptor)
   getAll() {
     return this.channelsService.getAll();
   }
