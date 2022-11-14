@@ -9,29 +9,165 @@ import {
   Tbody,
   Td,
   Button,
+  HStack,
+  useDisclosure,
+  Modal,
+  ModalOverlay,
+  ModalHeader,
+  ModalContent,
+  ModalBody,
+  ModalCloseButton,
+  ModalFooter,
+  Select,
+  FormControl,
+  FormLabel,
+  useToast,
 } from '@chakra-ui/react';
 import { useState, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
+import { User, emptyUser } from '../../models/User';
 import { Channel } from '../../models/Channel';
-import Api from '../../services/api';
+import api from '../../services/api';
+import userStorage from '../../services/userStorage';
+
+function ModalForm() {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [option, setOption] = useState('');
+  const toast = useToast();
+  let navigate = useNavigate();
+  const {
+    handleSubmit,
+    register,
+    formState: { errors, isSubmitting },
+  } = useForm();
+
+  function onSubmit(values: any) {
+    const user: User = userStorage.getUser() || emptyUser();
+    values.owner_id = user.id;
+    api.createChannel(values).then((response) => {
+      onClose();
+      if (response.status != 201) {
+        toast({
+          title: 'Failed to create channel',
+          description: response.data.message,
+          status: 'error',
+          duration: 2000,
+          isClosable: true,
+        });
+      } else {
+        toast({
+          title: 'Channel created',
+          status: 'success',
+          duration: 2000,
+          isClosable: true,
+        });
+        api.connectToChannel(response.data.id.toString());
+        navigate('/chat?id=' + response.data.id.toString());
+      }
+    });
+  }
+
+  return (
+    <>
+      <Button onClick={onOpen}>Create channel</Button>
+
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <ModalContent>
+            <ModalHeader textAlign={'center'}>Create new channel</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <FormControl>
+                <FormLabel>name</FormLabel>
+                <Input
+                  id="name"
+                  {...register('name', { required: 'This is required' })}
+                  placeholder="example: My Channel"
+                  type="text"
+                  mb={'1rem'}
+                />
+                <FormLabel>visibility</FormLabel>
+                <Select
+                  id="type"
+                  {...register('type', { required: 'This is required' })}
+                  placeholder="Select option"
+                  mb={'1rem'}
+                  onChange={(option) => {
+                    setOption(option.target.value);
+                  }}
+                >
+                  <option value="PUBLIC">PUBLIC</option>
+                  <option value="PRIVATE">PRIVATE</option>
+                  <option value="PROTECTED">PROTECTED</option>
+                </Select>
+                {option == 'PRIVATE' && (
+                  <>
+                    <FormLabel>users</FormLabel>
+                    <Input
+                      id="allowed_users"
+                      {...register('allowed_users', {
+                        required: 'This is required',
+                      })}
+                      type="text"
+                      placeholder="example: 1234, 4321"
+                    />
+                  </>
+                )}
+                {option == 'PROTECTED' && (
+                  <>
+                    <FormLabel>password</FormLabel>
+                    <Input
+                      id="password"
+                      {...register('password', {
+                        required: 'This is required',
+                      })}
+                      isRequired
+                      type="password"
+                    />
+                  </>
+                )}
+              </FormControl>
+            </ModalBody>
+
+            <ModalFooter>
+              <Button isLoading={isSubmitting} colorScheme="blue" type="submit">
+                create
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </form>
+      </Modal>
+    </>
+  );
+}
 
 export function ChannelTable() {
   const [channelArr, setChannels] = useState<Channel[]>([]);
   let navigate = useNavigate();
 
   const redirect = (room: number) => {
-    Api.connectToChannel(room.toString());
+    api.connectToChannel(room.toString());
     navigate('/chat?id=' + room.toString());
   };
 
   useEffect(() => {
-    Api.getChannels().then((channels) => setChannels(channels));
+    api.getChannels().then((channels) => setChannels(channels));
   }, []);
 
   return (
     <>
-      <Input placeholder="Search channel room"/>
-      <TableContainer overflowY={'scroll'} h={'100%'} maxHeight={'100%'} paddingBottom={'2rem'}>
+      <HStack>
+        <Input placeholder="Search channel room" />
+        <ModalForm />
+      </HStack>
+      <TableContainer
+        overflowY={'scroll'}
+        h={'100%'}
+        maxHeight={'100%'}
+        paddingBottom={'2rem'}
+      >
         <Table variant="striped">
           <Thead>
             <Tr>
@@ -61,7 +197,6 @@ export function ChannelTable() {
                     <Button
                       onClick={() => redirect(channel.id)}
                       colorScheme={'blue'}
-                      size={'lg'}
                     >
                       join
                     </Button>

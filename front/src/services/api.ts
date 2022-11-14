@@ -61,15 +61,13 @@ class Api {
           name: user.profile.name,
           nickname: name,
           avatar_path: user.profile.avatar_path,
-        }
+        },
       });
       return response;
-    }
-    catch(err) {
+    } catch (err) {
       console.log('catch', err);
       return (err as AxiosError).response;
     }
-
   }
 
   connectToChannel(room: string) {
@@ -138,6 +136,15 @@ class Api {
   async getUser(id: string): Promise<User> {
     const response = await this.client.get(`/users/${id}`, {});
     return response.data;
+  }
+
+  async createChannel(data: any): Promise<any> {
+    try {
+      const response = await this.client.post('/channels', data);
+      return response;
+    } catch (error) {
+      return (error as AxiosError).response;
+    }
   }
 
   findMatch(
