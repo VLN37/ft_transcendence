@@ -22,7 +22,9 @@ const AuthCallback = ({ setUser }: any) => {
 
     async function validateCode(code: string | null): Promise<void> {
       setLoading(true);
-      if (!code || code.length !== 64) throw new Error('invalid code');
+      // HACK: we should validate at least the size
+      // if (!code || code.length !== 64) throw new Error('invalid code');
+      if (!code) throw new Error('invalid code');
 
       try {
         const token = await api.authenticate(code);
