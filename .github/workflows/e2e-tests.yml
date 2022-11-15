@@ -1,7 +1,9 @@
 on:
-  push:
+  pull_request:
+    types:
+      - opened
     branches:
-      - master
+      - 'master'
 jobs:
   e2e-tests:
     name: run end-to-end tests
