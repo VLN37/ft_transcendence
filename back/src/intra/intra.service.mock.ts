@@ -2,6 +2,7 @@ import { faker } from '@faker-js/faker';
 import { Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { TokenPayload } from 'src/auth/dto/TokenPayload';
+import { User } from 'src/entities/user.entity';
 import { IntraUser } from 'src/users/dto/intraUser.dto';
 import { UserDto } from 'src/users/dto/user.dto';
 import { UsersService } from 'src/users/users.service';
@@ -12,6 +13,61 @@ export class IntraServiceMock {
 
   private readonly users = {};
 
+  private readonly specificUsers: {
+    abcd: UserDto;
+    '1234': UserDto;
+    noob: UserDto;
+  } = {
+    abcd: {
+      id: 42,
+      login_intra: 'psergio-',
+      tfa_enabled: false,
+      tfa_secret: null,
+      profile: {
+        id: 42,
+        avatar_path: 'avatars/gatinho.jpeg',
+        losses: 0,
+        wins: 40,
+        mmr: 400,
+        status: 'ONLINE',
+        name: 'Paulo',
+        nickname: 'psergio-',
+      },
+    },
+    '1234': {
+      id: 43,
+      login_intra: 'jofelipe',
+      tfa_enabled: false,
+      tfa_secret: null,
+      profile: {
+        id: 43,
+        avatar_path: 'avatars/gatinho.jpeg',
+        losses: 0,
+        wins: 40,
+        mmr: 400,
+        status: 'ONLINE',
+        name: 'Jão',
+        nickname: 'jofelipe',
+      },
+    },
+    noob: {
+      id: 44,
+      login_intra: 'wleite',
+      tfa_enabled: false,
+      tfa_secret: null,
+      profile: {
+        id: 44,
+        avatar_path: 'avatars/gatinho.jpeg',
+        losses: 40,
+        wins: 0,
+        mmr: 0,
+        status: 'ONLINE',
+        name: 'Welton',
+        nickname: 'wleite',
+      },
+    },
+  };
+
   constructor(
     private jwtService: JwtService,
     private usersService: UsersService,
@@ -19,20 +75,30 @@ export class IntraServiceMock {
 
   async getUserToken(code: string) {
     let users: UserDto[] = await this.usersService.getAll();
-    console.log(users);
+
+    this.logger.debug('code: ' + code);
     if (!users.length) {
       await this.usersService.generateUsers(20);
+      await this.usersService.create(this.specificUsers['abcd']);
+      await this.usersService.create(this.specificUsers['1234']);
+      await this.usersService.create(this.specificUsers['noob']);
       users = await this.usersService.getAll();
     }
-    const i = faker.datatype.number({
-      min: 1,
-      max: users.length,
-    });
+    let id: number;
+
+    if (this.specificUsers[code]) {
+      id = this.specificUsers[code].id;
+    } else {
+      const i = faker.datatype.number({ max: 19 });
+      id = users[i].id;
+    }
+
     const payload: TokenPayload = {
-      sub: users[i].id,
+      sub: id,
       tfa_enabled: false,
       is_authenticated_twice: false,
     };
+
     this.logger.debug('faking user token');
     return {
       access_token: this.jwtService.sign(payload, {
@@ -46,16 +112,15 @@ export class IntraServiceMock {
     this.logger.debug('faking user info');
     faker.setLocale('pt_BR');
 
-    let user: IntraUser = this.users[access_token];
-    if (!user) {
-      user = {
-        id: faker.datatype.number({ min: 15000, max: 500000 }),
-        login: faker.random.alpha(8),
-        displayname: faker.name.fullName(),
-        image_url: 'avatars/gatinho.jpeg',
-      };
-      this.users[access_token] = user;
-    }
+    const id: number = this.jwtService.decode(access_token)['sub'];
+    let savedUser: UserDto = await this.usersService.getOne(id);
+
+    const user = {
+      id: id,
+      login: savedUser.login_intra,
+      displayname: savedUser.profile.name,
+      image_url: 'avatars/gatinho.jpeg',
+    };
     return user;
   }
 }

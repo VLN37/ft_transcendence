@@ -14,9 +14,23 @@ export default function LoginPage({ user }: any) {
           <NeonButton>GO HOME</NeonButton>
         </Link>
       ) : (
-        <a href={authorizationUrl!}>
-          <NeonButton>LOGIN</NeonButton>
-        </a>
+        <div>
+          <a href={authorizationUrl!}>
+            <NeonButton>LOGIN</NeonButton>
+          </a>
+          <br />
+          <a href="http://localhost/auth-callback?code=abcd">
+            <NeonButton>login as paulo</NeonButton>
+          </a>
+          <br />
+          <a href="http://localhost/auth-callback?code=1234">
+            <NeonButton>login as joao</NeonButton>
+          </a>
+          <br />
+          <a href="http://localhost/auth-callback?code=noob">
+            <NeonButton>login as welton</NeonButton>
+          </a>
+        </div>
       )}
     </Box>
   );
