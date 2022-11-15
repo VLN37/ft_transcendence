@@ -1,6 +1,5 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
-import { WebSocketServer } from '@nestjs/websockets';
-import { Server } from 'socket.io';
+import { Injectable, Logger } from '@nestjs/common';
+import { randomUUID } from 'crypto';
 import { UsersService } from 'src/users/users.service';
 import { MatchType, MATCH_TYPES } from './dto/AppendToQueueDTO';
 
@@ -10,13 +9,13 @@ class MemoryQueue {
 }
 
 class MemoryMatch {
-  id: number;
+  id: string;
   left_player: Express.User;
   right_player: Express.User;
   left_player_score?: number = 0;
   right_player_score?: number = 0;
 
-  constructor(id: number, leftPlayer: Express.User, rightPlayer: Express.User) {
+  constructor(id: string, leftPlayer: Express.User, rightPlayer: Express.User) {
     this.id = id;
     this.left_player = leftPlayer;
     this.right_player = rightPlayer;
@@ -31,9 +30,6 @@ export class MatchMakingService {
 
   private memoryQueue = new MemoryQueue();
   private memoryMatches: MemoryMatch[] = [];
-
-  @WebSocketServer()
-  private server: Server;
 
   constructor(private usersService: UsersService) {}
 
@@ -53,6 +49,7 @@ export class MatchMakingService {
     if (this.isMatchAvailable(queue)) {
       return this.createMatch(queue);
     }
+    return null;
   }
 
   dequeue(user: Express.User) {
@@ -72,15 +69,18 @@ export class MatchMakingService {
     return queue.length >= 2;
   }
 
-  private createMatch(queue: Express.User[]) {
+  private createMatch(queue: Express.User[]): MemoryMatch {
     const [user1, user2] = queue;
     this.logger.debug(
       `Creating a match between users ${user1.login_intra} and ${user2.login_intra}`,
     );
 
-    this.memoryMatches.push(new MemoryMatch(42, user1, user2));
+    const match = new MemoryMatch(randomUUID(), user1, user2);
+    this.memoryMatches.push(match);
 
     queue.shift();
     queue.shift();
+
+    return match;
   }
 }

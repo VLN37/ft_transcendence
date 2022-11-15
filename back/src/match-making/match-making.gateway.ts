@@ -15,7 +15,7 @@ import { Server, Socket } from 'socket.io';
 import { TokenPayload } from 'src/auth/dto/TokenPayload';
 import { UserDto } from 'src/users/dto/user.dto';
 import { UsersService } from 'src/users/users.service';
-import { MatchType, MATCH_TYPES } from './dto/AppendToQueueDTO';
+import { MatchType } from './dto/AppendToQueueDTO';
 import { MatchMakingService } from './match-making.service';
 
 @WebSocketGateway({
@@ -67,13 +67,22 @@ export class MatchMakingGateway
   ) {
     try {
       const user: UserDto = client.handshake.auth['user'];
-      this.matchMakingService.enqueue(user, type);
+      const createdMatch = this.matchMakingService.enqueue(user, type);
       client.join(user.login_intra); // only the user
-      setTimeout(() => {
-        this.server.in(user.login_intra).emit('match-found', {
-          data: 'Achamo',
-        });
-      }, 3000);
+      if (createdMatch) {
+        const notifyPlayers = () => {
+          const matchData = {
+            id: createdMatch.id,
+          };
+          this.server
+            .in(createdMatch.left_player.login_intra)
+            .in(createdMatch.right_player.login_intra)
+            .emit('match-found', {
+              matchData,
+            });
+        };
+        setTimeout(notifyPlayers, 1000);
+      }
     } catch (e) {
       throw new WsException(e);
     }
