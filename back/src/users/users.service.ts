@@ -168,6 +168,7 @@ export class UsersService {
       this.logger.debug('Returning user', { find });
       return find;
     } catch (error) {
+      this.logger.error(error);
       throw new BadRequestException(
         `Failed to process request with id '${id}'`,
       );
