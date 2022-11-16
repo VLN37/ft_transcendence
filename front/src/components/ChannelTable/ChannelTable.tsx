@@ -30,6 +30,7 @@ import { User, emptyUser } from '../../models/User';
 import { Channel } from '../../models/Channel';
 import api from '../../services/api';
 import userStorage from '../../services/userStorage';
+import { StatusCodes } from 'http-status-codes';
 
 function ModalForm() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -62,8 +63,16 @@ function ModalForm() {
           duration: 2000,
           isClosable: true,
         });
-        api.connectToChannel(response.data.id.toString());
-        navigate('/chat?id=' + response.data.id.toString());
+        api.connectToChannel(response.data.id.toString()).then((res) => {
+          if (res.status == StatusCodes.OK) {
+            api
+              .getChannel(response.data.id.toString())
+              .then((channel: Channel) => {
+                navigate('/chat', { state: { ...channel } });
+              });
+          }
+          //TODO: toast error message
+        });
       }
     });
   }
@@ -147,9 +156,15 @@ export function ChannelTable() {
   const [channelArr, setChannels] = useState<Channel[]>([]);
   let navigate = useNavigate();
 
-  const redirect = (room: number) => {
-    api.connectToChannel(room.toString());
-    navigate('/chat?id=' + room.toString());
+  const join = (room: number) => {
+    api.connectToChannel(room.toString()).then((res) => {
+      if (res.status == StatusCodes.OK) {
+        api.getChannel(room.toString()).then((channel: Channel) => {
+          navigate('/chat', { state: { ...channel } });
+        });
+      }
+      //TODO: toast error message
+    });
   };
 
   useEffect(() => {
@@ -195,7 +210,7 @@ export function ChannelTable() {
                   <Td>2</Td>
                   <Td>
                     <Button
-                      onClick={() => redirect(channel.id)}
+                      onClick={() => join(channel.id)}
                       colorScheme={'blue'}
                     >
                       join

@@ -54,16 +54,17 @@ export class ChannelsSocketGateway
   }
 
   @SubscribeMessage('join')
-  handleJoin(client: Socket, room: string): void {
+  handleJoin(client: Socket, room: string) {
     client.join(room);
-    console.log(`Client connected to the room ${room}`);
+    this.logger.log(`Client ${client.id} connected to the room ${room}`);
+    return { status: 200, message: 'Ok' };
   }
 
   @SubscribeMessage('chat')
   handleMessage(client: Socket, data): void {
     this.logger.debug('Received a message from ' + client.id);
     this.logger.debug('Sending a message to ' + client.id);
-    this.server.to(data.room).emit('chat', data);
+    this.server.to(data.room.toString()).emit('chat', data);
   }
 
   private validateConnection(client: Socket) {
