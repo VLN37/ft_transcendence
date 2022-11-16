@@ -30,7 +30,7 @@ export default function RankPage() {
           children={<SearchIcon color="teal.600" onClick={handleSearchClick} />}
         />
       </InputGroup>
-      <Box bg="cyan.800" maxW="100%" maxHeight={'100%'} overflowY={'auto'}>
+      <Box bg="gray.800" maxW="100%" maxHeight={'100%'} overflowY={'auto'}>
         {/* <Button>submit</Button> */}
         <RankTable query={searchValue} />
       </Box>
