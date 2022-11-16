@@ -6,4 +6,6 @@ export interface TableUser {
   nickname: string;
   wins: number;
   losses: number;
+  mmr: number;
+  status: string;
 }

@@ -25,6 +25,8 @@ export function RankTable(props: any) {
       nickname: '',
       wins: 0,
       losses: 0,
+      mmr: 0,
+      status: 'OFFLINE',
     },
   ]);
 
@@ -40,6 +42,8 @@ export function RankTable(props: any) {
           nickname: user.profile.nickname,
           wins: user.profile.wins,
           losses: user.profile.losses,
+          mmr: user.profile.mmr,
+          status: user.profile.status,
         };
         return newuser;
       });
