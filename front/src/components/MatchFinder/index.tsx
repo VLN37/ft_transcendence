@@ -24,6 +24,7 @@ import {
 } from '@chakra-ui/react';
 import React from 'react';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
 
 import NeonButton from '../NeonButton';
@@ -35,8 +36,11 @@ export default function MatchFinder() {
   const toastId = 'match-finder-error-toast';
   const toast = useToast();
 
+  const navigate = useNavigate();
+
   const [matchType, setMatchType] = useState<MatchType>('TURBO');
   const [isSearching, setIsSearching] = useState(false);
+  const [matchId, setMatchId] = useState<string | null>(null);
 
   const cancelRef = React.useRef(null);
   const {
@@ -73,7 +77,8 @@ export default function MatchFinder() {
   };
 
   const onMatchFindResponse = (data: any) => {
-    console.log('server responded via ws: ' + { data });
+    console.log('server responded via ws: ', { data });
+    setMatchId(data.matchData.id);
     openAlert();
   };
 
@@ -97,6 +102,17 @@ export default function MatchFinder() {
     closeDrawer();
   };
 
+  const handleAcceptMatch = () => {
+    stopFinding();
+    closeAlert();
+    navigate(`/match/${matchId}`);
+  };
+
+  const handleDismissMatch = () => {
+    stopFinding();
+    closeAlert();
+  };
+
   return (
     <div className="match-finder">
       <AlertDialog
@@ -105,22 +121,21 @@ export default function MatchFinder() {
         onClose={closeAlert}
         isOpen={isAlertOpen}
         isCentered
+        closeOnEsc={false}
+        closeOnOverlayClick={false}
       >
         <AlertDialogOverlay />
 
         <AlertDialogContent>
-          <AlertDialogHeader>Discard Changes?</AlertDialogHeader>
+          <AlertDialogHeader>Match found!</AlertDialogHeader>
           <AlertDialogCloseButton />
-          <AlertDialogBody>
-            Are you sure you want to discard all of your notes? 44 words will be
-            deleted.
-          </AlertDialogBody>
+          <AlertDialogBody>Are you ready?</AlertDialogBody>
           <AlertDialogFooter>
-            <Button ref={cancelRef} onClick={closeAlert}>
-              No
+            <Button ref={cancelRef} onClick={handleDismissMatch}>
+              Dismiss
             </Button>
-            <Button colorScheme="red" ml={3}>
-              Yes
+            <Button onClick={handleAcceptMatch} colorScheme="red" ml={3}>
+              Accept
             </Button>
           </AlertDialogFooter>
         </AlertDialogContent>
