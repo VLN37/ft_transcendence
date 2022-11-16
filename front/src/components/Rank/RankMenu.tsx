@@ -20,6 +20,8 @@ import {
   MenuOptionGroup,
   MenuDivider,
 } from '@chakra-ui/react'
+import { emptyUser, User } from '../../models/User';
+import userStorage from '../../services/userStorage';
 
 function AddToast() {
   const toast = useToast();
@@ -51,16 +53,14 @@ export function RankMenu(props: any) {
   const toast = useToast();
 
   async function clickCallback() {
-    const id = localStorage.getItem('USERID');
-    if (id == null)
-      return;
+    const user: User = userStorage.getUser() || emptyUser();
     const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/JSON',
       },
       body: JSON.stringify({
-        user_id: parseInt(id),
+        user_id: user.id,
       }),
     });
 
