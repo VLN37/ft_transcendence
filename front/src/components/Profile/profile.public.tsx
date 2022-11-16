@@ -25,7 +25,7 @@ import {
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import { TableUser } from '../../models/TableUser';
-import { emptyUser, User } from '../../models/User';
+import { User } from '../../models/User';
 import api from '../../services/api';
 import userStorage from '../../services/userStorage';
 
@@ -118,10 +118,9 @@ function NicknameUpdate(props: { user: User, setNickname: any }) {
 export function PublicProfile(props: { user: TableUser }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const link = process.env.REACT_APP_HOSTNAME + props.user.avatar_path;
-  const me: User = userStorage.getUser() || emptyUser();
 
   return (
-    <div>
+    <>
       <Image
         onClick={onOpen}
         marginTop={'15px'}
@@ -177,6 +176,6 @@ export function PublicProfile(props: { user: TableUser }) {
           </ModalFooter>
         </ModalContent>
       </Modal>
-    </div>
+    </>
   );
 }

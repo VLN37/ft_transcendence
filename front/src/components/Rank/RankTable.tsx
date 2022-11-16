@@ -16,44 +16,20 @@ import api from '../../services/api';
 export function RankTable(props: any) {
   const [type, setType] = useState<keyof TableUser>('wins');
   const [order, setOrder] = useState<'ASC' | 'DESC'>('ASC');
-  const [userList, setUserList] = useState([
-    {
-      login_intra: '',
-      id: 0,
-      tfa_enabled: false,
-      avatar_path: '',
-      nickname: '',
-      wins: 0,
-      losses: 0,
-      mmr: 0,
-      status: 'OFFLINE',
-    },
-  ]);
+  const [userList, setUserList] = useState([TableUser()]);
 
   useEffect(() => {
     async function queryDatabase() {
       const result: User[] = await api.getRankedUsers();
       const restructure: TableUser[] = result.map((user) => {
-        let newuser: TableUser = {
-          login_intra: user.login_intra,
-          id: user.id,
-          tfa_enabled: user.tfa_enabled,
-          avatar_path: user.profile.avatar_path,
-          nickname: user.profile.nickname,
-          wins: user.profile.wins,
-          losses: user.profile.losses,
-          mmr: user.profile.mmr,
-          status: user.profile.status,
-        };
-        return newuser;
+        return TableUser(user);
       });
       setUserList(restructure);
     }
     queryDatabase();
   }, []);
 
-  useEffect(() => {
-  }, [props.query]);
+  useEffect(() => {}, [props.query]);
 
   useEffect(() => {
     const sorted = userList.slice(0).sort(sortAscending);
