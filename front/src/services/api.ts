@@ -50,6 +50,22 @@ class Api {
     }
   }
 
+  async addFriend(myId: number, targetId: number) {
+    try {
+      const response = await this.client.post<any>(
+        `/users/${targetId}/friend_requests`,
+        {
+          user_id: myId
+        }
+      )
+      return response;
+    }
+    catch (err) {
+      console.log('catch', err);
+      return (err as AxiosError).response;
+    }
+  }
+
   async uploadNickname(user: User, name: string) {
     user.profile.nickname = name;
     try {
