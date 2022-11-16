@@ -158,6 +158,7 @@ class Api {
     const error = 'match-error';
     this.matchMakingSocket?.once(matchFound, (matchData) => {
       console.log('match found', matchData);
+      this.matchMakingSocket?.removeAllListeners(matchFound);
       this.matchMakingSocket?.removeAllListeners(error);
       onMatchFound(matchData);
     });
@@ -165,6 +166,7 @@ class Api {
     this.matchMakingSocket?.once(error, (matchData) => {
       console.log('match error', matchData);
       this.matchMakingSocket?.removeAllListeners(matchFound);
+      this.matchMakingSocket?.removeAllListeners(error);
       onError?.call(matchData);
     });
 
