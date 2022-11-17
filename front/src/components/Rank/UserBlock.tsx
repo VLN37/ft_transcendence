@@ -1,5 +1,4 @@
 import { Tr, Td, Image } from '@chakra-ui/react';
-import { Profile } from '../Profile/profile';
 import { PublicProfile } from '../Profile/profile.public';
 import { RankMenu } from './RankMenu';
 
