@@ -70,8 +70,15 @@ function ModalForm() {
               .then((channel: Channel) => {
                 navigate('/chat', { state: { ...channel } });
               });
+          } else {
+            toast({
+              title: 'Failed to join channel',
+              description: res.message,
+              status: 'error',
+              duration: 2000,
+              isClosable: true,
+            });
           }
-          //TODO: toast error message
         });
       }
     });
@@ -154,6 +161,7 @@ function ModalForm() {
 
 export function ChannelTable() {
   const [channelArr, setChannels] = useState<Channel[]>([]);
+  const toast = useToast();
   let navigate = useNavigate();
 
   const join = (room: number) => {
@@ -162,8 +170,15 @@ export function ChannelTable() {
         api.getChannel(room.toString()).then((channel: Channel) => {
           navigate('/chat', { state: { ...channel } });
         });
+      } else {
+        toast({
+          title: 'Failed to join channel',
+          description: res.message,
+          status: 'error',
+          duration: 2000,
+          isClosable: true,
+        });
       }
-      //TODO: toast error message
     });
   };
 
