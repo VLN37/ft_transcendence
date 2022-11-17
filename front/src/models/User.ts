@@ -2,6 +2,9 @@ export interface User {
   login_intra: string;
   id: number;
   tfa_enabled: boolean;
+  friends: User[];
+  friend_requests: User[];
+  blocked: number[];
   profile: {
     name: string,
     avatar_path: string;
@@ -18,6 +21,9 @@ export function emptyUser(): User {
     login_intra: '',
     id: 0,
     tfa_enabled: false,
+    friends: [],
+    friend_requests: [],
+    blocked: [],
     profile: {
       name: '',
       avatar_path: '',
