@@ -26,7 +26,7 @@ export class ChannelsInterceptor implements NestInterceptor {
         if (
           data.type == 'PRIVATE' &&
           data.owner_id != id &&
-          data.allowed_users.find((users) => users.id != id)
+          !data.allowed_users.find((channel_user) => channel_user.id == id)
         ) {
           throw new ForbiddenException(
             `You don't have permission to view this channel`,
