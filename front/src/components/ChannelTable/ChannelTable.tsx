@@ -63,13 +63,28 @@ function CreateChannel() {
           duration: 2000,
           isClosable: true,
         });
-        api.connectToChannel({ room: response.data.id }).then((res) => {
-          api
-            .getChannel(response.data.id.toString())
-            .then((channel: Channel) => {
-              navigate('/chat', { state: { ...channel } });
-            });
-        });
+        api
+          .connectToChannel({
+            room: response.data.id,
+            password: values.password,
+          })
+          .then((res) => {
+            if (res.status == StatusCodes.OK) {
+              api
+                .getChannel(response.data.id.toString())
+                .then((channel: Channel) => {
+                  navigate('/chat', { state: { ...channel } });
+                });
+            } else {
+              toast({
+                title: 'Failed to join channel',
+                description: res.message,
+                status: 'error',
+                duration: 2000,
+                isClosable: true,
+              });
+            }
+          });
       }
     });
   }
@@ -176,7 +191,7 @@ function AskPassword(channel: Channel) {
         });
       }
     });
-	onClose();
+    onClose();
   }
 
   return (
