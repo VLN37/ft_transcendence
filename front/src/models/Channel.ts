@@ -12,3 +12,8 @@ export interface ChannelSocketResponse {
   status: number;
   message: string;
 }
+
+export interface ChannelRoomAuth {
+  room: number;
+  password?: string;
+}

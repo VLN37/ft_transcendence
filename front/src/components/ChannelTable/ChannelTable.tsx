@@ -63,7 +63,7 @@ function CreateChannel() {
           duration: 2000,
           isClosable: true,
         });
-        api.connectToChannel(response.data.id.toString()).then((res) => {
+        api.connectToChannel({ room: response.data.id }).then((res) => {
           api
             .getChannel(response.data.id.toString())
             .then((channel: Channel) => {
@@ -149,15 +149,85 @@ function CreateChannel() {
   );
 }
 
+function AskPassword(channel: Channel) {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const toast = useToast();
+  let navigate = useNavigate();
+  const {
+    handleSubmit,
+    register,
+    formState: { errors, isSubmitting },
+  } = useForm();
+
+  function onSubmit(values: any) {
+    const password: string = values.password || '';
+    api.connectToChannel({ room: channel.id, password }).then((res) => {
+      if (res.status == StatusCodes.OK) {
+        api.getChannel(channel.id.toString()).then((channel: Channel) => {
+          navigate('/chat', { state: { ...channel } });
+        });
+      } else {
+        toast({
+          title: 'Failed to join channel',
+          description: res.message,
+          status: 'error',
+          duration: 2000,
+          isClosable: true,
+        });
+      }
+    });
+	onClose();
+  }
+
+  return (
+    <>
+      <Button onClick={onOpen} colorScheme={'blue'}>
+        join
+      </Button>
+
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <ModalContent>
+            <ModalHeader
+              textAlign={'center'}
+            >{`Join ${channel.name}`}</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <FormControl>
+                <FormLabel>password</FormLabel>
+                <Input
+                  id="password"
+                  {...register('password', {
+                    required: 'This is required',
+                  })}
+                  isRequired
+                  type="password"
+                />
+              </FormControl>
+            </ModalBody>
+
+            <ModalFooter>
+              <Button isLoading={isSubmitting} colorScheme="blue" type="submit">
+                join
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </form>
+      </Modal>
+    </>
+  );
+}
+
 export function ChannelTable() {
-  const [channelArr, setChannels] = useState<Channel[]>([]);
+  const [channels, setChannels] = useState<Channel[]>([]);
   const toast = useToast();
   let navigate = useNavigate();
 
-  const join = (room: number) => {
-    api.connectToChannel(room.toString()).then((res) => {
+  const join = (channel: Channel) => {
+    api.connectToChannel({ room: channel.id }).then((res) => {
       if (res.status == StatusCodes.OK) {
-        api.getChannel(room.toString()).then((channel: Channel) => {
+        api.getChannel(channel.id.toString()).then((channel: Channel) => {
           navigate('/chat', { state: { ...channel } });
         });
       } else {
@@ -199,7 +269,7 @@ export function ChannelTable() {
             </Tr>
           </Thead>
           <Tbody>
-            {channelArr.map((channel) => {
+            {channels.map((channel) => {
               return (
                 <Tr key={channel.id}>
                   <Td>{channel.id}</Td>
@@ -214,12 +284,16 @@ export function ChannelTable() {
                   <Td>{channel.owner_id}</Td>
                   <Td>2</Td>
                   <Td>
-                    <Button
-                      onClick={() => join(channel.id)}
-                      colorScheme={'blue'}
-                    >
-                      join
-                    </Button>
+                    {channel.type == 'PROTECTED' ? (
+                      <AskPassword {...channel} />
+                    ) : (
+                      <Button
+                        onClick={() => join(channel)}
+                        colorScheme={'blue'}
+                      >
+                        join
+                      </Button>
+                    )}
                   </Td>
                 </Tr>
               );

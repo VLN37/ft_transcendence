@@ -2,7 +2,11 @@ import axios, { AxiosError } from 'axios';
 import { io, Socket } from 'socket.io-client';
 import { StatusCodes } from 'http-status-codes';
 
-import { Channel, ChannelSocketResponse } from '../models/Channel';
+import {
+  Channel,
+  ChannelRoomAuth,
+  ChannelSocketResponse,
+} from '../models/Channel';
 import { User } from '../models/User';
 
 interface AuthenticationResponse {
@@ -87,7 +91,7 @@ class Api {
     }
   }
 
-  connectToChannel(room: string): Promise<ChannelSocketResponse> {
+  connectToChannel(data: ChannelRoomAuth): Promise<ChannelSocketResponse> {
     return new Promise((resolve) => {
       this.channelSocket = io(
         `http://localhost:3000/${this.CHANNEL_NAMESPACE}`,
@@ -95,10 +99,10 @@ class Api {
           auth: { token: this.token },
         },
       );
-      this.channelSocket.emit('join', room, (res: ChannelSocketResponse) => {
+      this.channelSocket.emit('join', data, (res: ChannelSocketResponse) => {
         if (res.status == StatusCodes.OK)
-          console.log(`Client connected to the room ${room}`);
-		console.log(res);
+          console.log(`Client connected to the room ${data.room}`);
+        console.log(res);
         resolve(res);
       });
     });
