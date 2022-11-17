@@ -1,4 +1,5 @@
 import { User } from '../models/User';
+import api from './api';
 
 class UserStorage {
   getUser(): User | null {
@@ -11,6 +12,10 @@ class UserStorage {
   saveUser(user: User) {
     const userStr = JSON.stringify(user);
     localStorage.setItem('user', userStr);
+  }
+
+  updateUser() {
+    api.getUser('me').then((user) => this.saveUser(user));
   }
 
   removeUser() {

@@ -33,6 +33,8 @@ export function PublicProfile(props: { user: TableUser }) {
     const response: any = await api.addFriend(myId, props.user.id);
     const status = response.status == 200 ? 'success' : 'error';
     const message = response.status == 200 ? '' : response.data.message;
+    if (response.status == 200)
+      userStorage.updateUser();
     toast({
       title: 'Friend request sent',
       status: status,
