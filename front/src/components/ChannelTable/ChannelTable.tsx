@@ -32,7 +32,7 @@ import api from '../../services/api';
 import userStorage from '../../services/userStorage';
 import { StatusCodes } from 'http-status-codes';
 
-function ModalForm() {
+function CreateChannel() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [option, setOption] = useState('');
   const toast = useToast();
@@ -64,21 +64,11 @@ function ModalForm() {
           isClosable: true,
         });
         api.connectToChannel(response.data.id.toString()).then((res) => {
-          if (res.status == StatusCodes.OK) {
-            api
-              .getChannel(response.data.id.toString())
-              .then((channel: Channel) => {
-                navigate('/chat', { state: { ...channel } });
-              });
-          } else {
-            toast({
-              title: 'Failed to join channel',
-              description: res.message,
-              status: 'error',
-              duration: 2000,
-              isClosable: true,
+          api
+            .getChannel(response.data.id.toString())
+            .then((channel: Channel) => {
+              navigate('/chat', { state: { ...channel } });
             });
-          }
         });
       }
     });
@@ -190,7 +180,7 @@ export function ChannelTable() {
     <>
       <HStack>
         <Input placeholder="Search channel room" />
-        <ModalForm />
+        <CreateChannel />
       </HStack>
       <TableContainer
         overflowY={'scroll'}
