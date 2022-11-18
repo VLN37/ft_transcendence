@@ -70,16 +70,15 @@ export class MatchMakingService {
   }
 
   private createMatch(queue: Express.User[]): MemoryMatch {
-    const [user1, user2] = queue;
+    const user1 = queue.shift();
+    const user2 = queue.shift();
+
     this.logger.debug(
       `Creating a match between users ${user1.login_intra} and ${user2.login_intra}`,
     );
 
     const match = new MemoryMatch(randomUUID(), user1, user2);
     this.memoryMatches.push(match);
-
-    queue.shift();
-    queue.shift();
 
     return match;
   }
