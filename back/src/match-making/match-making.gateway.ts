@@ -61,13 +61,13 @@ export class MatchMakingGateway
   }
 
   @SubscribeMessage('enqueue')
-  enqueue(
+  async enqueue(
     @MessageBody('type') type: MatchType,
     @ConnectedSocket() client: Socket,
   ) {
     try {
       const user: UserDto = client.handshake.auth['user'];
-      const createdMatch = this.matchMakingService.enqueue(user, type);
+      const createdMatch = await this.matchMakingService.enqueue(user, type);
       client.join(user.login_intra); // only the user
       if (createdMatch) {
         const notifyPlayers = () => {
