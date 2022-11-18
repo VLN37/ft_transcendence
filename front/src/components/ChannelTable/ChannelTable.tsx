@@ -46,6 +46,7 @@ function CreateChannel() {
   function onSubmit(values: any) {
     const user: User = userStorage.getUser() || emptyUser();
     values.owner_id = user.id;
+	values.allowed_users = values.allowed_users.split(',');
     api.createChannel(values).then((response) => {
       onClose();
       if (response.status != 201) {
@@ -132,7 +133,7 @@ function CreateChannel() {
                         required: 'This is required',
                       })}
                       type="text"
-                      placeholder="example: 1234, 4321"
+                      placeholder="example: jofelipe, psergio-, wleite"
                     />
                   </>
                 )}

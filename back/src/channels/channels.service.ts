@@ -6,7 +6,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { isArray } from 'class-validator';
+import { isArray, isString } from 'class-validator';
 import { Channel } from 'src/entities/channel.entity';
 import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
@@ -46,15 +46,14 @@ export class ChannelsService {
   async create(channel: ChannelDto): Promise<Channel> {
     const invalidChannel = this.validateChannel(channel);
     if (invalidChannel) throw new BadRequestException(invalidChannel);
+    const users = (<string[]>channel.allowed_users).map((user) => user.trim());
     const newChannel = await this.channelsRepository
       .save({
         name: channel.name,
         owner_id: channel.owner_id,
         type: channel.type,
         password: await this.hashPass(channel.password),
-        allowed_users: await this.usersService.findMany(
-          channel.allowed_users as number[],
-        ),
+        allowed_users: await this.usersService.findManyByNickname(users),
       })
       .catch((err: any) => {
         console.log(err);
@@ -106,7 +105,7 @@ export class ChannelsService {
         return 'Private channels allowed_users format error';
       if (!channel.allowed_users[0])
         return 'Private channels allowed_users cannot be empty';
-      if (channel.allowed_users.some((user) => !Number.isInteger(user)))
+      if (channel.allowed_users.some((user) => !isString(user)))
         return 'Private channels allowed_users format error';
       if (
         channel.allowed_users.some(
