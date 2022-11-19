@@ -76,7 +76,7 @@ export class ChannelsService {
   async getOne(id: number): Promise<ChannelDto> {
     const channel = await this.channelsRepository.findOne({
       where: { id },
-      relations: ['users', 'allowed_users.profile'],
+      relations: ['users', 'users.profile', 'allowed_users.profile'],
     });
     if (!channel) throw new NotFoundException('Channel not found');
     this.logger.debug('Returning channel', { channel });

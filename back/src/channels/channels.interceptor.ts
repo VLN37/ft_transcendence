@@ -39,6 +39,10 @@ export class ChannelsInterceptor implements NestInterceptor {
           delete user.tfa_enabled;
           delete user.tfa_secret;
         });
+        data.users?.map((user) => {
+          delete user.tfa_enabled;
+          delete user.tfa_secret;
+        });
         return data;
       }),
     );

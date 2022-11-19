@@ -183,7 +183,7 @@ export class UsersService {
         'friends.profile',
         'blocked.profile',
         'friend_requests.profile',
-		'channels'
+        'channels',
       ],
     });
     if (!find) return null;
@@ -198,6 +198,9 @@ export class UsersService {
     find.friend_requests.map((user) => {
       delete user.tfa_enabled;
       delete user.tfa_secret;
+    });
+    find.channels.map((channel) => {
+      delete channel.password;
     });
     this.logger.debug('Returning user', { find });
     return find;
