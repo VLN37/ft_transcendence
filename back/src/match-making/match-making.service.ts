@@ -1,30 +1,16 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { randomUUID } from 'crypto';
 import { Match } from 'src/entities/match.entity';
+import { User } from 'src/entities/user.entity';
+import { MatchManagerService } from 'src/match-manager/match-manager.service';
+import { MemoryMatch } from 'src/match-manager/model/MemoryMatch';
 import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
 import { MatchType, MATCH_TYPES } from './dto/AppendToQueueDTO';
 
 class MemoryQueue {
-  CLASSIC: Express.User[] = [];
-  TURBO: Express.User[] = [];
-}
-
-class MemoryMatch {
-  id: string;
-  left_player: Express.User;
-  right_player: Express.User;
-  left_player_score?: number = 0;
-  right_player_score?: number = 0;
-
-  constructor(id: string, leftPlayer: Express.User, rightPlayer: Express.User) {
-    this.id = id;
-    this.left_player = leftPlayer;
-    this.right_player = rightPlayer;
-    this.left_player_score = 0;
-    this.right_player_score = 0;
-  }
+  CLASSIC: User[] = [];
+  TURBO: User[] = [];
 }
 
 @Injectable()
@@ -32,19 +18,15 @@ export class MatchMakingService {
   private readonly logger = new Logger(MatchMakingService.name);
 
   private memoryQueue = new MemoryQueue();
-  private memoryMatches: MemoryMatch[] = [];
 
   constructor(
     @InjectRepository(Match)
-    private matchRepository: Repository<Match>,
     private usersService: UsersService,
+    private matchManager: MatchManagerService,
   ) {}
 
   // PERF: we could save the queue the user is on in the database for better dequeueing
-  async enqueue(
-    user: Express.User,
-    matchType: MatchType,
-  ): Promise<MemoryMatch> {
+  async enqueue(user: User, matchType: MatchType): Promise<MemoryMatch> {
     const queue = this.memoryQueue[matchType];
 
     if (queue.some((enqueuedUser) => enqueuedUser.id === user.id)) {
@@ -75,11 +57,11 @@ export class MatchMakingService {
     });
   }
 
-  private isMatchAvailable(queue: Express.User[]): boolean {
+  private isMatchAvailable(queue: User[]): boolean {
     return queue.length >= 2;
   }
 
-  private async createMatch(queue: Express.User[]): Promise<MemoryMatch> {
+  private async createMatch(queue: User[]): Promise<MemoryMatch> {
     const user1 = queue.shift();
     const user2 = queue.shift();
 
@@ -87,17 +69,6 @@ export class MatchMakingService {
       `Creating a match between users ${user1.login_intra} and ${user2.login_intra}`,
     );
 
-    const match = this.matchRepository.create({
-      left_player: user1,
-      right_player: user2,
-    });
-
-    await this.matchRepository.save(match);
-    this.logger.warn('created match', match.id);
-
-    const memoryMatch = new MemoryMatch(match.id, user1, user2);
-    this.memoryMatches.push(match);
-
-    return memoryMatch;
+    return this.matchManager.createMatch(user1, user2);
   }
 }
