@@ -4,13 +4,14 @@ import { Match } from 'src/entities/match.entity';
 import { User } from 'src/entities/user.entity';
 import { MatchManagerService } from 'src/match-manager/match-manager.service';
 import { MemoryMatch } from 'src/match-manager/model/MemoryMatch';
+import { UserDto } from 'src/users/dto/user.dto';
 import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
 import { MatchType, MATCH_TYPES } from './dto/AppendToQueueDTO';
 
 class MemoryQueue {
-  CLASSIC: User[] = [];
-  TURBO: User[] = [];
+  CLASSIC: UserDto[] = [];
+  TURBO: UserDto[] = [];
 }
 
 @Injectable()
@@ -26,7 +27,7 @@ export class MatchMakingService {
   ) {}
 
   // PERF: we could save the queue the user is on in the database for better dequeueing
-  async enqueue(user: User, matchType: MatchType): Promise<MemoryMatch> {
+  async enqueue(user: UserDto, matchType: MatchType): Promise<MemoryMatch> {
     const queue = this.memoryQueue[matchType];
 
     if (queue.some((enqueuedUser) => enqueuedUser.id === user.id)) {
@@ -57,11 +58,11 @@ export class MatchMakingService {
     });
   }
 
-  private isMatchAvailable(queue: User[]): boolean {
+  private isMatchAvailable(queue: UserDto[]): boolean {
     return queue.length >= 2;
   }
 
-  private async createMatch(queue: User[]): Promise<MemoryMatch> {
+  private async createMatch(queue: UserDto[]): Promise<MemoryMatch> {
     const user1 = queue.shift();
     const user2 = queue.shift();
 
