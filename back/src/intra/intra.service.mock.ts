@@ -2,16 +2,12 @@ import { faker } from '@faker-js/faker';
 import { Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { TokenPayload } from 'src/auth/dto/TokenPayload';
-import { User } from 'src/entities/user.entity';
-import { IntraUser } from 'src/users/dto/intraUser.dto';
 import { UserDto } from 'src/users/dto/user.dto';
 import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class IntraServiceMock {
   private readonly logger = new Logger(IntraServiceMock.name);
-
-  private readonly users = {};
 
   private readonly specificUsers: {
     abcd: UserDto;
@@ -25,7 +21,7 @@ export class IntraServiceMock {
       tfa_secret: null,
       profile: {
         id: 42,
-        avatar_path: 'avatars/gatinho.jpeg',
+        avatar_path: 'avatars/psergio-.jpeg',
         losses: 0,
         wins: 40,
         mmr: 400,
@@ -41,7 +37,7 @@ export class IntraServiceMock {
       tfa_secret: null,
       profile: {
         id: 43,
-        avatar_path: 'avatars/gatinho.jpeg',
+        avatar_path: 'avatars/jofelipe.jpeg',
         losses: 0,
         wins: 40,
         mmr: 400,
@@ -57,7 +53,7 @@ export class IntraServiceMock {
       tfa_secret: null,
       profile: {
         id: 44,
-        avatar_path: 'avatars/gatinho.jpeg',
+        avatar_path: 'avatars/wleite.jpeg',
         losses: 40,
         wins: 0,
         mmr: 0,
@@ -119,7 +115,7 @@ export class IntraServiceMock {
       id: id,
       login: savedUser.login_intra,
       displayname: savedUser.profile.name,
-      image_url: 'avatars/gatinho.jpeg',
+      image_url: savedUser.profile?.avatar_path ?? 'avatars/gatinho.jpeg',
     };
     return user;
   }
