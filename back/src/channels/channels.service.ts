@@ -46,14 +46,15 @@ export class ChannelsService {
   async create(channel: ChannelDto): Promise<Channel> {
     const invalidChannel = this.validateChannel(channel);
     if (invalidChannel) throw new BadRequestException(invalidChannel);
-    const users = (<string[]>channel.allowed_users).map((user) => user.trim());
     const newChannel = await this.channelsRepository
       .save({
         name: channel.name,
         owner_id: channel.owner_id,
         type: channel.type,
         password: await this.hashPass(channel.password),
-        allowed_users: await this.usersService.findManyByNickname(users),
+        allowed_users: await this.usersService.findManyByNickname(
+          channel.allowed_users as string[],
+        ),
       })
       .catch((err: any) => {
         console.log(err);

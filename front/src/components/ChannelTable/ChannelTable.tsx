@@ -46,7 +46,11 @@ function CreateChannel() {
   function onSubmit(values: any) {
     const user: User = userStorage.getUser() || emptyUser();
     values.owner_id = user.id;
-	values.allowed_users = values.allowed_users.split(',');
+    if (values.hasOwnProperty('allowed_users')) {
+      let users: string[] = values.allowed_users.split(',');
+      users = users.map((user_channel) => user_channel.trim());
+      values.allowed_users = users;
+    }
     api.createChannel(values).then((response) => {
       onClose();
       if (response.status != 201) {
