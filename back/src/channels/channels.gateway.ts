@@ -61,9 +61,8 @@ export class ChannelsSocketGateway
 
   @SubscribeMessage('join')
   async handleJoin(client: Socket, data: ChannelRoomAuth) {
-    const userCannotJoin = await this.UserCannotJoin(client, data);
-    if (userCannotJoin) return userCannotJoin;
-    client.join(data.room.toString());
+    const invalidJoin = await this.joinChannel(client, data);
+    if (invalidJoin) return invalidJoin;
     this.logger.log(`Client ${client.id} connected to the room ${data.room}`);
     return { status: 200, message: 'Ok' };
   }
@@ -87,13 +86,12 @@ export class ChannelsSocketGateway
     }
   }
 
-  private async UserCannotJoin(client: Socket, data: ChannelRoomAuth) {
-    const user: UserDto = await this.usersService.getMe(
-      client.handshake.auth.token,
-    );
+  private async joinChannel(client: Socket, data: ChannelRoomAuth) {
     if (!data || !data.room)
       return { status: 400, message: 'Invalid channel data' };
 
+    const token = client.handshake.auth.token;
+    const user: UserDto = await this.usersService.getMe(token);
     const channel: ChannelDto = await this.channelsService.getOne(data.room);
 
     if (channel.type == 'PRIVATE') {
@@ -113,6 +111,11 @@ export class ChannelsSocketGateway
       const isMatch = await bcrypt.compare(data.password, channel.password);
       if (!isMatch) return { status: 401, message: 'Invalid password' };
     }
-    return '';
+    if (!channel.users.find((channel_user) => channel_user.id == user.id)) {
+      user.channels.push(channel);
+      this.usersService.update(user);
+    }
+    client.join(data.room.toString());
+    return null;
   }
 }

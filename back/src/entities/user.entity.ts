@@ -7,6 +7,7 @@ import {
   PrimaryColumn,
   JoinColumn,
 } from 'typeorm';
+import { Channel } from './channel.entity';
 import { Profile } from './profile.entity';
 
 @Entity({ name: 'users' })
@@ -55,4 +56,8 @@ export class User {
   @ManyToMany(() => User)
   @JoinTable({ name: 'friendships' })
   friends: Partial<User>[];
+
+  @ManyToMany(() => Channel)
+  @JoinTable({ name: 'channel_members' })
+  channels: Partial<Channel>[];
 }

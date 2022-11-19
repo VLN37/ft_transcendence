@@ -1,10 +1,10 @@
-import { Faker, faker } from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import axios from 'axios';
+import { Channel } from 'src/entities/channel.entity';
 import { Profile } from 'src/entities/profile.entity';
 import { User } from 'src/entities/user.entity';
 import { UserDto } from 'src/users/dto/user.dto';
-import { getConnection, Repository } from 'typeorm';
 
 export const url = 'http://localhost:3000';
 
@@ -15,7 +15,7 @@ export function getTestDbModule() {
     port: 5433,
     username: 'user_test',
     password: 'pass_test',
-    entities: [User, Profile],
+    entities: [User, Profile, Channel],
     database: 'transcendence_test',
     synchronize: true,
     dropSchema: true,

@@ -46,14 +46,15 @@ export class ChannelsService {
   async create(channel: ChannelDto): Promise<Channel> {
     const invalidChannel = this.validateChannel(channel);
     if (invalidChannel) throw new BadRequestException(invalidChannel);
-    const users = (<string[]>channel.allowed_users).map((user) => user.trim());
     const newChannel = await this.channelsRepository
       .save({
         name: channel.name,
         owner_id: channel.owner_id,
         type: channel.type,
         password: await this.hashPass(channel.password),
-        allowed_users: await this.usersService.findManyByNickname(users),
+        allowed_users: await this.usersService.findManyByNickname(
+          channel.allowed_users as string[],
+        ),
       })
       .catch((err: any) => {
         console.log(err);
@@ -75,7 +76,7 @@ export class ChannelsService {
   async getOne(id: number): Promise<ChannelDto> {
     const channel = await this.channelsRepository.findOne({
       where: { id },
-      relations: ['allowed_users.profile'],
+      relations: ['users', 'users.profile', 'allowed_users.profile'],
     });
     if (!channel) throw new NotFoundException('Channel not found');
     this.logger.debug('Returning channel', { channel });
@@ -87,6 +88,10 @@ export class ChannelsService {
     const channel = await this.getOne(id);
     this.logger.debug('Channel deleted', { channel });
     await this.channelsRepository.delete({ id: id });
+  }
+
+  async update(channel: ChannelDto) {
+    return await this.channelsRepository.save(channel);
   }
 
   private validateChannel(channel: ChannelDto) {
