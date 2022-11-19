@@ -55,7 +55,7 @@ export class ChannelsService {
         allowed_users: await this.usersService.findManyByNickname(
           channel.allowed_users as string[],
         ),
-        administrators: [{id: channel.owner_id}],
+        administrators: [{ id: channel.owner_id }],
       })
       .catch((err: any) => {
         console.log(err);
@@ -77,7 +77,12 @@ export class ChannelsService {
   async getOne(id: number): Promise<ChannelDto> {
     const channel = await this.channelsRepository.findOne({
       where: { id },
-      relations: ['users', 'users.profile', 'allowed_users.profile'],
+      relations: [
+        'users',
+        'users.profile',
+        'allowed_users.profile',
+        'administrators',
+      ],
     });
     if (!channel) throw new NotFoundException('Channel not found');
     this.logger.debug('Returning channel', { channel });
