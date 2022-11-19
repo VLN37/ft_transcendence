@@ -21,7 +21,7 @@ export class User {
   @Column({
     type: 'varchar',
     length: 20,
-    // unique: true,
+    unique: true,
     nullable: false,
   })
   login_intra: string;
