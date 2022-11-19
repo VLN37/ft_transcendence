@@ -55,6 +55,7 @@ export class ChannelsService {
         allowed_users: await this.usersService.findManyByNickname(
           channel.allowed_users as string[],
         ),
+        administrators: [{id: channel.owner_id}],
       })
       .catch((err: any) => {
         console.log(err);

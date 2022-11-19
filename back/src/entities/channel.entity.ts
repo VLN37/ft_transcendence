@@ -47,4 +47,8 @@ export class Channel {
   @ManyToMany(() => User)
   @JoinTable({ name: 'channel_members' })
   users: Partial<User>[];
+
+  @ManyToMany(() => User)
+  @JoinTable({name: 'channel_administrators'})
+  administrators: Partial<User>[];
 }

@@ -38,4 +38,7 @@ export class ChannelDto {
 
   @IsOptional()
   users?: Partial<UserDto>[];
+
+  @IsOptional()
+  administrators?: Partial<UserDto>[];
 }
