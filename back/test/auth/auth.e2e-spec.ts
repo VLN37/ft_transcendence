@@ -35,6 +35,7 @@ function toUserEntity(intraUser: IntraUser): User {
     blocked: [],
     friend_requests: [],
     friends: [],
+    channels: [],
   };
 }
 
