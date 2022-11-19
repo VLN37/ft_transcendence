@@ -1,11 +1,6 @@
 on:
-  pull_request:
-    types:
-      - opened
-      - closed
-      - reopened
-    branches:
-      - 'master'
+  push:
+    
 jobs:
   e2e-tests:
     name: run end-to-end tests

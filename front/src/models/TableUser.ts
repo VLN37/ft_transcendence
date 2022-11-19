@@ -31,7 +31,7 @@ export function TableUser(user: User | void) {
         login_intra: '',
         id: 0,
         tfa_enabled: false,
-        avatar_path: '',
+        avatar_path: 'localhost:3000/avatars/gatinho.jpeg',
         nickname: '',
         wins: 0,
         losses: 0,

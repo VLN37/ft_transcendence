@@ -13,6 +13,7 @@ import {
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { Channel } from '../../models/Channel';
+import { Message } from '../../models/Message';
 import api from '../../services/api';
 import userStorage from '../../services/userStorage';
 
@@ -78,14 +79,6 @@ function InputMessage(props: any) {
       </Flex>
     </>
   );
-}
-
-interface Message {
-  id: string;
-  name: string;
-  text: string;
-  room: string;
-  avatar: string;
 }
 
 function sendMessage(room_id: string) {

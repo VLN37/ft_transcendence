@@ -13,6 +13,20 @@ import { TableUser } from '../../models/TableUser';
 import { User } from '../../models/User';
 import api from '../../services/api';
 
+function ListUsers(props: { users: TableUser[]; query: string }) {
+  if (!props.users[0].login_intra) return <></>;
+  const users = props.users
+    .filter((user) => user.login_intra.includes(props.query))
+    .map((user, i) => (
+      <UserBlock
+        key={i}
+        user={user}
+        path={process.env.REACT_APP_HOSNAME + user.avatar_path}
+      ></UserBlock>
+    ));
+  return <>{users}</>;
+}
+
 export function RankTable(props: any) {
   const [type, setType] = useState<keyof TableUser>('wins');
   const [order, setOrder] = useState<'ASC' | 'DESC'>('ASC');
@@ -83,19 +97,7 @@ export function RankTable(props: any) {
             </Tr>
           </Thead>
           <Tbody>
-            {!userList[0].login_intra ? (
-              <UserBlock user={userList[0]} />
-            ) : (
-              userList
-                .filter((user) => user.login_intra.includes(props.query))
-                .map((user, i) => (
-                  <UserBlock
-                    key={i}
-                    user={user}
-                    path={process.env.REACT_APP_HOSTNAME + user.avatar_path}
-                  />
-                ))
-            )}
+            <ListUsers users={userList} query={props.query}></ListUsers>
           </Tbody>
         </Table>
       </TableContainer>

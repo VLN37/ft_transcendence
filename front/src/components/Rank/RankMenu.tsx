@@ -21,6 +21,7 @@ import {
   MenuDivider,
 } from '@chakra-ui/react'
 import { emptyUser, User } from '../../models/User';
+import api from '../../services/api';
 import userStorage from '../../services/userStorage';
 
 function AddToast() {
@@ -67,6 +68,7 @@ export function RankMenu(props: any) {
     const body = await response.json();
     const status = response.ok ? 'success' : 'error';
     const message = response.ok ? '' : body.message;
+    if (response.ok) userStorage.updateUser();
     toast({
       title: 'Friend request sent',
       status: status,
