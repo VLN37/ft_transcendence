@@ -183,6 +183,7 @@ export class UsersService {
         'friends.profile',
         'blocked.profile',
         'friend_requests.profile',
+		'channels'
       ],
     });
     if (!find) return null;

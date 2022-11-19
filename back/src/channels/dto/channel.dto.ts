@@ -35,4 +35,7 @@ export class ChannelDto {
   @ValidateIf(o => o.type === 'PRIVATE')
   @IsNotEmpty()
   allowed_users?: Partial<UserDto>[];
+
+  @IsOptional()
+  users?: Partial<UserDto>[];
 }

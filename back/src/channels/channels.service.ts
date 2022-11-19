@@ -76,7 +76,7 @@ export class ChannelsService {
   async getOne(id: number): Promise<ChannelDto> {
     const channel = await this.channelsRepository.findOne({
       where: { id },
-      relations: ['allowed_users.profile'],
+      relations: ['users', 'allowed_users.profile'],
     });
     if (!channel) throw new NotFoundException('Channel not found');
     this.logger.debug('Returning channel', { channel });
@@ -88,6 +88,10 @@ export class ChannelsService {
     const channel = await this.getOne(id);
     this.logger.debug('Channel deleted', { channel });
     await this.channelsRepository.delete({ id: id });
+  }
+
+  async update(channel: ChannelDto) {
+    return await this.channelsRepository.save(channel);
   }
 
   private validateChannel(channel: ChannelDto) {

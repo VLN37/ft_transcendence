@@ -8,6 +8,7 @@ import {
   MaxLength,
   ValidateNested,
 } from 'class-validator';
+import { Channel } from 'src/entities/channel.entity';
 import { ProfileDto } from './profile.dto';
 
 export class UserDto {
@@ -42,4 +43,7 @@ export class UserDto {
 
   @IsOptional()
   blocked?: Partial<UserDto>[];
+
+  @IsOptional()
+  channels?: Partial<Channel>[];
 }
