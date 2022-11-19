@@ -84,12 +84,13 @@ function InputMessage(props: any) {
 function sendMessage(room_id: string) {
   const text = (document.getElementById('message') as HTMLInputElement).value;
   (document.getElementById('message') as HTMLInputElement).value = '';
+  const userImage = userStorage.getUser()?.profile?.avatar_path || '';
   const message: Message = {
     id: userStorage.getUser()?.id?.toString() || '',
     name: userStorage.getUser()?.profile?.nickname || '',
     text: text,
     room: room_id,
-    avatar: userStorage.getUser()?.profile?.avatar_path || '',
+    avatar: process.env.REACT_APP_HOSTNAME + userImage,
   };
   api.sendMessage(message);
   console.log('message sent');

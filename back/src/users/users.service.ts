@@ -214,13 +214,17 @@ export class UsersService {
     return find;
   }
 
-  async findMany(users_id: number[]): Promise<UserDto[]> {
-    if (!users_id) return [];
+  async findManyByNickname(users_nickname: string[]): Promise<UserDto[]> {
+    if (!users_nickname) return [];
     const users = await this.usersRepository.find({
       relations: ['profile'],
-      where: { id: In(users_id) },
+      where: {
+        profile: {
+          nickname: In(users_nickname),
+        },
+      },
     });
-    if (users.length != users_id.length)
+    if (users.length != users_nickname.length)
       throw new BadRequestException('User not found in database');
     users.map((user) => {
       delete user.tfa_enabled;
