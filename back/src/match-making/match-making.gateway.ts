@@ -66,9 +66,10 @@ export class MatchMakingGateway
     @ConnectedSocket() client: Socket,
   ) {
     try {
-      const user: UserDto = client.handshake.auth['user'];
+      const userDto: UserDto = client.handshake.auth['user'];
+      const user = this.usersService.findOne(userDto.id);
       const createdMatch = await this.matchMakingService.enqueue(user, type);
-      client.join(user.login_intra); // only the user
+      client.join(userDto.login_intra); // only the user
       if (createdMatch) {
         const notifyPlayers = () => {
           const matchData = {
