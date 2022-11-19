@@ -67,7 +67,7 @@ export class MatchMakingGateway
   ) {
     try {
       const userDto: UserDto = client.handshake.auth['user'];
-      const user = this.usersService.findOne(userDto.id);
+      const user = await this.usersService.findOne(userDto.id);
       const createdMatch = await this.matchMakingService.enqueue(user, type);
       client.join(userDto.login_intra); // only the user
       if (createdMatch) {

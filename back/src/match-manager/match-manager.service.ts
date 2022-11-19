@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Match } from 'src/entities/match.entity';
 import { User } from 'src/entities/user.entity';
+import { UserDto } from 'src/users/dto/user.dto';
 import { Repository } from 'typeorm';
 import { MemoryMatch } from './model/MemoryMatch';
 
@@ -16,7 +17,7 @@ export class MatchManagerService {
     private readonly matchRepository: Repository<Match>,
   ) {}
 
-  async createMatch(user1: User, user2: User) {
+  async createMatch(user1: UserDto, user2: UserDto) {
     const match = this.matchRepository.create({
       left_player: user1,
       right_player: user2,
