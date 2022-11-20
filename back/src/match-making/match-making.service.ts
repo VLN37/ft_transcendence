@@ -43,7 +43,7 @@ export class MatchMakingService {
     return null;
   }
 
-  dequeue(user: Express.User) {
+  dequeue(user: UserDto) {
     MATCH_TYPES.forEach((type) => {
       const queue = this.memoryQueue[type];
       const i = queue.findIndex((queuedUser) => (queuedUser.id = user.id));
