@@ -1,3 +1,4 @@
+import { MatchStage } from 'src/match-manager/model/MemoryMatch';
 import {
   Column,
   CreateDateColumn,
@@ -44,12 +45,7 @@ export class Match {
     ],
     default: 'AWAITING_PLAYERS',
   })
-  stage:
-    | 'AWAITING_PLAYERS'
-    | 'PREPARATION'
-    | 'ONGOING'
-    | 'FINISHED'
-    | 'CANCELED';
+  stage: MatchStage;
 
   @CreateDateColumn()
   created_at: Date;

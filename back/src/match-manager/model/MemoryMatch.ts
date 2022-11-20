@@ -13,6 +13,13 @@ function hours(h: number) {
   return h * minutes(60);
 }
 
+export type MatchStage =
+  | 'AWAITING_PLAYERS'
+  | 'PREPARATION'
+  | 'ONGOING'
+  | 'FINISHED'
+  | 'CANCELED';
+
 export class MemoryMatch {
   private readonly logger: Logger;
 
@@ -27,12 +34,7 @@ export class MemoryMatch {
     ongoing?: NodeJS.Timeout;
   };
 
-  stage:
-    | 'AWAITING_PLAYERS'
-    | 'PREPARATION'
-    | 'ONGOING'
-    | 'FINISHED'
-    | 'CANCELED';
+  stage: MatchStage;
 
   onStageChange: () => void;
 
