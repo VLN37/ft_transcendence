@@ -115,6 +115,7 @@ export default function Chat(props: Channel) {
     document.getElementById('bottom')?.scrollIntoView();
   }, [messages]);
 
+  // console.log('chat page: ', props);
   return (
     <Grid
       gridTemplateColumns={'repeat(10, 1fr)'}
