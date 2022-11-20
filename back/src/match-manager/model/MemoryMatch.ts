@@ -40,7 +40,7 @@ export class MemoryMatch {
     this.right_player = rightPlayer;
     this.left_player_score = 0;
     this.right_player_score = 0;
-    // this.timers = {};
+    this.timers = {};
     this.stage = 'AWAITING_PLAYERS';
     this.logger = new Logger('match ' + id);
     this.logger.log(
