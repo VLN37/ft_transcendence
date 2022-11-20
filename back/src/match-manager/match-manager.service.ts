@@ -25,6 +25,10 @@ export class MatchManagerService {
     await this.matchRepository.save(match);
 
     const memoryMatch = new MemoryMatch(match.id, user1, user2);
+    memoryMatch.onStageChange = () => {
+      match.stage = memoryMatch.stage;
+      this.matchRepository.save(match);
+    };
     memoryMatch.waitForPlayers();
     this.memoryMatches.push(memoryMatch);
 

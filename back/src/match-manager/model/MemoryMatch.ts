@@ -34,6 +34,8 @@ export class MemoryMatch {
     | 'FINISHED'
     | 'CANCELED';
 
+  onStageChange: () => void;
+
   constructor(id: string, leftPlayer: UserDto, rightPlayer: UserDto) {
     this.id = id;
     this.left_player = leftPlayer;
@@ -57,6 +59,7 @@ export class MemoryMatch {
     this.timers.awaiting_players = setTimeout(() => {
       this.logger.warn("canceling match: players didn't connect");
       this.stage = 'CANCELED';
+      this.onStageChange();
     }, seconds(30));
   }
 
@@ -68,6 +71,7 @@ export class MemoryMatch {
 
   private startPreparationTime() {
     this.stage = 'PREPARATION';
+    this.onStageChange();
     this.logger.debug('starting preparation time');
     this.timers.preparation = setTimeout(() => {
       this.startMatch();
@@ -76,6 +80,7 @@ export class MemoryMatch {
 
   private startMatch() {
     this.stage = 'ONGOING';
+    this.onStageChange();
     this.logger.debug('starting match');
     this.timers.ongoing = setTimeout(() => {
       this.finishMatch();
@@ -85,5 +90,6 @@ export class MemoryMatch {
   private finishMatch() {
     this.logger.log('match finished');
     this.stage = 'FINISHED';
+    this.onStageChange();
   }
 }
