@@ -1,12 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Match } from 'src/entities/match.entity';
-import { User } from 'src/entities/user.entity';
 import { MatchManagerService } from 'src/match-manager/match-manager.service';
 import { MemoryMatch } from 'src/match-manager/model/MemoryMatch';
 import { UserDto } from 'src/users/dto/user.dto';
 import { UsersService } from 'src/users/users.service';
-import { Repository } from 'typeorm';
 import { MatchType, MATCH_TYPES } from './dto/AppendToQueueDTO';
 
 class MemoryQueue {
