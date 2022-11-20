@@ -4,7 +4,6 @@ import { Match } from 'src/entities/match.entity';
 import { MatchManagerService } from 'src/match-manager/match-manager.service';
 import { MemoryMatch } from 'src/match-manager/model/MemoryMatch';
 import { UserDto } from 'src/users/dto/user.dto';
-import { UsersService } from 'src/users/users.service';
 import { MatchType, MATCH_TYPES } from './dto/AppendToQueueDTO';
 
 class MemoryQueue {
@@ -20,7 +19,6 @@ export class MatchMakingService {
 
   constructor(
     @InjectRepository(Match)
-    private usersService: UsersService,
     private matchManager: MatchManagerService,
   ) {}
 
