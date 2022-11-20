@@ -1,14 +1,13 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Match } from 'src/entities/match.entity';
-import { User } from 'src/entities/user.entity';
 import { UserDto } from 'src/users/dto/user.dto';
 import { Repository } from 'typeorm';
 import { MemoryMatch } from './model/MemoryMatch';
 
 @Injectable()
 export class MatchManagerService {
-  private readonly logger = new Logger();
+  private readonly logger = new Logger('Match Manager');
 
   private memoryMatches: MemoryMatch[] = [];
 
@@ -24,10 +23,11 @@ export class MatchManagerService {
     });
 
     await this.matchRepository.save(match);
-    this.logger.warn('created match', match.id);
 
     const memoryMatch = new MemoryMatch(match.id, user1, user2);
-    this.memoryMatches.push(match);
+    memoryMatch.waitForPlayers();
+    this.logger.debug('match ' + match.id + ' created');
+    this.memoryMatches.push(memoryMatch);
 
     return memoryMatch;
   }
