@@ -66,10 +66,9 @@ export class MatchMakingGateway
     @ConnectedSocket() client: Socket,
   ) {
     try {
-      const userDto: UserDto = client.handshake.auth['user'];
-      const user = await this.usersService.findOne(userDto.id);
+      const user = await this.getUser(client);
       const createdMatch = await this.matchMakingService.enqueue(user, type);
-      client.join(userDto.login_intra); // only the user
+      client.join(user.login_intra); // only the user
       if (createdMatch) {
         const notifyPlayers = () => {
           const matchData = {
@@ -89,10 +88,10 @@ export class MatchMakingGateway
     }
   }
 
-  private dequeueUser(client: Socket) {
+  private async dequeueUser(client: Socket) {
+    const user = await this.getUser(client);
+    this.matchMakingService.dequeue(user);
     try {
-      const user = client.handshake.auth['user'];
-      this.matchMakingService.dequeue(user);
     } catch (e) {
       throw new WsException(e);
     }
@@ -121,5 +120,10 @@ export class MatchMakingGateway
     } catch {
       throw new WsException('Token invalid or expired');
     }
+  }
+
+  private async getUser(client: Socket) {
+    const user = client.handshake.auth['user'];
+    return this.usersService.findOne(user.id);
   }
 }
