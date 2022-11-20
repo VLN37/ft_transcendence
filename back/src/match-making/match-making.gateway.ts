@@ -70,6 +70,7 @@ export class MatchMakingGateway
       const createdMatch = await this.matchMakingService.enqueue(user, type);
       client.join(user.login_intra); // only the user
       if (createdMatch) {
+        this.logger.debug('match created, notifying players');
         const notifyPlayers = () => {
           const matchData = {
             id: createdMatch.id,
@@ -82,6 +83,8 @@ export class MatchMakingGateway
             });
         };
         setTimeout(notifyPlayers, 1000);
+      } else {
+        this.logger.error('no match was created');
       }
     } catch (e) {
       throw new WsException(e);

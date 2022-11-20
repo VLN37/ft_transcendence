@@ -38,7 +38,7 @@ export class Match {
     enum: ['AWAITING_PLAYERS', 'PREPARATION', 'ONGOING', 'FINISHED'],
     default: 'AWAITING_PLAYERS',
   })
-  stage: string;
+  stage: 'AWAITING_PLAYERS' | 'PREPARATION' | 'ONGOING' | 'FINISHED';
 
   @CreateDateColumn()
   created_at: Date;

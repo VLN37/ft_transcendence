@@ -61,6 +61,7 @@ export class MatchMakingService {
   }
 
   private async createMatch(queue: UserDto[]): Promise<MemoryMatch> {
+    this.logger.debug('match is available');
     const user1 = queue.shift();
     const user2 = queue.shift();
 
