@@ -16,6 +16,7 @@ import { Channel } from '../../models/Channel';
 import { Message } from '../../models/Message';
 import api from '../../services/api';
 import userStorage from '../../services/userStorage';
+import { ChatUsers } from './ChatUsers';
 
 function ChannelTitle(props: any) {
   return (
@@ -96,7 +97,7 @@ function sendMessage(room_id: string) {
   console.log('message sent');
 }
 
-export default function Chat(props: Channel) {
+export default function Chat(props: any) {
   const [messages, setMessages] = useState<Message[]>([]);
 
   api.listenMessage((message: Message) => {
@@ -115,6 +116,7 @@ export default function Chat(props: Channel) {
     document.getElementById('bottom')?.scrollIntoView();
   }, [messages]);
 
+  // console.log('chat page: ', props);
   return (
     <Grid
       gridTemplateColumns={'repeat(10, 1fr)'}
@@ -127,7 +129,7 @@ export default function Chat(props: Channel) {
         <ChannelTitle>{`${props.name} #${props.id}`}</ChannelTitle>
       </GridItem>
       <GridItem borderRadius={'5px'} rowSpan={11} colSpan={2} bg="gray.700">
-        <Users />
+        {props.users ? <ChatUsers users={props.users} /> : <></>}
       </GridItem>
       <GridItem
         borderRadius={'5px'}

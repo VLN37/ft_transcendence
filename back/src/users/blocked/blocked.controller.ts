@@ -18,14 +18,14 @@ export class BlockedController {
     return await this.blockedService.get(me);
   }
 
-  @HttpCode(200)
+  @HttpCode(201)
   @Post()
   async block(@Param('target') target: number, @Body('user_id') me: number) {
     return await this.blockedService.block(me, target);
   }
 
-  @Delete(':me')
-  async unblock(@Param('target') me: number, @Param('me') target: number) {
+  @Delete()
+  async unblock(@Param('target') me: number, @Body('user_id') target: number) {
     return await this.blockedService.unblock(me, target);
   }
 }

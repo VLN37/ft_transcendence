@@ -14,8 +14,8 @@ class UserStorage {
     localStorage.setItem('user', userStr);
   }
 
-  updateUser() {
-    api.getUser('me').then((user) => this.saveUser(user));
+  async updateUser() {
+    await api.getUser('me').then((user) => this.saveUser(user));
   }
 
   removeUser() {
