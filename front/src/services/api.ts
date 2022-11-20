@@ -79,7 +79,6 @@ class Api {
           user_id: myId
         }
       )
-      console.log('block user response: ', response);
       return response;
     } catch (err) {
       console.log('catch', err);
@@ -92,10 +91,9 @@ class Api {
       const response = await this.client.delete<any>(
         `/users/${myId}/blocked_users`,
         {
-          data: targetId,
+          data: {user_id: targetId},
         }
       )
-      console.log('unblock user response: ', response);
       return response;
     } catch (err) {
       console.log('catch', err);
