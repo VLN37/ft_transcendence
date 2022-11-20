@@ -58,9 +58,6 @@ export class MemoryMatch {
       this.logger.warn("canceling match: players didn't connect");
       this.stage = 'CANCELED';
     }, seconds(30));
-
-    this.logger.debug('exiting waitForPlayers()');
-    this.logger.debug('exiting waitForPlayers()');
   }
 
   onBothPlayersConnected() {

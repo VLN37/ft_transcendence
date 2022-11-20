@@ -26,7 +26,6 @@ export class MatchManagerService {
 
     const memoryMatch = new MemoryMatch(match.id, user1, user2);
     memoryMatch.waitForPlayers();
-    this.logger.debug('match ' + match.id + ' created');
     this.memoryMatches.push(memoryMatch);
 
     return memoryMatch;
