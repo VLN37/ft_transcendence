@@ -35,10 +35,21 @@ export class Match {
 
   @Column({
     type: 'enum',
-    enum: ['AWAITING_PLAYERS', 'PREPARATION', 'ONGOING', 'FINISHED'],
+    enum: [
+      'AWAITING_PLAYERS',
+      'PREPARATION',
+      'ONGOING',
+      'FINISHED',
+      'CANCELED',
+    ],
     default: 'AWAITING_PLAYERS',
   })
-  stage: 'AWAITING_PLAYERS' | 'PREPARATION' | 'ONGOING' | 'FINISHED';
+  stage:
+    | 'AWAITING_PLAYERS'
+    | 'PREPARATION'
+    | 'ONGOING'
+    | 'FINISHED'
+    | 'CANCELED';
 
   @CreateDateColumn()
   created_at: Date;
