@@ -12,6 +12,8 @@ import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
 import { ChannelDto } from './dto/channel.dto';
 import * as bcrypt from 'bcrypt';
+import { Message } from './channels.interface';
+import { ChannelMessages } from 'src/entities/channel_messages.entity';
 
 @Injectable()
 export class ChannelsService {
@@ -20,6 +22,8 @@ export class ChannelsService {
   constructor(
     @InjectRepository(Channel)
     private channelsRepository: Repository<Channel>,
+    @InjectRepository(ChannelMessages)
+    private channelsMesssagesRepository: Repository<ChannelMessages>,
     private usersService: UsersService,
   ) {}
 
@@ -76,7 +80,13 @@ export class ChannelsService {
   async getOne(id: number): Promise<ChannelDto> {
     const channel = await this.channelsRepository.findOne({
       where: { id },
-      relations: ['users', 'users.profile', 'allowed_users.profile'],
+      relations: [
+        'users',
+        'users.profile',
+        'allowed_users.profile',
+        'channel_messages.user.profile',
+        'channel_messages.channel',
+      ],
     });
     if (!channel) throw new NotFoundException('Channel not found');
     this.logger.debug('Returning channel', { channel });
@@ -92,6 +102,18 @@ export class ChannelsService {
 
   async update(channel: ChannelDto) {
     return await this.channelsRepository.save(channel);
+  }
+
+  async saveMessage(message: Message) {
+    const user = await this.usersService.getOne(parseInt(message.id));
+    const channel = await this.getOne(parseInt(message.room));
+    const newMessage = await this.channelsMesssagesRepository.save({
+      user: user,
+      channel: channel,
+      message: message.text,
+    });
+    channel.channel_messages.push(newMessage);
+    this.channelsRepository.save(channel);
   }
 
   private validateChannel(channel: ChannelDto) {

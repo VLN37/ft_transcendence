@@ -13,7 +13,7 @@ import { Server, Socket } from 'socket.io';
 import { TokenPayload } from 'src/auth/dto/TokenPayload';
 import { UserDto } from 'src/users/dto/user.dto';
 import { UsersService } from 'src/users/users.service';
-import { ChannelRoomAuth } from './channels.interface';
+import { ChannelRoomAuth, Message } from './channels.interface';
 import { ChannelsService } from './channels.service';
 import { ChannelDto } from './dto/channel.dto';
 import * as bcrypt from 'bcrypt';
@@ -68,9 +68,10 @@ export class ChannelsSocketGateway
   }
 
   @SubscribeMessage('chat')
-  handleMessage(client: Socket, data): void {
+  handleMessage(client: Socket, data: Message): void {
     this.logger.debug('Received a message from ' + client.id);
     this.logger.debug('Sending a message to ' + client.id);
+	this.channelsService.saveMessage(data);
     this.server.to(data.room.toString()).emit('chat', data);
   }
 
