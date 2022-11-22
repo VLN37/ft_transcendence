@@ -6,7 +6,7 @@ export interface User {
   tfa_enabled: boolean;
   friends: User[];
   friend_requests: User[];
-  blocked: number[];
+  blocked: User[];
   channels: Channel[];
   profile: {
     name: string,
