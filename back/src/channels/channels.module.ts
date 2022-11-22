@@ -7,10 +7,11 @@ import { ChannelsSocketGateway } from './channels.gateway';
 import { UsersModule } from 'src/users/users.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ChannelsInterceptor } from './channels.interceptor';
+import { ChannelMessages } from 'src/entities/channel_messages.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Channel]),
+    TypeOrmModule.forFeature([Channel, ChannelMessages]),
     JwtModule.register({}),
     UsersModule,
   ],

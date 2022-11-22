@@ -13,7 +13,7 @@ import { Server, Socket } from 'socket.io';
 import { TokenPayload } from 'src/auth/dto/TokenPayload';
 import { UserDto } from 'src/users/dto/user.dto';
 import { UsersService } from 'src/users/users.service';
-import { ChannelRoomAuth } from './channels.interface';
+import { ChannelRoomAuth, ChannelRoomMessage } from './channels.interface';
 import { ChannelsService } from './channels.service';
 import { ChannelDto } from './dto/channel.dto';
 import * as bcrypt from 'bcrypt';
@@ -68,10 +68,11 @@ export class ChannelsSocketGateway
   }
 
   @SubscribeMessage('chat')
-  handleMessage(client: Socket, data): void {
+  async handleMessage(client: Socket, data: ChannelRoomMessage) {
     this.logger.debug('Received a message from ' + client.id);
     this.logger.debug('Sending a message to ' + client.id);
-    this.server.to(data.room.toString()).emit('chat', data);
+    const newMessage = await this.channelsService.saveMessage(client, data);
+    this.server.to(newMessage.channel.id.toString()).emit('chat', newMessage);
   }
 
   private validateConnection(client: Socket) {

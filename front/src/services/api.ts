@@ -8,6 +8,8 @@ import {
   ChannelSocketResponse,
 } from '../models/Channel';
 import { User } from '../models/User';
+import { Message } from '../models/Message';
+import userStorage from './userStorage';
 
 interface AuthenticationResponse {
   access_token: string;
@@ -60,12 +62,11 @@ class Api {
       const response = await this.client.post<any>(
         `/users/${targetId}/friend_requests`,
         {
-          user_id: myId
-        }
-      )
+          user_id: myId,
+        },
+      );
       return response;
-    }
-    catch (err) {
+    } catch (err) {
       console.log('catch', err);
       return (err as AxiosError).response;
     }
@@ -144,7 +145,20 @@ class Api {
   }
 
   listenMessage(callback: any) {
-    this.channelSocket?.on('chat', callback);
+    this.channelSocket?.on('chat', (message: Message) => {
+      const blocked = userStorage.getUser()?.blocked || [];
+      if (blocked.length) {
+        if (blocked.find((blocked_user) => message.user.id == blocked_user.id))
+          return;
+      }
+      callback(message);
+    });
+  }
+
+  async getChannelMessages(id: string): Promise<Message[]> {
+    const response = await this.client.get(`/channels/${id}/messages`, {});
+    // console.log(response.data);
+    return response.data;
   }
 
   async authenticate(code: string): Promise<string> {

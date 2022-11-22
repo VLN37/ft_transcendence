@@ -3,8 +3,10 @@ import {
   Entity,
   JoinTable,
   ManyToMany,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { ChannelMessages } from './channel_messages.entity';
 import { User } from './user.entity';
 
 export type ChannelType = 'PUBLIC' | 'PRIVATE' | 'PROTECTED';
@@ -49,6 +51,9 @@ export class Channel {
   users: Partial<User>[];
 
   @ManyToMany(() => User)
-  @JoinTable({name: 'channel_administrators'})
+  @JoinTable({ name: 'channel_administrators' })
   administrators: Partial<User>[];
+
+  @OneToMany(() => ChannelMessages, (message) => message.channel)
+  channel_messages: ChannelMessages[];
 }

@@ -1,3 +1,4 @@
+import { StarIcon } from '@chakra-ui/icons';
 import {
   Box,
   Menu,
@@ -14,7 +15,11 @@ import api from '../../services/api';
 import userStorage from '../../services/userStorage';
 import { PublicProfile } from '../Profile/profile.public';
 
-function UserMenu(props: { user: TableUser }) {
+function UserMenu(props: {
+  user: TableUser,
+  admin: User[],
+  owner_id: number,
+}) {
   const [reload, setReload] = useState<boolean>(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const me: User = userStorage.getUser() || emptyUser();
@@ -29,10 +34,7 @@ function UserMenu(props: { user: TableUser }) {
       status: status,
       description: message,
     })
-    if (response.status == 201) {
-      // me.blocked.push(props.user.id);
-      await userStorage.updateUser();
-    }
+    await userStorage.updateUser();
     setReload(!reload);
   }
 
@@ -45,13 +47,15 @@ function UserMenu(props: { user: TableUser }) {
       status: status,
       description: message,
     })
-    if (response.status == 200) {
-      // me.blocked = me.blocked.filter((user) => user.id !== props.user.id);
-      await userStorage.updateUser();
-    }
+    await userStorage.updateUser();
     setReload(!reload);
   }
 
+  const isAdmin = props.admin.find((user) => props.user.id == user.id);
+  const amAdmin = props.admin.find((user) => me.id == user.id);
+  const amOwner = me.id == props.owner_id && me.id != props.user.id;
+  const isMyself = me.id == props.user.id;
+  const isBlocked = me.blocked.find((user) => props.user.id == user.id);
   return (
     <Box padding={1}>
       <PublicProfile
@@ -60,24 +64,50 @@ function UserMenu(props: { user: TableUser }) {
         onClose={onClose}
       ></PublicProfile>
       <Menu isLazy>
-        <MenuButton>{props.user.nickname}</MenuButton>
+        <MenuButton>
+          {isAdmin ? <StarIcon></StarIcon> : null}
+          {props.user.nickname}
+        </MenuButton>
         <MenuList>
           <MenuItem onClick={onOpen}>view profile</MenuItem>
-          {me.blocked.find((user: User) => props.user.id == user.id)
+          {isBlocked
             ? <MenuItem onClick={unblockUser}>unblock user</MenuItem>
-            : <MenuItem onClick={blockUser}>block user</MenuItem>}
-
+            : (
+              !isMyself
+                ? <MenuItem onClick={unblockUser}>unblock user</MenuItem>
+                : null
+            )}
+          {amOwner
+            ? (
+              isAdmin && !isMyself
+                ? <MenuItem>remove admin</MenuItem>
+                : <MenuItem>give admin</MenuItem>
+            )
+            : null}
+          {amAdmin && !isMyself && !isAdmin
+            ? <MenuItem>ban user</MenuItem>
+            : null}
         </MenuList>
       </Menu>
     </Box>
   );
 }
 
-export function ChatUsers(props: { users: User[] }) {
+export function ChatUsers(props: {
+  users: User[],
+  admin: User[],
+  owner_id: number,
+}) {
   const userList = props.users.map((user: User, i: number) => {
     const tableuser = TableUser(user);
-    return <UserMenu key={i} user={tableuser}></UserMenu>;
-    // <Text key={i}>{user.profile.nickname}</Text>
+    return (
+      <UserMenu
+        owner_id={props.owner_id}
+        admin={props.admin}
+        key={i}
+        user={tableuser}
+      ></UserMenu>
+    );
   });
   console.log('users: ', props.users);
   return <>{userList}</>;

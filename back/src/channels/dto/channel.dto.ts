@@ -1,5 +1,4 @@
 import {
-	IsIn,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -9,6 +8,7 @@ import {
   ValidateIf,
 } from 'class-validator';
 import { ChannelType } from 'src/entities/channel.entity';
+import { ChannelMessages } from 'src/entities/channel_messages.entity';
 import { UserDto } from 'src/users/dto/user.dto';
 
 export class ChannelDto {
@@ -26,13 +26,13 @@ export class ChannelDto {
   @IsNotEmpty()
   type: ChannelType;
 
-  @ValidateIf(o => o.type === 'PROTECTED')
+  @ValidateIf((o) => o.type === 'PROTECTED')
   @IsString()
   @IsNotEmpty()
   @MinLength(8)
   password: string;
 
-  @ValidateIf(o => o.type === 'PRIVATE')
+  @ValidateIf((o) => o.type === 'PRIVATE')
   @IsNotEmpty()
   allowed_users?: Partial<UserDto>[];
 
@@ -41,4 +41,7 @@ export class ChannelDto {
 
   @IsOptional()
   administrators?: Partial<UserDto>[];
+
+  @IsOptional()
+  channel_messages?: ChannelMessages[];
 }

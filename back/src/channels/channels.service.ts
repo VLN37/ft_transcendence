@@ -12,6 +12,9 @@ import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
 import { ChannelDto } from './dto/channel.dto';
 import * as bcrypt from 'bcrypt';
+import { ChannelRoomMessage, Message } from './channels.interface';
+import { ChannelMessages } from 'src/entities/channel_messages.entity';
+import { Socket } from 'socket.io';
 
 @Injectable()
 export class ChannelsService {
@@ -20,6 +23,8 @@ export class ChannelsService {
   constructor(
     @InjectRepository(Channel)
     private channelsRepository: Repository<Channel>,
+    @InjectRepository(ChannelMessages)
+    private channelsMesssagesRepository: Repository<ChannelMessages>,
     private usersService: UsersService,
   ) {}
 
@@ -81,12 +86,31 @@ export class ChannelsService {
         'users',
         'users.profile',
         'allowed_users.profile',
+        'channel_messages.user.profile',
+        'channel_messages.channel',
         'administrators',
       ],
     });
     if (!channel) throw new NotFoundException('Channel not found');
     this.logger.debug('Returning channel', { channel });
     return channel;
+  }
+
+  async getMessages(id: number): Promise<ChannelMessages[]> {
+    const channel = await this.channelsRepository.findOne({
+      where: { id },
+      relations: [
+        'users',
+        'users.profile',
+        'allowed_users.profile',
+        'channel_messages.user.profile',
+        'channel_messages.channel',
+      ],
+    });
+    if (!channel) throw new NotFoundException('Channel not found');
+    // this.logger.debug('Returning channel messages', channel.channel_messages);
+    this.logger.debug(`Returning channel ${channel.id} messages`);
+    return channel.channel_messages;
   }
 
   async delete(id: number) {
@@ -98,6 +122,31 @@ export class ChannelsService {
 
   async update(channel: ChannelDto) {
     return await this.channelsRepository.save(channel);
+  }
+
+  async saveMessage(
+    client: Socket,
+    data: ChannelRoomMessage,
+  ): Promise<Message> {
+    const token = client.handshake.auth.token;
+    const channel_id = data.channel_id;
+    const user_id = await this.usersService.getUserId(token);
+    const user = await this.usersService.getOne(user_id);
+    const channel: ChannelDto = await this.channelsRepository.findOne({
+      where: { id: channel_id },
+      relations: ['channel_messages'],
+    });
+
+    const newMessage = await this.channelsMesssagesRepository.save({
+      message: data.message,
+      user: user,
+      channel: channel,
+    });
+    channel.channel_messages.push(newMessage);
+    this.channelsRepository.save(channel);
+    delete newMessage.channel.password;
+    delete newMessage.channel.channel_messages;
+    return newMessage;
   }
 
   private validateChannel(channel: ChannelDto) {
