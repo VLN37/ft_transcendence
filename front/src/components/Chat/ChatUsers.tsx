@@ -51,11 +51,13 @@ function UserMenu(props: {
     setReload(!reload);
   }
 
+  const isMyself = me.id == props.user.id;
+  const amOwner = me.id == props.owner_id && me.id != props.user.id;
+  const isBlocked = me.blocked.find((user) => props.user.id == user.id);
   const isAdmin = props.admin.find((user) => props.user.id == user.id);
   const amAdmin = props.admin.find((user) => me.id == user.id);
-  const amOwner = me.id == props.owner_id && me.id != props.user.id;
-  const isMyself = me.id == props.user.id;
-  const isBlocked = me.blocked.find((user) => props.user.id == user.id);
+  console.log('isMyself: ', isMyself);
+  console.log('isBlocked: ', isBlocked);
   return (
     <Box padding={1}>
       <PublicProfile
@@ -70,23 +72,30 @@ function UserMenu(props: {
         </MenuButton>
         <MenuList>
           <MenuItem onClick={onOpen}>view profile</MenuItem>
-          {isBlocked
-            ? <MenuItem onClick={unblockUser}>unblock user</MenuItem>
-            : (
-              !isMyself
-                ? <MenuItem onClick={unblockUser}>unblock user</MenuItem>
-                : null
-            )}
-          {amOwner
-            ? (
-              isAdmin && !isMyself
-                ? <MenuItem>remove admin</MenuItem>
-                : <MenuItem>give admin</MenuItem>
-            )
-            : null}
-          {amAdmin && !isMyself && !isAdmin
-            ? <MenuItem>ban user</MenuItem>
-            : null}
+          <MenuItem>invite to game</MenuItem>
+          {
+            isMyself
+              ? null
+              : (
+                isBlocked
+                  ? <MenuItem onClick={unblockUser}>unblock user</MenuItem>
+                  : <MenuItem onClick={blockUser}>block user</MenuItem>
+              )
+          }
+          {
+            amOwner && !isMyself
+              ? (
+                isAdmin
+                  ? <MenuItem>remove admin</MenuItem>
+                  : <MenuItem>give admin</MenuItem>
+              )
+              : null
+          }
+          {
+            amAdmin && !isMyself
+              ? <MenuItem>ban user</MenuItem>
+              : null
+          }
         </MenuList>
       </Menu>
     </Box>
@@ -110,5 +119,6 @@ export function ChatUsers(props: {
     );
   });
   console.log('users: ', props.users);
+  console.log('admins: ', props.admin);
   return <>{userList}</>;
 }
