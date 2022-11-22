@@ -132,12 +132,11 @@ export class ChannelsGetMessagesInterceptor implements NestInterceptor {
     const id = (await this.usersService.getMe(request.headers['authorization']))
       .id;
     const channel_id = request.path.split('/')[2] || 0;
-    const owner_id = (await this.channelsService.getOne(channel_id)).owner_id;
-    if (owner_id != id) {
+    const channel = await this.channelsService.getOne(channel_id);
+    if (!channel.users.find((user) => user.id == id))
       throw new ForbiddenException(
-        `You don't have permission to delete this channel`,
+        `You need to join first to get all channel messages`,
       );
-    }
     return next.handle().pipe(
       map((data) => {
         data.map((message) => {
