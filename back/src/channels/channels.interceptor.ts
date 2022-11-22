@@ -145,6 +145,13 @@ export class ChannelsGetMessagesInterceptor implements NestInterceptor {
           delete message.user.tfa_enabled;
           delete message.channel.password;
         });
+        if (user.blocked.length) {
+          data = data.filter((message) =>
+            user.blocked.find(
+              (blocked_user) => message.user.id != blocked_user.id,
+            ),
+          );
+        }
         return data;
       }),
     );
