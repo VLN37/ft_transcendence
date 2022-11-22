@@ -116,3 +116,44 @@ export class ChannelsDeleteInterceptor implements NestInterceptor {
     );
   }
 }
+
+@Injectable()
+export class ChannelsGetMessagesInterceptor implements NestInterceptor {
+  constructor(
+    private channelsService: ChannelsService,
+    private usersService: UsersService,
+  ) {}
+
+  async intercept(
+    context: ExecutionContext,
+    next: CallHandler,
+  ): Promise<Observable<any>> {
+    const request = context.switchToHttp().getRequest();
+    const user = await this.usersService.getMe(
+      request.headers['authorization'],
+    );
+    const channel_id = request.path.split('/')[2] || 0;
+    const channel = await this.channelsService.getOne(channel_id);
+    if (!channel.users.find((channel_user) => channel_user.id == user.id))
+      throw new ForbiddenException(
+        `You need to join first to get all channel messages`,
+      );
+    return next.handle().pipe(
+      map((data) => {
+        data.map((message) => {
+          delete message.user.tfa_secret;
+          delete message.user.tfa_enabled;
+          delete message.channel.password;
+        });
+        if (user.blocked.length) {
+          data = data.filter((message) =>
+            user.blocked.find(
+              (blocked_user) => message.user.id != blocked_user.id,
+            ),
+          );
+        }
+        return data;
+      }),
+    );
+  }
+}

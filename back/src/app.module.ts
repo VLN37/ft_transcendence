@@ -18,6 +18,7 @@ import { ChannelsModule } from './channels/channels.module';
 import { MatchMakingModule } from './match-making/match-making.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { Match } from './entities/match.entity';
+import { ChannelMessages } from './entities/channel_messages.entity';
 
 const environment = process.env.ENVIRONMENT;
 const dbHost = process.env.DB_HOST;
@@ -42,7 +43,7 @@ declare global {
       username: 'user',
       password: 'pass',
       database: 'transcendence',
-      entities: [User, Profile, Channel, Match],
+      entities: [User, Profile, Channel, ChannelMessages, Match],
       synchronize: environment != 'prod',
     }),
     ConfigModule.forRoot({

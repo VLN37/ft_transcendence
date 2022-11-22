@@ -126,6 +126,19 @@ export class UsersService {
     return user;
   }
 
+  async getUserId(token: string): Promise<number> {
+    let id: number;
+    try {
+      token = token.replace('Bearer ', '');
+      id = this.jwtService.decode(token)['sub'];
+    } catch (error) {
+      throw new ForbiddenException(
+        'User token format invalid, cannot read property id',
+      );
+    }
+    return id;
+  }
+
   async set2faSecret(userId: number, secret?: string) {
     // FIX: check if user already has a secret
     const user = await this.usersRepository.findOneBy({ id: userId });
