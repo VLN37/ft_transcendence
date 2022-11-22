@@ -22,8 +22,12 @@ import { emptyUser, User } from '../../models/User';
 import api from '../../services/api';
 import userStorage from '../../services/userStorage';
 
-export function PublicProfile(props: { user: TableUser }) {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+export function PublicProfile(props: {
+  user: TableUser,
+  isOpen: boolean,
+  onClose: () => void,
+}) {
+
   const link = process.env.REACT_APP_HOSTNAME + props.user.avatar_path;
   const toast = useToast();
 
@@ -44,14 +48,7 @@ export function PublicProfile(props: { user: TableUser }) {
 
   return (
     <>
-      <Image
-        onClick={onOpen}
-        marginTop={'15px'}
-        borderRadius="full"
-        boxSize="65px"
-        src={link}
-      />
-      <Modal isOpen={isOpen} onClose={onClose} size={'3xl'}>
+      <Modal isOpen={props.isOpen} onClose={props.onClose} size={'3xl'}>
         <ModalOverlay />
         <ModalContent>
           <ModalCloseButton></ModalCloseButton>
@@ -87,7 +84,7 @@ export function PublicProfile(props: { user: TableUser }) {
             </Stack>
           </ModalBody>
           <ModalFooter>
-            <Button onClick={onClose}>close</Button>
+            <Button onClick={props.onClose}>close</Button>
           </ModalFooter>
         </ModalContent>
       </Modal>

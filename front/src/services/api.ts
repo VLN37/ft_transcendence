@@ -72,6 +72,36 @@ class Api {
     }
   }
 
+  async blockUser(myId: number, targetId: number) {
+    try {
+      const response = await this.client.post<any>(
+        `/users/${targetId}/blocked_users`,
+        {
+          user_id: myId
+        }
+      )
+      return response;
+    } catch (err) {
+      console.log('catch', err);
+      return (err as AxiosError).response;
+    }
+  }
+
+  async unblockUser(myId: number, targetId: number) {
+    try {
+      const response = await this.client.delete<any>(
+        `/users/${myId}/blocked_users`,
+        {
+          data: {user_id: targetId},
+        }
+      )
+      return response;
+    } catch (err) {
+      console.log('catch', err);
+      return (err as AxiosError).response;
+    }
+  }
+
   async uploadNickname(user: User, name: string) {
     user.profile.nickname = name;
     try {
@@ -108,6 +138,7 @@ class Api {
       });
     });
   }
+
 
   sendMessage(data: any) {
     this.channelSocket?.emit('chat', data);

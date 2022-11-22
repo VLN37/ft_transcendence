@@ -6,6 +6,8 @@ export interface Channel {
   owner_id: number;
   type: string;
   allowed_users?: User[];
+  administrators?: User[];
+  users: User[];
 }
 
 export interface ChannelSocketResponse {

@@ -60,6 +60,7 @@ export class ChannelsService {
         allowed_users: await this.usersService.findManyByNickname(
           channel.allowed_users as string[],
         ),
+        administrators: [{ id: channel.owner_id }],
       })
       .catch((err: any) => {
         console.log(err);
@@ -87,6 +88,7 @@ export class ChannelsService {
         'allowed_users.profile',
         'channel_messages.user.profile',
         'channel_messages.channel',
+        'administrators',
       ],
     });
     if (!channel) throw new NotFoundException('Channel not found');
