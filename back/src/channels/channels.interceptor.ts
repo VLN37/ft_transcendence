@@ -129,11 +129,12 @@ export class ChannelsGetMessagesInterceptor implements NestInterceptor {
     next: CallHandler,
   ): Promise<Observable<any>> {
     const request = context.switchToHttp().getRequest();
-    const id = (await this.usersService.getMe(request.headers['authorization']))
-      .id;
+    const user = await this.usersService.getMe(
+      request.headers['authorization'],
+    );
     const channel_id = request.path.split('/')[2] || 0;
     const channel = await this.channelsService.getOne(channel_id);
-    if (!channel.users.find((user) => user.id == id))
+    if (!channel.users.find((channel_user) => channel_user.id == user.id))
       throw new ForbiddenException(
         `You need to join first to get all channel messages`,
       );
