@@ -15,7 +15,6 @@ import { useEffect, useState } from 'react';
 import { Channel } from '../../models/Channel';
 import { Message } from '../../models/Message';
 import api from '../../services/api';
-import userStorage from '../../services/userStorage';
 
 function ChannelTitle(props: any) {
   return (
@@ -81,18 +80,15 @@ function InputMessage(props: any) {
   );
 }
 
+// id: number;
+// message: string;
+// user: User;
+// channel: Channel;
+
 function sendMessage(room_id: string) {
   const text = (document.getElementById('message') as HTMLInputElement).value;
   (document.getElementById('message') as HTMLInputElement).value = '';
-  const userImage = userStorage.getUser()?.profile?.avatar_path || '';
-  const message: Message = {
-    id: userStorage.getUser()?.id?.toString() || '',
-    name: userStorage.getUser()?.profile?.nickname || '',
-    text: text,
-    room: room_id,
-    avatar: process.env.REACT_APP_HOSTNAME + userImage,
-  };
-  api.sendMessage(message);
+  api.sendMessage({ message: text, channel_id: room_id });
   console.log('message sent');
 }
 
@@ -100,14 +96,7 @@ export default function Chat(props: Channel) {
   const [messages, setMessages] = useState<Message[]>([]);
 
   api.listenMessage((message: Message) => {
-    const newMessage: Message = {
-      id: message.id,
-      name: message.name,
-      text: message.text,
-      room: message.room,
-      avatar: message.avatar,
-    };
-    setMessages([...messages, newMessage]);
+    setMessages([...messages, message]);
     console.log('message received');
   });
 
@@ -136,13 +125,16 @@ export default function Chat(props: Channel) {
         bg="gray.700"
         overflowY={'scroll'}
       >
-        {messages.map((message, index) => {
+        {messages.map((message) => {
           return (
             <MessageComponent
-              name={message.name}
-              image={message.avatar}
-              text={message.text}
-              key={index}
+              name={message.user.profile.nickname}
+              image={
+                process.env.REACT_APP_HOSTNAME +
+                message.user.profile.avatar_path
+              }
+              text={message.message}
+              key={message.id}
             />
           );
         })}

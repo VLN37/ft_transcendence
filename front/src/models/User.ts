@@ -1,3 +1,5 @@
+import { Channel } from "./Channel";
+
 export interface User {
   login_intra: string;
   id: number;
@@ -5,6 +7,7 @@ export interface User {
   friends: User[];
   friend_requests: User[];
   blocked: number[];
+  channels: Channel[];
   profile: {
     name: string,
     avatar_path: string;
@@ -24,6 +27,7 @@ export function emptyUser(): User {
     friends: [],
     friend_requests: [],
     blocked: [],
+    channels: [],
     profile: {
       name: '',
       avatar_path: '',

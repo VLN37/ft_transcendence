@@ -12,8 +12,9 @@ import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
 import { ChannelDto } from './dto/channel.dto';
 import * as bcrypt from 'bcrypt';
-import { Message } from './channels.interface';
+import { ChannelRoomMessage, Message } from './channels.interface';
 import { ChannelMessages } from 'src/entities/channel_messages.entity';
+import { Socket } from 'socket.io';
 
 @Injectable()
 export class ChannelsService {
@@ -104,16 +105,29 @@ export class ChannelsService {
     return await this.channelsRepository.save(channel);
   }
 
-  async saveMessage(message: Message) {
-    const user = await this.usersService.getOne(parseInt(message.id));
-    const channel = await this.getOne(parseInt(message.room));
+  async saveMessage(
+    client: Socket,
+    data: ChannelRoomMessage,
+  ): Promise<Message> {
+    const token = client.handshake.auth.token;
+    const channel_id = data.channel_id;
+    const user_id = await this.usersService.getUserId(token);
+    const user = await this.usersService.getOne(user_id);
+    const channel: ChannelDto = await this.channelsRepository.findOne({
+      where: { id: channel_id },
+      relations: ['channel_messages'],
+    });
+
     const newMessage = await this.channelsMesssagesRepository.save({
+      message: data.message,
       user: user,
       channel: channel,
-      message: message.text,
     });
     channel.channel_messages.push(newMessage);
     this.channelsRepository.save(channel);
+    delete newMessage.channel.password;
+    delete newMessage.channel.channel_messages;
+    return newMessage;
   }
 
   private validateChannel(channel: ChannelDto) {
