@@ -8,6 +8,7 @@ import {
   ChannelSocketResponse,
 } from '../models/Channel';
 import { User } from '../models/User';
+import { Message } from '../models/Message';
 
 interface AuthenticationResponse {
   access_token: string;
@@ -114,6 +115,12 @@ class Api {
 
   listenMessage(callback: any) {
     this.channelSocket?.on('chat', callback);
+  }
+
+  async getChannelMessages(id: string): Promise<Message[]> {
+    const response = await this.client.get(`/channels/${id}/messages`, {});
+    // console.log(response.data);
+    return response.data;
   }
 
   async authenticate(code: string): Promise<string> {

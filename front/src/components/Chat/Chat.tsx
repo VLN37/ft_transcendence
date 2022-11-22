@@ -101,6 +101,12 @@ export default function Chat(props: Channel) {
   });
 
   useEffect(() => {
+    api.getChannelMessages(props.id.toString()).then((messages: Message[]) => {
+      setMessages(messages);
+    });
+  }, []);
+
+  useEffect(() => {
     document.getElementById('bottom')?.scrollIntoView();
   }, [messages]);
 
