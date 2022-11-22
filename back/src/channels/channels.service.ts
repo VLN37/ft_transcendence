@@ -94,6 +94,23 @@ export class ChannelsService {
     return channel;
   }
 
+  async getMessages(id: number): Promise<ChannelMessages[]> {
+    const channel = await this.channelsRepository.findOne({
+      where: { id },
+      relations: [
+        'users',
+        'users.profile',
+        'allowed_users.profile',
+        'channel_messages.user.profile',
+        'channel_messages.channel',
+      ],
+    });
+    if (!channel) throw new NotFoundException('Channel not found');
+    // this.logger.debug('Returning channel messages', channel.channel_messages);
+    this.logger.debug(`Returning channel ${channel.id} messages`);
+    return channel.channel_messages;
+  }
+
   async delete(id: number) {
     //TODO: disconnect all users from this channel/socket
     const channel = await this.getOne(id);

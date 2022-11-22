@@ -12,6 +12,7 @@ import { JwtAuthGuard } from 'src/auth/guard/jwt.guard';
 import {
   ChannelsDeleteInterceptor,
   ChannelsGetAllInterceptor,
+  ChannelsGetMessagesInterceptor,
   ChannelsInterceptor,
 } from './channels.interceptor';
 import { ChannelsService } from './channels.service';
@@ -45,6 +46,13 @@ export class ChannelsController {
   @UseInterceptors(ChannelsInterceptor)
   getOne(@Param('id') id: number) {
     return this.channelsService.getOne(id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get(':id/messages')
+  @UseInterceptors(ChannelsGetMessagesInterceptor)
+  getMessages(@Param('id') id: number) {
+    return this.channelsService.getMessages(id);
   }
 
   @UseGuards(JwtAuthGuard)

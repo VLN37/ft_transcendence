@@ -116,3 +116,37 @@ export class ChannelsDeleteInterceptor implements NestInterceptor {
     );
   }
 }
+
+@Injectable()
+export class ChannelsGetMessagesInterceptor implements NestInterceptor {
+  constructor(
+    private channelsService: ChannelsService,
+    private usersService: UsersService,
+  ) {}
+
+  async intercept(
+    context: ExecutionContext,
+    next: CallHandler,
+  ): Promise<Observable<any>> {
+    const request = context.switchToHttp().getRequest();
+    const id = (await this.usersService.getMe(request.headers['authorization']))
+      .id;
+    const channel_id = request.path.split('/')[2] || 0;
+    const owner_id = (await this.channelsService.getOne(channel_id)).owner_id;
+    if (owner_id != id) {
+      throw new ForbiddenException(
+        `You don't have permission to delete this channel`,
+      );
+    }
+    return next.handle().pipe(
+      map((data) => {
+        data.map((message) => {
+          delete message.user.tfa_secret;
+          delete message.user.tfa_enabled;
+          delete message.channel.password;
+        });
+        return data;
+      }),
+    );
+  }
+}
