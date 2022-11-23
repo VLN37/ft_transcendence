@@ -93,7 +93,7 @@ function sendMessage(room_id: string) {
   console.log('message sent');
 }
 
-export default function Chat(props: any) {
+export default function Chat(props: Channel) {
   const [messages, setMessages] = useState<Message[]>([]);
 
   api.listenMessage((message: Message) => {
@@ -126,9 +126,10 @@ export default function Chat(props: any) {
       <GridItem borderRadius={'5px'} rowSpan={11} colSpan={2} bg="gray.700">
         {props.users
           ? <ChatUsers
-            owner_id={props.owner_id}
-            admin={props.administrators}
-            users={props.users}
+              channel_id={props.id}
+              owner_id={props.owner_id}
+              admin={props.administrators}
+              users={props.users}
             />
           : <></>}
       </GridItem>
