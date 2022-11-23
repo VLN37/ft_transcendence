@@ -25,6 +25,14 @@ export class MatchManagerService {
     await this.matchRepository.save(match);
 
     const memoryMatch = new MemoryMatch(match.id, user1, user2);
+    memoryMatch.onCancel = () => {
+      this.logger.warn('match was cancelled');
+    };
+
+    memoryMatch.onStart = () => {
+      this.logger.warn('match is starting');
+    };
+
     memoryMatch.onStageChange = () => {
       match.stage = memoryMatch.stage;
       this.matchRepository.save(match);
