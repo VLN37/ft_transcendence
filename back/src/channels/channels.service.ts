@@ -149,6 +149,14 @@ export class ChannelsService {
     return newMessage;
   }
 
+  async addAdmin(token: string, channel: number, target: number) {
+    this.logger.debug('Add admin request');
+  }
+
+  async delAdmin() {
+    this.logger.debug('Del admin request');
+  }
+
   private validateChannel(channel: ChannelDto) {
     if (channel.type == 'PUBLIC') {
       if (channel.password) return 'Public channels cannot have password';

@@ -12,6 +12,7 @@ import {
   Avatar,
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
+import { Channel } from '../../models/Channel';
 import { Message } from '../../models/Message';
 import api from '../../services/api';
 import userStorage from '../../services/userStorage';
