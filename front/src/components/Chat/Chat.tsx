@@ -124,14 +124,7 @@ export default function Chat(props: Channel) {
         <ChannelTitle>{`${props.name} #${props.id}`}</ChannelTitle>
       </GridItem>
       <GridItem borderRadius={'5px'} rowSpan={11} colSpan={2} bg="gray.700">
-        {props.users
-          ? <ChatUsers
-              channel_id={props.id}
-              owner_id={props.owner_id}
-              admin={props.administrators}
-              users={props.users}
-            />
-          : <></>}
+        {props.users ? <ChatUsers channel={props} /> : null}
       </GridItem>
       <GridItem
         borderRadius={'5px'}
