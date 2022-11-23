@@ -5,8 +5,8 @@ export interface Channel {
   name: string;
   owner_id: number;
   type: string;
-  allowed_users?: User[];
-  administrators?: User[];
+  allowed_users: User[];
+  administrators: User[];
   users: User[];
 }
 
