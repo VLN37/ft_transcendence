@@ -12,6 +12,7 @@ import {
   Avatar,
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
+import { Channel } from '../../models/Channel';
 import { Message } from '../../models/Message';
 import api from '../../services/api';
 import userStorage from '../../services/userStorage';
@@ -93,7 +94,7 @@ function sendMessage(room_id: string) {
   console.log('message sent');
 }
 
-export default function Chat(props: any) {
+export default function Chat(props: Channel) {
   const [messages, setMessages] = useState<Message[]>([]);
 
   api.listenMessage((message: Message) => {
@@ -124,13 +125,7 @@ export default function Chat(props: any) {
         <ChannelTitle>{`${props.name} #${props.id}`}</ChannelTitle>
       </GridItem>
       <GridItem borderRadius={'5px'} rowSpan={11} colSpan={2} bg="gray.700">
-        {props.users
-          ? <ChatUsers
-            owner_id={props.owner_id}
-            admin={props.administrators}
-            users={props.users}
-            />
-          : <></>}
+        {props.users ? <ChatUsers channel={props} /> : null}
       </GridItem>
       <GridItem
         borderRadius={'5px'}

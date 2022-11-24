@@ -72,6 +72,30 @@ class Api {
     }
   }
 
+  async addAdmin(targetId: number, channelId: number) {
+    try {
+      const response = await this.client.post<any>(
+        `/channels/${channelId}/admin/${targetId}`,
+      )
+      return response;
+    } catch (err) {
+      console.log('catch', err);
+      return (err as AxiosError).response;
+    }
+  }
+
+  async delAdmin(targetId: number, channelId: number) {
+    try {
+      const response = await this.client.delete<any>(
+        `/channels/${channelId}/admin/${targetId}`
+      );
+      return response;
+    } catch (err) {
+      console.log('catch', err);
+      return (err as AxiosError).response;
+    }
+  }
+
   async blockUser(myId: number, targetId: number) {
     try {
       const response = await this.client.post<any>(

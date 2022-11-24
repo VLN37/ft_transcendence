@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Post,
+  Headers,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -61,5 +62,25 @@ export class ChannelsController {
   delete(@Param('id') id: number) {
     //TODO: disconnect all users from this channel/socket
     return this.channelsService.delete(id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post(':channel/admin/:id')
+  addAdmin(
+    @Headers('Authorization') token: string,
+    @Param('id') target: number,
+    @Param('channel') channel: number,
+  ) {
+    this.channelsService.addAdmin(token, channel, target);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete(':channel/admin/:id')
+  delAdmin(
+    @Headers('Authorization') token: string,
+    @Param('id') target: number,
+    @Param('channel') channel: number,
+  ) {
+    this.channelsService.delAdmin(token, channel, target);
   }
 }
