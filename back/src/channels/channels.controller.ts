@@ -71,13 +71,16 @@ export class ChannelsController {
     @Param('id') target: number,
     @Param('channel') channel: number,
   ) {
-    console.log('token: ', token);
     this.channelsService.addAdmin(token, channel, target);
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete(':channel/admin/:id')
-  delAdmin() {
-
+  delAdmin(
+    @Headers('Authorization') token: string,
+    @Param('id') target: number,
+    @Param('channel') channel: number,
+  ) {
+    this.channelsService.delAdmin(token, channel, target);
   }
 }

@@ -162,20 +162,37 @@ export class ChannelsService {
     if (!userId)
       throw new BadRequestException("invalid jwt token");
     const channel: ChannelDto = await this.getOne(channelId);
-    if (!channel.administrators.find(elem => elem.id == userId))
-      throw new BadRequestException("insufficient permissions");
+    if (channel.owner_id != userId)
+      throw new BadRequestException("You are not the owner of this channel");
     const newAdmin: UserDto = await this.usersService.getOne(target);
     if (!newAdmin)
       throw new BadRequestException("user does not exist in the database");
     channel.administrators.push(newAdmin);
-    if (channel.allowed_users.length == 0)
+    if (channel.type == 'PUBLIC')
       delete channel.allowed_users;
-    this.update(channel);
-    this.logger.log(`User added as admin in channel ${channelId}`);
+    await this.update(channel);
+    this.logger.log(`Admin added. Updated channel: ${channel}`);
   }
 
-  async delAdmin() {
+  async delAdmin(token: string, channelId: number, target: number) {
     this.logger.debug('Delete admin request');
+
+    token = token.replace('Bearer ', '');
+    const userId: number = this.jwtService.decode(token)['sub'];
+    if (!userId)
+      throw new BadRequestException("invalid jwt token");
+    const channel: ChannelDto = await this.getOne(channelId);
+    if (channel.owner_id != userId)
+      throw new BadRequestException("You are not the owner of this channel");
+    const index = channel.administrators.findIndex(elem => elem.id == target);
+    if (index == -1)
+      throw new BadRequestException("This user is not an administrator");
+    channel.administrators.splice(index);
+    if (channel.type == 'PUBLIC')
+      delete channel.allowed_users;
+    await this.update(channel);
+    console.log(channel);
+    this.logger.log(`Delete succesful. Updated channel ${channel}`);
   }
 
   private validateChannel(channel: ChannelDto) {
