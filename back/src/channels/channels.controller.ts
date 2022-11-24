@@ -72,8 +72,7 @@ export class ChannelsController {
     @Param('channel') channel: number,
   ) {
     console.log('token: ', token);
-    console.log('target: ', target);
-    console.log('channel: ', channel);
+    this.channelsService.addAdmin(token, channel, target);
   }
 
   @UseGuards(JwtAuthGuard)

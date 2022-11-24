@@ -15,6 +15,8 @@ import * as bcrypt from 'bcrypt';
 import { ChannelRoomMessage, Message } from './channels.interface';
 import { ChannelMessages } from 'src/entities/channel_messages.entity';
 import { Socket } from 'socket.io';
+import { JwtService } from '@nestjs/jwt';
+import { UserDto } from 'src/users/dto/user.dto';
 
 @Injectable()
 export class ChannelsService {
@@ -26,6 +28,7 @@ export class ChannelsService {
     @InjectRepository(ChannelMessages)
     private channelsMesssagesRepository: Repository<ChannelMessages>,
     private usersService: UsersService,
+    private jwtService: JwtService,
   ) {}
 
   async generateChannels(amount: number) {
@@ -121,6 +124,8 @@ export class ChannelsService {
   }
 
   async update(channel: ChannelDto) {
+    const invalidChannel = this.validateChannel(channel);
+    if (invalidChannel) throw new BadRequestException(invalidChannel);
     return await this.channelsRepository.save(channel);
   }
 
@@ -149,12 +154,28 @@ export class ChannelsService {
     return newMessage;
   }
 
-  async addAdmin(token: string, channel: number, target: number) {
+  async addAdmin(token: string, channelId: number, target: number) {
     this.logger.debug('Add admin request');
+
+    token = token.replace('Bearer ', '');
+    const userId: number = this.jwtService.decode(token)['sub'];
+    if (!userId)
+      throw new BadRequestException("invalid jwt token");
+    const channel: ChannelDto = await this.getOne(channelId);
+    if (!channel.administrators.find(elem => elem.id == userId))
+      throw new BadRequestException("insufficient permissions");
+    const newAdmin: UserDto = await this.usersService.getOne(target);
+    if (!newAdmin)
+      throw new BadRequestException("user does not exist in the database");
+    channel.administrators.push(newAdmin);
+    if (channel.allowed_users.length == 0)
+      delete channel.allowed_users;
+    this.update(channel);
+    this.logger.log(`User added as admin in channel ${channelId}`);
   }
 
   async delAdmin() {
-    this.logger.debug('Del admin request');
+    this.logger.debug('Delete admin request');
   }
 
   private validateChannel(channel: ChannelDto) {
