@@ -40,7 +40,7 @@ export class ChannelDto {
   users?: Partial<UserDto>[];
 
   @IsOptional()
-  administrators?: Partial<UserDto>[];
+  admins?: Partial<UserDto>[];
 
   @IsOptional()
   channel_messages?: ChannelMessages[];
