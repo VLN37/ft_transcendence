@@ -51,8 +51,8 @@ export class Channel {
   users: Partial<User>[];
 
   @ManyToMany(() => User)
-  @JoinTable({ name: 'channel_administrators' })
-  administrators: Partial<User>[];
+  @JoinTable({ name: 'channel_admins' })
+  admins: Partial<User>[];
 
   @OneToMany(() => ChannelMessages, (message) => message.channel)
   channel_messages: ChannelMessages[];

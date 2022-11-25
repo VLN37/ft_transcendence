@@ -63,7 +63,7 @@ export class ChannelsService {
         allowed_users: await this.usersService.findManyByNickname(
           channel.allowed_users as string[],
         ),
-        administrators: [{ id: channel.owner_id }],
+        admins: [{ id: channel.owner_id }],
       })
       .catch((err: any) => {
         console.log(err);
@@ -91,7 +91,7 @@ export class ChannelsService {
         'allowed_users.profile',
         'channel_messages.user.profile',
         'channel_messages.channel',
-        'administrators',
+        'admins',
       ],
     });
     if (!channel) throw new NotFoundException('Channel not found');
@@ -167,7 +167,7 @@ export class ChannelsService {
     const newAdmin: UserDto = await this.usersService.getOne(target);
     if (!newAdmin)
       throw new BadRequestException("user does not exist in the database");
-    channel.administrators.push(newAdmin);
+    channel.admins.push(newAdmin);
     if (channel.type == 'PUBLIC')
       delete channel.allowed_users;
     await this.update(channel);
@@ -184,10 +184,10 @@ export class ChannelsService {
     const channel: ChannelDto = await this.getOne(channelId);
     if (channel.owner_id != userId)
       throw new BadRequestException("You are not the owner of this channel");
-    const index = channel.administrators.findIndex(elem => elem.id == target);
+    const index = channel.admins.findIndex(elem => elem.id == target);
     if (index == -1)
       throw new BadRequestException("This user is not an administrator");
-    channel.administrators.splice(index);
+    channel.admins.splice(index);
     if (channel.type == 'PUBLIC')
       delete channel.allowed_users;
     await this.update(channel);
