@@ -119,7 +119,7 @@ export default function Chat(props: Channel) {
 
   useEffect(() => {
     api.subscribeMessage(updateMessages);
-    return api.unsubscribeMessage(updateMessages);
+    return () => api.unsubscribeMessage(updateMessages);
   }, [messages]);
 
   useEffect(() => {
