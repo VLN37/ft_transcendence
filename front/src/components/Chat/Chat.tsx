@@ -11,9 +11,10 @@ import {
   Spacer,
   Avatar,
 } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Channel } from '../../models/Channel';
 import { Message } from '../../models/Message';
+import { User } from '../../models/User';
 import api from '../../services/api';
 import userStorage from '../../services/userStorage';
 import { ChatUsers } from './ChatUsers';
@@ -82,11 +83,6 @@ function InputMessage(props: any) {
   );
 }
 
-// id: number;
-// message: string;
-// user: User;
-// channel: Channel;
-
 function sendMessage(room_id: string) {
   const text = (document.getElementById('message') as HTMLInputElement).value;
   (document.getElementById('message') as HTMLInputElement).value = '';
@@ -96,11 +92,35 @@ function sendMessage(room_id: string) {
 
 export default function Chat(props: Channel) {
   const [messages, setMessages] = useState<Message[]>([]);
+  const [channel, setChannel] = useState<Channel>(props);
+  const [reload, setReload] = useState<Boolean>(false);
 
-  api.listenMessage((message: Message) => {
-    setMessages([...messages, message]);
-    console.log('message received');
-  });
+  const updateMessages = useCallback(
+    (message: Message) => setMessages([...messages, message]),
+    [messages],
+  );
+
+  const updateChannel = useCallback(
+    (data: any) => {
+      if (!channel.users.find((elem) => elem.id == data.user.id)) {
+        console.log('user joined');
+        channel.users.push(data.user);
+        setChannel(channel);
+        setReload(!reload);
+      }
+    },
+    [channel],
+  );
+
+  useEffect(() => {
+    api.subscribeJoin(updateChannel);
+    return () => api.unsubscribeJoin(updateChannel);
+  }, [channel]);
+
+  useEffect(() => {
+    api.subscribeMessage(updateMessages);
+    return api.unsubscribeMessage(updateMessages);
+  }, [messages]);
 
   useEffect(() => {
     api.getChannelMessages(props.id.toString()).then((messages: Message[]) => {
@@ -125,7 +145,7 @@ export default function Chat(props: Channel) {
         <ChannelTitle>{`${props.name} #${props.id}`}</ChannelTitle>
       </GridItem>
       <GridItem borderRadius={'5px'} rowSpan={11} colSpan={2} bg="gray.700">
-        {props.users ? <ChatUsers channel={props} /> : null}
+        {props.users ? <ChatUsers channel={channel} /> : null}
       </GridItem>
       <GridItem
         borderRadius={'5px'}
