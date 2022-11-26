@@ -117,6 +117,12 @@ export class ChannelsSocketGateway
       await this.usersService.update(user);
     }
     client.join(data.room.toString());
-    return null;
+    this.server.emit('join', {
+      data: {user: user}
+    });
+    return {
+      status: 200,
+      message: "user joined the channel",
+    };
   }
 }
