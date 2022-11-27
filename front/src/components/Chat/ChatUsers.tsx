@@ -62,8 +62,8 @@ function UserMenu(props: {
       description: message,
     })
     if (response.status == 200)
-      props.channel.administrators
-        .splice(props.channel.administrators
+      props.channel.admins
+        .splice(props.channel.admins
         .findIndex((user) => user.id == props.user.id)
       );
     setReload(!reload);
@@ -79,17 +79,15 @@ function UserMenu(props: {
       description: message,
     });
     if (response.status == 201)
-      props.channel.administrators.push(props.user2);
+      props.channel.admins.push(props.user2);
     setReload(!reload);
   }
 
   const isMyself = me.id == props.user.id;
   const amOwner = me.id == props.channel.owner_id && me.id != props.user.id;
   const isBlocked = me.blocked.find((user) => props.user.id == user.id);
-  const isAdmin = props.channel.administrators.find((user) => props.user.id == user.id);
-  const amAdmin = props.channel.administrators.find((user) => me.id == user.id);
-  console.log('isMyself: ', isMyself);
-  console.log('isBlocked: ', isBlocked);
+  const isAdmin = props.channel.admins.find((user) => props.user.id == user.id);
+  const amAdmin = props.channel.admins.find((user) => me.id == user.id);
   return (
     <Box padding={1}>
       <PublicProfile

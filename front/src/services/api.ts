@@ -159,6 +159,7 @@ class Api {
           console.log(`Client connected to the room ${data.room}`);
         console.log(res);
         resolve(res);
+        return data;
       });
     });
   }
@@ -168,7 +169,7 @@ class Api {
     this.channelSocket?.emit('chat', data);
   }
 
-  listenMessage(callback: any) {
+  subscribeMessage(callback: any) {
     this.channelSocket?.on('chat', (message: Message) => {
       const blocked = userStorage.getUser()?.blocked || [];
       if (blocked.length) {
@@ -177,6 +178,22 @@ class Api {
       }
       callback(message);
     });
+  }
+
+  unsubscribeMessage(callback: any) {
+    this.channelSocket?.off('chat', callback);
+  }
+
+  subscribeJoin(callback: any) {
+    console.log('callback registered');
+    this.channelSocket?.on('join', (response: any) => {
+      console.log('callback called');
+      callback(response.data);
+    });
+  }
+
+  unsubscribeJoin(callback: any) {
+    this.channelSocket?.off('join', callback);
   }
 
   async getChannelMessages(id: string): Promise<Message[]> {

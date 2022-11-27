@@ -114,9 +114,15 @@ export class ChannelsSocketGateway
     }
     if (!channel.users.find((channel_user) => channel_user.id == user.id)) {
       user.channels.push(channel);
-      this.usersService.update(user);
+      await this.usersService.update(user);
     }
     client.join(data.room.toString());
-    return null;
+    this.server.emit('join', {
+      data: {user: user}
+    });
+    return {
+      status: 200,
+      message: "user joined the channel",
+    };
   }
 }
