@@ -11,12 +11,10 @@ import {
   Spacer,
   Avatar,
 } from '@chakra-ui/react';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Channel } from '../../models/Channel';
 import { Message } from '../../models/Message';
-import { User } from '../../models/User';
 import api from '../../services/api';
-import userStorage from '../../services/userStorage';
 import { ChatUsers } from './ChatUsers';
 
 function ChannelTitle(props: any) {
@@ -93,34 +91,31 @@ function sendMessage(room_id: string) {
 export default function Chat(props: Channel) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [channel, setChannel] = useState<Channel>(props);
-  const [reload, setReload] = useState<Boolean>(false);
 
-  const updateMessages = useCallback(
-    (message: Message) => setMessages([...messages, message]),
-    [messages],
-  );
+  const updateMessages = (message: Message) =>
+    setMessages([...messages, message]);
 
-  const updateChannel = useCallback(
-    (data: any) => {
-      if (!channel.users.find((elem) => elem.id == data.user.id)) {
-        console.log('user joined');
-        channel.users.push(data.user);
-        setChannel(channel);
-        setReload(!reload);
-      }
-    },
-    [channel],
-  );
+  const updateChannel = (data: any) => {
+    if (!channel.users.find((elem) => elem.id == data.user.id)) {
+      console.log('user joined');
+      channel.users.push(data.user);
+      setChannel({ ...channel });
+    }
+  };
+
+  useEffect(() => {
+    setChannel(channel);
+  }, [channel]);
 
   useEffect(() => {
     api.subscribeJoin(updateChannel);
     return () => api.unsubscribeJoin(updateChannel);
-  }, [channel]);
+  }, []);
 
   useEffect(() => {
     api.subscribeMessage(updateMessages);
     return () => api.unsubscribeMessage(updateMessages);
-  }, [messages]);
+  }, []);
 
   useEffect(() => {
     api.getChannelMessages(props.id.toString()).then((messages: Message[]) => {
@@ -132,7 +127,6 @@ export default function Chat(props: Channel) {
     document.getElementById('bottom')?.scrollIntoView();
   }, [messages]);
 
-  // console.log('chat page: ', props);
   return (
     <Grid
       gridTemplateColumns={'repeat(10, 1fr)'}
