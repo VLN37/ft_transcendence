@@ -100,6 +100,7 @@ export default function Chat(props: Channel) {
   const updateMessages = (message: Message) =>
     setMessages([...messages, message]);
 
+  // console.log('chat channel: ', channel);
   const updateChannel = (data: any) => {
     if (!channel.users.find((elem) => elem.id == data.user.id)) {
       console.log('user joined');
@@ -119,7 +120,7 @@ export default function Chat(props: Channel) {
   useEffect(() => {
     api.subscribeMessage(updateMessages);
     document.getElementById('bottom')?.scrollIntoView();
-    return () => api.unsubscribeMessage(updateMessages);;
+    return () => api.unsubscribeMessage(updateMessages);
   }, [messages]);
 
 
