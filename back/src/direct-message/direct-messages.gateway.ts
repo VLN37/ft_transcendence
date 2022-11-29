@@ -13,9 +13,7 @@ import { TokenPayload } from 'src/auth/dto/TokenPayload';
 import { UsersService } from 'src/users/users.service';
 import { Server, Socket } from 'socket.io';
 import { DirectMessagesService } from './direct-messages.service';
-import { iDirectMessage, UserMessage } from './direct-messages.interface';
-import { UserDto } from 'src/users/dto/user.dto';
-import { faker } from '@faker-js/faker';
+import { UserMessage } from './direct-messages.interface';
 
 @WebSocketGateway({
   namespace: '/direct_messages',
@@ -56,7 +54,6 @@ export class DirectMessagesGateway
     const userId = (await this.usersService.getUserId(token)).toString();
     this.usersSocketId[userId] = client.id;
     this.logger.log(`Client connected ${client.id}`);
-    this.logger.warn(this.usersSocketId);
   }
 
   async handleDisconnect(client: Socket) {
@@ -68,19 +65,13 @@ export class DirectMessagesGateway
 
   @SubscribeMessage('chat')
   async handleMessage(client: Socket, data: UserMessage) {
-    const token = client.handshake.auth.token;
-    const fromUser: UserDto = await this.usersService.getMe(token);
+    const fromUser = client.id;
     const toUser = this.usersSocketId[data.user_id] || '';
-	const ID = faker.random.numeric();
-    const newMessage: iDirectMessage = {
-      id: parseInt(ID),
-      message: data.message,
-      user: fromUser,
-    };
+    const newMessage = await this.dmService.saveMessage(client, data);
+    //sender
+    this.server.to(fromUser).emit('chat', newMessage);
     //receiver
     this.server.to(toUser).emit('chat', newMessage);
-    //sender
-    this.server.to(client.id).emit('chat', newMessage);
   }
 
   private validateConnection(client: Socket) {

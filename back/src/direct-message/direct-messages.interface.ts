@@ -1,4 +1,4 @@
-import { UserDto } from "src/users/dto/user.dto";
+import { UserDto } from 'src/users/dto/user.dto';
 
 export interface UserMessage {
   user_id: string;
@@ -7,6 +7,7 @@ export interface UserMessage {
 
 export interface iDirectMessage {
   id: number;
+  sender: UserDto;
+  receiver: UserDto;
   message: string;
-  user: UserDto;
 }
