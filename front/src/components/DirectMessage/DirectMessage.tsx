@@ -15,6 +15,8 @@ import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { iDirectMessage } from '../../models/DirectMessage';
 import api from '../../services/api';
+import userStorage from '../../services/userStorage';
+import { DmUsers } from '../Chat/DmUsers';
 
 function ChatTitle(props: any) {
   return (
@@ -121,7 +123,7 @@ export default function DirectMessage(props: any) {
         <ChatTitle>{chatTitle}</ChatTitle>
       </GridItem>
       <GridItem borderRadius={'5px'} rowSpan={11} colSpan={2} bg="gray.700">
-        <Users />
+        <DmUsers users={userStorage.getUser()?.friends || []} />
       </GridItem>
       <GridItem
         borderRadius={'5px'}
