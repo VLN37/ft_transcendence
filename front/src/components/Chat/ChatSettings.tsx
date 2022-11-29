@@ -77,6 +77,39 @@ function RemovePassForm(props: {
   )
 }
 
+function ChangePassForm(props: {
+  channel: Channel,
+  setChannel: any,
+  setChangePasswordForm: any,
+}) {
+  const [oldPass, setOldPass] = useState<string>('');
+  const [input1, setInput1] = useState<string>('');
+  const [input2, setInput2] = useState<string>('');
+
+  const handleInput1 = (e: any) => setInput1(e.target.value);
+  const handleInput2 = (e: any) => setInput2(e.target.value);
+  const handleInput3 = (e: any) => setOldPass(e.target.value);
+  const isError = input1 != input2;
+
+  function sendForm() {
+    props.setChangePasswordForm();
+  }
+
+  return (
+    <FormControl isInvalid={isError}>
+      <FormLabel>Old password</FormLabel>
+      <Input size={'sm'} value={input1} onChange={handleInput3} type='password' />
+      <FormLabel>New password</FormLabel>
+      <Input size={'sm'} value={input1} onChange={handleInput1} type='password' />
+      <FormLabel>Repeat new password</FormLabel>
+      <Input size={'sm'} value={input2} onChange={handleInput2} type='password' />
+      {isError ? <FormHelperText>Passwords don't match</FormHelperText> : null}
+      <Button size={'sm'} marginTop={2} onClick={sendForm}>Submit</Button>
+    </FormControl>
+  )
+}
+
+
 export function ChatSettings(props: {
   channel: Channel,
   setChannel: any
@@ -109,6 +142,10 @@ export function ChatSettings(props: {
     setPasswordForm(!removePasswordForm);
   }
 
+  function flipChangePass() {
+    setChangePasswordForm(!changePasswordForm);
+  }
+
   return (
   <>
     <SettingsIcon onClick={onOpen} marginTop={3} boxSize={7} />
@@ -123,7 +160,7 @@ export function ChatSettings(props: {
           ? <Button size={'sm'} onClick={flipPass}>Make Private</Button>
           : <>
             <Button size={'sm'} onClick={flipRemPass}>Make Public</Button>
-            <Button size={'sm'} onClick={flipRemPass}>Change Password</Button>
+            <Button size={'sm'} onClick={flipChangePass}>Change Password</Button>
             </>
         }
         {
@@ -141,6 +178,15 @@ export function ChatSettings(props: {
                 channel={props.channel}
                 setChannel={props.setChannel}
                 setRemovePasswordForm={setRemovePasswordForm}
+              />
+            : null
+        }
+        {
+          changePasswordForm
+            ? <ChangePassForm
+                channel={props.channel}
+                setChannel={props.setChannel}
+                setChangePasswordForm={setChangePasswordForm}
               />
             : null
         }
