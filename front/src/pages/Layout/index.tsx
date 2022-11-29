@@ -1,12 +1,4 @@
-import { HamburgerIcon, Search2Icon } from '@chakra-ui/icons';
-import {
-  Container,
-  Flex,
-  Grid,
-  GridItem,
-  IconButton,
-  MenuButton,
-} from '@chakra-ui/react';
+import { Container, Flex, Grid, GridItem } from '@chakra-ui/react';
 import { useState } from 'react';
 import { Link, Outlet } from 'react-router-dom';
 import MatchFinder from '../../components/MatchFinder';
@@ -53,6 +45,11 @@ export default function Layout({ setUser }: any) {
               <li>
                 <Link to="/chat">
                   <NeonButton>CHAT</NeonButton>
+                </Link>
+              </li>
+              <li>
+                <Link to="/dm">
+                  <NeonButton>DM</NeonButton>
                 </Link>
               </li>
             </ul>
