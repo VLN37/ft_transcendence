@@ -196,7 +196,9 @@ class Api {
     this.dmSocket?.on('chat', (message: iDirectMessage) => {
       const blocked = userStorage.getUser()?.blocked || [];
       if (blocked.length) {
-        if (blocked.find((blocked_user) => message.sender.id == blocked_user.id))
+        if (
+          blocked.find((blocked_user) => message.sender.id == blocked_user.id)
+        )
           return;
       }
       callback(message);
@@ -225,6 +227,12 @@ class Api {
 
   async getChannelMessages(id: string): Promise<Message[]> {
     const response = await this.client.get(`/channels/${id}/messages`, {});
+    // console.log(response.data);
+    return response.data;
+  }
+
+  async getDirectMessages(id: string): Promise<iDirectMessage[]> {
+    const response = await this.client.get(`/direct_messages/${id}`, {});
     // console.log(response.data);
     return response.data;
   }
@@ -358,7 +366,7 @@ class Api {
     this.client.defaults.headers['Authorization'] = `Bearer ${token}`;
     this.token = token;
     this.connectToMatchMakingCoordinator();
-	this.connectToDM();
+    this.connectToDM();
   }
 
   removeToken() {
@@ -366,7 +374,7 @@ class Api {
     if (this.matchMakingSocket) this.matchMakingSocket.auth = {};
     this.token = undefined;
     this.channelSocket?.disconnect();
-	this.dmSocket?.disconnect();
+    this.dmSocket?.disconnect();
   }
 }
 

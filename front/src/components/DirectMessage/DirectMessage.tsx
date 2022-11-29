@@ -99,6 +99,12 @@ export default function DirectMessage(props: any) {
   }, [messages]);
 
   useEffect(() => {
+    api.getDirectMessages(userId).then((messages: iDirectMessage[]) => {
+      setMessages(messages);
+    });
+  }, []);
+
+  useEffect(() => {
     document.getElementById('bottom')?.scrollIntoView();
   }, [messages]);
 
