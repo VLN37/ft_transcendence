@@ -27,7 +27,7 @@ function PassForm(props: {
 
   const handleInput1 = (e: any) => setInput1(e.target.value);
   const handleInput2 = (e: any) => setInput2(e.target.value);
-  const isError = input1 != input2
+  const isError = input1 != input2;
 
   function sendForm() {
     props.setPasswordForm();
@@ -35,6 +35,38 @@ function PassForm(props: {
 
   return (
     <FormControl isInvalid={isError}>
+      <FormLabel>Password</FormLabel>
+      <Input size={'sm'} value={input1} onChange={handleInput1} type='password' />
+      <FormLabel>Repeat password</FormLabel>
+      <Input size={'sm'} value={input2} onChange={handleInput2} type='password' />
+      {isError ? <FormHelperText>Passwords don't match</FormHelperText> : null}
+      <Button size={'sm'} marginTop={2} onClick={sendForm}>Submit</Button>
+    </FormControl>
+  )
+}
+
+function RemovePassForm(props: {
+  channel: Channel,
+  setChannel: any,
+  setRemovePasswordForm: any,
+}) {
+  const [oldPass, setOldPass] = useState<string>('');
+  const [input1, setInput1] = useState<string>('');
+  const [input2, setInput2] = useState<string>('');
+
+  const handleInput1 = (e: any) => setInput1(e.target.value);
+  const handleInput2 = (e: any) => setInput2(e.target.value);
+  const handleInput3 = (e: any) => setOldPass(e.target.value);
+  const isError = input1 != input2;
+
+  function sendForm() {
+    props.setRemovePasswordForm();
+  }
+
+  return (
+    <FormControl isInvalid={isError}>
+      <FormLabel>Old password</FormLabel>
+      <Input size={'sm'} value={input1} onChange={handleInput3} type='password' />
       <FormLabel>Password</FormLabel>
       <Input size={'sm'} value={input1} onChange={handleInput1} type='password' />
       <FormLabel>Repeat password</FormLabel>
@@ -53,6 +85,7 @@ export function ChatSettings(props: {
   const [channelType, setChannelType] = useState<string>(props.channel.type);
   const [passwordForm, setPasswordForm] = useState<boolean>(false);
   const [removePasswordForm, setRemovePasswordForm] = useState<boolean>(false);
+  const [changePasswordForm, setChangePasswordForm] = useState<boolean>(false);
 
   function makePublic() {
     let newChannel: Channel = {... props.channel};
@@ -104,7 +137,11 @@ export function ChatSettings(props: {
         }
         {
           removePasswordForm
-            ? <Input title='old password'></Input>
+            ? <RemovePassForm
+                channel={props.channel}
+                setChannel={props.setChannel}
+                setRemovePasswordForm={setRemovePasswordForm}
+              />
             : null
         }
       </ModalBody>
