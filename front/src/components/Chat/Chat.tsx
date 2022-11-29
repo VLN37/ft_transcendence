@@ -109,28 +109,19 @@ export default function Chat(props: Channel) {
   };
 
   useEffect(() => {
-    setChannel(channel);
-  }, [channel]);
-
-  useEffect(() => {
+    api.getChannelMessages(props.id.toString()).then((messages: Message[]) => {
+      setMessages(messages);
+    });
     api.subscribeJoin(updateChannel);
     return () => api.unsubscribeJoin(updateChannel);
   }, []);
 
   useEffect(() => {
     api.subscribeMessage(updateMessages);
-    return () => api.unsubscribeMessage(updateMessages);
-  }, []);
-
-  useEffect(() => {
-    api.getChannelMessages(props.id.toString()).then((messages: Message[]) => {
-      setMessages(messages);
-    });
-  }, []);
-
-  useEffect(() => {
     document.getElementById('bottom')?.scrollIntoView();
+    return () => api.unsubscribeMessage(updateMessages);;
   }, [messages]);
+
 
   return (
     <Grid
