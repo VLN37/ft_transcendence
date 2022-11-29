@@ -50,15 +50,6 @@ function MessageComponent(props: any) {
   );
 }
 
-function Users() {
-  return (
-    <Box padding={2}>
-      <h1>USERS1</h1>
-      <h1>USERS2</h1>
-    </Box>
-  );
-}
-
 function InputMessage(props: any) {
   return (
     <>
