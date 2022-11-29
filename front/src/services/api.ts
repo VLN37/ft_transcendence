@@ -196,7 +196,7 @@ class Api {
     this.dmSocket?.on('chat', (message: iDirectMessage) => {
       const blocked = userStorage.getUser()?.blocked || [];
       if (blocked.length) {
-        if (blocked.find((blocked_user) => message.user.id == blocked_user.id))
+        if (blocked.find((blocked_user) => message.sender.id == blocked_user.id))
           return;
       }
       callback(message);

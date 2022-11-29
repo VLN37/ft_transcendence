@@ -133,10 +133,10 @@ export default function DirectMessage(props: any) {
         {messages.map((message) => {
           return (
             <MessageComponent
-              name={message.user.profile.nickname}
+              name={message.sender.profile.nickname}
               image={
                 process.env.REACT_APP_HOSTNAME +
-                message.user.profile.avatar_path
+                message.sender.profile.avatar_path
               }
               text={message.message}
               key={message.id}
