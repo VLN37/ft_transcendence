@@ -42,7 +42,7 @@ export class MatchMakingGateway
   afterInit(_: Server) {
     this.logger.debug('match-making gateway afterInit');
     this.server.use((socket, next) => {
-      validateWsJwt(this.jwtService, socket)
+      validateWsJwt(this.usersService, this.jwtService, socket)
         .then((user) => {
           this.logger.debug('user validated');
           socket.handshake.auth['user'] = user;
