@@ -60,9 +60,9 @@ function PassForm(props: {
   return (
     <FormControl isInvalid={isError}>
       <FormLabel>Password</FormLabel>
-      <Input size={'sm'} value={input1} onChange={handleInput1} type='password' />
+      <Input size={'sm'} id={'1'} value={input1} onChange={handleInput1} type='password' />
       <FormLabel>Repeat password</FormLabel>
-      <Input size={'sm'} value={input2} onChange={handleInput2} type='password' />
+      <Input size={'sm'} id={'2' }value={input2} onChange={handleInput2} type='password' />
       {isError ? <FormHelperText>Passwords don't match</FormHelperText> : null}
       <Button size={'sm'} marginTop={2} onClick={sendForm}>Submit</Button>
     </FormControl>
@@ -90,11 +90,11 @@ function RemovePassForm(props: {
   return (
     <FormControl isInvalid={isError}>
       <FormLabel>Old password</FormLabel>
-      <Input size={'sm'} value={input1} onChange={handleInput3} type='password' />
+      <Input size={'sm'} id={'1'} value={input1} onChange={handleInput3} type='password' />
       <FormLabel>Password</FormLabel>
-      <Input size={'sm'} value={input1} onChange={handleInput1} type='password' />
+      <Input size={'sm'} id={'2'} value={input1} onChange={handleInput1} type='password' />
       <FormLabel>Repeat password</FormLabel>
-      <Input size={'sm'} value={input2} onChange={handleInput2} type='password' />
+      <Input size={'sm'} id={'3'} value={input2} onChange={handleInput2} type='password' />
       {isError ? <FormHelperText>Passwords don't match</FormHelperText> : null}
       <Button size={'sm'} marginTop={2} onClick={sendForm}>Submit</Button>
     </FormControl>
@@ -122,13 +122,13 @@ function ChangePassForm(props: {
   return (
     <FormControl isInvalid={isError}>
       <FormLabel>Old password</FormLabel>
-      <Input size={'sm'} value={input1} onChange={handleInput3} type='password' />
+      <Input size={'sm'} id={'1'} value={oldPass} onChange={handleInput3} type='password' />
       <FormLabel>New password</FormLabel>
-      <Input size={'sm'} value={input1} onChange={handleInput1} type='password' />
+      <Input size={'sm'} id={'2'} value={input1} onChange={handleInput1} type='password' />
       <FormLabel>Repeat new password</FormLabel>
-      <Input size={'sm'} value={input2} onChange={handleInput2} type='password' />
+      <Input size={'sm'} id={'3'} value={input2} onChange={handleInput2} type='password' />
       {isError ? <FormHelperText>Passwords don't match</FormHelperText> : null}
-      <Button size={'sm'} marginTop={2} onClick={sendForm}>Submit</Button>
+      <Button size={'sm'} id={'4'} marginTop={2} onClick={sendForm}>Submit</Button>
     </FormControl>
   )
 }
@@ -193,6 +193,7 @@ export function ChatSettings(props: {
                 channel={props.channel}
                 setChannel={props.setChannel}
                 setPasswordForm={setPasswordForm}
+                setChannelType={setChannelType}
               />
             : null
         }
