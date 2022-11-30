@@ -73,8 +73,8 @@ export class ChannelsService {
     return newChannel;
   }
 
-  async updateChannel(user: any, newChannel: ChannelDto, password: string) {
-    const id: number = newChannel.id;
+  async updateChannel(user: any, data: any) {
+    const id: number = data.channel.id;
     const channel: ChannelDto = await this.channelsRepository.findOne({
       where: { id },
       relations: [
@@ -88,21 +88,38 @@ export class ChannelsService {
     });
     if (!channel)
       throw new NotFoundException("Channel does not exist");
-    if (newChannel.owner_id != user.id) {
-      throw new BadRequestException({
-        statusCode: 403,
-        message: "you are not the owner of this channel",
-      });
+      if (data.channel.owner_id != user.id) {
+        throw new BadRequestException({
+          statusCode: 403,
+          message: "you are not the owner of this channel",
+        });
+      }
+    if (data.oldPassword && data.newPassword) {
+      const isMatch = await bcrypt.compare(data.oldPassword, channel.password);
+      if (!isMatch) throw new BadRequestException('Incorrect password');
+      data.channel.password = await this.hashPass(data.newPassword);
+      this.logger.debug('Channel password updated');
     }
-    const invalidChannel = this.validateChannel(newChannel);
+    else if (data.oldPassword && !data.newPassword) {
+      const isMatch = await bcrypt.compare(data.oldPassword, channel.password);
+      if (!isMatch) throw new BadRequestException('Incorrect password');
+      delete data.channel.password;
+      this.logger.debug('Channel password removed');
+    }
+    else if (!data.oldPassword && data.newPassword) {
+      data.channel.password = await this.hashPass(data.newPassword);
+      this.logger.debug('Channel password created');
+    }
+    else
+      throw new BadRequestException('invalid api call');
+    const invalidChannel = this.validateChannel(data.channel);
     if (invalidChannel)
     throw new BadRequestException(invalidChannel);
-    newChannel.password = await this.hashPass(password);
-    delete newChannel.users;
-    delete newChannel.channel_messages;
-    delete newChannel.admins;
-    this.logger.debug('Channel updated', { newChannel });
-    return this.channelsRepository.update({id: newChannel.id}, newChannel);
+    delete data.channel.users;
+    delete data.channel.channel_messages;
+    delete data.channel.admins;
+    this.logger.debug('Channel updated', data.channel);
+    return this.channelsRepository.update({id: data.channel.id}, data.channel);
   }
 
   async getAll(): Promise<ChannelDto[]> {

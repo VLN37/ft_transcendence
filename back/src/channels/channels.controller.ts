@@ -64,11 +64,13 @@ export class ChannelsController {
   updateChannel(
     @Param('id') id: number,
     @Req() request: Request,
-    @Body('password') passEncrypted: string | null,
-    @Body('channel') channel: ChannelDto,
+    @Body() data: {
+      channel: ChannelDto,
+      oldPassword: string | null,
+      newPassword: string | null,
+    }
   ) {
-    const user = request.user;
-    return this.channelsService.updateChannel(user, channel, passEncrypted);
+    return this.channelsService.updateChannel(request.user, data);
   }
 
   @UseGuards(JwtAuthGuard)
