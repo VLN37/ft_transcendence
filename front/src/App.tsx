@@ -18,6 +18,7 @@ import { useState } from 'react';
 import AuthCallback from './pages/auth-callback';
 
 import theme from './theme';
+import MatchPage from './pages/match';
 
 type User = {
   id: number;
@@ -58,6 +59,8 @@ function App() {
             <Route path="community" element={<CommunityPage />} />
             <Route path="chat" element={<ChatPage />} />
           </Route>
+
+          <Route path="match/:match_id" element={<MatchPage />} />
 
           <Route path="/login" element={<LoginPage user={user} />} />
           <Route
