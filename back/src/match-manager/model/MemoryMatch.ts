@@ -28,6 +28,8 @@ export class MemoryMatch {
   right_player: UserDto;
   left_player_score?: number = 0;
   right_player_score?: number = 0;
+  left_player_connected: boolean = false;
+  right_player_connected: boolean = false;
   timers: {
     awaiting_players?: NodeJS.Timeout;
     preparation?: NodeJS.Timeout;
@@ -67,7 +69,19 @@ export class MemoryMatch {
     }, seconds(30));
   }
 
-  onBothPlayersConnected() {
+  connectPlayer(playerId: number) {
+    if (playerId !== this.left_player.id && playerId !== this.right_player.id)
+      throw new Error('User is not a player');
+
+    if (playerId === this.left_player.id) this.left_player_connected = true;
+
+    if (playerId === this.right_player.id) this.right_player_connected = true;
+
+    if (this.left_player_connected && this.right_player_connected)
+      this.onBothPlayersConnected();
+  }
+
+  private onBothPlayersConnected() {
     this.logger.debug('both players connected');
     clearTimeout(this.timers.awaiting_players);
     this.startPreparationTime();

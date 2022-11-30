@@ -76,7 +76,7 @@ class Api {
     try {
       const response = await this.client.post<any>(
         `/channels/${channelId}/admin/${targetId}`,
-      )
+      );
       return response;
     } catch (err) {
       console.log('catch', err);
@@ -87,7 +87,7 @@ class Api {
   async delAdmin(targetId: number, channelId: number) {
     try {
       const response = await this.client.delete<any>(
-        `/channels/${channelId}/admin/${targetId}`
+        `/channels/${channelId}/admin/${targetId}`,
       );
       return response;
     } catch (err) {
@@ -101,9 +101,9 @@ class Api {
       const response = await this.client.post<any>(
         `/users/${targetId}/blocked_users`,
         {
-          user_id: myId
-        }
-      )
+          user_id: myId,
+        },
+      );
       return response;
     } catch (err) {
       console.log('catch', err);
@@ -116,9 +116,9 @@ class Api {
       const response = await this.client.delete<any>(
         `/users/${myId}/blocked_users`,
         {
-          data: {user_id: targetId},
-        }
-      )
+          data: { user_id: targetId },
+        },
+      );
       return response;
     } catch (err) {
       console.log('catch', err);
@@ -163,7 +163,6 @@ class Api {
       });
     });
   }
-
 
   sendMessage(data: any) {
     this.channelSocket?.emit('chat', data);
@@ -338,6 +337,10 @@ class Api {
     if (this.matchMakingSocket) this.matchMakingSocket.auth = {};
     this.token = undefined;
     this.channelSocket?.disconnect();
+  }
+
+  getToken() {
+    return this.token;
   }
 }
 

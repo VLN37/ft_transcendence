@@ -42,4 +42,15 @@ export class MatchManagerService {
 
     return memoryMatch;
   }
+
+  getActiveMatch(matchId: string): MemoryMatch {
+    return this.memoryMatches.find((match) => match.id === matchId);
+  }
+
+  connectPlayer(matchId: string, playerId: number) {
+    const match = this.memoryMatches.find((match) => match.id === matchId);
+    if (!match) throw new Error('Match not found');
+
+    match.connectPlayer(playerId);
+  }
 }
