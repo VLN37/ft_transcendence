@@ -146,11 +146,15 @@ class Api {
     }
   }
 
-  async updateChannel(channel: Channel, password: string | null) {
+  async updateChannel(
+    channel: Channel,
+    password: string | null,
+    oldPassword: string | null) {
     try {
       const response = await this.client.patch<any>(`/channels/${channel.id}`, {
         channel: channel,
-        password: password,
+        newPassword: password,
+        oldPassword: oldPassword
       });
       return response;
     } catch (err) {

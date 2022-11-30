@@ -40,10 +40,11 @@ function PassForm(props: {
     const newChannel: Channel = {... props.channel};
     newChannel.type = 'PROTECTED';
     newChannel.password = input1;
-    const response: any = await api.updateChannel(newChannel, input1);
+
+    const response: any = await api.updateChannel(newChannel, input1, null);
     const status = response.status == 200 ? 'success' : 'error';
     const message = response.status == 200 ? '' : response.data.message;
-    console.log('sending channel request', newChannel);
+
     toast({
       title: 'Password creation request sent',
       status: status,
@@ -53,7 +54,7 @@ function PassForm(props: {
       delete newChannel.password;
       props.setChannel({... newChannel});
       props.setChannelType(newChannel.type);
-      props.setPasswordForm();
+      props.setPasswordForm(false);
     }
   }
 
@@ -73,29 +74,40 @@ function RemovePassForm(props: {
   channel: Channel,
   setChannel: any,
   setRemovePasswordForm: any,
+  setChannelType: any,
 }) {
   const [oldPass, setOldPass] = useState<string>('');
-  const [input1, setInput1] = useState<string>('');
-  const [input2, setInput2] = useState<string>('');
 
-  const handleInput1 = (e: any) => setInput1(e.target.value);
-  const handleInput2 = (e: any) => setInput2(e.target.value);
-  const handleInput3 = (e: any) => setOldPass(e.target.value);
-  const isError = input1 != input2;
+  const toast = useToast();
+  const handleOldPass = (e: any) => setOldPass(e.target.value);
 
-  function sendForm() {
-    props.setRemovePasswordForm();
+  async function sendForm() {
+    const newChannel: Channel = {... props.channel};
+    newChannel.type = 'PUBLIC';
+    delete newChannel.password;
+
+    const response: any = await api.updateChannel(newChannel, null, oldPass);
+    const status = response.status == 200 ? 'success' : 'error';
+    const message = response.status == 200 ? '' : response.data.message;
+
+    toast({
+      title: 'Password removal request sent',
+      status: status,
+      description: message,
+    })
+    if (response.status == 200) {
+      delete newChannel.password;
+      props.setChannel({... newChannel});
+      props.setChannelType(newChannel.type);
+      props.setRemovePasswordForm(false);
+    }
   }
 
+
   return (
-    <FormControl isInvalid={isError}>
+    <FormControl >
       <FormLabel>Old password</FormLabel>
-      <Input size={'sm'} id={'1'} value={input1} onChange={handleInput3} type='password' />
-      <FormLabel>Password</FormLabel>
-      <Input size={'sm'} id={'2'} value={input1} onChange={handleInput1} type='password' />
-      <FormLabel>Repeat password</FormLabel>
-      <Input size={'sm'} id={'3'} value={input2} onChange={handleInput2} type='password' />
-      {isError ? <FormHelperText>Passwords don't match</FormHelperText> : null}
+      <Input size={'sm'} id={'1'} value={oldPass} onChange={handleOldPass} type='password' />
       <Button size={'sm'} marginTop={2} onClick={sendForm}>Submit</Button>
     </FormControl>
   )
@@ -105,18 +117,37 @@ function ChangePassForm(props: {
   channel: Channel,
   setChannel: any,
   setChangePasswordForm: any,
+  setChannelType: any,
 }) {
   const [oldPass, setOldPass] = useState<string>('');
   const [input1, setInput1] = useState<string>('');
   const [input2, setInput2] = useState<string>('');
+  const toast = useToast();
 
   const handleInput1 = (e: any) => setInput1(e.target.value);
   const handleInput2 = (e: any) => setInput2(e.target.value);
   const handleInput3 = (e: any) => setOldPass(e.target.value);
   const isError = input1 != input2;
 
-  function sendForm() {
-    props.setChangePasswordForm();
+  async function sendForm() {
+    const newChannel: Channel = {... props.channel};
+    newChannel.password = input1;
+
+    const response: any = await api.updateChannel(newChannel, input1, oldPass);
+    const status = response.status == 200 ? 'success' : 'error';
+    const message = response.status == 200 ? '' : response.data.message;
+
+    toast({
+      title: 'Update password request sent',
+      status: status,
+      description: message,
+    })
+    if (response.status == 200) {
+      delete newChannel.password;
+      props.setChannel({... newChannel});
+      props.setChannelType(newChannel.type);
+      props.setChangePasswordForm(false);
+    }
   }
 
   return (
@@ -163,7 +194,7 @@ export function ChatSettings(props: {
   }
 
   function flipRemPass() {
-    setPasswordForm(!removePasswordForm);
+    setRemovePasswordForm(!removePasswordForm);
   }
 
   function flipChangePass() {
@@ -203,6 +234,7 @@ export function ChatSettings(props: {
                 channel={props.channel}
                 setChannel={props.setChannel}
                 setRemovePasswordForm={setRemovePasswordForm}
+                setChannelType={setChannelType}
               />
             : null
         }
@@ -212,6 +244,7 @@ export function ChatSettings(props: {
                 channel={props.channel}
                 setChannel={props.setChannel}
                 setChangePasswordForm={setChangePasswordForm}
+                setChannelType={setChannelType}
               />
             : null
         }
