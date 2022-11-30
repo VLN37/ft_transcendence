@@ -73,6 +73,38 @@ export class ChannelsService {
     return newChannel;
   }
 
+  async updateChannel(user: any, newChannel: ChannelDto, password: string) {
+    const id: number = newChannel.id;
+    const channel: ChannelDto = await this.channelsRepository.findOne({
+      where: { id },
+      relations: [
+        'users',
+        'users.profile',
+        'allowed_users.profile',
+        'channel_messages.user.profile',
+        'channel_messages.channel',
+        'admins',
+      ],
+    });
+    if (!channel)
+      throw new NotFoundException("Channel does not exist");
+    if (newChannel.owner_id != user.id) {
+      throw new BadRequestException({
+        statusCode: 403,
+        message: "you are not the owner of this channel",
+      });
+    }
+    const invalidChannel = this.validateChannel(newChannel);
+    if (invalidChannel)
+    throw new BadRequestException(invalidChannel);
+    newChannel.password = await this.hashPass(password);
+    delete newChannel.users;
+    delete newChannel.channel_messages;
+    delete newChannel.admins;
+    this.logger.debug('Channel updated', { newChannel });
+    return this.channelsRepository.update({id: newChannel.id}, newChannel);
+  }
+
   async getAll(): Promise<ChannelDto[]> {
     const channels = await this.channelsRepository.find({
       relations: ['allowed_users.profile'],
@@ -195,16 +227,16 @@ export class ChannelsService {
     this.logger.log(`Delete succesful. Updated channel ${channel}`);
   }
 
-  private validateChannel(channel: ChannelDto) {
+  private validateChannel(channel: ChannelDto): string {
     if (channel.type == 'PUBLIC') {
       if (channel.password) return 'Public channels cannot have password';
       if (channel.allowed_users)
         return 'Public channels cannot have allowed users';
     }
-    if (channel.type == 'PROTECTED') {
-      if (channel.allowed_users)
-        return 'Protected channels cannot have allowed users';
-    }
+    // if (channel.type == 'PROTECTED') {
+    //   if (channel.allowed_users)
+    //     return 'Protected channels cannot have allowed users';
+    // }
     if (channel.type == 'PRIVATE') {
       if (channel.password) return 'Private channels cannot have password';
       if (!isArray(channel.allowed_users))

@@ -8,7 +8,10 @@ import {
   Headers,
   UseGuards,
   UseInterceptors,
+  Patch,
+  Req,
 } from '@nestjs/common';
+import { Request } from 'express';
 import { JwtAuthGuard } from 'src/auth/guard/jwt.guard';
 import {
   ChannelsDeleteInterceptor,
@@ -54,6 +57,18 @@ export class ChannelsController {
   @UseInterceptors(ChannelsGetMessagesInterceptor)
   getMessages(@Param('id') id: number) {
     return this.channelsService.getMessages(id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch(':id')
+  updateChannel(
+    @Param('id') id: number,
+    @Req() request: Request,
+    @Body('password') passEncrypted: string | null,
+    @Body('channel') channel: ChannelDto,
+  ) {
+    const user = request.user;
+    return this.channelsService.updateChannel(user, channel, passEncrypted);
   }
 
   @UseGuards(JwtAuthGuard)
