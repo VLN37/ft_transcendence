@@ -12,25 +12,49 @@ import {
   ModalHeader,
   ModalOverlay,
   useDisclosure,
+  useToast,
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import { Channel } from '../../models/Channel';
+import { emptyUser } from '../../models/User';
 import api from '../../services/api';
+import userStorage from '../../services/userStorage';
 
 function PassForm(props: {
   channel: Channel,
   setChannel: any,
   setPasswordForm: any,
+  setChannelType: any,
 }) {
   const [input1, setInput1] = useState<string>('');
   const [input2, setInput2] = useState<string>('');
+  const toast = useToast();
+  const me = userStorage.getUser() || emptyUser();
 
   const handleInput1 = (e: any) => setInput1(e.target.value);
   const handleInput2 = (e: any) => setInput2(e.target.value);
   const isError = input1 != input2;
 
-  function sendForm() {
-    props.setPasswordForm();
+
+  async function sendForm() {
+    const newChannel: Channel = {... props.channel};
+    newChannel.type = 'PROTECTED';
+    newChannel.password = input1;
+    const response: any = await api.updateChannel(newChannel, input1);
+    const status = response.status == 200 ? 'success' : 'error';
+    const message = response.status == 200 ? '' : response.data.message;
+    console.log('sending channel request', newChannel);
+    toast({
+      title: 'Password creation request sent',
+      status: status,
+      description: message,
+    })
+    if (response.status == 200) {
+      delete newChannel.password;
+      props.setChannel({... newChannel});
+      props.setChannelType(newChannel.type);
+      props.setPasswordForm();
+    }
   }
 
   return (
