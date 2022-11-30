@@ -4,6 +4,7 @@ export interface Channel {
   id: number;
   name: string;
   owner_id: number;
+  password?: string;
   type: string;
   allowed_users: User[];
   admins: User[];

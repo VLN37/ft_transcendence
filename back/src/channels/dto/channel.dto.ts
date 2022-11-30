@@ -12,6 +12,7 @@ import { ChannelMessages } from 'src/entities/channel_messages.entity';
 import { UserDto } from 'src/users/dto/user.dto';
 
 export class ChannelDto {
+  @IsOptional()
   id: number;
 
   @IsString()
