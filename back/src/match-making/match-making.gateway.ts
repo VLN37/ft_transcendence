@@ -12,8 +12,6 @@ import {
   WsException,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { TokenPayload } from 'src/auth/dto/TokenPayload';
-import { UserDto } from 'src/users/dto/user.dto';
 import { UsersService } from 'src/users/users.service';
 import { validateWsJwt } from 'src/utils/functions/validateWsConnection';
 import { MatchType } from './dto/AppendToQueueDTO';
