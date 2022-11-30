@@ -17,6 +17,7 @@ import { ChannelRoomAuth, ChannelRoomMessage } from './channels.interface';
 import { ChannelsService } from './channels.service';
 import { ChannelDto } from './dto/channel.dto';
 import * as bcrypt from 'bcrypt';
+import { validateWsJwt } from 'src/utils/functions/validateWsConnection';
 
 @WebSocketGateway({
   namespace: '/channel',
@@ -39,7 +40,7 @@ export class ChannelsSocketGateway
   afterInit(_: Server) {
     this.logger.debug('channel gateway afterInit');
     this.server.use((socket, next) => {
-      this.validateConnection(socket)
+      validateWsJwt(this.usersService, this.jwtService, socket)
         .then((user) => {
           this.logger.debug('user validated');
           socket.handshake.auth['user'] = user;
@@ -75,18 +76,6 @@ export class ChannelsSocketGateway
     this.server.to(newMessage.channel.id.toString()).emit('chat', newMessage);
   }
 
-  private validateConnection(client: Socket) {
-    const token = client.handshake.auth.token;
-    try {
-      const payload = this.jwtService.verify<TokenPayload>(token, {
-        secret: process.env.JWT_SECRET,
-      });
-      return this.usersService.findCompleteUserById(payload.sub);
-    } catch {
-      throw new WsException('Token invalid or expired');
-    }
-  }
-
   private async joinChannel(client: Socket, data: ChannelRoomAuth) {
     if (!data || !data.room)
       return { status: 400, message: 'Invalid channel data' };
@@ -118,11 +107,11 @@ export class ChannelsSocketGateway
     }
     client.join(data.room.toString());
     this.server.emit('join', {
-      data: {user: user}
+      data: { user: user },
     });
     return {
       status: 200,
-      message: "user joined the channel",
+      message: 'user joined the channel',
     };
   }
 }
