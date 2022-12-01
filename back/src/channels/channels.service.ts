@@ -51,12 +51,17 @@ export class ChannelsService {
     return this.getAll();
   }
 
-  async banUser(token: any, userId: number, channelId: number) {
-    const channel: ChannelDto = await this.getOne(channelId);
+  async banUser( token: Express.User, chId: number, ban: number, time: number) {
+    const channel: ChannelDto = await this.getOne(chId);
     if (!channel.admins.find(elem => elem.id == token.id))
-      throw new BadRequestException("you are not an admin of this channel");
-    if (!channel.users.find(elem => elem.id == userId))
+    throw new BadRequestException("you are not an admin of this channel");
+    if (!channel.users.find(elem => elem.id == token.id))
       throw new BadRequestException("user is not in the channel");
+    this.bannedUsersRepository.save({
+      user_id: ban,
+      channel: { id: channel.id },
+      expiration: new Date(),
+    })
   }
 
   async create(channel: ChannelDto): Promise<Channel> {
@@ -81,7 +86,7 @@ export class ChannelsService {
     return newChannel;
   }
 
-  async updateChannel(user: any, data: any) {
+  async updateChannel(user: Express.User, data: any) {
     const channel: ChannelDto = await this.getOne(data.channel.id);
     if (!channel)
       throw new NotFoundException("Channel does not exist");

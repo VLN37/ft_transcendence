@@ -65,12 +65,23 @@ export class ChannelsController {
     @Param('id') id: number,
     @Req() request: Request,
     @Body() data: {
-      channel: ChannelDto,
-      oldPassword: string | null,
-      newPassword: string | null,
-    }
+      channel: ChannelDto;
+      oldPassword: string | null;
+      newPassword: string | null;
+    },
   ) {
     return this.channelsService.updateChannel(request.user, data);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post(':channel/ban/:id')
+  banUser(
+    @Req() req: Request,
+    @Param('channel') channelId: number,
+    @Param('id') userId,
+    @Body('seconds') time: number,
+  ) {
+    return this.channelsService.banUser(req.user, channelId, userId, time);
   }
 
   @UseGuards(JwtAuthGuard)
