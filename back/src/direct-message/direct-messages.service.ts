@@ -47,4 +47,24 @@ export class DirectMessagesService {
     });
     return messages;
   }
+
+  async getAllMessages(token: string): Promise<DirectMessages[]> {
+    const myId = await this.usersService.getUserId(token);
+    const messages = await this.dmRepository.find({
+      where: [
+        {
+          sender: {
+            id: myId,
+          },
+        },
+        {
+          receiver: {
+            id: myId,
+          },
+        },
+      ],
+      relations: ['sender.profile', 'receiver.profile'],
+    });
+    return messages;
+  }
 }

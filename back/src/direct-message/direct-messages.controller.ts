@@ -1,4 +1,11 @@
-import { Controller, Headers, Get, Param, UseGuards, UseInterceptors } from '@nestjs/common';
+import {
+  Controller,
+  Headers,
+  Get,
+  Param,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guard/jwt.guard';
 import { DirectMessagesGetInterceptor } from './direct-message.interceptor';
 import { DirectMessagesService } from './direct-messages.service';
@@ -15,5 +22,12 @@ export class DirectMessagesController {
     @Param('id') id: number,
   ) {
     return this.dmService.getMessages(token, id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get()
+  @UseInterceptors(DirectMessagesGetInterceptor)
+  getAllMessages(@Headers('Authorization') token: string) {
+    return this.dmService.getAllMessages(token);
   }
 }
