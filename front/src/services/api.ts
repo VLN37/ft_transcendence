@@ -149,6 +149,23 @@ class Api {
     }
   }
 
+  async updateChannel(
+    channel: Channel,
+    password: string | null,
+    oldPassword: string | null) {
+    try {
+      const response = await this.client.patch<any>(`/channels/${channel.id}`, {
+        channel: channel,
+        newPassword: password,
+        oldPassword: oldPassword
+      });
+      return response;
+    } catch (err) {
+      console.log('catch', err);
+      return (err as AxiosError).response;
+    }
+  }
+
   connectToChannel(data: ChannelRoomAuth): Promise<ChannelSocketResponse> {
     return new Promise((resolve) => {
       this.channelSocket = io(

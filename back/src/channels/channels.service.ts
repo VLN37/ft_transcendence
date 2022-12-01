@@ -17,6 +17,7 @@ import { ChannelMessages } from 'src/entities/channel_messages.entity';
 import { Socket } from 'socket.io';
 import { JwtService } from '@nestjs/jwt';
 import { UserDto } from 'src/users/dto/user.dto';
+import { BannedUsers } from 'src/entities/channel.banned.entity';
 
 @Injectable()
 export class ChannelsService {
@@ -27,6 +28,8 @@ export class ChannelsService {
     private channelsRepository: Repository<Channel>,
     @InjectRepository(ChannelMessages)
     private channelsMesssagesRepository: Repository<ChannelMessages>,
+    @InjectRepository(BannedUsers)
+    private bannedUsersRepository: Repository<BannedUsers>,
     private usersService: UsersService,
     private jwtService: JwtService,
   ) {}
@@ -51,6 +54,19 @@ export class ChannelsService {
     return this.getAll();
   }
 
+  async banUser( token: Express.User, chId: number, ban: number, time: number) {
+    const channel: ChannelDto = await this.getOne(chId);
+    if (!channel.admins.find(elem => elem.id == token.id))
+    throw new BadRequestException("you are not an admin of this channel");
+    if (!channel.users.find(elem => elem.id == token.id))
+      throw new BadRequestException("user is not in the channel");
+    this.bannedUsersRepository.save({
+      user_id: ban,
+      channel: { id: channel.id },
+      expiration: new Date(),
+    })
+  }
+
   async create(channel: ChannelDto): Promise<Channel> {
     const invalidChannel = this.validateChannel(channel);
     if (invalidChannel) throw new BadRequestException(invalidChannel);
@@ -73,6 +89,44 @@ export class ChannelsService {
     return newChannel;
   }
 
+  async updateChannel(user: Express.User, data: any) {
+    const channel: ChannelDto = await this.getOne(data.channel.id);
+    if (!channel)
+      throw new NotFoundException("Channel does not exist");
+      if (data.channel.owner_id != user.id) {
+        throw new BadRequestException({
+          statusCode: 403,
+          message: "you are not the owner of this channel",
+        });
+      }
+    if (data.oldPassword && data.newPassword) {
+      const isMatch = await bcrypt.compare(data.oldPassword, channel.password);
+      if (!isMatch) throw new BadRequestException('Incorrect password');
+      data.channel.password = await this.hashPass(data.newPassword);
+      this.logger.debug('Channel password updated');
+    }
+    else if (data.oldPassword && !data.newPassword) {
+      const isMatch = await bcrypt.compare(data.oldPassword, channel.password);
+      if (!isMatch) throw new BadRequestException('Incorrect password');
+      delete data.channel.password;
+      this.logger.debug('Channel password removed');
+    }
+    else if (!data.oldPassword && data.newPassword) {
+      data.channel.password = await this.hashPass(data.newPassword);
+      this.logger.debug('Channel password created');
+    }
+    else
+      throw new BadRequestException('invalid api call');
+    const invalidChannel = this.validateChannel(data.channel);
+    if (invalidChannel)
+    throw new BadRequestException(invalidChannel);
+    delete data.channel.users;
+    delete data.channel.channel_messages;
+    delete data.channel.admins;
+    this.logger.debug('Channel updated', data.channel);
+    return this.channelsRepository.update({id: data.channel.id}, data.channel);
+  }
+
   async getAll(): Promise<ChannelDto[]> {
     const channels = await this.channelsRepository.find({
       relations: ['allowed_users.profile'],
@@ -91,6 +145,7 @@ export class ChannelsService {
         'allowed_users.profile',
         'channel_messages.user.profile',
         'channel_messages.channel',
+        'banned_users',
         'admins',
       ],
     });
@@ -195,16 +250,16 @@ export class ChannelsService {
     this.logger.log(`Delete succesful. Updated channel ${channel}`);
   }
 
-  private validateChannel(channel: ChannelDto) {
+  private validateChannel(channel: ChannelDto): string {
     if (channel.type == 'PUBLIC') {
       if (channel.password) return 'Public channels cannot have password';
       if (channel.allowed_users)
         return 'Public channels cannot have allowed users';
     }
-    if (channel.type == 'PROTECTED') {
-      if (channel.allowed_users)
-        return 'Protected channels cannot have allowed users';
-    }
+    // if (channel.type == 'PROTECTED') {
+    //   if (channel.allowed_users)
+    //     return 'Protected channels cannot have allowed users';
+    // }
     if (channel.type == 'PRIVATE') {
       if (channel.password) return 'Private channels cannot have password';
       if (!isArray(channel.allowed_users))

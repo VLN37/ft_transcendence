@@ -1,4 +1,4 @@
-import { ArrowRightIcon } from '@chakra-ui/icons';
+import { ArrowRightIcon, SettingsIcon } from '@chakra-ui/icons';
 import {
   Box,
   Center,
@@ -10,11 +10,14 @@ import {
   IconButton,
   Spacer,
   Avatar,
+  useDisclosure,
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { Channel } from '../../models/Channel';
 import { Message } from '../../models/Message';
 import api from '../../services/api';
+import userStorage from '../../services/userStorage';
+import { ChatSettings } from './ChatSettings';
 import { ChatUsers } from './ChatUsers';
 
 function ChannelTitle(props: any) {
@@ -91,10 +94,13 @@ function sendMessage(room_id: string) {
 export default function Chat(props: Channel) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [channel, setChannel] = useState<Channel>(props);
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const myId: number = userStorage.getUser()?.id || 0;
 
   const updateMessages = (message: Message) =>
     setMessages([...messages, message]);
 
+  // console.log('chat channel: ', channel);
   const updateChannel = (data: any) => {
     if (!channel.users.find((elem) => elem.id == data.user.id)) {
       console.log('user joined');
@@ -104,28 +110,19 @@ export default function Chat(props: Channel) {
   };
 
   useEffect(() => {
-    setChannel(channel);
-  }, [channel]);
-
-  useEffect(() => {
+    api.getChannelMessages(props.id.toString()).then((messages: Message[]) => {
+      setMessages(messages);
+    });
     api.subscribeJoin(updateChannel);
     return () => api.unsubscribeJoin(updateChannel);
   }, []);
 
   useEffect(() => {
     api.subscribeMessage(updateMessages);
-    return () => api.unsubscribeMessage(updateMessages);
-  }, []);
-
-  useEffect(() => {
-    api.getChannelMessages(props.id.toString()).then((messages: Message[]) => {
-      setMessages(messages);
-    });
-  }, []);
-
-  useEffect(() => {
     document.getElementById('bottom')?.scrollIntoView();
+    return () => api.unsubscribeMessage(updateMessages);
   }, [messages]);
+
 
   return (
     <Grid
@@ -135,8 +132,13 @@ export default function Chat(props: Channel) {
       gridRowGap={'10px'}
       h={'100%'}
     >
-      <GridItem borderRadius={'5px'} rowSpan={1} colSpan={10}>
+      <GridItem borderRadius={'5px'} rowSpan={1} colSpan={9}>
         <ChannelTitle>{`${props.name} #${props.id}`}</ChannelTitle>
+      </GridItem>
+      <GridItem  colStart={10}>
+        {myId == props.owner_id
+          ? <ChatSettings setChannel={setChannel}channel={props}></ChatSettings>
+          : null}
       </GridItem>
       <GridItem borderRadius={'5px'} rowSpan={11} colSpan={2} bg="gray.700">
         {props.users ? <ChatUsers channel={channel} /> : null}

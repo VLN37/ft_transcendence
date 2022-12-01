@@ -22,6 +22,7 @@ import { ChannelMessages } from './entities/channel_messages.entity';
 import { DirectMessagesController } from './direct-message/direct-messages.controller';
 import { DirectMessagesModule } from './direct-message/direct-messages.module';
 import { DirectMessages } from './entities/direct_messages.entity';
+import { BannedUsers } from './entities/channel.banned.entity';
 
 const environment = process.env.ENVIRONMENT;
 const dbHost = process.env.DB_HOST;
@@ -53,6 +54,7 @@ declare global {
         ChannelMessages,
         Match,
         DirectMessages,
+        BannedUsers,
       ],
       synchronize: environment != 'prod',
     }),
