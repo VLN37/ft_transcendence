@@ -60,11 +60,6 @@ export default function Layout({ setUser }: any) {
                 </Link>
               </li>
               <li>
-                <Link to="/chat">
-                  <NeonButton>CHAT</NeonButton>
-                </Link>
-              </li>
-              <li>
                 <Link
                   onClick={() => setNotification(0)}
                   className="button"
