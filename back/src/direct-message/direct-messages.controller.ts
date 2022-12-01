@@ -7,12 +7,22 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guard/jwt.guard';
-import { DirectMessagesGetInterceptor } from './direct-message.interceptor';
+import {
+  DirectMessagesGetInterceptor,
+  DirectMessagesGetLastInterceptor,
+} from './direct-message.interceptor';
 import { DirectMessagesService } from './direct-messages.service';
 
 @Controller('direct_messages')
 export class DirectMessagesController {
   constructor(private readonly dmService: DirectMessagesService) {}
+
+  @UseGuards(JwtAuthGuard)
+  @Get('last')
+  @UseInterceptors(DirectMessagesGetLastInterceptor)
+  getLastMessages(@Headers('Authorization') token: string) {
+    return this.dmService.getLastMessages(token);
+  }
 
   @UseGuards(JwtAuthGuard)
   @Get(':id')

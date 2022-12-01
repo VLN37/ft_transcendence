@@ -237,6 +237,12 @@ class Api {
     return response.data;
   }
 
+  async getLastDirectMessages(): Promise<User[]> {
+    const response = await this.client.get(`/direct_messages/last`, {});
+    // console.log(response.data);
+    return response.data;
+  }
+
   async authenticate(code: string): Promise<string> {
     const response = await this.client.post<AuthenticationResponse>(
       '/auth/login',

@@ -29,3 +29,24 @@ export class DirectMessagesGetInterceptor implements NestInterceptor {
     );
   }
 }
+
+@Injectable()
+export class DirectMessagesGetLastInterceptor implements NestInterceptor {
+  constructor() {}
+
+  async intercept(
+    context: ExecutionContext,
+    next: CallHandler,
+  ): Promise<Observable<any>> {
+    const request = context.switchToHttp().getRequest();
+    return next.handle().pipe(
+      map((data) => {
+        data.map((user) => {
+          delete user.tfa_enabled;
+          delete user.tfa_secret;
+        });
+        return data;
+      }),
+    );
+  }
+}
