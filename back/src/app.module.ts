@@ -19,6 +19,9 @@ import { MatchMakingModule } from './match-making/match-making.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { Match } from './entities/match.entity';
 import { ChannelMessages } from './entities/channel_messages.entity';
+import { DirectMessagesController } from './direct-message/direct-messages.controller';
+import { DirectMessagesModule } from './direct-message/direct-messages.module';
+import { DirectMessages } from './entities/direct_messages.entity';
 import { BannedUsers } from './entities/channel.banned.entity';
 
 const environment = process.env.ENVIRONMENT;
@@ -44,7 +47,15 @@ declare global {
       username: 'user',
       password: 'pass',
       database: 'transcendence',
-      entities: [User, Profile, Channel, ChannelMessages, Match, BannedUsers],
+      entities: [
+        User,
+        Profile,
+        Channel,
+        ChannelMessages,
+        Match,
+        DirectMessages,
+        BannedUsers,
+      ],
       synchronize: environment != 'prod',
     }),
     ConfigModule.forRoot({
@@ -59,6 +70,7 @@ declare global {
     ProfileModule,
     ChannelsModule,
     MatchMakingModule,
+    DirectMessagesModule,
   ],
   controllers: [],
   providers: [],
@@ -74,6 +86,7 @@ export class AppModule implements NestModule {
         BlockedController,
         FriendsController,
         FriendRequestsController,
+        DirectMessagesController,
       );
   }
 }

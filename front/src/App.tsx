@@ -18,6 +18,7 @@ import { useState } from 'react';
 import AuthCallback from './pages/auth-callback';
 
 import theme from './theme';
+import DirectMessagePage from './pages/direct-message';
 
 type User = {
   id: number;
@@ -57,6 +58,7 @@ function App() {
             <Route path="rank" element={<RankPage />} />
             <Route path="community" element={<CommunityPage />} />
             <Route path="chat" element={<ChatPage />} />
+            <Route path="dm" element={<DirectMessagePage />} />
           </Route>
 
           <Route path="/login" element={<LoginPage user={user} />} />

@@ -10,6 +10,7 @@ import {
 import { User } from '../models/User';
 import { Message } from '../models/Message';
 import userStorage from './userStorage';
+import { iDirectMessage } from '../models/DirectMessage';
 
 interface AuthenticationResponse {
   access_token: string;
@@ -25,6 +26,7 @@ export type ErrorResponse = {
 class Api {
   private readonly MATCH_MAKING_NAMESPACE = 'match-making';
   private readonly CHANNEL_NAMESPACE = 'channel';
+  private readonly DM_NAMESPACE = 'direct_messages';
 
   private client = axios.create({
     baseURL: 'http://localhost:3000',
@@ -32,6 +34,7 @@ class Api {
 
   private matchMakingSocket?: Socket;
   private channelSocket?: Socket;
+  private dmSocket?: Socket;
   private token?: string;
 
   constructor() {
@@ -76,7 +79,7 @@ class Api {
     try {
       const response = await this.client.post<any>(
         `/channels/${channelId}/admin/${targetId}`,
-      )
+      );
       return response;
     } catch (err) {
       console.log('catch', err);
@@ -87,7 +90,7 @@ class Api {
   async delAdmin(targetId: number, channelId: number) {
     try {
       const response = await this.client.delete<any>(
-        `/channels/${channelId}/admin/${targetId}`
+        `/channels/${channelId}/admin/${targetId}`,
       );
       return response;
     } catch (err) {
@@ -101,9 +104,9 @@ class Api {
       const response = await this.client.post<any>(
         `/users/${targetId}/blocked_users`,
         {
-          user_id: myId
-        }
-      )
+          user_id: myId,
+        },
+      );
       return response;
     } catch (err) {
       console.log('catch', err);
@@ -116,9 +119,9 @@ class Api {
       const response = await this.client.delete<any>(
         `/users/${myId}/blocked_users`,
         {
-          data: {user_id: targetId},
-        }
-      )
+          data: { user_id: targetId },
+        },
+      );
       return response;
     } catch (err) {
       console.log('catch', err);
@@ -181,9 +184,18 @@ class Api {
     });
   }
 
+  connectToDM() {
+    this.dmSocket = io(`http://localhost:3000/${this.DM_NAMESPACE}`, {
+      auth: { token: this.token },
+    });
+  }
 
   sendMessage(data: any) {
     this.channelSocket?.emit('chat', data);
+  }
+
+  sendDirectMessage(data: any) {
+    this.dmSocket?.emit('chat', data);
   }
 
   subscribeMessage(callback: any) {
@@ -197,8 +209,25 @@ class Api {
     });
   }
 
+  subscribeDirectMessage(callback: any) {
+    this.dmSocket?.on('chat', (message: iDirectMessage) => {
+      const blocked = userStorage.getUser()?.blocked || [];
+      if (blocked.length) {
+        if (
+          blocked.find((blocked_user) => message.sender.id == blocked_user.id)
+        )
+          return;
+      }
+      callback(message);
+    });
+  }
+
   unsubscribeMessage(callback: any) {
     this.channelSocket?.off('chat', callback);
+  }
+
+  unsubscribeDirectMessage(callback: any) {
+    this.dmSocket?.off('chat', callback);
   }
 
   subscribeJoin(callback: any) {
@@ -215,6 +244,18 @@ class Api {
 
   async getChannelMessages(id: string): Promise<Message[]> {
     const response = await this.client.get(`/channels/${id}/messages`, {});
+    // console.log(response.data);
+    return response.data;
+  }
+
+  async getDirectMessages(id: string): Promise<iDirectMessage[]> {
+    const response = await this.client.get(`/direct_messages/${id}`, {});
+    // console.log(response.data);
+    return response.data;
+  }
+
+  async getLastDirectMessages(): Promise<User[]> {
+    const response = await this.client.get(`/direct_messages/last`, {});
     // console.log(response.data);
     return response.data;
   }
@@ -348,6 +389,7 @@ class Api {
     this.client.defaults.headers['Authorization'] = `Bearer ${token}`;
     this.token = token;
     this.connectToMatchMakingCoordinator();
+    this.connectToDM();
   }
 
   removeToken() {
@@ -355,6 +397,7 @@ class Api {
     if (this.matchMakingSocket) this.matchMakingSocket.auth = {};
     this.token = undefined;
     this.channelSocket?.disconnect();
+    this.dmSocket?.disconnect();
   }
 }
 

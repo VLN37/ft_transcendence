@@ -1,43 +1,30 @@
 import {
   Box,
   useToast,
-  Table,
-  Thead,
-  Tbody,
-  Tfoot,
-  Tr,
-  Th,
-  Td,
   Button,
-  TableCaption,
-  TableContainer,
   Menu,
   MenuButton,
   MenuList,
   MenuItem,
-  MenuItemOption,
-  MenuGroup,
-  MenuOptionGroup,
-  MenuDivider,
-} from '@chakra-ui/react'
+} from '@chakra-ui/react';
+import { useNavigate } from 'react-router-dom';
 import { emptyUser, User } from '../../models/User';
-import api from '../../services/api';
 import userStorage from '../../services/userStorage';
 
 function AddToast() {
   const toast = useToast();
-  return toast({ description: 'some text' })
+  return toast({ description: 'some text' });
 }
 
 function CustomToastExample() {
-  const toast = useToast()
+  const toast = useToast();
   return (
     <Button
       onClick={() =>
         toast({
           position: 'bottom-left',
           render: () => (
-            <Box color='white' p={3} bg='blue.500'>
+            <Box color="white" p={3} bg="blue.500">
               Hello World
             </Box>
           ),
@@ -46,12 +33,13 @@ function CustomToastExample() {
     >
       Show Toast
     </Button>
-  )
+  );
 }
 
 export function RankMenu(props: any) {
   const url = `http://localhost:3000/users/${props.id}/friend_requests`;
   const toast = useToast();
+  let navigate = useNavigate();
 
   async function clickCallback() {
     const user: User = userStorage.getUser() || emptyUser();
@@ -75,15 +63,21 @@ export function RankMenu(props: any) {
       description: message,
     });
   }
+
+  function sendUserMessage() {
+    navigate(`/dm?user=${props.id}`);
+  }
+
   return (
     <Menu isLazy>
       <MenuButton>{props.input}</MenuButton>
       <MenuList>
         {/* MenuItems are not rendered unless Menu is open */}
-        <MenuItem onClick={clickCallback} >addFriend</MenuItem>
+        <MenuItem onClick={clickCallback}>addFriend</MenuItem>
+        <MenuItem onClick={sendUserMessage}>send a message</MenuItem>
         {/* <MenuItem>Open Closed Tab</MenuItem> */}
         {/* <MenuItem>Open File</MenuItem> */}
       </MenuList>
     </Menu>
-  )
+  );
 }
