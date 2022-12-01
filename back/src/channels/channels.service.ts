@@ -17,6 +17,7 @@ import { ChannelMessages } from 'src/entities/channel_messages.entity';
 import { Socket } from 'socket.io';
 import { JwtService } from '@nestjs/jwt';
 import { UserDto } from 'src/users/dto/user.dto';
+import { BannedUsers } from 'src/entities/channel.banned.entity';
 
 @Injectable()
 export class ChannelsService {
@@ -27,6 +28,8 @@ export class ChannelsService {
     private channelsRepository: Repository<Channel>,
     @InjectRepository(ChannelMessages)
     private channelsMesssagesRepository: Repository<ChannelMessages>,
+    @InjectRepository(BannedUsers)
+    private bannedUsersRepository: Repository<BannedUsers>,
     private usersService: UsersService,
     private jwtService: JwtService,
   ) {}
