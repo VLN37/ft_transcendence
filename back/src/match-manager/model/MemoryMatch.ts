@@ -30,6 +30,7 @@ export class MemoryMatch {
   right_player_score?: number = 0;
   left_player_connected: boolean = false;
   right_player_connected: boolean = false;
+  starts_at?: Date;
   timers: {
     awaiting_players?: NodeJS.Timeout;
     preparation?: NodeJS.Timeout;
@@ -89,7 +90,13 @@ export class MemoryMatch {
 
   private startPreparationTime() {
     this.updateStage('PREPARATION');
+
+    const start_at = new Date();
+    start_at.setSeconds(start_at.getSeconds() + 15);
+    this.starts_at = start_at;
+
     this.logger.debug('starting preparation time');
+    this.logger.debug('match starts at ' + this.starts_at.toISOString());
     this.timers.preparation = setTimeout(() => {
       this.startMatch();
     }, seconds(15));
