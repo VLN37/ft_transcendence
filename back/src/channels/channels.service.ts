@@ -51,6 +51,14 @@ export class ChannelsService {
     return this.getAll();
   }
 
+  async banUser(token: any, userId: number, channelId: number) {
+    const channel: ChannelDto = await this.getOne(channelId);
+    if (!channel.admins.find(elem => elem.id == token.id))
+      throw new BadRequestException("you are not an admin of this channel");
+    if (!channel.users.find(elem => elem.id == userId))
+      throw new BadRequestException("user is not in the channel");
+  }
+
   async create(channel: ChannelDto): Promise<Channel> {
     const invalidChannel = this.validateChannel(channel);
     if (invalidChannel) throw new BadRequestException(invalidChannel);
@@ -74,18 +82,7 @@ export class ChannelsService {
   }
 
   async updateChannel(user: any, data: any) {
-    const id: number = data.channel.id;
-    const channel: ChannelDto = await this.channelsRepository.findOne({
-      where: { id },
-      relations: [
-        'users',
-        'users.profile',
-        'allowed_users.profile',
-        'channel_messages.user.profile',
-        'channel_messages.channel',
-        'admins',
-      ],
-    });
+    const channel: ChannelDto = await this.getOne(data.channel.id);
     if (!channel)
       throw new NotFoundException("Channel does not exist");
       if (data.channel.owner_id != user.id) {
@@ -140,6 +137,7 @@ export class ChannelsService {
         'allowed_users.profile',
         'channel_messages.user.profile',
         'channel_messages.channel',
+        'banned_users',
         'admins',
       ],
     });
