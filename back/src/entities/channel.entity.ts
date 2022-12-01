@@ -6,6 +6,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { BannedUsers } from './channel.banned.entity';
 import { ChannelMessages } from './channel_messages.entity';
 import { User } from './user.entity';
 
@@ -53,6 +54,9 @@ export class Channel {
   @ManyToMany(() => User)
   @JoinTable({ name: 'channel_admins' })
   admins: Partial<User>[];
+
+  @OneToMany(() => BannedUsers, (element) => element.channel)
+  banned_users: BannedUsers[];
 
   @OneToMany(() => ChannelMessages, (message) => message.channel)
   channel_messages: ChannelMessages[];
