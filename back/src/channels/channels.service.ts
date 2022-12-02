@@ -54,22 +54,29 @@ export class ChannelsService {
     return this.getAll();
   }
 
-  async banUser( token: Express.User, chId: number, ban: number, time: number) {
+  async banUser(token: Express.User, chId: number, ban: number, time: number) {
     const channel: ChannelDto = await this.getOne(chId);
-    if (!channel.admins.find(elem => elem.id == token.id))
-    throw new BadRequestException("you are not an admin of this channel");
-    if (!channel.users.find(elem => elem.id == token.id))
-      throw new BadRequestException("user is not in the channel");
+    if (!channel.admins.find((elem) => elem.id == token.id))
+      throw new BadRequestException('you are not an admin of this channel');
+    if (!channel.users.find((elem) => elem.id == token.id))
+      throw new BadRequestException('user is not in the channel');
     this.bannedUsersRepository.save({
       user_id: ban,
       channel: { id: channel.id },
       expiration: new Date(),
-    })
+    });
   }
 
   async create(channel: ChannelDto): Promise<Channel> {
     const invalidChannel = this.validateChannel(channel);
     if (invalidChannel) throw new BadRequestException(invalidChannel);
+    // const userChannel = await this.channelsRepository.findOne({
+    //   where: {
+    //     owner_id: channel.owner_id,
+    //   },
+    // });
+    // if (userChannel)
+    //   throw new ForbiddenException('User already owns a channel');
     const newChannel = await this.channelsRepository
       .save({
         name: channel.name,
@@ -91,40 +98,37 @@ export class ChannelsService {
 
   async updateChannel(user: Express.User, data: any) {
     const channel: ChannelDto = await this.getOne(data.channel.id);
-    if (!channel)
-      throw new NotFoundException("Channel does not exist");
-      if (data.channel.owner_id != user.id) {
-        throw new BadRequestException({
-          statusCode: 403,
-          message: "you are not the owner of this channel",
-        });
-      }
+    if (!channel) throw new NotFoundException('Channel does not exist');
+    if (data.channel.owner_id != user.id) {
+      throw new BadRequestException({
+        statusCode: 403,
+        message: 'you are not the owner of this channel',
+      });
+    }
     if (data.oldPassword && data.newPassword) {
       const isMatch = await bcrypt.compare(data.oldPassword, channel.password);
       if (!isMatch) throw new BadRequestException('Incorrect password');
       data.channel.password = await this.hashPass(data.newPassword);
       this.logger.debug('Channel password updated');
-    }
-    else if (data.oldPassword && !data.newPassword) {
+    } else if (data.oldPassword && !data.newPassword) {
       const isMatch = await bcrypt.compare(data.oldPassword, channel.password);
       if (!isMatch) throw new BadRequestException('Incorrect password');
       delete data.channel.password;
       this.logger.debug('Channel password removed');
-    }
-    else if (!data.oldPassword && data.newPassword) {
+    } else if (!data.oldPassword && data.newPassword) {
       data.channel.password = await this.hashPass(data.newPassword);
       this.logger.debug('Channel password created');
-    }
-    else
-      throw new BadRequestException('invalid api call');
+    } else throw new BadRequestException('invalid api call');
     const invalidChannel = this.validateChannel(data.channel);
-    if (invalidChannel)
-    throw new BadRequestException(invalidChannel);
+    if (invalidChannel) throw new BadRequestException(invalidChannel);
     delete data.channel.users;
     delete data.channel.channel_messages;
     delete data.channel.admins;
     this.logger.debug('Channel updated', data.channel);
-    return this.channelsRepository.update({id: data.channel.id}, data.channel);
+    return this.channelsRepository.update(
+      { id: data.channel.id },
+      data.channel,
+    );
   }
 
   async getAll(): Promise<ChannelDto[]> {
@@ -214,17 +218,15 @@ export class ChannelsService {
 
     token = token.replace('Bearer ', '');
     const userId: number = this.jwtService.decode(token)['sub'];
-    if (!userId)
-      throw new BadRequestException("invalid jwt token");
+    if (!userId) throw new BadRequestException('invalid jwt token');
     const channel: ChannelDto = await this.getOne(channelId);
     if (channel.owner_id != userId)
-      throw new BadRequestException("You are not the owner of this channel");
+      throw new BadRequestException('You are not the owner of this channel');
     const newAdmin: UserDto = await this.usersService.getOne(target);
     if (!newAdmin)
-      throw new BadRequestException("user does not exist in the database");
+      throw new BadRequestException('user does not exist in the database');
     channel.admins.push(newAdmin);
-    if (channel.type == 'PUBLIC')
-      delete channel.allowed_users;
+    if (channel.type == 'PUBLIC') delete channel.allowed_users;
     await this.update(channel);
     this.logger.log(`Admin added. Updated channel: ${channel}`);
   }
@@ -234,17 +236,15 @@ export class ChannelsService {
 
     token = token.replace('Bearer ', '');
     const userId: number = this.jwtService.decode(token)['sub'];
-    if (!userId)
-      throw new BadRequestException("invalid jwt token");
+    if (!userId) throw new BadRequestException('invalid jwt token');
     const channel: ChannelDto = await this.getOne(channelId);
     if (channel.owner_id != userId)
-      throw new BadRequestException("You are not the owner of this channel");
-    const index = channel.admins.findIndex(elem => elem.id == target);
+      throw new BadRequestException('You are not the owner of this channel');
+    const index = channel.admins.findIndex((elem) => elem.id == target);
     if (index == -1)
-      throw new BadRequestException("This user is not an administrator");
+      throw new BadRequestException('This user is not an administrator');
     channel.admins.splice(index);
-    if (channel.type == 'PUBLIC')
-      delete channel.allowed_users;
+    if (channel.type == 'PUBLIC') delete channel.allowed_users;
     await this.update(channel);
     console.log(channel);
     this.logger.log(`Delete succesful. Updated channel ${channel}`);
