@@ -277,7 +277,7 @@ export function ChannelTable() {
   const filterChannel = (event: ChangeEvent<HTMLInputElement>) => {
     const filter = event.target.value;
     const filteredChannels = bkpChannels.filter((channel) =>
-      channel.name.includes(filter),
+      channel.name.toLowerCase().includes(filter.toLocaleLowerCase()),
     );
     setChannels(filteredChannels);
   };
