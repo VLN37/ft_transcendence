@@ -125,7 +125,7 @@ function CreateChannel() {
                   type="text"
                   mb={'1rem'}
                 />
-                <FormLabel>visibility</FormLabel>
+                <FormLabel>type</FormLabel>
                 <Select
                   id="type"
                   {...register('type', { required: 'This is required' })}
