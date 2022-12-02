@@ -54,7 +54,7 @@ export class ChannelsService {
     return this.getAll();
   }
 
-  async banUser( token: Express.User, chId: number, ban: number, time: number) {
+  async banUser(token: Express.User, chId: number, ban: number, time: number) {
     const channel: ChannelDto = await this.getOne(chId);
     if (!channel.admins.find(elem => elem.id == token.id))
       throw new BadRequestException("you are not an admin of this channel");
@@ -70,6 +70,15 @@ export class ChannelsService {
       channel: { id: channel.id },
       expiration: date.toLocaleString('pt-BR', {timeZone: 'America/Sao_Paulo'}),
     })
+  }
+
+  async unbanUser(token: Express.User, chId: number, unban: number) {
+    const channel: ChannelDto = await this.getOne(chId);
+    if (!channel.admins.find(elem => elem.id == token.id))
+      throw new BadRequestException("you are not an admin of this channel");
+    if (!channel.users.find(elem => elem.id == token.id))
+      throw new BadRequestException("user is not in the channel");
+    return this.bannedUsersRepository.delete({user_id: unban});
   }
 
   async create(channel: ChannelDto): Promise<Channel> {
