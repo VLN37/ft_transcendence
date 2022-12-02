@@ -23,7 +23,7 @@ import {
   FormLabel,
   useToast,
 } from '@chakra-ui/react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, ChangeEvent } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { User, emptyUser } from '../../models/User';
@@ -252,6 +252,7 @@ function AskPassword(channel: Channel) {
 
 export function ChannelTable() {
   const [channels, setChannels] = useState<Channel[]>([]);
+  const [bkpChannels, setBkpChannels] = useState<Channel[]>([]);
   const toast = useToast();
   let navigate = useNavigate();
 
@@ -273,21 +274,25 @@ export function ChannelTable() {
     });
   };
 
-  useEffect(() => {
-    api.getChannels().then((channels) => setChannels(channels));
-  }, []);
+  const filterChannel = (event: ChangeEvent<HTMLInputElement>) => {
+    const filter = event.target.value;
+    const filteredChannels = bkpChannels.filter((channel) =>
+      channel.name.includes(filter),
+    );
+    setChannels(filteredChannels);
+  };
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      api.getChannels().then((channels) => setChannels(channels));
-    }, 5000);
-    return () => clearInterval(interval);
+    api.getChannels().then((channels) => {
+      setChannels(channels);
+      setBkpChannels(channels);
+    });
   }, []);
 
   return (
     <>
       <HStack>
-        <Input placeholder="Search channel room" />
+        <Input onChange={filterChannel} placeholder="Search channel room" />
         <CreateChannel />
       </HStack>
       <TableContainer
