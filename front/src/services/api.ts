@@ -1,4 +1,4 @@
-import axios, { AxiosError } from 'axios';
+import axios, { Axios, AxiosError } from 'axios';
 import { io, Socket } from 'socket.io-client';
 import { StatusCodes } from 'http-status-codes';
 
@@ -71,6 +71,21 @@ class Api {
       return response;
     } catch (err) {
       console.log('catch', err);
+      return (err as AxiosError).response;
+    }
+  }
+
+  async banUser(channelId: number, targetId: number, seconds: number) {
+    try {
+      const response = await this.client.post<any>(
+        `/channels/${channelId}/ban/${targetId}`,
+        {
+          seconds: seconds,
+        }
+      );
+      return response;
+    } catch (err) {
+      console.log(err);
       return (err as AxiosError).response;
     }
   }
