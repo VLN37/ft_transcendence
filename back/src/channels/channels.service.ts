@@ -119,6 +119,7 @@ export class ChannelsService {
       data.channel.password = await this.hashPass(data.newPassword);
       this.logger.debug('Channel password created');
     } else throw new BadRequestException('invalid api call');
+    delete data.channel.allowed_users;
     const invalidChannel = this.validateChannel(data.channel);
     if (invalidChannel) throw new BadRequestException(invalidChannel);
     delete data.channel.users;
@@ -254,12 +255,12 @@ export class ChannelsService {
     if (channel.type == 'PUBLIC') {
       if (channel.password) return 'Public channels cannot have password';
       if (channel.allowed_users)
-        return 'Public channels cannot have allowed users';
+        return 'Public channels cannot have allowed users field';
     }
-    // if (channel.type == 'PROTECTED') {
-    //   if (channel.allowed_users)
-    //     return 'Protected channels cannot have allowed users';
-    // }
+    if (channel.type == 'PROTECTED') {
+      if (channel.allowed_users)
+        return 'Protected channels cannot have allowed users field';
+    }
     if (channel.type == 'PRIVATE') {
       if (channel.password) return 'Private channels cannot have password';
       if (!isArray(channel.allowed_users))
