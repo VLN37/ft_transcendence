@@ -108,7 +108,7 @@ export class ChannelsSocketGateway
         };
       }
     }
-    if (channel.type == 'PROTECTED') {
+    if (channel.type == 'PROTECTED' && user.id != channel.owner_id) {
       const isMatch = await bcrypt.compare(data.password, channel.password);
       if (!isMatch) return { status: 401, message: 'Invalid password' };
     }

@@ -255,6 +255,7 @@ export function ChannelTable() {
   const [bkpChannels, setBkpChannels] = useState<Channel[]>([]);
   const toast = useToast();
   let navigate = useNavigate();
+  const user = userStorage.getUser();
 
   const join = (channel: Channel) => {
     api.connectToChannel({ room: channel.id }).then((res) => {
@@ -325,7 +326,8 @@ export function ChannelTable() {
                   </Td>
                   <Td>{channel.owner_id}</Td>
                   <Td>
-                    {channel.type == 'PROTECTED' ? (
+                    {channel.type == 'PROTECTED' &&
+                    user?.id != channel.owner_id ? (
                       <AskPassword {...channel} />
                     ) : (
                       <Button
