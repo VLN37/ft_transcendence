@@ -32,6 +32,21 @@ import api from '../../services/api';
 import userStorage from '../../services/userStorage';
 import { StatusCodes } from 'http-status-codes';
 
+function formatValues(values: any) {
+  if (values.hasOwnProperty('allowed_users')) {
+    let users: string[] = values.allowed_users.split(',');
+    users = users.map((user_channel) => user_channel.trim());
+    values.allowed_users = users;
+  }
+  if (values.type == 'PUBLIC') {
+    delete values.password;
+    delete values.allowed_users;
+  }
+  if (values.type == 'PROTECTED') delete values.allowed_users;
+  if (values.type == 'PRIVATE') delete values.password;
+  return values;
+}
+
 function CreateChannel() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [option, setOption] = useState('');
@@ -42,21 +57,6 @@ function CreateChannel() {
     register,
     formState: { errors, isSubmitting },
   } = useForm();
-
-  function formatValues(values: any) {
-    if (values.hasOwnProperty('allowed_users')) {
-      let users: string[] = values.allowed_users.split(',');
-      users = users.map((user_channel) => user_channel.trim());
-      values.allowed_users = users;
-    }
-    if (values.type == 'PUBLIC') {
-      delete values.password;
-      delete values.allowed_users;
-    }
-    if (values.type == 'PROTECTED') delete values.allowed_users;
-    if (values.type == 'PRIVATE') delete values.password;
-    return values;
-  }
 
   function onSubmit(values: any) {
     const user: User = userStorage.getUser() || emptyUser();
@@ -277,6 +277,13 @@ export function ChannelTable() {
     api.getChannels().then((channels) => setChannels(channels));
   }, []);
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      api.getChannels().then((channels) => setChannels(channels));
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <>
       <HStack>
@@ -293,10 +300,9 @@ export function ChannelTable() {
           <Thead>
             <Tr>
               <Th>chat room</Th>
-              <Th>visibility</Th>
-              <Th>protected</Th>
+              <Th>type</Th>
+              <Th>password</Th>
               <Th>owner</Th>
-              <Th>users</Th>
             </Tr>
           </Thead>
           <Tbody>
@@ -313,7 +319,6 @@ export function ChannelTable() {
                     )}
                   </Td>
                   <Td>{channel.owner_id}</Td>
-                  <Td>2</Td>
                   <Td>
                     {channel.type == 'PROTECTED' ? (
                       <AskPassword {...channel} />
