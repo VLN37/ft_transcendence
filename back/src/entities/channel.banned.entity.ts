@@ -23,7 +23,7 @@ export class BannedUsers {
   channel: Partial<Channel>;
 
   @Column({
-    type: 'timestamp with time zone',
+    type: 'timestamptz',
   })
   expiration: Date;
 }

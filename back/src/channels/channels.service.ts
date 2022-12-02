@@ -9,7 +9,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { isArray, isString } from 'class-validator';
 import { Channel } from 'src/entities/channel.entity';
 import { UsersService } from 'src/users/users.service';
-import { Repository } from 'typeorm';
+import { MoreThan, Repository } from 'typeorm';
 import { ChannelDto } from './dto/channel.dto';
 import * as bcrypt from 'bcrypt';
 import { ChannelRoomMessage, Message } from './channels.interface';
@@ -60,10 +60,12 @@ export class ChannelsService {
     throw new BadRequestException("you are not an admin of this channel");
     if (!channel.users.find(elem => elem.id == token.id))
       throw new BadRequestException("user is not in the channel");
+    const date = new Date();
+    date.setSeconds(date.getSeconds() + time);
     this.bannedUsersRepository.save({
       user_id: ban,
       channel: { id: channel.id },
-      expiration: new Date(),
+      expiration: date.toLocaleString('pt-BR', {timeZone: 'America/Sao_Paulo'}),
     })
   }
 
@@ -137,8 +139,10 @@ export class ChannelsService {
   }
 
   async getOne(id: number): Promise<ChannelDto> {
+    const date = new Date().toLocaleString('pt-BR', {
+      timeZone: 'America/Sao_Paulo'
+    });
     const channel = await this.channelsRepository.findOne({
-      where: { id },
       relations: [
         'users',
         'users.profile',
@@ -148,6 +152,10 @@ export class ChannelsService {
         'banned_users',
         'admins',
       ],
+      where: {
+        id,
+        banned_users: { expiration: MoreThan(new Date(date)) }
+      },
     });
     if (!channel) throw new NotFoundException('Channel not found');
     this.logger.debug('Returning channel', { channel });
