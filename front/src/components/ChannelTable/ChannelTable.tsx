@@ -43,14 +43,25 @@ function CreateChannel() {
     formState: { errors, isSubmitting },
   } = useForm();
 
-  function onSubmit(values: any) {
-    const user: User = userStorage.getUser() || emptyUser();
-    values.owner_id = user.id;
+  function formatValues(values: any) {
     if (values.hasOwnProperty('allowed_users')) {
       let users: string[] = values.allowed_users.split(',');
       users = users.map((user_channel) => user_channel.trim());
       values.allowed_users = users;
     }
+    if (values.type == 'PUBLIC') {
+      delete values.password;
+      delete values.allowed_users;
+    }
+    if (values.type == 'PROTECTED') delete values.allowed_users;
+    if (values.type == 'PRIVATE') delete values.password;
+    return values;
+  }
+
+  function onSubmit(values: any) {
+    const user: User = userStorage.getUser() || emptyUser();
+    values.owner_id = user.id;
+    values = formatValues(values);
     api.createChannel(values).then((response) => {
       onClose();
       if (response.status != 201) {
