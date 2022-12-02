@@ -22,6 +22,7 @@ import {
   Stat,
   StatLabel,
   StatNumber,
+  Box,
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import { emptyUser, User } from '../../models/User';
@@ -123,7 +124,7 @@ export function Profile() {
   );
 
   return (
-    <div>
+    <Box marginY={'auto'}>
       <Image
         onClick={onOpen}
         marginTop={'15px'}
@@ -179,6 +180,6 @@ export function Profile() {
           </ModalFooter>
         </ModalContent>
       </Modal>
-    </div>
+    </Box>
   );
 }
