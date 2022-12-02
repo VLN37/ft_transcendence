@@ -309,7 +309,7 @@ export function ChannelTable() {
             {channels.map((channel) => {
               return (
                 <Tr key={channel.id}>
-                  <Td>{channel.id}</Td>
+                  <Td>{channel.name}</Td>
                   <Td>{channel.type}</Td>
                   <Td>
                     {channel.type == 'PROTECTED' ? (
