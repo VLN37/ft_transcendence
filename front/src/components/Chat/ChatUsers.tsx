@@ -83,11 +83,46 @@ function UserMenu(props: {
     setReload(!reload);
   }
 
+  async function banUser() {
+    const response: any = await api.banUser(
+      props.channel.id, props.user.id, 360
+      );
+    const status = response.status == 201 ? 'success' : 'error';
+    const message = response.status == 201
+      ? '5 minutes timeout'
+      : response.data.message;
+    toast({
+      title: 'User ban request sent',
+      status: status,
+      description: message,
+    });
+    if (response.status == 201)
+      props.channel.banned_users.push(props.user.id);
+    setReload(!reload);
+  }
+
+  async function unbanUser() {
+    const response: any = await api.unbanUser(props.channel.id, props.user.id);
+    const status = response.status == 200 ? 'success' : 'error';
+    const message = response.status == 200 ? '' : response.data.message;
+    toast({
+      title: 'User unban request sent',
+      status: status,
+      description: message,
+    });
+    if (response.status == 200)
+      props.channel.banned_users.splice(
+        props.channel.banned_users.indexOf(props.user.id), 1
+      );
+    setReload(!reload);
+  }
+
   const isMyself = me.id == props.user.id;
   const amOwner = me.id == props.channel.owner_id && me.id != props.user.id;
   const isBlocked = me.blocked.find((user) => props.user.id == user.id);
   const isAdmin = props.channel.admins.find((user) => props.user.id == user.id);
   const amAdmin = props.channel.admins.find((user) => me.id == user.id);
+  const isBanned = props.channel.banned_users.find(i => i == props.user.id);
   return (
     <Box padding={1}>
       <PublicProfile
@@ -123,7 +158,11 @@ function UserMenu(props: {
           }
           {
             amAdmin && !isMyself
-              ? <MenuItem>ban user</MenuItem>
+              ? (
+                isBanned
+                  ? <MenuItem onClick={unbanUser}>unban user</MenuItem>
+                  : <MenuItem onClick={banUser}>ban user</MenuItem>
+              )
               : null
           }
         </MenuList>
