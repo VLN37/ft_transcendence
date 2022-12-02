@@ -95,6 +95,13 @@ export class ChannelsSocketGateway
     const user: UserDto = await this.usersService.getMe(token);
     const channel: ChannelDto = await this.channelsService.getOne(data.room);
 
+    const isBanned = channel.banned_users.find(elem => elem.user_id == user.id);
+    if (isBanned) {
+      return {
+        status: 403,
+        message: `Banned from the channel until ${isBanned.expiration}`,
+      }
+    }
     if (channel.type == 'PRIVATE') {
       if (
         channel.owner_id != user.id &&

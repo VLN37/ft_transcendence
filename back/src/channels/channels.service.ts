@@ -57,12 +57,15 @@ export class ChannelsService {
   async banUser( token: Express.User, chId: number, ban: number, time: number) {
     const channel: ChannelDto = await this.getOne(chId);
     if (!channel.admins.find(elem => elem.id == token.id))
-    throw new BadRequestException("you are not an admin of this channel");
+      throw new BadRequestException("you are not an admin of this channel");
+    if (channel.admins.find(elem => elem.id == ban))
+      throw new BadRequestException("you cannot ban an admin of this channel");
     if (!channel.users.find(elem => elem.id == token.id))
       throw new BadRequestException("user is not in the channel");
     const date = new Date();
+    this.logger.debug(`User ${ban} banned`);
     date.setSeconds(date.getSeconds() + time);
-    this.bannedUsersRepository.save({
+    return this.bannedUsersRepository.save({
       user_id: ban,
       channel: { id: channel.id },
       expiration: date.toLocaleString('pt-BR', {timeZone: 'America/Sao_Paulo'}),
@@ -120,8 +123,7 @@ export class ChannelsService {
     else
       throw new BadRequestException('invalid api call');
     const invalidChannel = this.validateChannel(data.channel);
-    if (invalidChannel)
-    throw new BadRequestException(invalidChannel);
+    if (invalidChannel) throw new BadRequestException(invalidChannel);
     delete data.channel.users;
     delete data.channel.channel_messages;
     delete data.channel.admins;
@@ -142,6 +144,7 @@ export class ChannelsService {
     const date = new Date().toLocaleString('pt-BR', {
       timeZone: 'America/Sao_Paulo'
     });
+    const localeDate = new Date(date);
     const channel = await this.channelsRepository.findOne({
       relations: [
         'users',
@@ -152,11 +155,15 @@ export class ChannelsService {
         'banned_users',
         'admins',
       ],
-      where: {
-        id,
-        banned_users: { expiration: MoreThan(new Date(date)) }
-      },
+      where: { id }
+      // where: {
+      //   id,
+      //   banned_users: { expiration: MoreThan(new Date(date)) }
+      // },
     });
+    channel.banned_users = channel.banned_users.filter(
+      elem => elem.expiration > localeDate
+    );
     if (!channel) throw new NotFoundException('Channel not found');
     this.logger.debug('Returning channel', { channel });
     return channel;
