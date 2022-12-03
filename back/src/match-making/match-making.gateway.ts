@@ -12,9 +12,8 @@ import {
   WsException,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { TokenPayload } from 'src/auth/dto/TokenPayload';
-import { UserDto } from 'src/users/dto/user.dto';
 import { UsersService } from 'src/users/users.service';
+import { validateWsJwt } from 'src/utils/functions/validateWsConnection';
 import { MatchType } from './dto/AppendToQueueDTO';
 import { MatchMakingService } from './match-making.service';
 
@@ -41,7 +40,7 @@ export class MatchMakingGateway
   afterInit(_: Server) {
     this.logger.debug('match-making gateway afterInit');
     this.server.use((socket, next) => {
-      this.validateConnection(socket)
+      validateWsJwt(this.usersService, this.jwtService, socket)
         .then((user) => {
           this.logger.debug('user validated');
           socket.handshake.auth['user'] = user;
@@ -108,21 +107,6 @@ export class MatchMakingGateway
   handleDisconnect(client: Socket) {
     this.dequeueUser(client);
     this.logger.debug(`client ${client.id} disconnected`);
-  }
-
-  private async validateConnection(client: Socket) {
-    this.logger.debug('validating ws user connection');
-    const token = client.handshake.auth.token;
-    try {
-      const payload = this.jwtService.verify<TokenPayload>(token, {
-        secret: process.env.JWT_SECRET,
-      });
-      const user = await this.usersService.findCompleteUserById(payload.sub);
-      if (!user) throw new Error();
-      return user;
-    } catch {
-      throw new WsException('Token invalid or expired');
-    }
   }
 
   private async getUser(client: Socket) {

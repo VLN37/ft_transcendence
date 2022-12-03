@@ -25,13 +25,37 @@ export class MatchManagerService {
     await this.matchRepository.save(match);
 
     const memoryMatch = new MemoryMatch(match.id, user1, user2);
+    memoryMatch.onCancel = () => {
+      this.logger.warn('match was cancelled');
+    };
+
+    memoryMatch.onStart = () => {
+      this.logger.warn('match is starting');
+    };
+
     memoryMatch.onStageChange = () => {
       match.stage = memoryMatch.stage;
+      // if (!this.matchRepository.manager.connection.isInitialized) {
+      //   const msg = 'Database connection is not active';
+      //   this.logger.error(msg);
+      //   throw new Error(msg);
+      // }
       this.matchRepository.save(match);
     };
     memoryMatch.waitForPlayers();
     this.memoryMatches.push(memoryMatch);
 
     return memoryMatch;
+  }
+
+  getActiveMatch(matchId: string): MemoryMatch {
+    return this.memoryMatches.find((match) => match.id === matchId);
+  }
+
+  connectPlayer(matchId: string, playerId: number) {
+    const match = this.memoryMatches.find((match) => match.id === matchId);
+    if (!match) throw new Error('Match not found');
+
+    match.connectPlayer(playerId);
   }
 }

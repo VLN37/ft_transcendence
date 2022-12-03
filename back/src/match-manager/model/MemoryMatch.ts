@@ -28,6 +28,9 @@ export class MemoryMatch {
   right_player: UserDto;
   left_player_score?: number = 0;
   right_player_score?: number = 0;
+  left_player_connected: boolean = false;
+  right_player_connected: boolean = false;
+  starts_at?: Date;
   timers: {
     awaiting_players?: NodeJS.Timeout;
     preparation?: NodeJS.Timeout;
@@ -37,6 +40,8 @@ export class MemoryMatch {
   stage: MatchStage;
 
   onStageChange: () => void;
+  onStart: () => void;
+  onCancel: () => void;
 
   constructor(id: string, leftPlayer: UserDto, rightPlayer: UserDto) {
     this.id = id;
@@ -61,10 +66,23 @@ export class MemoryMatch {
     this.timers.awaiting_players = setTimeout(() => {
       this.logger.warn("canceling match: players didn't connect");
       this.updateStage('CANCELED');
+      this.onCancel?.call(this);
     }, seconds(30));
   }
 
-  onBothPlayersConnected() {
+  connectPlayer(playerId: number) {
+    if (playerId !== this.left_player.id && playerId !== this.right_player.id)
+      throw new Error('User is not a player');
+
+    if (playerId === this.left_player.id) this.left_player_connected = true;
+
+    if (playerId === this.right_player.id) this.right_player_connected = true;
+
+    if (this.left_player_connected && this.right_player_connected)
+      this.onBothPlayersConnected();
+  }
+
+  private onBothPlayersConnected() {
     this.logger.debug('both players connected');
     clearTimeout(this.timers.awaiting_players);
     this.startPreparationTime();
@@ -72,22 +90,35 @@ export class MemoryMatch {
 
   private startPreparationTime() {
     this.updateStage('PREPARATION');
+
+    const start_at = new Date();
+    start_at.setSeconds(start_at.getSeconds() + 15);
+    this.starts_at = start_at;
+
     this.logger.debug('starting preparation time');
+    this.logger.debug('match starts at ' + this.starts_at.toISOString());
     this.timers.preparation = setTimeout(() => {
       this.startMatch();
     }, seconds(15));
   }
 
   private startMatch() {
+    this.logger.debug('starting match exactly at ' + new Date().toISOString());
     this.updateStage('ONGOING');
-    this.logger.debug('starting match');
+
+    const end_at = new Date();
+    end_at.setMinutes(end_at.getMinutes() + 5);
+    // this.starts_at = end_at;
+    this.logger.debug('match finishes at ' + end_at.toISOString());
+
     this.timers.ongoing = setTimeout(() => {
       this.finishMatch();
     }, minutes(5));
+    this.onStart?.call(this);
   }
 
   private finishMatch() {
-    this.logger.log('match finished');
+    this.logger.debug('match finished exactly at ' + new Date().toISOString());
     this.updateStage('FINISHED');
   }
 

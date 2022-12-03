@@ -7,16 +7,15 @@ import {
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
-  WsException,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { TokenPayload } from 'src/auth/dto/TokenPayload';
 import { UserDto } from 'src/users/dto/user.dto';
 import { UsersService } from 'src/users/users.service';
 import { ChannelRoomAuth, ChannelRoomMessage } from './channels.interface';
 import { ChannelsService } from './channels.service';
 import { ChannelDto } from './dto/channel.dto';
 import * as bcrypt from 'bcrypt';
+import { validateWsJwt } from 'src/utils/functions/validateWsConnection';
 
 @WebSocketGateway({
   namespace: '/channel',
@@ -42,7 +41,7 @@ export class ChannelsSocketGateway
   afterInit(_: Server) {
     this.logger.debug('channel gateway afterInit');
     this.server.use((socket, next) => {
-      this.validateConnection(socket)
+      validateWsJwt(this.usersService, this.jwtService, socket)
         .then((user) => {
           this.logger.debug('user validated');
           socket.handshake.auth['user'] = user;
@@ -102,18 +101,6 @@ export class ChannelsSocketGateway
         },
       },
     });
-  }
-
-  private validateConnection(client: Socket) {
-    const token = client.handshake.auth.token;
-    try {
-      const payload = this.jwtService.verify<TokenPayload>(token, {
-        secret: process.env.JWT_SECRET,
-      });
-      return this.usersService.findCompleteUserById(payload.sub);
-    } catch {
-      throw new WsException('Token invalid or expired');
-    }
   }
 
   private async joinChannel(client: Socket, data: ChannelRoomAuth) {

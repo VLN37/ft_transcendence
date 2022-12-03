@@ -1,10 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Match } from 'src/entities/match.entity';
 import { MatchManagerService } from 'src/match-manager/match-manager.service';
 import { MemoryMatch } from 'src/match-manager/model/MemoryMatch';
 import { UserDto } from 'src/users/dto/user.dto';
-import { UsersService } from 'src/users/users.service';
 import { MatchType, MATCH_TYPES } from './dto/AppendToQueueDTO';
 
 class MemoryQueue {
@@ -18,11 +15,7 @@ export class MatchMakingService {
 
   private memoryQueue = new MemoryQueue();
 
-  constructor(
-    @InjectRepository(Match)
-    private usersService: UsersService,
-    private matchManager: MatchManagerService,
-  ) {}
+  constructor(private matchManager: MatchManagerService) {}
 
   // PERF: we could save the queue the user is on in the database for better dequeueing
   async enqueue(user: UserDto, matchType: MatchType): Promise<MemoryMatch> {

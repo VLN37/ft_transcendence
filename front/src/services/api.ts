@@ -1,15 +1,7 @@
 import axios, { AxiosError } from 'axios';
 import { io, Socket } from 'socket.io-client';
 import { StatusCodes } from 'http-status-codes';
-import {
-  Channel,
-  ChannelRoomAuth,
-  ChannelSocketResponse,
-} from '../models/Channel';
-import { User } from '../models/User';
-import { Message } from '../models/Message';
-import userStorage from './userStorage';
-import { iDirectMessage } from '../models/DirectMessage';
+import { ChannelRoomAuth, ChannelSocketResponse } from '../models/Channel';
 
 interface AuthenticationResponse {
   access_token: string;
@@ -40,16 +32,30 @@ export class Api {
     console.log('Creating API class instance');
   }
 
-  getClient(){
+  getClient() {
     return this.client;
   }
 
   getMatchMakingSocket() {
     return this.matchMakingSocket;
   }
+
+  async addAdmin(targetId: number, channelId: number) {
+    try {
+      const response = await this.client.post<any>(
+        `/channels/${channelId}/admin/${targetId}`,
+      );
+      return response;
+    } catch (err) {
+      console.log('catch', err);
+      return (err as AxiosError).response;
+    }
+  }
+
   getChannelSocket() {
     return this.channelSocket;
   }
+
   getDirectMessageSocket() {
     return this.dmSocket;
   }
@@ -92,8 +98,6 @@ export class Api {
       return (error as AxiosError).response;
     }
   }
-
-
 
   connectToChannel(data: ChannelRoomAuth): Promise<ChannelSocketResponse> {
     return new Promise((resolve) => {
@@ -157,6 +161,10 @@ export class Api {
     this.token = undefined;
     this.channelSocket?.disconnect();
     this.dmSocket?.disconnect();
+  }
+
+  getToken() {
+    return this.token;
   }
 }
 
