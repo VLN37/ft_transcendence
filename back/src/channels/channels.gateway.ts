@@ -73,6 +73,7 @@ export class ChannelsSocketGateway
     const invalidJoin = await this.joinChannel(client, data);
     if (invalidJoin) return invalidJoin;
     this.logger.log(`Client ${client.id} connected to the room ${data.room}`);
+    return { status: 200, message: 'Ok' };
   }
 
   //   @SubscribeMessage('leave')
@@ -87,10 +88,6 @@ export class ChannelsSocketGateway
     this.logger.debug('Sending a message to ' + client.id);
     const newMessage = await this.channelsService.saveMessage(client, data);
     this.server.to(newMessage.channel.id.toString()).emit('chat', newMessage);
-    return {
-      status: 200,
-      message: 'user joined the channel',
-    };
   }
 
   kickUser(userId: number, room: string) {
