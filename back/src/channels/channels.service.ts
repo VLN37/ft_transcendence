@@ -64,10 +64,12 @@ export class ChannelsService {
       throw new BadRequestException('You are not an admin of this channel');
     if (!channel.users.find((elem) => elem.id == token.id))
       throw new BadRequestException('User is not in the channel');
+    const date = new Date();
+    date.setSeconds(date.getSeconds() + time);
     const result = this.bannedUsersRepository.save({
       user_id: ban,
       channel: { id: channel.id },
-      expiration: new Date(),
+      expiration: date.toLocaleString('pt-BR', {timeZone: 'America/Sao_Paulo'}),
     });
     this.channelsSocketGateway.kickUser(ban, chId.toString());
     channel.users = channel.users.filter((user) => user.id != ban);
