@@ -12,7 +12,7 @@ import { useState } from 'react';
 import { Channel } from '../../models/Channel';
 import { TableUser } from '../../models/TableUser';
 import { emptyUser, User } from '../../models/User';
-import api from '../../services/api';
+import { channelApi } from '../../services/api_index';
 import userStorage from '../../services/userStorage';
 import { PublicProfile } from '../Profile/profile.public';
 
@@ -27,7 +27,9 @@ function UserMenu(props: {
   const toast = useToast();
 
   async function blockUser() {
-    const response: any = await api.blockUser(me.id, props.user.id);
+    const response: any = await channelApi.blockUser(
+      me.id, props.user.id
+    );
     const status = response.status == 201 ? 'success' : 'error';
     const message = response.status == 201 ? '' : response.data.message;
     toast({
@@ -40,7 +42,9 @@ function UserMenu(props: {
   }
 
   async function unblockUser() {
-    const response: any = await api.unblockUser(me.id, props.user.id);
+    const response: any = await channelApi.unblockUser(
+      me.id, props.user.id
+    );
     const status = response.status == 200 ? 'success' : 'error';
     const message = response.status == 200 ? '' : response.data.message;
     toast({
@@ -53,7 +57,9 @@ function UserMenu(props: {
   }
 
   async function delAdmin() {
-    const response: any = await api.delAdmin(props.user.id, props.channel.id);
+    const response: any = await channelApi.delAdmin(
+      props.user.id, props.channel.id
+    );
     const status = response.status == 200 ? 'success' : 'error';
     const message = response.status == 200 ? '' : response.data.message;
     toast({
@@ -70,7 +76,9 @@ function UserMenu(props: {
   }
 
   async function addAdmin() {
-    const response: any = await api.addAdmin(props.user.id, props.channel.id);
+    const response: any = await channelApi.addAdmin(
+      props.user.id, props.channel.id
+    );
     const status = response.status == 201 ? 'success' : 'error';
     const message = response.status == 201 ? '' : response.data.message;
     toast({
@@ -84,7 +92,7 @@ function UserMenu(props: {
   }
 
   async function banUser() {
-    const response: any = await api.banUser(
+    const response: any = await channelApi.banUser(
       props.channel.id, props.user.id, 360
       );
     const status = response.status == 201 ? 'success' : 'error';
@@ -102,7 +110,9 @@ function UserMenu(props: {
   }
 
   async function unbanUser() {
-    const response: any = await api.unbanUser(props.channel.id, props.user.id);
+    const response: any = await channelApi.unbanUser(
+      props.channel.id, props.user.id
+    );
     const status = response.status == 200 ? 'success' : 'error';
     const message = response.status == 200 ? '' : response.data.message;
     toast({

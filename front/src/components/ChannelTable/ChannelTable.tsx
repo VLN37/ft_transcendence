@@ -28,7 +28,7 @@ import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { User, emptyUser } from '../../models/User';
 import { Channel } from '../../models/Channel';
-import api from '../../services/api';
+import { channelApi, api } from '../../services/api_index';
 import userStorage from '../../services/userStorage';
 import { StatusCodes } from 'http-status-codes';
 
@@ -86,7 +86,7 @@ function CreateChannel() {
           })
           .then((res) => {
             if (res.status == StatusCodes.OK) {
-              api
+              channelApi
                 .getChannel(response.data.id.toString())
                 .then((channel: Channel) => {
                   navigate('/chat', { state: { ...channel } });
@@ -194,7 +194,7 @@ function AskPassword(channel: Channel) {
     const password: string = values.password || '';
     api.connectToChannel({ room: channel.id, password }).then((res) => {
       if (res.status == StatusCodes.OK) {
-        api.getChannel(channel.id.toString()).then((channel: Channel) => {
+        channelApi.getChannel(channel.id.toString()).then((channel: Channel) => {
           navigate('/chat', { state: { ...channel } });
         });
       } else {
@@ -260,7 +260,7 @@ export function ChannelTable() {
   const join = (channel: Channel) => {
     api.connectToChannel({ room: channel.id }).then((res) => {
       if (res.status == StatusCodes.OK) {
-        api.getChannel(channel.id.toString()).then((channel: Channel) => {
+        channelApi.getChannel(channel.id.toString()).then((channel: Channel) => {
           navigate('/chat', { state: { ...channel } });
         });
       } else {
@@ -284,7 +284,7 @@ export function ChannelTable() {
   };
 
   useEffect(() => {
-    api.getChannels().then((channels) => {
+    channelApi.getChannels().then((channels) => {
       setChannels(channels);
       setBkpChannels(channels);
     });

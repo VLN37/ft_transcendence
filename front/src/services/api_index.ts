@@ -1,9 +1,9 @@
-import MMapi from "./MMapi";
 import api from "./api";
-import ChatApi from "./ChatApi";
-import ProfileApi from "./ProfileApi";
-import ChannelApi from "./ChannelApi";
-import UserApi from "./UserApi";
+import mmApi from "./MMapi";
+import chatApi from "./ChatApi";
+import profileApi from "./ProfileApi";
+import channelApi from "./ChannelApi";
+import userApi from "./UserApi";
 import { Api } from "./api";
 
-export { type Api, api, UserApi, ProfileApi, ChannelApi, ChatApi, MMapi }
+export { type Api, api, userApi, profileApi, channelApi, chatApi, mmApi }

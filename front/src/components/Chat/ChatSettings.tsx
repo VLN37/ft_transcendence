@@ -17,7 +17,7 @@ import {
 import { useState } from 'react';
 import { Channel } from '../../models/Channel';
 import { emptyUser } from '../../models/User';
-import api from '../../services/api';
+import { channelApi } from '../../services/api_index';
 import userStorage from '../../services/userStorage';
 
 function PassForm(props: {
@@ -41,7 +41,9 @@ function PassForm(props: {
     newChannel.type = 'PROTECTED';
     newChannel.password = input1;
 
-    const response: any = await api.updateChannel(newChannel, input1, null);
+    const response: any = await channelApi.updateChannel(
+      newChannel, input1, null
+    );
     const status = response.status == 200 ? 'success' : 'error';
     const message = response.status == 200 ? '' : response.data.message;
 
@@ -86,7 +88,9 @@ function RemovePassForm(props: {
     newChannel.type = 'PUBLIC';
     delete newChannel.password;
 
-    const response: any = await api.updateChannel(newChannel, null, oldPass);
+    const response: any = await channelApi.updateChannel(
+      newChannel, null, oldPass
+    );
     const status = response.status == 200 ? 'success' : 'error';
     const message = response.status == 200 ? '' : response.data.message;
 
@@ -133,7 +137,9 @@ function ChangePassForm(props: {
     const newChannel: Channel = {... props.channel};
     newChannel.password = input1;
 
-    const response: any = await api.updateChannel(newChannel, input1, oldPass);
+    const response: any = await channelApi.updateChannel(
+      newChannel, input1, oldPass
+    );
     const status = response.status == 200 ? 'success' : 'error';
     const message = response.status == 200 ? '' : response.data.message;
 

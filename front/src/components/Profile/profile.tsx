@@ -26,7 +26,7 @@ import {
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import { emptyUser, User } from '../../models/User';
-import api from '../../services/api';
+import { userApi, profileApi } from '../../services/api_index';
 import userStorage from '../../services/userStorage';
 
 function InputFileUpload(props: any) {
@@ -42,11 +42,11 @@ function InputFileUpload(props: any) {
     const formdata = new FormData();
     formdata.append('avatar', value);
 
-    const response: any = await api.uploadAvatar(formdata);
+    const response: any = await profileApi.uploadAvatar(formdata);
     const status = response.status == 201 ? 'success' : 'error';
     const message = response.status == 201 ? '' : response.data.message;
     if (response.status == 201) {
-      api.getUser('me').then((user) => {
+      userApi.getUser('me').then((user) => {
         const link = process.env.REACT_APP_HOSTNAME + user.profile.avatar_path;
         userStorage.saveUser(user);
         localStorage.setItem('avatar', link);
@@ -87,7 +87,7 @@ function NicknameUpdate(props: { user: User; setNickname: any }) {
 
   async function UploadName() {
     if (name === props.user.profile.nickname) return;
-    const response: any = await api.uploadNickname(props.user, name);
+    const response: any = await profileApi.uploadNickname(props.user, name);
     const status = response.status == 200 ? 'success' : 'error';
     const message = response.status == 200 ? '' : response.data.message;
     if (response.status == 200) {

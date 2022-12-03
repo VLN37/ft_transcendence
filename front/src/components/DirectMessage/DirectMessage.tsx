@@ -14,7 +14,7 @@ import {
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { iDirectMessage } from '../../models/DirectMessage';
-import api from '../../services/api';
+import { chatApi, userApi } from '../../services/api_index';
 import userStorage from '../../services/userStorage';
 import { DmUsers } from '../Chat/DmUsers';
 
@@ -76,7 +76,7 @@ function InputMessage(props: any) {
 function sendMessage(to: string) {
   const text = (document.getElementById('message') as HTMLInputElement).value;
   (document.getElementById('message') as HTMLInputElement).value = '';
-  api.sendDirectMessage({ message: text, user_id: to });
+  chatApi.sendDirectMessage({ message: text, user_id: to });
   console.log('message sent');
 }
 
@@ -85,7 +85,7 @@ export default function DirectMessage(props: any) {
   const [messages, setMessages] = useState<iDirectMessage[]>([]);
   const [chatTitle, setChatTitle] = useState('');
   const userId = searchParams.get('user') || '';
-  api.getUser(userId).then((user) => {
+  userApi.getUser(userId).then((user) => {
     setChatTitle(user.profile.nickname);
   });
 
@@ -94,12 +94,12 @@ export default function DirectMessage(props: any) {
   };
 
   useEffect(() => {
-    api.subscribeDirectMessage(updateMessages);
-    return () => api.unsubscribeDirectMessage(updateMessages);
+    chatApi.subscribeDirectMessage(updateMessages);
+    return () => chatApi.unsubscribeDirectMessage(updateMessages);
   }, [messages]);
 
   useEffect(() => {
-    api.getDirectMessages(userId).then((messages: iDirectMessage[]) => {
+    chatApi.getDirectMessages(userId).then((messages: iDirectMessage[]) => {
       setMessages(messages);
     });
   }, []);

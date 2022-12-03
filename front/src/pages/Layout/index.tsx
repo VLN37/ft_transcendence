@@ -15,7 +15,7 @@ import NeonButton from '../../components/NeonButton';
 import { Profile } from '../../components/Profile/profile';
 import { iDirectMessage } from '../../models/DirectMessage';
 import { emptyUser } from '../../models/User';
-import api from '../../services/api';
+import { chatApi } from '../../services/api_index';
 import userStorage from '../../services/userStorage';
 
 import './style.css';
@@ -26,7 +26,7 @@ export default function Layout({ setUser }: any) {
   const [avatar, setAvatar] = useState<string>(
     JSON.parse(localStorage.getItem('user') || '').profile.avatar_path || '',
   );
-  api.subscribeDirectMessage((message: iDirectMessage) => {
+  chatApi.subscribeDirectMessage((message: iDirectMessage) => {
     if (message.sender.id != user.id) setNotification(notification + 1);
   });
   return (

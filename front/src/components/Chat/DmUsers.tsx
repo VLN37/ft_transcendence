@@ -12,7 +12,7 @@ import { useState } from 'react';
 import { Channel } from '../../models/Channel';
 import { TableUser } from '../../models/TableUser';
 import { emptyUser, User } from '../../models/User';
-import api from '../../services/api';
+import { channelApi } from '../../services/api_index';
 import userStorage from '../../services/userStorage';
 import { PublicProfile } from '../Profile/profile.public';
 
@@ -26,7 +26,7 @@ function UserDmMenu(props: {
   const toast = useToast();
 
   async function blockUser() {
-    const response: any = await api.blockUser(me.id, props.user.id);
+    const response: any = await channelApi.blockUser(me.id, props.user.id);
     const status = response.status == 201 ? 'success' : 'error';
     const message = response.status == 201 ? '' : response.data.message;
     toast({
@@ -39,7 +39,7 @@ function UserDmMenu(props: {
   }
 
   async function unblockUser() {
-    const response: any = await api.unblockUser(me.id, props.user.id);
+    const response: any = await channelApi.unblockUser(me.id, props.user.id);
     const status = response.status == 200 ? 'success' : 'error';
     const message = response.status == 200 ? '' : response.data.message;
     toast({

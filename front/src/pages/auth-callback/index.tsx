@@ -5,7 +5,7 @@ import LoadDualSpinner from '../../components/LoadDualSpinner';
 import { TokenPayload } from '../../models/TokenPayload';
 import { User } from '../../models/User';
 
-import api from '../../services/api';
+import { api, userApi } from '../../services/api_index';
 import userStorage from '../../services/userStorage';
 import { TFAModal } from './components/2fa-modal';
 
@@ -63,7 +63,7 @@ const AuthCallback = ({ setUser }: any) => {
   const finishLogin = (payload: TokenPayload) => {
     console.log({ payload });
 
-    api.getUser('me').then((user) => {
+    userApi.getUser('me').then((user) => {
       const link = process.env.REACT_APP_HOSTNAME + user.profile.avatar_path;
       localStorage.setItem('avatar', link);
       userStorage.saveUser(user);

@@ -17,7 +17,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Channel } from '../../models/Channel';
 import { Message } from '../../models/Message';
-import api from '../../services/api';
+import { chatApi } from '../../services/api_index';
 import userStorage from '../../services/userStorage';
 import { ChatSettings } from './ChatSettings';
 import { ChatUsers } from './ChatUsers';
@@ -54,15 +54,6 @@ function MessageComponent(props: any) {
   );
 }
 
-function Users() {
-  return (
-    <Box padding={2}>
-      <h1>USERS1</h1>
-      <h1>USERS2</h1>
-    </Box>
-  );
-}
-
 function InputMessage(props: any) {
   return (
     <>
@@ -89,7 +80,7 @@ function InputMessage(props: any) {
 function sendMessage(room_id: string) {
   const text = (document.getElementById('message') as HTMLInputElement).value;
   (document.getElementById('message') as HTMLInputElement).value = '';
-  api.sendMessage({ message: text, channel_id: room_id });
+  chatApi.sendMessage({ message: text, channel_id: room_id });
   console.log('message sent');
 }
 
@@ -122,7 +113,7 @@ export default function Chat(props: Channel) {
   };
 
   useEffect(() => {
-    api.subscribeChannelDisconnect(() => {
+    chatApi.subscribeChannelDisconnect(() => {
       toast({
         title: `Disconnect from the channel ${channel.name}`,
         status: 'error',
@@ -131,26 +122,26 @@ export default function Chat(props: Channel) {
       });
       navigate('/community');
     });
-    return () => api.unsubscribeChannelDisconnect();
+    return () => chatApi.unsubscribeChannelDisconnect();
   }, []);
 
   useEffect(() => {
-    api.getChannelMessages(props.id.toString()).then((messages: Message[]) => {
+    chatApi.getChannelMessages(props.id.toString()).then((messages: Message[]) => {
       setMessages(messages);
     });
-    api.subscribeJoin(addUserChannelList);
-    return () => api.unsubscribeJoin(addUserChannelList);
+    chatApi.subscribeJoin(addUserChannelList);
+    return () => chatApi.unsubscribeJoin(addUserChannelList);
   }, []);
 
   useEffect(() => {
-    api.subscribeLeave(delUserChannelList);
-    return () => api.unsubscribeLeave(delUserChannelList);
+    chatApi.subscribeLeave(delUserChannelList);
+    return () => chatApi.unsubscribeLeave(delUserChannelList);
   }, []);
 
   useEffect(() => {
-    api.subscribeMessage(updateMessages);
+    chatApi.subscribeMessage(updateMessages);
     document.getElementById('bottom')?.scrollIntoView();
-    return () => api.unsubscribeMessage(updateMessages);
+    return () => chatApi.unsubscribeMessage(updateMessages);
   }, [messages]);
 
   return (

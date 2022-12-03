@@ -25,7 +25,7 @@ import {
 import React from 'react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../../services/api';
+import { mmApi } from '../../services/api_index';
 
 import NeonButton from '../NeonButton';
 import './style.css';
@@ -55,7 +55,7 @@ export default function MatchFinder() {
   } = useDisclosure();
 
   const stopFinding = () => {
-    api.stopFindingMatch();
+    mmApi.stopFindingMatch();
     setIsSearching(false);
   };
 
@@ -86,7 +86,7 @@ export default function MatchFinder() {
     e.preventDefault();
     setIsSearching(true);
     try {
-      api.findMatch(matchType, onMatchFindResponse);
+      mmApi.findMatch(matchType, onMatchFindResponse);
     } catch (e) {
       toast({
         id: toastId,

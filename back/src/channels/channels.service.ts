@@ -77,8 +77,8 @@ export class ChannelsService {
     channel.allowed_users = channel.allowed_users.filter(
       (user) => user.id != ban,
     );
-    this.logger.debug(`User ${ban} banned`);
     await this.update(channel);
+    this.logger.debug(`User ${ban} banned`);
     return result;
   }
 
@@ -142,6 +142,7 @@ export class ChannelsService {
     delete data.channel.users;
     delete data.channel.channel_messages;
     delete data.channel.admins;
+    delete data.channel.banned_users;
     this.logger.debug('Channel updated', data.channel);
     return this.channelsRepository.update(
       { id: data.channel.id },

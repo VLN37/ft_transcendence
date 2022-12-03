@@ -11,7 +11,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { iDirectMessage } from '../../models/DirectMessage';
 import { User } from '../../models/User';
-import api from '../../services/api';
+import { chatApi } from '../../services/api_index';
 import userStorage from '../../services/userStorage';
 import { DmUsers } from '../Chat/DmUsers';
 
@@ -57,14 +57,14 @@ function MessageBoxComponent(props: any) {
 export default function DirectMessagesComponent(props: any) {
   const [users, setUsers] = useState<User[]>([]);
 
-  api.subscribeDirectMessage((message: iDirectMessage) => {
-    api.getLastDirectMessages().then((dm_users: User[]) => {
+  chatApi.subscribeDirectMessage((message: iDirectMessage) => {
+    chatApi.getLastDirectMessages().then((dm_users: User[]) => {
       setUsers(dm_users);
     });
   });
 
   useEffect(() => {
-    api.getLastDirectMessages().then((dm_users: User[]) => {
+    chatApi.getLastDirectMessages().then((dm_users: User[]) => {
       setUsers(dm_users);
     });
   }, []);
