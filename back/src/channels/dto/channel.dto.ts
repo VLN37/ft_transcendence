@@ -7,11 +7,13 @@ import {
   MinLength,
   ValidateIf,
 } from 'class-validator';
+import { BannedUsers } from 'src/entities/channel.banned.entity';
 import { ChannelType } from 'src/entities/channel.entity';
 import { ChannelMessages } from 'src/entities/channel_messages.entity';
 import { UserDto } from 'src/users/dto/user.dto';
 
 export class ChannelDto {
+  @IsOptional()
   id: number;
 
   @IsString()
@@ -44,4 +46,7 @@ export class ChannelDto {
 
   @IsOptional()
   channel_messages?: ChannelMessages[];
+
+  @IsOptional()
+  banned_users?: BannedUsers[];
 }

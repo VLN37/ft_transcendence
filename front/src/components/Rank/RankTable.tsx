@@ -11,7 +11,7 @@ import {
 } from '@chakra-ui/react';
 import { TableUser } from '../../models/TableUser';
 import { User } from '../../models/User';
-import api from '../../services/api';
+import { userApi } from '../../services/api_index';
 
 function ListUsers(props: { users: TableUser[]; query: string }) {
   if (!props.users[0].login_intra) return <></>;
@@ -34,7 +34,7 @@ export function RankTable(props: any) {
 
   useEffect(() => {
     async function queryDatabase() {
-      const result: User[] = await api.getRankedUsers();
+      const result: User[] = await userApi.getRankedUsers();
       const restructure: TableUser[] = result.map((user) => {
         return TableUser(user);
       });

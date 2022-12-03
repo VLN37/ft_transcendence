@@ -1,5 +1,5 @@
 import { User } from '../models/User';
-import api from './api';
+import { userApi } from "./api_index"
 
 class UserStorage {
   getUser(): User | null {
@@ -15,7 +15,7 @@ class UserStorage {
   }
 
   async updateUser() {
-    const response = await api.getUser('me');
+    const response = await userApi.getUser('me');
     this.saveUser(response);
   }
 

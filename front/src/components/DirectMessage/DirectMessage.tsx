@@ -10,19 +10,15 @@ import {
   IconButton,
   Spacer,
   Avatar,
-  useDisclosure,
-  useToast,
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Channel } from '../../models/Channel';
-import { Message } from '../../models/Message';
-import { chatApi } from '../../services/api_index';
+import { useSearchParams } from 'react-router-dom';
+import { iDirectMessage } from '../../models/DirectMessage';
+import { chatApi, userApi } from '../../services/api_index';
 import userStorage from '../../services/userStorage';
-import { ChatSettings } from './ChatSettings';
-import { ChatUsers } from './ChatUsers';
+import { DmUsers } from '../Chat/DmUsers';
 
-function ChannelTitle(props: any) {
+function ChatTitle(props: any) {
   return (
     <Center color="white">
       <Text fontSize="3xl">{props.children}</Text>
@@ -69,7 +65,7 @@ function InputMessage(props: any) {
           <IconButton
             aria-label="Send message"
             icon={<ArrowRightIcon />}
-            onClick={() => sendMessage(props.room)}
+            onClick={() => sendMessage(props.to)}
           />
         </Box>
       </Flex>
@@ -77,71 +73,39 @@ function InputMessage(props: any) {
   );
 }
 
-function sendMessage(room_id: string) {
+function sendMessage(to: string) {
   const text = (document.getElementById('message') as HTMLInputElement).value;
   (document.getElementById('message') as HTMLInputElement).value = '';
-  chatApi.sendMessage({ message: text, channel_id: room_id });
+  chatApi.sendDirectMessage({ message: text, user_id: to });
   console.log('message sent');
 }
 
-export default function Chat(props: Channel) {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [channel, setChannel] = useState<Channel>(props);
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const myId: number = userStorage.getUser()?.id || 0;
-  const toast = useToast();
-  let navigate = useNavigate();
+export default function DirectMessage(props: any) {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [messages, setMessages] = useState<iDirectMessage[]>([]);
+  const [chatTitle, setChatTitle] = useState('');
+  const userId = searchParams.get('user') || '';
+  userApi.getUser(userId).then((user) => {
+    setChatTitle(user.profile.nickname);
+  });
 
-  const updateMessages = (message: Message) =>
+  const updateMessages = (message: iDirectMessage) => {
     setMessages([...messages, message]);
-
-  const addUserChannelList = (data: any) => {
-    if (!channel.users.find((elem) => elem.id == data.user.id)) {
-      console.log('user joined');
-      channel.users.push(data.user);
-      setChannel({ ...channel });
-    }
-  };
-
-  const delUserChannelList = (data: any) => {
-    if (channel.users.find((elem) => elem.id == data.user.id)) {
-      console.log('user leave');
-      const index = channel.users.indexOf(data.user);
-      channel.users.splice(index);
-      setChannel({ ...channel });
-    }
   };
 
   useEffect(() => {
-    chatApi.subscribeChannelDisconnect(() => {
-      toast({
-        title: `Disconnect from the channel ${channel.name}`,
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-      });
-      navigate('/community');
-    });
-    return () => chatApi.unsubscribeChannelDisconnect();
-  }, []);
+    chatApi.subscribeDirectMessage(updateMessages);
+    return () => chatApi.unsubscribeDirectMessage(updateMessages);
+  }, [messages]);
 
   useEffect(() => {
-    chatApi.getChannelMessages(props.id.toString()).then((messages: Message[]) => {
+    chatApi.getDirectMessages(userId).then((messages: iDirectMessage[]) => {
       setMessages(messages);
     });
-    chatApi.subscribeJoin(addUserChannelList);
-    return () => chatApi.unsubscribeJoin(addUserChannelList);
   }, []);
 
   useEffect(() => {
-    chatApi.subscribeLeave(delUserChannelList);
-    return () => chatApi.unsubscribeLeave(delUserChannelList);
-  }, []);
-
-  useEffect(() => {
-    chatApi.subscribeMessage(updateMessages);
     document.getElementById('bottom')?.scrollIntoView();
-    return () => chatApi.unsubscribeMessage(updateMessages);
   }, [messages]);
 
   return (
@@ -152,16 +116,11 @@ export default function Chat(props: Channel) {
       gridRowGap={'10px'}
       h={'100%'}
     >
-      <GridItem borderRadius={'5px'} rowSpan={1} colSpan={9}>
-        <ChannelTitle>{`${props.name} #${props.id}`}</ChannelTitle>
-      </GridItem>
-      <GridItem colStart={10}>
-        {myId == props.owner_id ? (
-          <ChatSettings setChannel={setChannel} channel={props}></ChatSettings>
-        ) : null}
+      <GridItem borderRadius={'5px'} rowSpan={1} colSpan={10}>
+        <ChatTitle>{chatTitle}</ChatTitle>
       </GridItem>
       <GridItem borderRadius={'5px'} rowSpan={11} colSpan={2} bg="gray.700">
-        {props.users ? <ChatUsers channel={channel} /> : null}
+        <DmUsers users={userStorage.getUser()?.friends || []} />
       </GridItem>
       <GridItem
         borderRadius={'5px'}
@@ -173,10 +132,10 @@ export default function Chat(props: Channel) {
         {messages.map((message) => {
           return (
             <MessageComponent
-              name={message.user.profile.nickname}
+              name={message.sender.profile.nickname}
               image={
                 process.env.REACT_APP_HOSTNAME +
-                message.user.profile.avatar_path
+                message.sender.profile.avatar_path
               }
               text={message.message}
               key={message.id}
@@ -186,7 +145,7 @@ export default function Chat(props: Channel) {
         <Spacer id="bottom" />
       </GridItem>
       <GridItem borderRadius={'5px'} rowSpan={2} colSpan={8} bg="gray.700">
-        <InputMessage room={props.id} placeholder={`Message ${props.name}`} />
+        <InputMessage to={userId} placeholder={`Message ${chatTitle}`} />
       </GridItem>
     </Grid>
   );

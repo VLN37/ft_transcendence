@@ -4,8 +4,8 @@ import { Navigate, useSearchParams } from 'react-router-dom';
 import LoadDualSpinner from '../../components/LoadDualSpinner';
 import { TokenPayload } from '../../models/TokenPayload';
 import { User } from '../../models/User';
-
-import api from '../../services/api';
+import { chatApi, mmApi } from '../../services/api_index';
+import { api, userApi } from '../../services/api_index';
 import userStorage from '../../services/userStorage';
 import { TFAModal } from './components/2fa-modal';
 
@@ -29,6 +29,8 @@ const AuthCallback = ({ setUser }: any) => {
       try {
         const token = await api.authenticate(code);
         api.setToken(token);
+        mmApi.setMatchMakingSocket(api);
+        chatApi.setDMSocket(api);
         localStorage.setItem('selfkey', token);
         const payload = jwtDecode<TokenPayload>(token);
 
@@ -51,6 +53,8 @@ const AuthCallback = ({ setUser }: any) => {
     try {
       const token = await api.authenticate2fa(tfaCode);
       api.setToken(token);
+      chatApi.setDMSocket(api);
+      mmApi.setMatchMakingSocket(api);
       const payload = jwtDecode<TokenPayload>(token);
       finishLogin(payload);
       setIsSending2fa(true);
@@ -63,7 +67,7 @@ const AuthCallback = ({ setUser }: any) => {
   const finishLogin = (payload: TokenPayload) => {
     console.log({ payload });
 
-    api.getUser('me').then((user) => {
+    userApi.getUser('me').then((user) => {
       const link = process.env.REACT_APP_HOSTNAME + user.profile.avatar_path;
       localStorage.setItem('avatar', link);
       userStorage.saveUser(user);

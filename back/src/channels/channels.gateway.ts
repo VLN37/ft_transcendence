@@ -1,4 +1,4 @@
-import { Logger } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import {
   OnGatewayConnection,
@@ -7,10 +7,8 @@ import {
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
-  WsException,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { TokenPayload } from 'src/auth/dto/TokenPayload';
 import { UserDto } from 'src/users/dto/user.dto';
 import { UsersService } from 'src/users/users.service';
 import { ChannelRoomAuth, ChannelRoomMessage } from './channels.interface';
@@ -25,15 +23,18 @@ import { validateWsJwt } from 'src/utils/functions/validateWsConnection';
     origin: '*',
   },
 })
+@Injectable()
 export class ChannelsSocketGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
   @WebSocketServer() server: Server;
   private readonly logger = new Logger(ChannelsSocketGateway.name);
+  private usersSocketId = [];
 
   constructor(
     private jwtService: JwtService,
     private usersService: UsersService,
+    @Inject(forwardRef(() => ChannelsService))
     private channelsService: ChannelsService,
   ) {}
 
@@ -52,11 +53,17 @@ export class ChannelsSocketGateway
     });
   }
 
-  handleConnection(client: any) {
+  async handleConnection(client: any) {
+    const token = client.handshake.auth.token;
+    const userId = (await this.usersService.getUserId(token)).toString();
+    this.usersSocketId[userId] = client;
     this.logger.log(`Client connected ${client.id}`);
   }
 
-  handleDisconnect(client: any) {
+  async handleDisconnect(client: Socket) {
+    const token = client.handshake.auth.token;
+    const userId = (await this.usersService.getUserId(token)).toString();
+    delete this.usersSocketId[userId];
     this.logger.log(`Client disconnected ${client.id}`);
   }
 
@@ -68,12 +75,32 @@ export class ChannelsSocketGateway
     return { status: 200, message: 'Ok' };
   }
 
+  //   @SubscribeMessage('leave')
+  //   async handleLeave(client: Socket, data: ChannelRoomAuth) {
+  //     client.join(data.room.toString());
+  //     return { status: 200, message: 'Ok' };
+  //   }
+
   @SubscribeMessage('chat')
   async handleMessage(client: Socket, data: ChannelRoomMessage) {
     this.logger.debug('Received a message from ' + client.id);
     this.logger.debug('Sending a message to ' + client.id);
     const newMessage = await this.channelsService.saveMessage(client, data);
     this.server.to(newMessage.channel.id.toString()).emit('chat', newMessage);
+  }
+
+  kickUser(userId: number, room: string) {
+    const client = this.usersSocketId[userId] || '';
+    if (!client) return;
+    client.leave(room);
+    client.disconnect();
+    this.server.emit('leave', {
+      data: {
+        user: {
+          id: userId,
+        },
+      },
+    });
   }
 
   private async joinChannel(client: Socket, data: ChannelRoomAuth) {
@@ -83,6 +110,9 @@ export class ChannelsSocketGateway
     const token = client.handshake.auth.token;
     const user: UserDto = await this.usersService.getMe(token);
     const channel: ChannelDto = await this.channelsService.getOne(data.room);
+
+    const userIsBanned = await this.userIsBanned(channel, user);
+    if (userIsBanned) return userIsBanned;
 
     if (channel.type == 'PRIVATE') {
       if (
@@ -97,7 +127,7 @@ export class ChannelsSocketGateway
         };
       }
     }
-    if (channel.type == 'PROTECTED') {
+    if (channel.type == 'PROTECTED' && user.id != channel.owner_id) {
       const isMatch = await bcrypt.compare(data.password, channel.password);
       if (!isMatch) return { status: 401, message: 'Invalid password' };
     }
@@ -113,5 +143,28 @@ export class ChannelsSocketGateway
       status: 200,
       message: 'user joined the channel',
     };
+  }
+
+  private async userIsBanned(channel: ChannelDto, user: UserDto) {
+    const banned_user = channel.banned_users.find((banned_user) => {
+      if (banned_user.user_id == user.id) return banned_user;
+    });
+    if (banned_user) {
+      const now = new Date().getTime();
+      const exp = ((now - banned_user.expiration.getTime()) / 60000).toFixed(0);
+      const timeRemaining = 5 - parseInt(exp);
+      if (timeRemaining <= 4) {
+        channel.banned_users = channel.banned_users.filter(
+          (banned_users) => banned_users.user_id != user.id,
+        );
+        await this.channelsService.update(channel);
+        return '';
+      }
+      return {
+        status: 403,
+        message: `Banned from channel ${channel.name} for the next ${timeRemaining} minutes`,
+      };
+    }
+    return '';
   }
 }

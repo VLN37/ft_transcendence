@@ -16,9 +16,10 @@ import ChatPage from './pages/chat';
 import LoginPage from './pages/login';
 import { useState } from 'react';
 import AuthCallback from './pages/auth-callback';
+import MatchPage from './pages/match';
+import DirectMessagePage from './pages/direct-message';
 
 import theme from './theme';
-import MatchPage from './pages/match';
 
 type User = {
   id: number;
@@ -58,6 +59,7 @@ function App() {
             <Route path="rank" element={<RankPage />} />
             <Route path="community" element={<CommunityPage />} />
             <Route path="chat" element={<ChatPage />} />
+            <Route path="dm" element={<DirectMessagePage />} />
           </Route>
 
           <Route path="match/:match_id" element={<MatchPage />} />

@@ -32,3 +32,15 @@
 		font-size: 0.1rem;
 	}
 }
+
+.badge {
+	position: absolute;
+	bottom: 5px;
+	right: -10px;
+	background: green !important;
+	color: white !important;
+}
+
+.button {
+	position: relative;
+}

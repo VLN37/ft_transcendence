@@ -242,7 +242,9 @@ export class UsersService {
       },
     });
     if (users.length != users_nickname.length)
-      throw new BadRequestException('User not found in database');
+      throw new BadRequestException(
+        'A user in [allowed_users] not found in database',
+      );
     users.map((user) => {
       delete user.tfa_enabled;
       delete user.tfa_secret;

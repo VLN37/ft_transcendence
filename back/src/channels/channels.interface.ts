@@ -7,8 +7,8 @@ export interface ChannelRoomAuth {
 }
 
 export interface ChannelRoomMessage {
-  message: string;
   channel_id: number;
+  message: string;
 }
 
 export interface Message {

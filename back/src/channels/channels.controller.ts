@@ -8,7 +8,10 @@ import {
   Headers,
   UseGuards,
   UseInterceptors,
+  Patch,
+  Req,
 } from '@nestjs/common';
+import { Request } from 'express';
 import { JwtAuthGuard } from 'src/auth/guard/jwt.guard';
 import {
   ChannelsDeleteInterceptor,
@@ -54,6 +57,41 @@ export class ChannelsController {
   @UseInterceptors(ChannelsGetMessagesInterceptor)
   getMessages(@Param('id') id: number) {
     return this.channelsService.getMessages(id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch(':id')
+  updateChannel(
+    @Param('id') id: number,
+    @Req() request: Request,
+    @Body() data: {
+      channel: ChannelDto;
+      oldPassword: string | null;
+      newPassword: string | null;
+    },
+  ) {
+    return this.channelsService.updateChannel(request.user, data);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post(':channel/ban/:id')
+  banUser(
+    @Req() req: Request,
+    @Param('channel') channelId: number,
+    @Param('id') userId,
+    @Body('seconds') time: number,
+  ) {
+    return this.channelsService.banUser(req.user, channelId, userId, time);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete(':channel/ban/:id')
+  unbanUser(
+    @Req() req: Request,
+    @Param('channel') channelId: number,
+    @Param('id') userId,
+  ) {
+    return this.channelsService.unbanUser(req.user, channelId, userId);
   }
 
   @UseGuards(JwtAuthGuard)

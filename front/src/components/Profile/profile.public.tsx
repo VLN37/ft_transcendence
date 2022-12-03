@@ -19,7 +19,7 @@ import {
 } from '@chakra-ui/react';
 import { TableUser } from '../../models/TableUser';
 import { emptyUser, User } from '../../models/User';
-import api from '../../services/api';
+import { profileApi } from '../../services/api_index';
 import userStorage from '../../services/userStorage';
 
 export function PublicProfile(props: {
@@ -34,7 +34,7 @@ export function PublicProfile(props: {
   async function addFriend() {
     const me: User = userStorage.getUser() || emptyUser();
     const myId: number = me.id;
-    const response: any = await api.addFriend(myId, props.user.id);
+    const response: any = await profileApi.addFriend(myId, props.user.id);
     const status = response.status == 200 ? 'success' : 'error';
     const message = response.status == 200 ? '' : response.data.message;
     if (response.status == 200)

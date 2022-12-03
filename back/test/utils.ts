@@ -1,6 +1,7 @@
 import { faker } from '@faker-js/faker';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import axios from 'axios';
+import { BannedUsers } from 'src/entities/channel.banned.entity';
 import { Channel } from 'src/entities/channel.entity';
 import { ChannelMessages } from 'src/entities/channel_messages.entity';
 import { Profile } from 'src/entities/profile.entity';
@@ -16,7 +17,7 @@ export function getTestDbModule() {
     port: 5433,
     username: 'user_test',
     password: 'pass_test',
-    entities: [User, Profile, Channel, ChannelMessages],
+    entities: [User, Profile, Channel, ChannelMessages, BannedUsers],
     database: 'transcendence_test',
     synchronize: true,
     dropSchema: true,

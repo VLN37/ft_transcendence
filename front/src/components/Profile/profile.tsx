@@ -1,4 +1,4 @@
-import { AttachmentIcon, CheckIcon, DownloadIcon } from '@chakra-ui/icons';
+import { DownloadIcon } from '@chakra-ui/icons';
 import {
   Image,
   Modal,
@@ -22,10 +22,11 @@ import {
   Stat,
   StatLabel,
   StatNumber,
+  Box,
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import { emptyUser, User } from '../../models/User';
-import api from '../../services/api';
+import { userApi, profileApi } from '../../services/api_index';
 import userStorage from '../../services/userStorage';
 
 function InputFileUpload(props: any) {
@@ -41,11 +42,11 @@ function InputFileUpload(props: any) {
     const formdata = new FormData();
     formdata.append('avatar', value);
 
-    const response: any = await api.uploadAvatar(formdata);
+    const response: any = await profileApi.uploadAvatar(formdata);
     const status = response.status == 201 ? 'success' : 'error';
     const message = response.status == 201 ? '' : response.data.message;
     if (response.status == 201) {
-      api.getUser('me').then((user) => {
+      userApi.getUser('me').then((user) => {
         const link = process.env.REACT_APP_HOSTNAME + user.profile.avatar_path;
         userStorage.saveUser(user);
         localStorage.setItem('avatar', link);
@@ -76,7 +77,7 @@ function InputFileUpload(props: any) {
   );
 }
 
-function NicknameUpdate(props: { user: User, setNickname: any }) {
+function NicknameUpdate(props: { user: User; setNickname: any }) {
   const [name, setName] = useState<string>(props.user.profile.nickname);
   const toast = useToast();
 
@@ -86,7 +87,7 @@ function NicknameUpdate(props: { user: User, setNickname: any }) {
 
   async function UploadName() {
     if (name === props.user.profile.nickname) return;
-    const response: any = await api.uploadNickname(props.user, name);
+    const response: any = await profileApi.uploadNickname(props.user, name);
     const status = response.status == 200 ? 'success' : 'error';
     const message = response.status == 200 ? '' : response.data.message;
     if (response.status == 200) {
@@ -116,7 +117,6 @@ function NicknameUpdate(props: { user: User, setNickname: any }) {
 
 export function Profile() {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const link = localStorage.getItem('avatar') || '';
   const user: User = userStorage.getUser() || emptyUser();
   const [nickname, setNickname] = useState<string>(user.profile.nickname);
   const [avatar, setAvatar] = useState<string>(
@@ -124,7 +124,7 @@ export function Profile() {
   );
 
   return (
-    <div>
+    <Box marginY={'auto'}>
       <Image
         onClick={onOpen}
         marginTop={'15px'}
@@ -168,7 +168,7 @@ export function Profile() {
                 <GridItem colStart={1}>
                   <Stack spacing={4}>
                     <NicknameUpdate user={user} setNickname={setNickname} />
-                    <InputFileUpload setAvatar={setAvatar}/>
+                    <InputFileUpload setAvatar={setAvatar} />
                     <Switch>2FA</Switch>
                   </Stack>
                 </GridItem>
@@ -180,6 +180,6 @@ export function Profile() {
           </ModalFooter>
         </ModalContent>
       </Modal>
-    </div>
+    </Box>
   );
 }
