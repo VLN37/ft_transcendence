@@ -92,13 +92,6 @@ export class ChannelsService {
   async create(channel: ChannelDto): Promise<Channel> {
     const invalidChannel = this.validateChannel(channel);
     if (invalidChannel) throw new BadRequestException(invalidChannel);
-    // const userChannel = await this.channelsRepository.findOne({
-    //   where: {
-    //     owner_id: channel.owner_id,
-    //   },
-    // });
-    // if (userChannel)
-    //   throw new ForbiddenException('User already owns a channel');
     const newChannel = await this.channelsRepository
       .save({
         name: channel.name,
