@@ -1,6 +1,7 @@
 import { AxiosError, AxiosInstance } from "axios";
 import { Channel } from "../models/Channel";
-import { Api, api } from "./api_index";
+import api from './api';
+import { Api } from './api'
 
 class ChannelApi {
   private client: AxiosInstance;

@@ -27,6 +27,7 @@ import { useState, useEffect, ChangeEvent } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { User, emptyUser } from '../../models/User';
+import { chatApi } from '../../services/api_index';
 import { Channel } from '../../models/Channel';
 import { channelApi, api } from '../../services/api_index';
 import userStorage from '../../services/userStorage';
@@ -85,6 +86,7 @@ function CreateChannel() {
             password: values.password,
           })
           .then((res) => {
+            chatApi.setChannelSocket(api);
             if (res.status == StatusCodes.OK) {
               channelApi
                 .getChannel(response.data.id.toString())
@@ -193,6 +195,7 @@ function AskPassword(channel: Channel) {
   function onSubmit(values: any) {
     const password: string = values.password || '';
     api.connectToChannel({ room: channel.id, password }).then((res) => {
+      chatApi.setChannelSocket(api);
       if (res.status == StatusCodes.OK) {
         channelApi.getChannel(channel.id.toString()).then((channel: Channel) => {
           navigate('/chat', { state: { ...channel } });
@@ -259,6 +262,7 @@ export function ChannelTable() {
 
   const join = (channel: Channel) => {
     api.connectToChannel({ room: channel.id }).then((res) => {
+      chatApi.setChannelSocket(api);
       if (res.status == StatusCodes.OK) {
         channelApi.getChannel(channel.id.toString()).then((channel: Channel) => {
           navigate('/chat', { state: { ...channel } });

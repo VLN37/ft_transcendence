@@ -1,6 +1,7 @@
 import { AxiosError, AxiosInstance } from "axios";
 import { Socket } from "socket.io-client";
-import { Api, api } from "./api_index";
+import api from './api';
+import { Api } from './api';
 
 class MMApi {
   private matchMakingSocket?: Socket;
@@ -8,14 +9,20 @@ class MMApi {
   constructor(public _client: Api) {
     console.log('Creating matchmaking api class instance');
     this.matchMakingSocket = _client.getMatchMakingSocket();
+    console.log('socket mm', this.matchMakingSocket);
     this.client = _client.getClient();
+  }
+
+  setMatchMakingSocket(instance: Api) {
+    this.matchMakingSocket = instance.getMatchMakingSocket();
   }
 
   findMatch(
     type: 'CLASSIC' | 'TURBO',
     onMatchFound: Function,
     onError?: Function,
-  ) {
+    ) {
+    console.log('socket mm', this.matchMakingSocket);
     console.log('match type: ' + type);
 
     const matchFound = 'match-found';

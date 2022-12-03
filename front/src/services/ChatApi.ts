@@ -3,7 +3,8 @@ import { Message } from '../models/Message';
 import { Socket } from "socket.io-client";
 import { iDirectMessage } from "../models/DirectMessage";
 import { User } from "../models/User";
-import { Api, api } from "./api_index";
+import api from './api';
+import { Api } from "./api";
 import userStorage from "./userStorage";
 
 class ChatApi {
@@ -15,6 +16,14 @@ class ChatApi {
     this.client = _client.getClient();
     this.channelSocket = _client.getChannelSocket();
     this.dmSocket = _client.getDirectMessageSocket();
+  }
+
+  setChannelSocket(instance: Api) {
+    this.channelSocket = instance.getChannelSocket();
+  }
+
+  setDMSocket(instance: Api) {
+    this.channelSocket = instance.getDirectMessageSocket();
   }
 
   subscribeDirectMessage(callback: any) {
