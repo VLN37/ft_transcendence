@@ -85,6 +85,16 @@ export class ChannelsController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Delete(':channel/ban/:id')
+  unbanUser(
+    @Req() req: Request,
+    @Param('channel') channelId: number,
+    @Param('id') userId,
+  ) {
+    return this.channelsService.unbanUser(req.user, channelId, userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   @UseInterceptors(ChannelsDeleteInterceptor)
   delete(@Param('id') id: number) {

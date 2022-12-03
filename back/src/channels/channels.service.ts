@@ -64,7 +64,7 @@ export class ChannelsService {
       throw new BadRequestException('You are not an admin of this channel');
     if (!channel.users.find((elem) => elem.id == token.id))
       throw new BadRequestException('User is not in the channel');
-    this.bannedUsersRepository.save({
+    const result = this.bannedUsersRepository.save({
       user_id: ban,
       channel: { id: channel.id },
       expiration: new Date(),
@@ -75,8 +75,18 @@ export class ChannelsService {
     channel.allowed_users = channel.allowed_users.filter(
       (user) => user.id != ban,
     );
+    this.logger.debug(`User ${ban} banned`);
     await this.update(channel);
-    return;
+    return result;
+  }
+
+  async unbanUser(token: Express.User, chId: number, unban: number) {
+    const channel: ChannelDto = await this.getOne(chId);
+    if (!channel.admins.find((elem) => elem.id == token.id))
+      throw new BadRequestException('you are not an admin of this channel');
+    if (!channel.users.find((elem) => elem.id == token.id))
+      throw new BadRequestException('user is not in the channel');
+    return this.bannedUsersRepository.delete({ user_id: unban });
   }
 
   async create(channel: ChannelDto): Promise<Channel> {
@@ -154,8 +164,11 @@ export class ChannelsService {
   }
 
   async getOne(id: number): Promise<ChannelDto> {
+    const date = new Date().toLocaleString('pt-BR', {
+      timeZone: 'America/Sao_Paulo',
+    });
+    const localeDate = new Date(date);
     const channel = await this.channelsRepository.findOne({
-      where: { id },
       relations: [
         'users',
         'users.profile',
@@ -165,7 +178,15 @@ export class ChannelsService {
         'banned_users',
         'admins',
       ],
+      where: { id },
+      // where: {
+      //   id,
+      //   banned_users: { expiration: MoreThan(new Date(date)) }
+      // },
     });
+    channel.banned_users = channel.banned_users.filter(
+      (elem) => elem.expiration > localeDate,
+    );
     if (!channel) throw new NotFoundException('Channel not found');
     // this.logger.debug('Returning channel', { channel });
     this.logger.debug('Returning channel');

@@ -75,6 +75,33 @@ class Api {
     }
   }
 
+  async banUser(channelId: number, targetId: number, seconds: number) {
+    try {
+      const response = await this.client.post<any>(
+        `/channels/${channelId}/ban/${targetId}`,
+        {
+          seconds: seconds,
+        },
+      );
+      return response;
+    } catch (err) {
+      console.log(err);
+      return (err as AxiosError).response;
+    }
+  }
+
+  async unbanUser(channelId: number, targetId: number) {
+    try {
+      const response = await this.client.delete<any>(
+        `/channels/${channelId}/ban/${targetId}`,
+      );
+      return response;
+    } catch (err) {
+      console.log(err);
+      return (err as AxiosError).response;
+    }
+  }
+
   async addAdmin(targetId: number, channelId: number) {
     try {
       const response = await this.client.post<any>(

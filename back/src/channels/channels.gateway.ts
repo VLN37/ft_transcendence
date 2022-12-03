@@ -127,8 +127,8 @@ export class ChannelsSocketGateway
     const user: UserDto = await this.usersService.getMe(token);
     const channel: ChannelDto = await this.channelsService.getOne(data.room);
 
-    const banned_user = await this.userIsBanned(channel, user);
-    if (banned_user) return banned_user;
+    const userIsBanned = await this.userIsBanned(channel, user);
+    if (userIsBanned) return userIsBanned;
 
     if (channel.type == 'PRIVATE') {
       if (

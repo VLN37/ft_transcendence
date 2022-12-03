@@ -126,7 +126,7 @@ export default function Chat(props: Channel) {
       toast({
         title: `Disconnect from the channel ${channel.name}`,
         status: 'error',
-        duration: 2000,
+        duration: 3000,
         isClosable: true,
       });
       navigate('/community');
