@@ -9,7 +9,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { isArray, isString } from 'class-validator';
 import { Channel } from 'src/entities/channel.entity';
 import { UsersService } from 'src/users/users.service';
-import { Repository } from 'typeorm';
+import { MoreThan, Repository } from 'typeorm';
 import { ChannelDto } from './dto/channel.dto';
 import * as bcrypt from 'bcrypt';
 import { ChannelRoomMessage, Message } from './channels.interface';
@@ -188,8 +188,7 @@ export class ChannelsService {
       (elem) => elem.expiration > localeDate,
     );
     if (!channel) throw new NotFoundException('Channel not found');
-    // this.logger.debug('Returning channel', { channel });
-    this.logger.debug('Returning channel');
+    this.logger.debug('Returning channel', { channel });
     return channel;
   }
 

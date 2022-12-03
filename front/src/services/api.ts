@@ -81,7 +81,7 @@ class Api {
         `/channels/${channelId}/ban/${targetId}`,
         {
           seconds: seconds,
-        },
+        }
       );
       return response;
     } catch (err) {
@@ -94,7 +94,7 @@ class Api {
     try {
       const response = await this.client.delete<any>(
         `/channels/${channelId}/ban/${targetId}`,
-      );
+      )
       return response;
     } catch (err) {
       console.log(err);
