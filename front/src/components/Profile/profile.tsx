@@ -1,4 +1,4 @@
-import { AttachmentIcon, CheckIcon, DownloadIcon } from '@chakra-ui/icons';
+import { DownloadIcon } from '@chakra-ui/icons';
 import {
   Image,
   Modal,
@@ -22,6 +22,7 @@ import {
   Stat,
   StatLabel,
   StatNumber,
+  Box,
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import { emptyUser, User } from '../../models/User';
@@ -76,7 +77,7 @@ function InputFileUpload(props: any) {
   );
 }
 
-function NicknameUpdate(props: { user: User, setNickname: any }) {
+function NicknameUpdate(props: { user: User; setNickname: any }) {
   const [name, setName] = useState<string>(props.user.profile.nickname);
   const toast = useToast();
 
@@ -116,7 +117,6 @@ function NicknameUpdate(props: { user: User, setNickname: any }) {
 
 export function Profile() {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const link = localStorage.getItem('avatar') || '';
   const user: User = userStorage.getUser() || emptyUser();
   const [nickname, setNickname] = useState<string>(user.profile.nickname);
   const [avatar, setAvatar] = useState<string>(
@@ -124,7 +124,7 @@ export function Profile() {
   );
 
   return (
-    <div>
+    <Box marginY={'auto'}>
       <Image
         onClick={onOpen}
         marginTop={'15px'}
@@ -168,7 +168,7 @@ export function Profile() {
                 <GridItem colStart={1}>
                   <Stack spacing={4}>
                     <NicknameUpdate user={user} setNickname={setNickname} />
-                    <InputFileUpload setAvatar={setAvatar}/>
+                    <InputFileUpload setAvatar={setAvatar} />
                     <Switch>2FA</Switch>
                   </Stack>
                 </GridItem>
@@ -180,6 +180,6 @@ export function Profile() {
           </ModalFooter>
         </ModalContent>
       </Modal>
-    </div>
+    </Box>
   );
 }

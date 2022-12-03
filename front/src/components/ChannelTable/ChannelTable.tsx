@@ -23,7 +23,7 @@ import {
   FormLabel,
   useToast,
 } from '@chakra-ui/react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, ChangeEvent } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { User, emptyUser } from '../../models/User';
@@ -31,6 +31,21 @@ import { Channel } from '../../models/Channel';
 import api from '../../services/api';
 import userStorage from '../../services/userStorage';
 import { StatusCodes } from 'http-status-codes';
+
+function formatValues(values: any) {
+  if (values.hasOwnProperty('allowed_users')) {
+    let users: string[] = values.allowed_users.split(',');
+    users = users.map((user_channel) => user_channel.trim());
+    values.allowed_users = users;
+  }
+  if (values.type == 'PUBLIC') {
+    delete values.password;
+    delete values.allowed_users;
+  }
+  if (values.type == 'PROTECTED') delete values.allowed_users;
+  if (values.type == 'PRIVATE') delete values.password;
+  return values;
+}
 
 function CreateChannel() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -46,11 +61,7 @@ function CreateChannel() {
   function onSubmit(values: any) {
     const user: User = userStorage.getUser() || emptyUser();
     values.owner_id = user.id;
-    if (values.hasOwnProperty('allowed_users')) {
-      let users: string[] = values.allowed_users.split(',');
-      users = users.map((user_channel) => user_channel.trim());
-      values.allowed_users = users;
-    }
+    values = formatValues(values);
     api.createChannel(values).then((response) => {
       onClose();
       if (response.status != 201) {
@@ -114,7 +125,7 @@ function CreateChannel() {
                   type="text"
                   mb={'1rem'}
                 />
-                <FormLabel>visibility</FormLabel>
+                <FormLabel>type</FormLabel>
                 <Select
                   id="type"
                   {...register('type', { required: 'This is required' })}
@@ -241,8 +252,10 @@ function AskPassword(channel: Channel) {
 
 export function ChannelTable() {
   const [channels, setChannels] = useState<Channel[]>([]);
+  const [bkpChannels, setBkpChannels] = useState<Channel[]>([]);
   const toast = useToast();
   let navigate = useNavigate();
+  const user = userStorage.getUser();
 
   const join = (channel: Channel) => {
     api.connectToChannel({ room: channel.id }).then((res) => {
@@ -262,14 +275,25 @@ export function ChannelTable() {
     });
   };
 
+  const filterChannel = (event: ChangeEvent<HTMLInputElement>) => {
+    const filter = event.target.value;
+    const filteredChannels = bkpChannels.filter((channel) =>
+      channel.name.toLowerCase().includes(filter.toLocaleLowerCase()),
+    );
+    setChannels(filteredChannels);
+  };
+
   useEffect(() => {
-    api.getChannels().then((channels) => setChannels(channels));
+    api.getChannels().then((channels) => {
+      setChannels(channels);
+      setBkpChannels(channels);
+    });
   }, []);
 
   return (
     <>
       <HStack>
-        <Input placeholder="Search channel room" />
+        <Input onChange={filterChannel} placeholder="Search channel room" />
         <CreateChannel />
       </HStack>
       <TableContainer
@@ -282,17 +306,16 @@ export function ChannelTable() {
           <Thead>
             <Tr>
               <Th>chat room</Th>
-              <Th>visibility</Th>
-              <Th>protected</Th>
+              <Th>type</Th>
+              <Th>password</Th>
               <Th>owner</Th>
-              <Th>users</Th>
             </Tr>
           </Thead>
           <Tbody>
             {channels.map((channel) => {
               return (
                 <Tr key={channel.id}>
-                  <Td>{channel.id}</Td>
+                  <Td>{channel.name}</Td>
                   <Td>{channel.type}</Td>
                   <Td>
                     {channel.type == 'PROTECTED' ? (
@@ -302,9 +325,9 @@ export function ChannelTable() {
                     )}
                   </Td>
                   <Td>{channel.owner_id}</Td>
-                  <Td>2</Td>
                   <Td>
-                    {channel.type == 'PROTECTED' ? (
+                    {channel.type == 'PROTECTED' &&
+                    user?.id != channel.owner_id ? (
                       <AskPassword {...channel} />
                     ) : (
                       <Button

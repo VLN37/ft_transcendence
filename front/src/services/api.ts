@@ -1,4 +1,4 @@
-import axios, { Axios, AxiosError } from 'axios';
+import axios, { AxiosError } from 'axios';
 import { io, Socket } from 'socket.io-client';
 import { StatusCodes } from 'http-status-codes';
 
@@ -179,12 +179,13 @@ class Api {
   async updateChannel(
     channel: Channel,
     password: string | null,
-    oldPassword: string | null) {
+    oldPassword: string | null,
+  ) {
     try {
       const response = await this.client.patch<any>(`/channels/${channel.id}`, {
         channel: channel,
         newPassword: password,
-        oldPassword: oldPassword
+        oldPassword: oldPassword,
       });
       return response;
     } catch (err) {
@@ -267,6 +268,30 @@ class Api {
 
   unsubscribeJoin(callback: any) {
     this.channelSocket?.off('join', callback);
+  }
+
+  subscribeLeave(callback: any) {
+    console.log('callback registered');
+    this.channelSocket?.on('leave', (response: any) => {
+      console.log('callback called');
+      callback(response.data);
+    });
+  }
+
+  unsubscribeLeave(callback: any) {
+    this.channelSocket?.off('leave', callback);
+  }
+
+  subscribeChannelDisconnect(callback: any) {
+    console.log('callback registered');
+    this.channelSocket?.on('disconnect', () => {
+      console.log('callback called');
+      callback();
+    });
+  }
+
+  unsubscribeChannelDisconnect() {
+    this.channelSocket?.off('disconnect');
   }
 
   async getChannelMessages(id: string): Promise<Message[]> {

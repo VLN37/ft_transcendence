@@ -1,6 +1,7 @@
 import { EmailIcon } from '@chakra-ui/icons';
 import {
   Badge,
+  Button,
   Container,
   Flex,
   Grid,
@@ -81,7 +82,7 @@ export default function Layout({ setUser }: any) {
               </li>
             </ul>
             <Profile />
-            <button onClick={() => setUser(null)}>logout</button>
+            <Button marginY={'auto'} onClick={() => setUser(null)}>logout</Button>
           </nav>
         </GridItem>
 
