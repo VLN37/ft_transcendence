@@ -35,6 +35,11 @@ export class MatchManagerService {
 
     memoryMatch.onStageChange = () => {
       match.stage = memoryMatch.stage;
+      // if (!this.matchRepository.manager.connection.isInitialized) {
+      //   const msg = 'Database connection is not active';
+      //   this.logger.error(msg);
+      //   throw new Error(msg);
+      // }
       this.matchRepository.save(match);
     };
     memoryMatch.waitForPlayers();

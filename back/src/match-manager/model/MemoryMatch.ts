@@ -103,8 +103,14 @@ export class MemoryMatch {
   }
 
   private startMatch() {
+    this.logger.debug('starting match exactly at ' + new Date().toISOString());
     this.updateStage('ONGOING');
-    this.logger.debug('starting match');
+
+    const end_at = new Date();
+    end_at.setMinutes(end_at.getMinutes() + 5);
+    // this.starts_at = end_at;
+    this.logger.debug('match finishes at ' + end_at.toISOString());
+
     this.timers.ongoing = setTimeout(() => {
       this.finishMatch();
     }, minutes(5));
@@ -112,7 +118,7 @@ export class MemoryMatch {
   }
 
   private finishMatch() {
-    this.logger.log('match finished');
+    this.logger.debug('match finished exactly at ' + new Date().toISOString());
     this.updateStage('FINISHED');
   }
 
