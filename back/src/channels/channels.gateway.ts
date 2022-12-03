@@ -1,4 +1,4 @@
-import { Logger } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import {
   OnGatewayConnection,
@@ -24,15 +24,18 @@ import * as bcrypt from 'bcrypt';
     origin: '*',
   },
 })
+@Injectable()
 export class ChannelsSocketGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
   @WebSocketServer() server: Server;
   private readonly logger = new Logger(ChannelsSocketGateway.name);
+  private usersSocketId = [];
 
   constructor(
     private jwtService: JwtService,
     private usersService: UsersService,
+    @Inject(forwardRef(() => ChannelsService))
     private channelsService: ChannelsService,
   ) {}
 
@@ -51,11 +54,17 @@ export class ChannelsSocketGateway
     });
   }
 
-  handleConnection(client: any) {
+  async handleConnection(client: any) {
+    const token = client.handshake.auth.token;
+    const userId = (await this.usersService.getUserId(token)).toString();
+    this.usersSocketId[userId] = client;
     this.logger.log(`Client connected ${client.id}`);
   }
 
-  handleDisconnect(client: any) {
+  async handleDisconnect(client: Socket) {
+    const token = client.handshake.auth.token;
+    const userId = (await this.usersService.getUserId(token)).toString();
+    delete this.usersSocketId[userId];
     this.logger.log(`Client disconnected ${client.id}`);
   }
 
@@ -64,8 +73,13 @@ export class ChannelsSocketGateway
     const invalidJoin = await this.joinChannel(client, data);
     if (invalidJoin) return invalidJoin;
     this.logger.log(`Client ${client.id} connected to the room ${data.room}`);
-    return { status: 200, message: 'Ok' };
   }
+
+  //   @SubscribeMessage('leave')
+  //   async handleLeave(client: Socket, data: ChannelRoomAuth) {
+  //     client.join(data.room.toString());
+  //     return { status: 200, message: 'Ok' };
+  //   }
 
   @SubscribeMessage('chat')
   async handleMessage(client: Socket, data: ChannelRoomMessage) {
@@ -73,6 +87,24 @@ export class ChannelsSocketGateway
     this.logger.debug('Sending a message to ' + client.id);
     const newMessage = await this.channelsService.saveMessage(client, data);
     this.server.to(newMessage.channel.id.toString()).emit('chat', newMessage);
+    return {
+      status: 200,
+      message: 'user joined the channel',
+    };
+  }
+
+  kickUser(userId: number, room: string) {
+    const client = this.usersSocketId[userId] || '';
+    if (!client) return;
+    client.leave(room);
+    client.disconnect();
+    this.server.emit('leave', {
+      data: {
+        user: {
+          id: userId,
+        },
+      },
+    });
   }
 
   private validateConnection(client: Socket) {
@@ -94,6 +126,9 @@ export class ChannelsSocketGateway
     const token = client.handshake.auth.token;
     const user: UserDto = await this.usersService.getMe(token);
     const channel: ChannelDto = await this.channelsService.getOne(data.room);
+
+    const banned_user = await this.userIsBanned(channel, user);
+    if (banned_user) return banned_user;
 
     if (channel.type == 'PRIVATE') {
       if (
@@ -118,11 +153,34 @@ export class ChannelsSocketGateway
     }
     client.join(data.room.toString());
     this.server.emit('join', {
-      data: {user: user}
+      data: { user: user },
     });
     return {
       status: 200,
-      message: "user joined the channel",
+      message: 'user joined the channel',
     };
+  }
+
+  private async userIsBanned(channel: ChannelDto, user: UserDto) {
+    const banned_user = channel.banned_users.find((banned_user) => {
+      if (banned_user.user_id == user.id) return banned_user;
+    });
+    if (banned_user) {
+      const now = new Date().getTime();
+      const exp = ((now - banned_user.expiration.getTime()) / 60000).toFixed(0);
+      const timeRemaining = 5 - parseInt(exp);
+      if (timeRemaining <= 4) {
+        channel.banned_users = channel.banned_users.filter(
+          (banned_users) => banned_users.user_id != user.id,
+        );
+        await this.channelsService.update(channel);
+        return '';
+      }
+      return {
+        status: 403,
+        message: `Banned from channel ${channel.name} for the next ${timeRemaining} minutes`,
+      };
+    }
+    return '';
   }
 }

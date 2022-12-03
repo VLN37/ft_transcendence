@@ -23,6 +23,7 @@ import { DirectMessagesController } from './direct-message/direct-messages.contr
 import { DirectMessagesModule } from './direct-message/direct-messages.module';
 import { DirectMessages } from './entities/direct_messages.entity';
 import { BannedUsers } from './entities/channel.banned.entity';
+import { ChannelsController } from './channels/channels.controller';
 
 const environment = process.env.ENVIRONMENT;
 const dbHost = process.env.DB_HOST;
@@ -87,6 +88,7 @@ export class AppModule implements NestModule {
         FriendsController,
         FriendRequestsController,
         DirectMessagesController,
+        ChannelsController,
       );
   }
 }

@@ -18,6 +18,7 @@ import { Socket } from 'socket.io';
 import { JwtService } from '@nestjs/jwt';
 import { UserDto } from 'src/users/dto/user.dto';
 import { BannedUsers } from 'src/entities/channel.banned.entity';
+import { ChannelsSocketGateway } from './channels.gateway';
 
 @Injectable()
 export class ChannelsService {
@@ -32,6 +33,7 @@ export class ChannelsService {
     private bannedUsersRepository: Repository<BannedUsers>,
     private usersService: UsersService,
     private jwtService: JwtService,
+    private channelsSocketGateway: ChannelsSocketGateway,
   ) {}
 
   async generateChannels(amount: number) {
@@ -56,15 +58,25 @@ export class ChannelsService {
 
   async banUser(token: Express.User, chId: number, ban: number, time: number) {
     const channel: ChannelDto = await this.getOne(chId);
+    if (channel.banned_users.find((elem) => elem.user_id == ban))
+      throw new BadRequestException('User is already banned');
     if (!channel.admins.find((elem) => elem.id == token.id))
-      throw new BadRequestException('you are not an admin of this channel');
+      throw new BadRequestException('You are not an admin of this channel');
     if (!channel.users.find((elem) => elem.id == token.id))
-      throw new BadRequestException('user is not in the channel');
+      throw new BadRequestException('User is not in the channel');
     this.bannedUsersRepository.save({
       user_id: ban,
       channel: { id: channel.id },
       expiration: new Date(),
     });
+    this.channelsSocketGateway.kickUser(ban, chId.toString());
+    channel.users = channel.users.filter((user) => user.id != ban);
+    channel.admins = channel.admins.filter((user) => user.id != ban);
+    channel.allowed_users = channel.allowed_users.filter(
+      (user) => user.id != ban,
+    );
+    await this.update(channel);
+    return;
   }
 
   async create(channel: ChannelDto): Promise<Channel> {
@@ -155,7 +167,8 @@ export class ChannelsService {
       ],
     });
     if (!channel) throw new NotFoundException('Channel not found');
-    this.logger.debug('Returning channel', { channel });
+    // this.logger.debug('Returning channel', { channel });
+    this.logger.debug('Returning channel');
     return channel;
   }
 
@@ -172,7 +185,7 @@ export class ChannelsService {
     });
     if (!channel) throw new NotFoundException('Channel not found');
     // this.logger.debug('Returning channel messages', channel.channel_messages);
-    this.logger.debug(`Returning channel ${channel.id} messages`);
+    this.logger.debug('Returning channel messages');
     return channel.channel_messages;
   }
 
@@ -184,8 +197,6 @@ export class ChannelsService {
   }
 
   async update(channel: ChannelDto) {
-    const invalidChannel = this.validateChannel(channel);
-    if (invalidChannel) throw new BadRequestException(invalidChannel);
     return await this.channelsRepository.save(channel);
   }
 
