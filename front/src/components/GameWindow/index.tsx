@@ -7,61 +7,80 @@ const BALL_RADIUS = 20;
 export default (props: any) => {
   const whRatio = 858 / 525;
 
-  let width = 500;
-  let height = 500;
+  const gameWindow = {
+    width: 500,
+    height: 500,
+  };
+
+  const WORLD_WIDTH = 858;
+  const WORLD_HEIGHT = 525;
+  let lastWindowWidth = -1;
+  let lastWindowHeight = -1;
   let ball: Ball;
 
   let upperBound = BALL_RADIUS;
-  let lowerBound = height - BALL_RADIUS;
+  let lowerBound = WORLD_HEIGHT - BALL_RADIUS;
   let leftBound = BALL_RADIUS;
-  let rightBound = width - BALL_RADIUS;
+  let rightBound = WORLD_WIDTH - BALL_RADIUS;
+
+  let world: p5Types.Graphics;
 
   const updateWindowProportions = () => {
     let currentWidth = window.innerWidth;
     let currentHeight = window.innerHeight;
+    lastWindowWidth = currentWidth;
+    lastWindowHeight = currentHeight;
 
     if (currentHeight * whRatio > currentWidth) {
       currentHeight = currentWidth / whRatio;
     } else {
       currentWidth = currentHeight * whRatio;
     }
-    width = currentWidth;
-    height = currentHeight;
+    gameWindow.width = currentWidth;
+    gameWindow.height = currentHeight;
+  };
+
+  const worldMouse = (p5: p5Types) => {
+    return {
+      x: (p5.mouseX * world.width) / gameWindow.width,
+      y: (p5.mouseY * world.height) / gameWindow.height,
+    };
   };
 
   const setup = (p5: p5Types, canvasParentRef: Element) => {
     updateWindowProportions();
-    lowerBound = height - BALL_RADIUS;
-    rightBound = width - BALL_RADIUS;
-    p5.createCanvas(width, height).parent(canvasParentRef);
-    ball = new Ball(BALL_RADIUS, width / 2, height / 2);
+    world = p5.createGraphics(WORLD_WIDTH, WORLD_HEIGHT);
+    p5.createCanvas(gameWindow.width, gameWindow.height).parent(
+      canvasParentRef,
+    );
+    ball = new Ball(BALL_RADIUS, WORLD_WIDTH / 2, WORLD_HEIGHT / 2);
   };
 
   const resizeIfNecessary = (p5: p5Types) => {
-    if (p5.windowWidth == width && p5.windowHeight == height) return;
-
+    if (
+      p5.windowWidth == lastWindowWidth &&
+      p5.windowHeight == lastWindowHeight
+    )
+      return;
     console.log(`resizing window to ${p5.windowWidth}x${p5.windowHeight}`);
 
     updateWindowProportions();
-
-    p5.resizeCanvas(width, height);
-    lowerBound = height - BALL_RADIUS;
-    rightBound = width - BALL_RADIUS;
+    p5.resizeCanvas(gameWindow.width, gameWindow.height);
   };
 
   const drawRightPlayer = (p5: p5Types) => {
-    p5.fill(50, 100, 200);
-    p5.rectMode('center');
-    p5.rect(p5.width - 20, p5.mouseY, 20, 100);
+    world.fill(50, 100, 200);
+    world.rectMode('center');
+    world.rect(world.width - 20, worldMouse(p5).y, 20, 100);
   };
 
   const drawLeftPlayer = (p5: p5Types) => {
-    p5.fill(240, 100, 30);
-    p5.rectMode('center');
-    p5.rect(20, p5.height - p5.mouseY, 20, 100);
+    world.fill(240, 100, 30);
+    world.rectMode('center');
+    world.rect(20, world.height - worldMouse(p5).y, 20, 100);
   };
 
-  const checkBallCollision = (p5: p5Types) => {
+  const checkBallCollision = () => {
     if (ball.position.y >= lowerBound || ball.position.y < upperBound) {
       ball.velocity.y = -ball.velocity.y;
     }
@@ -70,33 +89,27 @@ export default (props: any) => {
     }
   };
 
-  let x = 0;
-  const drawBall = (p5: p5Types) => {
+  const drawBall = () => {
     ball.update();
-    if (x % 60 == 0) {
-      console.log(`ball x: ${ball.position.x}, y: ${ball.position.y}`);
-    }
-    x++;
-    const xRatio = (ball.position.x / width) * 255;
-    const yRatio = (ball.position.y / height) * 255;
-    p5.fill(200 - xRatio, yRatio, xRatio);
+    const xRatio = (ball.position.x / WORLD_WIDTH) * 255;
+    const yRatio = (ball.position.y / WORLD_HEIGHT) * 255;
+    world.fill(200 - xRatio, yRatio, xRatio);
     const size = ball.radius * 2;
-    p5.ellipse(ball.position.x, ball.position.y, size, size);
+    world.ellipse(ball.position.x, ball.position.y, size, size);
   };
 
   const draw = (p5: p5Types) => {
     resizeIfNecessary(p5);
-    p5.background(0);
-    checkBallCollision(p5);
-    drawBall(p5);
-    p5.textSize(32);
-    p5.fill(0, 102, 153);
-    p5.text('fps: ' + Math.round(1000 / p5.deltaTime), 50, 50);
+    world.background(0);
+    checkBallCollision();
+    drawBall();
+    world.textSize(32);
+    world.fill(0, 102, 153);
+    world.text('fps: ' + Math.round(1000 / p5.deltaTime), 50, 50);
     drawRightPlayer(p5);
     drawLeftPlayer(p5);
+    p5.image(world, 0, 0, p5.width, p5.height);
   };
 
-  const onWindowResize = (p5: p5Types) => {};
-
-  return <Sketch windowResized={onWindowResize} setup={setup} draw={draw} />;
+  return <Sketch setup={setup} draw={draw} />;
 };

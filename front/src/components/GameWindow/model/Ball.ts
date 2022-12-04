@@ -11,7 +11,7 @@ export class Ball {
     this.position.x = x || 0;
     this.position.y = y || 0;
     this.velocity = p5Types.Vector.random2D();
-    this.velocity.mult(3);
+    this.velocity.mult(9);
   }
 
   update() {
