@@ -1,6 +1,7 @@
-import { StarIcon } from '@chakra-ui/icons';
+import { StarIcon, ViewOffIcon } from '@chakra-ui/icons';
 import {
   Box,
+  Icon,
   Menu,
   MenuButton,
   MenuItem,
@@ -9,12 +10,22 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import { useState } from 'react';
+import { isBlock } from 'typescript';
 import { Channel } from '../../models/Channel';
 import { TableUser } from '../../models/TableUser';
 import { emptyUser, User } from '../../models/User';
 import { channelApi } from '../../services/api_index';
 import userStorage from '../../services/userStorage';
 import { PublicProfile } from '../Profile/profile.public';
+
+const CircleIcon = (props: any) => (
+  <Icon viewBox='0 0 200 200' {...props}>
+    <path
+      fill='currentColor'
+      d='M 100, 100 m -75, 0 a 75,75 0 1,0 150,0 a 75,75 0 1,0 -150,0'
+    />
+  </Icon>
+)
 
 function UserMenu(props: {
   channel: Channel,
@@ -133,6 +144,13 @@ function UserMenu(props: {
   const isAdmin = props.channel.admins.find((user) => props.user.id == user.id);
   const amAdmin = props.channel.admins.find((user) => me.id == user.id);
   const isBanned = props.channel.banned_users.find(i => i == props.user.id);
+  let color;
+  if (props.user.status == 'ONLINE')
+    color = 'green.500';
+  else if (props.user.status == 'OFFLINE')
+    color = 'grey.500';
+  else
+    color = 'red.500';
   return (
     <Box padding={1}>
       <PublicProfile
@@ -142,6 +160,8 @@ function UserMenu(props: {
       ></PublicProfile>
       <Menu isLazy>
         <MenuButton>
+          <CircleIcon color={color}></CircleIcon>
+          {isBlocked ? <ViewOffIcon></ViewOffIcon> : null}
           {isAdmin ? <StarIcon></StarIcon> : null}
           {props.user.nickname}
         </MenuButton>
@@ -187,7 +207,11 @@ export function ChatUsers(props: {
   const userList = props.channel.users.map((user: User, i: number) => {
     const tableuser = TableUser(user);
     return (
-      <UserMenu channel={props.channel} key={i} user={tableuser} user2={user}
+      <UserMenu
+        channel={props.channel}
+        key={i}
+        user={tableuser}
+        user2={user}
     ></UserMenu>
     );
   });

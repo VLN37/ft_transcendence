@@ -94,7 +94,7 @@ export class ChannelsSocketGateway
     if (!client) return;
     client.leave(room);
     client.disconnect();
-    this.server.emit('leave', {
+    this.server.to(room).emit('leave', {
       data: {
         user: {
           id: userId,
@@ -150,19 +150,10 @@ export class ChannelsSocketGateway
       if (banned_user.user_id == user.id) return banned_user;
     });
     if (banned_user) {
-      const now = new Date().getTime();
-      const exp = ((now - banned_user.expiration.getTime()) / 60000).toFixed(0);
-      const timeRemaining = 5 - parseInt(exp);
-      if (timeRemaining <= 4) {
-        channel.banned_users = channel.banned_users.filter(
-          (banned_users) => banned_users.user_id != user.id,
-        );
-        await this.channelsService.update(channel);
-        return '';
-      }
+      const time = banned_user.expiration.toLocaleString();
       return {
         status: 403,
-        message: `Banned from channel ${channel.name} for the next ${timeRemaining} minutes`,
+        message: `Banned from channel until ${time}.`,
       };
     }
     return '';
