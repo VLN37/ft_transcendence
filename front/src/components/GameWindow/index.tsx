@@ -89,11 +89,17 @@ export default (props: any) => {
     }
   };
 
+  let x = 0;
   const drawBall = () => {
     ball.update();
     const xRatio = (ball.position.x / WORLD_WIDTH) * 255;
     const yRatio = (ball.position.y / WORLD_HEIGHT) * 255;
     world.fill(200 - xRatio, yRatio, xRatio);
+    world.colorMode(world.HSL);
+    world.fill(x, 80, 50);
+    x += 3;
+    if (x > 355) x = 0;
+    world.colorMode(world.RGB, 255);
     const size = ball.radius * 2;
     world.ellipse(ball.position.x, ball.position.y, size, size);
   };
