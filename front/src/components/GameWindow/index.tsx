@@ -1,18 +1,26 @@
 import Sketch from 'react-p5';
 import p5Types from 'p5';
+import { Ball } from './model/Ball';
+
+const BALL_RADIUS = 20;
 
 export default (props: any) => {
   const whRatio = 858 / 525;
 
   let width = 500;
   let height = 500;
-  let x = 50;
-  let y = 50;
+  let ball: Ball;
+
+  let upperBound = BALL_RADIUS;
+  let lowerBound = height - BALL_RADIUS;
+  let leftBound = BALL_RADIUS;
+  let rightBound = width - BALL_RADIUS;
 
   const setup = (p5: p5Types, canvasParentRef: Element) => {
-    p5.createCanvas(window.innerWidth, window.innerHeight).parent(
-      canvasParentRef,
-    );
+    width = window.innerWidth;
+    height = window.innerHeight;
+    p5.createCanvas(width, height).parent(canvasParentRef);
+    ball = new Ball(BALL_RADIUS, width / 2, height / 2);
   };
 
   const resizeIfNecessary = (p5: p5Types) => {
@@ -25,6 +33,8 @@ export default (props: any) => {
     p5.resizeCanvas(currentWidth, currentHeight);
     width = currentWidth;
     height = currentHeight;
+    lowerBound = height - BALL_RADIUS;
+    rightBound = width - BALL_RADIUS;
   };
 
   const drawRightPlayer = (p5: p5Types) => {
@@ -39,19 +49,39 @@ export default (props: any) => {
     p5.rect(20, p5.height - p5.mouseY, 20, 100);
   };
 
+  const checkBallCollision = (p5: p5Types) => {
+    if (ball.position.y >= lowerBound || ball.position.y < upperBound) {
+      ball.velocity.y = -ball.velocity.y;
+    }
+    if (ball.position.x >= rightBound || ball.position.x < leftBound) {
+      ball.velocity.x = -ball.velocity.x;
+    }
+  };
+
+  let x = 0;
+  const drawBall = (p5: p5Types) => {
+    ball.update();
+    if (x % 60 == 0) {
+      console.log(`ball x: ${ball.position.x}, y: ${ball.position.y}`);
+    }
+    x++;
+    const xRatio = (ball.position.x / width) * 255;
+    const yRatio = (ball.position.y / height) * 255;
+    p5.fill(200 - xRatio, yRatio, xRatio);
+    const size = ball.radius * 2;
+    p5.ellipse(ball.position.x, ball.position.y, size, size);
+  };
+
   const draw = (p5: p5Types) => {
     resizeIfNecessary(p5);
-    const xRatio = (p5.mouseX / width) * 255;
-    const yRatio = (p5.mouseY / height) * 255;
     p5.background(0);
-    p5.fill(200 - xRatio, yRatio, xRatio);
-    p5.ellipse(p5.mouseX, p5.mouseY, 40, 40);
+    checkBallCollision(p5);
+    drawBall(p5);
     p5.textSize(32);
     p5.fill(0, 102, 153);
     p5.text('fps: ' + Math.round(1000 / p5.deltaTime), 50, 50);
     drawRightPlayer(p5);
     drawLeftPlayer(p5);
-    x++;
   };
 
   const onWindowResize = (p5: p5Types) => {};

@@ -17,6 +17,7 @@ export class MatchManagerService {
   ) {}
 
   async createMatch(user1: UserDto, user2: UserDto) {
+    // TODO: check if users are already playing a match
     const match = this.matchRepository.create({
       left_player: user1,
       right_player: user2,
