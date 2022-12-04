@@ -14,7 +14,7 @@ import {
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { iDirectMessage } from '../../models/DirectMessage';
-import { chatApi, userApi } from '../../services/api_index';
+import { api, chatApi, userApi } from '../../services/api_index';
 import userStorage from '../../services/userStorage';
 import { DmUsers } from '../Chat/DmUsers';
 
@@ -76,6 +76,7 @@ function InputMessage(props: any) {
 function sendMessage(to: string) {
   const text = (document.getElementById('message') as HTMLInputElement).value;
   (document.getElementById('message') as HTMLInputElement).value = '';
+  chatApi.setChannelSocket(api);
   chatApi.sendDirectMessage({ message: text, user_id: to });
   console.log('message sent');
 }

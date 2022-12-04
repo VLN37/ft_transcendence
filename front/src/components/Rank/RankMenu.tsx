@@ -9,6 +9,7 @@ import {
 } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 import { emptyUser, User } from '../../models/User';
+import { api, chatApi } from '../../services/api_index';
 import userStorage from '../../services/userStorage';
 
 function AddToast() {
@@ -65,6 +66,7 @@ export function RankMenu(props: any) {
   }
 
   function sendUserMessage() {
+    chatApi.setDMSocket(api);
     navigate(`/dm?user=${props.id}`);
   }
 
