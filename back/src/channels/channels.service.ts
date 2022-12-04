@@ -58,6 +58,8 @@ export class ChannelsService {
 
   async banUser(token: Express.User, chId: number, ban: number, time: number) {
     const channel: ChannelDto = await this.getOne(chId);
+    if (!time)
+      throw new BadRequestException('missing time parameter');
     if (channel.banned_users.find((elem) => elem.user_id == ban))
       throw new BadRequestException('User is already banned');
     if (!channel.admins.find((elem) => elem.id == token.id))
