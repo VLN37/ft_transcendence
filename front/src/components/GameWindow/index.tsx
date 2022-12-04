@@ -26,10 +26,15 @@ export default (props: any) => {
   };
 
   const resizeIfNecessary = (p5: p5Types) => {
-    const currentWidth = window.innerWidth;
-    const currentHeight = window.innerHeight;
+    let currentWidth = window.innerWidth;
+    let currentHeight = window.innerHeight;
 
     if (currentWidth == width && currentHeight == height) return;
+    if (currentHeight * whRatio > currentWidth) {
+      currentHeight = currentWidth / whRatio;
+    } else {
+      currentWidth = currentHeight * whRatio;
+    }
 
     console.log(`resizing window to ${currentWidth}x${currentHeight}`);
     p5.resizeCanvas(currentWidth, currentHeight);
