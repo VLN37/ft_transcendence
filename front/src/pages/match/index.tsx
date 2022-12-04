@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import GameWindow from '../../components/GameWindow';
 import { MatchApi } from '../../services/matchApi';
 
 export default function MatchPage() {
@@ -15,5 +16,9 @@ export default function MatchPage() {
     console.log('connected');
   }, []);
 
-  return <div>this is the match page</div>;
+  return (
+    <div>
+      <GameWindow />
+    </div>
+  );
 }
