@@ -58,8 +58,8 @@ export default (props: any) => {
 
   const resizeIfNecessary = (p5: p5Types) => {
     if (
-      p5.windowWidth == lastWindowWidth &&
-      p5.windowHeight == lastWindowHeight
+      window.innerWidth == lastWindowWidth &&
+      window.innerHeight == lastWindowHeight
     )
       return;
     console.log(`resizing window to ${p5.windowWidth}x${p5.windowHeight}`);
@@ -98,14 +98,18 @@ export default (props: any) => {
     world.ellipse(ball.position.x, ball.position.y, size, size);
   };
 
+  const printFps = () => {
+    world.textSize(32);
+    world.fill(0, 102, 153);
+    world.text('fps: ' + Math.round(1000 / world.deltaTime), 50, 50);
+  };
+
   const draw = (p5: p5Types) => {
     resizeIfNecessary(p5);
     world.background(0);
     checkBallCollision();
+    printFps();
     drawBall();
-    world.textSize(32);
-    world.fill(0, 102, 153);
-    world.text('fps: ' + Math.round(1000 / p5.deltaTime), 50, 50);
     drawRightPlayer(p5);
     drawLeftPlayer(p5);
     p5.image(world, 0, 0, p5.width, p5.height);
