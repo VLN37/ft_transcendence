@@ -16,9 +16,21 @@ export default (props: any) => {
   let leftBound = BALL_RADIUS;
   let rightBound = width - BALL_RADIUS;
 
+  const updateWindowProportions = () => {
+    let currentWidth = window.innerWidth;
+    let currentHeight = window.innerHeight;
+
+    if (currentHeight * whRatio > currentWidth) {
+      currentHeight = currentWidth / whRatio;
+    } else {
+      currentWidth = currentHeight * whRatio;
+    }
+    width = currentWidth;
+    height = currentHeight;
+  };
+
   const setup = (p5: p5Types, canvasParentRef: Element) => {
-    width = window.innerWidth;
-    height = window.innerHeight;
+    updateWindowProportions();
     lowerBound = height - BALL_RADIUS;
     rightBound = width - BALL_RADIUS;
     p5.createCanvas(width, height).parent(canvasParentRef);
@@ -26,20 +38,13 @@ export default (props: any) => {
   };
 
   const resizeIfNecessary = (p5: p5Types) => {
-    let currentWidth = window.innerWidth;
-    let currentHeight = window.innerHeight;
+    if (p5.windowWidth == width && p5.windowHeight == height) return;
 
-    if (currentWidth == width && currentHeight == height) return;
-    if (currentHeight * whRatio > currentWidth) {
-      currentHeight = currentWidth / whRatio;
-    } else {
-      currentWidth = currentHeight * whRatio;
-    }
+    console.log(`resizing window to ${p5.windowWidth}x${p5.windowHeight}`);
 
-    console.log(`resizing window to ${currentWidth}x${currentHeight}`);
-    p5.resizeCanvas(currentWidth, currentHeight);
-    width = currentWidth;
-    height = currentHeight;
+    updateWindowProportions();
+
+    p5.resizeCanvas(width, height);
     lowerBound = height - BALL_RADIUS;
     rightBound = width - BALL_RADIUS;
   };
