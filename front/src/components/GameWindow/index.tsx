@@ -19,6 +19,8 @@ export default (props: any) => {
   const setup = (p5: p5Types, canvasParentRef: Element) => {
     width = window.innerWidth;
     height = window.innerHeight;
+    lowerBound = height - BALL_RADIUS;
+    rightBound = width - BALL_RADIUS;
     p5.createCanvas(width, height).parent(canvasParentRef);
     ball = new Ball(BALL_RADIUS, width / 2, height / 2);
   };
