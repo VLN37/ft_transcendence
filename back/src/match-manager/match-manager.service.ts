@@ -63,10 +63,6 @@ export class MatchManagerService {
     return memoryMatch;
   }
 
-  getActiveMatch(matchId: string): MemoryMatch {
-    return this.memoryMatches.find((match) => match.id === matchId);
-  }
-
   getActiveMatches(): Partial<MemoryMatch>[] {
     return this.activeMatches.map((activeMatch) => {
       return activeMatch.match;
