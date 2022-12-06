@@ -10,7 +10,6 @@ export class MatchManagerController {
 
   @Get()
   getOngoingMatches(@Query('stage') stage: MatchStage) {
-    this.logger.error('caiu no controller matches');
     if (stage) {
       if (stage === 'FINISHED') {
         return this.matchManager.getFinishedMatches();
