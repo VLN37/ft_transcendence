@@ -19,7 +19,6 @@ export type ActiveMatch = {
 export class MatchManagerService {
   private readonly logger = new Logger('Match Manager');
 
-  private memoryMatches: MemoryMatch[] = [];
   private activeMatches: ActiveMatch[] = [];
 
   constructor(
@@ -80,7 +79,7 @@ export class MatchManagerService {
 
   connectPlayer(matchId: string, playerId: number) {
     const match = this.activeMatches.find(
-      (match) => match.match.id === matchId,
+      (activeMatch) => activeMatch.match.id === matchId,
     );
     if (!match) throw new Error('Match not found');
 
