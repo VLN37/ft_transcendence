@@ -81,7 +81,10 @@ export default function DirectMessagesComponent(props: any) {
         <ChatTitle>Direct Messages</ChatTitle>
       </GridItem>
       <GridItem borderRadius={'5px'} rowSpan={12} colSpan={2} bg="gray.700">
-        <DmUsers users={userStorage.getUser()?.friends || []} />
+        <DmUsers
+          users={userStorage.getUser()?.friends || []}
+          requests={userStorage.getUser()?.friend_requests || []}
+        />
       </GridItem>
       <GridItem
         borderRadius={'5px'}

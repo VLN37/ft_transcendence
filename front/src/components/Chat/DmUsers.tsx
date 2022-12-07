@@ -1,10 +1,12 @@
-import { StarIcon } from '@chakra-ui/icons';
+import { CheckIcon, CloseIcon, StarIcon } from '@chakra-ui/icons';
 import {
   Box,
+  IconButton,
   Menu,
   MenuButton,
   MenuItem,
   MenuList,
+  Text,
   useDisclosure,
   useToast,
 } from '@chakra-ui/react';
@@ -82,9 +84,33 @@ function UserDmMenu(props: {
   );
 }
 
-export function DmUsers(props: {
-  users: User[]
+function PendingRequestMenu(props: {
+  user: TableUser,
+  user2: User,
 }) {
+  return (
+    <Box padding={1}>
+      <Text>{props.user.nickname}</Text>
+      <CheckIcon
+        onClick={() => console.log('friend request accepted')}
+        color={'green.500'}
+        marginRight={'10px'}
+      ></CheckIcon>
+      <CloseIcon
+        color={'red.500'}
+        boxSize={'0.8em'}
+        onClick={() => console.log('friend request removed')}
+      ></CloseIcon>
+    </Box>
+  )
+}
+
+export function DmUsers(props: {
+  users: User[],
+  requests: User[]
+}) {
+  const [reload, setReload] = useState<boolean>(false);
+
   const userList = props.users.map((user: User, i: number) => {
     const tableuser = TableUser(user);
     return (
@@ -92,5 +118,19 @@ export function DmUsers(props: {
     ></UserDmMenu>
     );
   });
-  return <>{userList}</>;
+  const requestList = props.requests.map((user: User, i: number) => {
+    const tableuser = TableUser(user);
+    return <PendingRequestMenu key={i} user={tableuser} user2={user}/>
+  })
+  return (
+    <>
+      <Text> Friends</Text>
+      <hr></hr>
+      {userList}
+      <br></br>
+      <Text>Friend Requests</Text>
+      <hr></hr>
+      {requestList}
+    </>
+  );
 }
