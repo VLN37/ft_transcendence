@@ -122,25 +122,25 @@ export default function Chat(props: Channel) {
       });
       navigate('/community');
     });
-    return () => chatApi.unsubscribeChannelDisconnect();
-  }, []);
 
-  useEffect(() => {
     chatApi
       .getChannelMessages(props.id.toString())
       .then((messages: Message[]) => {
         setMessages(messages);
       });
-    chatApi.subscribeJoin(addUserChannelList);
-    return () => chatApi.unsubscribeJoin();
-  }, []);
 
-  useEffect(() => {
+    chatApi.subscribeJoin(addUserChannelList);
+
     chatApi.subscribeLeave((data: any) => {
       if (data.user.id == myId) chatApi.disconnect();
       else delUserChannelList(data);
     });
-    return () => chatApi.unsubscribeLeave(delUserChannelList);
+
+    return () => {
+      chatApi.unsubscribeChannelDisconnect();
+      chatApi.unsubscribeJoin();
+      chatApi.unsubscribeLeave(delUserChannelList);
+    };
   }, []);
 
   useEffect(() => {
