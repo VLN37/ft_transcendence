@@ -36,7 +36,7 @@ class ChannelApi {
 
   async getChannels(): Promise<Channel[]> {
     const response = await this.client.get<Channel[]>('/channels', {});
-    console.log(response.data);
+    // console.log(response.data);
     return response.data;
   }
 
