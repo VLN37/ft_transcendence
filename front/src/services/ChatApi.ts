@@ -23,7 +23,7 @@ class ChatApi {
   }
 
   setDMSocket(instance: Api) {
-    this.channelSocket = instance.getDirectMessageSocket();
+    this.dmSocket = instance.getDirectMessageSocket();
   }
 
   subscribeDirectMessage(callback: any) {
