@@ -100,6 +100,10 @@ export default function DirectMessage(props: any) {
   }, [messages]);
 
   useEffect(() => {
+    async function fetchUser() {
+      await userStorage.updateUser();
+    }
+    fetchUser();
     chatApi.getDirectMessages(userId).then((messages: iDirectMessage[]) => {
       setMessages(messages);
     });
@@ -121,7 +125,10 @@ export default function DirectMessage(props: any) {
         <ChatTitle>{chatTitle}</ChatTitle>
       </GridItem>
       <GridItem borderRadius={'5px'} rowSpan={11} colSpan={2} bg="gray.700">
-        <DmUsers users={userStorage.getUser()?.friends || []} />
+        <DmUsers
+          users={userStorage.getUser()?.friends || []}
+          requests={userStorage.getUser()?.friend_requests || []}
+        />
       </GridItem>
       <GridItem
         borderRadius={'5px'}

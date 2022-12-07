@@ -22,8 +22,7 @@ class MMApi {
     onMatchFound: Function,
     onError?: Function,
     ) {
-    console.log('socket mm', this.matchMakingSocket);
-    console.log('match type: ' + type);
+    // console.log('match type: ' + type);
 
     const matchFound = 'match-found';
     const error = 'match-error';
