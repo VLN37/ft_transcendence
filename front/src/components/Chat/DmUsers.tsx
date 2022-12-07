@@ -132,8 +132,6 @@ function PendingRequestMenu(props: {
       updateMe();
       props.setReload(!props.reload)
     }
-    else
-      console.log(response.data.message);
   }
 
 
