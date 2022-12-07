@@ -36,15 +36,15 @@ export class MatchMakingService {
     return null;
   }
 
-  dequeue(user: UserDto) {
+  dequeueUser(userId: number) {
     MATCH_TYPES.forEach((type) => {
       const queue = this.memoryQueue[type];
-      const i = queue.findIndex((queuedUser) => (queuedUser.id = user.id));
+      const i = queue.findIndex((queuedUser) => (queuedUser.id = userId));
       if (i >= 0) {
+        const user = queue.splice(i, 1);
         this.logger.debug(
-          `removing user ${user.login_intra} from the ${type} queue`,
+          `removing user ${user[0].login_intra} from the ${type} queue`,
         );
-        queue.splice(i, 1);
       }
     });
   }
