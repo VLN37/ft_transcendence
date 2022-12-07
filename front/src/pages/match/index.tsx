@@ -13,6 +13,9 @@ export default function MatchPage() {
     }
     matchApi.connectToServer();
     matchApi.connectAsPlayer(match_id);
+    matchApi.setOnMatchTickListener(() => {
+      console.log('listener being called ' + Date.now());
+    });
     console.log('connected');
   }, []);
 

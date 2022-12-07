@@ -39,6 +39,13 @@ export class MatchApi {
       match_id: matchId,
     });
   }
+
+  setOnMatchTickListener(callback: () => void) {
+    this.matchSocket?.on('match-tick', (matchData) => {
+      console.log('match is ticking, ', { matchData });
+      callback();
+    });
+  }
 }
 
 // export default new MatchApi();
