@@ -1,6 +1,7 @@
 import { CheckIcon, CloseIcon, StarIcon } from '@chakra-ui/icons';
 import {
   Box,
+  Icon,
   IconButton,
   Menu,
   MenuButton,
@@ -17,6 +18,15 @@ import { emptyUser, User } from '../../models/User';
 import { channelApi, userApi } from '../../services/api_index';
 import userStorage from '../../services/userStorage';
 import { PublicProfile } from '../Profile/profile.public';
+
+const CircleIcon = (props: any) => (
+  <Icon viewBox='0 0 200 200' {...props}>
+    <path
+      fill='currentColor'
+      d='M 100, 100 m -75, 0 a 75,75 0 1,0 150,0 a 75,75 0 1,0 -150,0'
+    />
+  </Icon>
+)
 
 function UserDmMenu(props: {
   user: TableUser,
@@ -72,6 +82,13 @@ function UserDmMenu(props: {
 
   const isMyself = me.id == props.user.id;
   const isBlocked = me.blocked.find((user) => props.user.id == user.id);
+  let color;
+  if (props.user.status == 'ONLINE')
+    color = 'green.500';
+  else if (props.user.status == 'OFFLINE')
+    color = 'grey.500';
+  else
+    color = 'red.500';
   return (
     <Box padding={1}>
       <PublicProfile
@@ -80,6 +97,7 @@ function UserDmMenu(props: {
         onClose={onClose}
       ></PublicProfile>
       <Menu isLazy>
+        <CircleIcon color={color}></CircleIcon>
         <MenuButton>
           {props.user.nickname}
         </MenuButton>
