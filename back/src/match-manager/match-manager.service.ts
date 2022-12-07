@@ -6,12 +6,16 @@ import { minutes, seconds } from 'src/utils/functions/timeConvertion';
 import { Repository } from 'typeorm';
 import { MemoryMatch } from './model/MemoryMatch';
 
+export const TICKS_PER_SECOND = 20;
+
 export type ActiveMatch = {
   timers: {
     waiting_timeout?: NodeJS.Timeout;
     preparation?: NodeJS.Timeout;
     ongoing?: NodeJS.Timeout;
+    tick?: NodeJS.Timer;
   };
+  onServerTick?: () => void;
   match: MemoryMatch;
 };
 
@@ -99,6 +103,24 @@ export class MatchManagerService {
       this.onBothPlayersConnected(match);
   }
 
+  setMatchTickHandler(matchId: string, handler: (any) => void) {
+    const activeMatch = this.activeMatches.find(
+      (activeMatch) => activeMatch.match.id === matchId,
+    );
+
+    activeMatch.onServerTick = () => {
+      const matchData = {
+        p1: 20,
+        p2: 10,
+        ball: {
+          x: 20,
+          y: 10,
+        },
+      };
+      handler(matchData);
+    };
+  }
+
   private startWaitingTime(activeMatch: ActiveMatch) {
     const onDoneWaiting = () => {
       this.logger.warn("canceling match: players didn't connect");
@@ -144,6 +166,9 @@ export class MatchManagerService {
     this.logger.debug('match finishes at ' + end_at.toISOString());
     match.match.ends_at = end_at;
 
+    match.timers.tick = setInterval(() => {
+      match.onServerTick();
+    }, 1000 / TICKS_PER_SECOND);
     const onMatchFinished = () => {
       this.logger.debug(
         'match finished exactly at ' + new Date().toISOString(),
@@ -155,6 +180,7 @@ export class MatchManagerService {
   }
 
   private finishMatch(match: ActiveMatch) {
+    clearInterval(match.timers.tick);
     match.match.updateStage('FINISHED');
   }
 }

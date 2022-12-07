@@ -7,6 +7,7 @@ import {
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
+  WsException,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { UsersService } from 'src/users/users.service';
@@ -54,6 +55,18 @@ export class MatchManagerGateway implements OnGatewayInit {
   ) {
     const user = client.handshake.auth.user;
     const playerId = user.id;
-    this.matchManager.connectPlayer(matchId, playerId);
+    try {
+      this.matchManager.connectPlayer(matchId, playerId);
+      this.matchManager.setMatchTickHandler(matchId, (matchState) => {
+        this.onMatchTick(matchId, matchState);
+      });
+      client.join(matchId);
+    } catch (e) {
+      throw new WsException(e);
+    }
+  }
+
+  private onMatchTick(matchId: string, matchState: any) {
+    this.server.in(matchId).emit('match-tick', matchState);
   }
 }
