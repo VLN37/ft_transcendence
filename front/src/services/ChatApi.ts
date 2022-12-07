@@ -1,11 +1,11 @@
-import { AxiosInstance } from "axios";
+import { AxiosInstance } from 'axios';
 import { Message } from '../models/Message';
-import { Socket } from "socket.io-client";
-import { iDirectMessage } from "../models/DirectMessage";
-import { User } from "../models/User";
+import { Socket } from 'socket.io-client';
+import { iDirectMessage } from '../models/DirectMessage';
+import { User } from '../models/User';
 import api from './api';
-import { Api } from "./api";
-import userStorage from "./userStorage";
+import { Api } from './api';
+import userStorage from './userStorage';
 
 class ChatApi {
   private client: AxiosInstance;
@@ -16,6 +16,10 @@ class ChatApi {
     this.client = _client.getClient();
     this.channelSocket = _client.getChannelSocket();
     this.dmSocket = _client.getDirectMessageSocket();
+  }
+
+  disconnect() {
+    this.channelSocket?.disconnect();
   }
 
   setChannelSocket(instance: Api) {
@@ -55,8 +59,9 @@ class ChatApi {
     });
   }
 
-  unsubscribeJoin(callback: any) {
-    this.channelSocket?.off('join', callback);
+  unsubscribeJoin() {
+    this.channelSocket?.off('join');
+    this.channelSocket?.removeAllListeners();
   }
 
   subscribeLeave(callback: any) {
@@ -119,7 +124,6 @@ class ChatApi {
       callback(message);
     });
   }
-
 }
 
 export default new ChatApi(api);

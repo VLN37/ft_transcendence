@@ -106,8 +106,8 @@ export default function Chat(props: Channel) {
   const delUserChannelList = (data: any) => {
     if (channel.users.find((elem) => elem.id == data.user.id)) {
       console.log('user leave');
-      const index = channel.users.indexOf(data.user);
-      channel.users.splice(index);
+      const index = channel.users.findIndex((elem) => elem.id == data.user.id);
+      channel.users.splice(index, 1);
       setChannel({ ...channel });
     }
   };
@@ -115,7 +115,7 @@ export default function Chat(props: Channel) {
   useEffect(() => {
     chatApi.subscribeChannelDisconnect(() => {
       toast({
-        title: `Disconnect from the channel ${channel.name}`,
+        title: `Disconnected from the channel ${channel.name}`,
         status: 'error',
         duration: 3000,
         isClosable: true,
@@ -126,15 +126,20 @@ export default function Chat(props: Channel) {
   }, []);
 
   useEffect(() => {
-    chatApi.getChannelMessages(props.id.toString()).then((messages: Message[]) => {
-      setMessages(messages);
-    });
+    chatApi
+      .getChannelMessages(props.id.toString())
+      .then((messages: Message[]) => {
+        setMessages(messages);
+      });
     chatApi.subscribeJoin(addUserChannelList);
-    return () => chatApi.unsubscribeJoin(addUserChannelList);
+    return () => chatApi.unsubscribeJoin();
   }, []);
 
   useEffect(() => {
-    chatApi.subscribeLeave(delUserChannelList);
+    chatApi.subscribeLeave((data: any) => {
+      if (data.user.id == myId) chatApi.disconnect();
+      else delUserChannelList(data);
+    });
     return () => chatApi.unsubscribeLeave(delUserChannelList);
   }, []);
 

@@ -1,6 +1,8 @@
 import { faker } from '@faker-js/faker';
 import {
   BadRequestException,
+  forwardRef,
+  Inject,
   Injectable,
   Logger,
   NotFoundException,
@@ -33,6 +35,7 @@ export class ChannelsService {
     private bannedUsersRepository: Repository<BannedUsers>,
     private usersService: UsersService,
     private jwtService: JwtService,
+	@Inject(forwardRef(() => ChannelsSocketGateway))
     private channelsSocketGateway: ChannelsSocketGateway,
   ) {}
 
@@ -58,21 +61,13 @@ export class ChannelsService {
 
   async banUser(token: Express.User, chId: number, ban: number, time: number) {
     const channel: ChannelDto = await this.getOne(chId);
-    if (!time)
-      throw new BadRequestException('missing time parameter');
+    if (!time) throw new BadRequestException('missing time parameter');
     if (channel.banned_users.find((elem) => elem.user_id == ban))
       throw new BadRequestException('User is already banned');
     if (!channel.admins.find((elem) => elem.id == token.id))
       throw new BadRequestException('You are not an admin of this channel');
     if (!channel.users.find((elem) => elem.id == token.id))
       throw new BadRequestException('User is not in the channel');
-    const date = new Date();
-    date.setSeconds(date.getSeconds() + time);
-    const result = this.bannedUsersRepository.save({
-      user_id: ban,
-      channel: { id: channel.id },
-      expiration: date.toLocaleString('pt-BR', {timeZone: 'America/Sao_Paulo'}),
-    });
     this.channelsSocketGateway.kickUser(ban, chId.toString());
     channel.users = channel.users.filter((user) => user.id != ban);
     channel.admins = channel.admins.filter((user) => user.id != ban);
@@ -80,8 +75,16 @@ export class ChannelsService {
       (user) => user.id != ban,
     );
     await this.update(channel);
+    const date = new Date();
+    date.setSeconds(date.getSeconds() + time);
     this.logger.debug(`User ${ban} banned`);
-    return result;
+    return this.bannedUsersRepository.save({
+      user_id: ban,
+      channel: { id: channel.id },
+      expiration: date.toLocaleString('pt-BR', {
+        timeZone: 'America/Sao_Paulo',
+      }),
+    });
   }
 
   async unbanUser(token: Express.User, chId: number, unban: number) {

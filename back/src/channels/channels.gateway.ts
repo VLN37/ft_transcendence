@@ -75,11 +75,20 @@ export class ChannelsSocketGateway
     return { status: 200, message: 'Ok' };
   }
 
-  //   @SubscribeMessage('leave')
-  //   async handleLeave(client: Socket, data: ChannelRoomAuth) {
-  //     client.join(data.room.toString());
-  //     return { status: 200, message: 'Ok' };
-  //   }
+  @SubscribeMessage('leave')
+  async handleLeave(client: Socket, room: string) {
+    client.leave(room);
+    const token = client.handshake.auth.token;
+    const userId = (await this.usersService.getUserId(token)).toString();
+    this.server.to(room).emit('leave', {
+      data: {
+        user: {
+          id: userId,
+        },
+      },
+    });
+    return { status: 200, message: 'Ok' };
+  }
 
   @SubscribeMessage('chat')
   async handleMessage(client: Socket, data: ChannelRoomMessage) {
@@ -92,8 +101,6 @@ export class ChannelsSocketGateway
   kickUser(userId: number, room: string) {
     const client = this.usersSocketId[userId] || '';
     if (!client) return;
-    client.leave(room);
-    client.disconnect();
     this.server.to(room).emit('leave', {
       data: {
         user: {
@@ -101,6 +108,7 @@ export class ChannelsSocketGateway
         },
       },
     });
+    client.leave(room);
   }
 
   private async joinChannel(client: Socket, data: ChannelRoomAuth) {
