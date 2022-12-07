@@ -12,6 +12,7 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Channel } from '../../models/Channel';
 import { TableUser } from '../../models/TableUser';
 import { emptyUser, User } from '../../models/User';
@@ -37,6 +38,7 @@ function UserDmMenu(props: {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const me: User = userStorage.getUser() || emptyUser();
   const toast = useToast();
+  let navigate = useNavigate();
 
   async function blockUser() {
     const response: any = await channelApi.blockUser(me.id, props.user.id);
@@ -103,6 +105,9 @@ function UserDmMenu(props: {
         </MenuButton>
         <MenuList>
           <MenuItem onClick={onOpen}>view profile</MenuItem>
+          <MenuItem onClick={() => navigate(`/dm?user=${props.user.id}`)}>
+            send message
+          </MenuItem>
           <MenuItem>invite to game</MenuItem>
           <MenuItem onClick={removeFriend}>remove friend</MenuItem>
           {
