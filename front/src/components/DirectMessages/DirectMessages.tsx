@@ -11,7 +11,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { iDirectMessage } from '../../models/DirectMessage';
 import { User } from '../../models/User';
-import { chatApi } from '../../services/api_index';
+import { api, chatApi } from '../../services/api_index';
 import userStorage from '../../services/userStorage';
 import { DmUsers } from '../Chat/DmUsers';
 
@@ -64,8 +64,12 @@ export default function DirectMessagesComponent(props: any) {
   });
 
   useEffect(() => {
+    async function fetchUser() {
+      await userStorage.updateUser();
+    }
     chatApi.getLastDirectMessages().then((dm_users: User[]) => {
       setUsers(dm_users);
+    fetchUser();
     });
   }, []);
 
