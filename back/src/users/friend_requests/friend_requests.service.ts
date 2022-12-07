@@ -106,21 +106,21 @@ export class FriendRequestsService {
         "You can't cancel a friend request sent to yourself",
       );
 
-    const userToCancelRequest = await this.usersService.findUserById(target);
+    const myProfile = await this.usersService.findUserById(me);
 
-    if (!userToCancelRequest.friend_requests.find((user) => user.id == me))
+    if (!myProfile.friend_requests.find((user) => user.id == target))
       throw new BadRequestException(
         'You do not have a pending friend request with this user',
       );
 
-    userToCancelRequest.friend_requests =
-      userToCancelRequest.friend_requests.filter((user) => user.id != me);
+    myProfile.friend_requests =
+      myProfile.friend_requests.filter((user) => user.id != target);
 
     this.logger.log(
-      `User ${user.login_intra} cancel a pending friend request with ${userToCancelRequest.login_intra}`,
+      `User ${user.login_intra} cancel a pending friend request with ${target}`,
     );
 
-    await this.usersService.update(userToCancelRequest);
+    await this.usersService.update(myProfile);
     return await this.userSentPendingFriendRequests(me);
   }
 
