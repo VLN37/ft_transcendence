@@ -1,6 +1,7 @@
 import { CheckIcon, CloseIcon, StarIcon } from '@chakra-ui/icons';
 import {
   Box,
+  Flex,
   Icon,
   IconButton,
   Menu,
@@ -159,19 +160,27 @@ function PendingRequestMenu(props: {
 
 
   return (
-    <Box padding={1}>
+    <Flex
+      padding={1}
+      direction={'row'}
+      width={'100%'}
+      alignItems={'center'}
+      justifyContent={'space-between'}
+    >
       <Text>{props.user.nickname}</Text>
-      <CheckIcon
-        onClick={acceptFriend}
-        color={'green.500'}
-        marginRight={'10px'}
-      ></CheckIcon>
-      <CloseIcon
-        onClick={rejectFriend}
-        color={'red.500'}
-        boxSize={'0.8em'}
-      ></CloseIcon>
-    </Box>
+      <Box>
+        <CheckIcon
+          onClick={acceptFriend}
+          color={'green.500'}
+          marginRight={'10px'}
+        ></CheckIcon>
+        <CloseIcon
+          onClick={rejectFriend}
+          color={'red.500'}
+          boxSize={'0.8em'}
+        ></CloseIcon>
+      </Box>
+    </Flex>
   )
 }
 
@@ -206,11 +215,11 @@ export function DmUsers(props: {
   })
   return (
     <>
-      <Text> Friends</Text>
+      <Text as={'b'} paddingLeft={1}>Friends</Text>
       <hr></hr>
       {userList}
       <br></br>
-      <Text>Friend Requests</Text>
+      <Text as={'b'} paddingLeft={1}>Friend Requests</Text>
       <hr></hr>
       {requestList}
     </>

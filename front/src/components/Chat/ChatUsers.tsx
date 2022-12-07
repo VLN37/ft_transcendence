@@ -8,6 +8,7 @@ import {
   MenuList,
   useDisclosure,
   useToast,
+  Text
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import { isBlock } from 'typescript';
@@ -215,5 +216,11 @@ export function ChatUsers(props: {
     ></UserMenu>
     );
   });
-  return <>{userList}</>;
+  return (
+    <>
+      <Text as={'b'} paddingLeft={1}>Channel members</Text>
+      <hr></hr>
+      {userList}
+    </>
+  );
 }
