@@ -12,7 +12,7 @@ import {
 import { Server, Socket } from 'socket.io';
 import { UsersService } from 'src/users/users.service';
 import { validateWsJwt } from 'src/utils/functions/validateWsConnection';
-import { MatchManagerService } from './match-manager';
+import { MatchManager } from './match-manager';
 
 @WebSocketGateway({
   namespace: '/match-manager',
@@ -29,7 +29,7 @@ export class MatchManagerGateway implements OnGatewayInit {
   constructor(
     private jwtService: JwtService,
     private usersService: UsersService,
-    private matchManager: MatchManagerService,
+    private matchManager: MatchManager,
   ) {}
 
   afterInit(server: any) {

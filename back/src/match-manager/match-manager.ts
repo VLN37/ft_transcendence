@@ -21,7 +21,7 @@ export type ActiveMatch = {
 };
 
 @Injectable()
-export class MatchManagerService {
+export class MatchManager {
   private readonly logger = new Logger('Match Manager');
 
   private activeMatches: ActiveMatch[] = [];

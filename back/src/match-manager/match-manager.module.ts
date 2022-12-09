@@ -5,12 +5,12 @@ import { Match } from 'src/entities/match.entity';
 import { UsersModule } from 'src/users/users.module';
 import { MatchManagerController } from './match-manager.controller';
 import { MatchManagerGateway } from './match-manager.gateway';
-import { MatchManagerService } from './match-manager';
+import { MatchManager } from './match-manager';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Match]), UsersModule],
-  providers: [MatchManagerGateway, MatchManagerService, JwtService],
-  exports: [MatchManagerService],
+  providers: [MatchManagerGateway, MatchManager, JwtService],
+  exports: [MatchManager],
   controllers: [MatchManagerController],
 })
 export class MatchManagerModule {}
