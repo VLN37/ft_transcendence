@@ -1,6 +1,6 @@
 const WIDTH = 858;
 const HEIGHT = 525;
-const BALL_RADIUS = 15;
+const BALL_RADIUS = 20;
 
 export const rules = {
   worldWidth: WIDTH,
@@ -11,9 +11,9 @@ export const rules = {
     y: HEIGHT / 2,
   },
   playerStart: HEIGHT / 2,
-  topCollisionEdge: BALL_RADIUS / 2,
-  bottomCollisionEdge: HEIGHT - BALL_RADIUS / 2,
+  topCollisionEdge: BALL_RADIUS,
+  bottomCollisionEdge: HEIGHT - BALL_RADIUS,
 
-  leftCollisionEdge: BALL_RADIUS / 2,
-  rightCollisionEdge: WIDTH - BALL_RADIUS / 2,
+  leftCollisionEdge: BALL_RADIUS,
+  rightCollisionEdge: WIDTH - BALL_RADIUS,
 };

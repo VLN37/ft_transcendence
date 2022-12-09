@@ -1,4 +1,6 @@
+import { Logger } from '@nestjs/common';
 import { UserDto } from 'src/users/dto/user.dto';
+import { Vector } from 'src/utils/functions/linearAlgebra';
 import { rules } from '../game/rules';
 import { MatchState } from './MatchState';
 
@@ -61,9 +63,13 @@ export class MemoryMatch {
   resetPositions() {
     this.state.p1 = rules.playerStart;
     this.state.p2 = rules.playerStart;
+    const vec = Vector.random();
+    vec.mul(9);
+    Logger.debug('vec mag ', vec.magnitude());
     this.state.ball = {
       x: rules.ballStart.x,
       y: rules.ballStart.y,
+      velocity: vec,
     };
   }
 
@@ -75,7 +81,27 @@ export class MemoryMatch {
       this.increment = -1;
     }
 
+    this.checkBallCollision();
     this.state.p1 += this.increment;
     this.state.p2 += this.increment;
+    this.state.ball.x += this.state.ball.velocity.x;
+    this.state.ball.y += this.state.ball.velocity.y;
+  }
+
+  private checkBallCollision() {
+    const { ball } = this.state;
+
+    if (
+      ball.x >= rules.rightCollisionEdge ||
+      ball.x <= rules.leftCollisionEdge
+    ) {
+      this.state.ball.velocity.x *= -1;
+    }
+    if (
+      ball.y <= rules.topCollisionEdge ||
+      ball.y >= rules.bottomCollisionEdge
+    ) {
+      this.state.ball.velocity.y *= -1;
+    }
   }
 }

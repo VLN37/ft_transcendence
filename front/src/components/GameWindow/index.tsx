@@ -111,7 +111,7 @@ export default (props: GameWindowProps) => {
 
   let x = 0;
   const drawBall = () => {
-    ball.update();
+    // ball.update();
     const xRatio = (ball.position.x / WORLD_WIDTH) * 255;
     const yRatio = (ball.position.y / WORLD_HEIGHT) * 255;
     world.fill(200 - xRatio, yRatio, xRatio);

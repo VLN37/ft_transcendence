@@ -148,7 +148,7 @@ export class MatchManagerService {
     // start match in 15 seconds after both players connected
     activeMatch.timers.preparation = setTimeout(
       onPreparationTimeEnd,
-      seconds(15),
+      seconds(5),
     );
   }
 
