@@ -7,21 +7,16 @@ export default function MatchPage() {
   const { match_id } = useParams();
   const matchApi = new MatchApi();
 
-  useEffect(() => {
-    if (!match_id) {
-      throw new Error('no match id to connect');
-    }
-    matchApi.connectToServer();
-    matchApi.connectAsPlayer(match_id);
-    matchApi.setOnMatchTickListener(() => {
-      console.log('listener being called ' + Date.now());
-    });
-    console.log('connected');
-  }, []);
+  if (!match_id) {
+    throw new Error('no match id to connect');
+  }
+  matchApi.connectToServer();
+  matchApi.connectAsPlayer(match_id);
+  console.log('connected');
 
   return (
     <div>
-      <GameWindow />
+      <GameWindow matchApi={matchApi} />
     </div>
   );
 }

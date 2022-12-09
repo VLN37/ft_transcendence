@@ -1,10 +1,17 @@
 import Sketch from 'react-p5';
 import p5Types from 'p5';
 import { Ball } from './model/Ball';
+import { MatchState } from './model/MatchState';
+import { Player, PlayerSide } from './model/Player';
+import { MatchApi } from '../../services/matchApi';
 
 const BALL_RADIUS = 20;
 
-export default (props: any) => {
+export type GameWindowProps = {
+  matchApi: MatchApi;
+};
+
+export default (props: GameWindowProps) => {
   const whRatio = 858 / 525;
 
   const gameWindow = {
@@ -17,6 +24,8 @@ export default (props: any) => {
   let lastWindowWidth = -1;
   let lastWindowHeight = -1;
   let ball: Ball;
+  let leftPlayer: Player;
+  let rightPlayer: Player;
 
   let upperBound = BALL_RADIUS;
   let lowerBound = WORLD_HEIGHT - BALL_RADIUS;
@@ -24,6 +33,27 @@ export default (props: any) => {
   let rightBound = WORLD_WIDTH - BALL_RADIUS;
 
   let world: p5Types.Graphics;
+
+  const setup = (p5: p5Types, canvasParentRef: Element) => {
+    updateWindowProportions();
+    world = p5.createGraphics(WORLD_WIDTH, WORLD_HEIGHT);
+    p5.createCanvas(gameWindow.width, gameWindow.height).parent(
+      canvasParentRef,
+    );
+    ball = new Ball(BALL_RADIUS, WORLD_WIDTH / 2, WORLD_HEIGHT / 2);
+    leftPlayer = new Player(PlayerSide.LEFT, 20);
+    rightPlayer = new Player(PlayerSide.RIGHT, 20);
+  };
+
+  const listenGameState = (state: MatchState) => {
+    ball.position.x = state.ball.x;
+    ball.position.y = state.ball.y;
+    leftPlayer.y = state.p1;
+    rightPlayer.y = state.p2;
+    console.log({ state });
+  };
+
+  props.matchApi.setOnMatchTickListener(listenGameState);
 
   const updateWindowProportions = () => {
     let currentWidth = window.innerWidth;
@@ -47,15 +77,6 @@ export default (props: any) => {
     };
   };
 
-  const setup = (p5: p5Types, canvasParentRef: Element) => {
-    updateWindowProportions();
-    world = p5.createGraphics(WORLD_WIDTH, WORLD_HEIGHT);
-    p5.createCanvas(gameWindow.width, gameWindow.height).parent(
-      canvasParentRef,
-    );
-    ball = new Ball(BALL_RADIUS, WORLD_WIDTH / 2, WORLD_HEIGHT / 2);
-  };
-
   const resizeIfNecessary = (p5: p5Types) => {
     if (
       window.innerWidth == lastWindowWidth &&
@@ -71,13 +92,13 @@ export default (props: any) => {
   const drawRightPlayer = (p5: p5Types) => {
     world.fill(50, 100, 200);
     world.rectMode('center');
-    world.rect(world.width - 20, worldMouse(p5).y, 20, 100);
+    world.rect(world.width - 20, rightPlayer.y, 20, 100);
   };
 
   const drawLeftPlayer = (p5: p5Types) => {
     world.fill(240, 100, 30);
     world.rectMode('center');
-    world.rect(20, world.height - worldMouse(p5).y, 20, 100);
+    world.rect(20, leftPlayer.y, 20, 100);
   };
 
   const checkBallCollision = () => {

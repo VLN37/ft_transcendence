@@ -4,6 +4,7 @@ import { Match } from 'src/entities/match.entity';
 import { UserDto } from 'src/users/dto/user.dto';
 import { minutes, seconds } from 'src/utils/functions/timeConvertion';
 import { Repository } from 'typeorm';
+import { MatchState } from './model/MatchState';
 import { MemoryMatch } from './model/MemoryMatch';
 
 export const TICKS_PER_SECOND = 20;
@@ -103,21 +104,14 @@ export class MatchManagerService {
       this.onBothPlayersConnected(match);
   }
 
-  setMatchTickHandler(matchId: string, handler: (any) => void) {
+  setMatchTickHandler(matchId: string, handler: (state: MatchState) => void) {
     const activeMatch = this.activeMatches.find(
       (activeMatch) => activeMatch.match.id === matchId,
     );
 
     activeMatch.onServerTick = () => {
-      const matchData = {
-        p1: 20,
-        p2: 10,
-        ball: {
-          x: 20,
-          y: 10,
-        },
-      };
-      handler(matchData);
+      activeMatch.match.update();
+      handler(activeMatch.match.state);
     };
   }
 

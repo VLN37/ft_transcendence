@@ -5,8 +5,10 @@ export enum PlayerSide {
 
 export class Player {
   side: PlayerSide;
+  y: number;
 
-  constructor(side: PlayerSide) {
+  constructor(side: PlayerSide, y: number) {
     this.side = side;
+    this.y = y;
   }
 }

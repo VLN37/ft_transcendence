@@ -1,5 +1,6 @@
-import { Logger } from '@nestjs/common';
 import { UserDto } from 'src/users/dto/user.dto';
+import { rules } from '../game/rules';
+import { MatchState } from './MatchState';
 
 function seconds(secs: number) {
   return secs * 1000;
@@ -33,6 +34,8 @@ export class MemoryMatch {
 
   stage: MatchStage;
 
+  state: MatchState;
+
   onStageChange: (stage: MatchStage) => void;
 
   constructor(id: string, leftPlayer: UserDto, rightPlayer: UserDto) {
@@ -42,10 +45,37 @@ export class MemoryMatch {
     this.left_player_score = 0;
     this.right_player_score = 0;
     this.stage = 'AWAITING_PLAYERS';
+    this.init();
   }
 
   updateStage(stage: MatchStage) {
     this.stage = stage;
     this.onStageChange?.call(this, stage);
+  }
+
+  init() {
+    this.state = new MatchState();
+    this.resetPositions();
+  }
+
+  resetPositions() {
+    this.state.p1 = rules.playerStart;
+    this.state.p2 = rules.playerStart;
+    this.state.ball = {
+      x: rules.ballStart.x,
+      y: rules.ballStart.y,
+    };
+  }
+
+  increment = 1;
+  update() {
+    if (this.state.p1 <= rules.topCollisionEdge) {
+      this.increment = +1;
+    } else if (this.state.p1 >= rules.bottomCollisionEdge) {
+      this.increment = -1;
+    }
+
+    this.state.p1 += this.increment;
+    this.state.p2 += this.increment;
   }
 }

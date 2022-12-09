@@ -1,6 +1,6 @@
 import { io, Socket } from 'socket.io-client';
-import userStorage from './userStorage';
 import api from './api';
+import { MatchState } from '../components/GameWindow/model/MatchState';
 
 export class MatchApi {
   private readonly MATCH_MANAGER_NAMESPACE = 'match-manager';
@@ -40,10 +40,12 @@ export class MatchApi {
     });
   }
 
-  setOnMatchTickListener(callback: () => void) {
+  setOnMatchTickListener(callback: (state: MatchState) => void) {
+    if (!this.matchSocket) {
+      throw new Error('match socket is not set');
+    }
     this.matchSocket?.on('match-tick', (matchData) => {
-      console.log('match is ticking, ', { matchData });
-      callback();
+      callback(matchData);
     });
   }
 }
