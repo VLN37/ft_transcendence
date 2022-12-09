@@ -50,7 +50,6 @@ export default (props: GameWindowProps) => {
     ball.position.y = state.ball.y;
     leftPlayer.y = state.p1;
     rightPlayer.y = state.p2;
-    console.log({ state });
   };
 
   props.matchApi.setOnMatchTickListener(listenGameState);
