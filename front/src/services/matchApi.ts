@@ -11,7 +11,8 @@ export class MatchApi {
   }
 
   connectToServer() {
-    const url = `http://localhost:3000/${this.MATCH_MANAGER_NAMESPACE}`;
+    const url =
+    `${process.env.REACT_APP_BACK_HOSTNAME}/${this.MATCH_MANAGER_NAMESPACE}`;
     const options = {
       auth: {
         token: api.getToken(),

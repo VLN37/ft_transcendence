@@ -3,7 +3,7 @@ import  { faker } from "@faker-js/faker";
 import { expect } from '@jest/globals';
 import { UserDto } from '../dto/user.dto';
 
-const baseURL = 'http://localhost:3000/users';
+const baseURL = process.env.HOSTNAME + ':3000/users';
 const req = request(baseURL);
 
 function makeUser(name: string) {

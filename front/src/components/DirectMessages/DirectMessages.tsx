@@ -69,7 +69,7 @@ export default function DirectMessagesComponent(props: any) {
     }
     chatApi.getLastDirectMessages().then((dm_users: User[]) => {
       setUsers(dm_users);
-    fetchUser();
+      fetchUser();
     });
   }, []);
 
@@ -101,7 +101,9 @@ export default function DirectMessagesComponent(props: any) {
             <MessageBoxComponent
               user_id={user.id}
               name={user.profile.nickname}
-              image={process.env.REACT_APP_HOSTNAME + user.profile.avatar_path}
+              image={
+                process.env.REACT_APP_BACK_HOSTNAME + user.profile.avatar_path
+              }
               text={''}
               key={index}
             />

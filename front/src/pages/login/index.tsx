@@ -19,15 +19,21 @@ export default function LoginPage({ user }: any) {
             <NeonButton>LOGIN</NeonButton>
           </a>
           <br />
-          <a href="http://localhost/auth-callback?code=abcd">
+          <a href={
+            process.env.REACT_APP_FRONT_HOSTNAME + "/auth-callback?code=abcd"
+          }>
             <NeonButton>login as paulo</NeonButton>
           </a>
           <br />
-          <a href="http://localhost/auth-callback?code=1234">
+          <a href={
+            process.env.REACT_APP_FRONT_HOSTNAME + "/auth-callback?code=1234"
+          }>
             <NeonButton>login as joao</NeonButton>
           </a>
           <br />
-          <a href="http://localhost/auth-callback?code=noob">
+          <a href={
+            process.env.REACT_APP_FRONT_HOSTNAME + "/auth-callback?code=noob"
+          }>
             <NeonButton>login as welton</NeonButton>
           </a>
         </div>

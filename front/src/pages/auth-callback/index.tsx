@@ -68,7 +68,8 @@ const AuthCallback = ({ setUser }: any) => {
     console.log({ payload });
 
     userApi.getUser('me').then((user) => {
-      const link = process.env.REACT_APP_HOSTNAME + user.profile.avatar_path;
+      const link =
+        process.env.REACT_APP_BACK_HOSTNAME + user.profile.avatar_path;
       localStorage.setItem('avatar', link);
       userStorage.saveUser(user);
       setUser(user);
