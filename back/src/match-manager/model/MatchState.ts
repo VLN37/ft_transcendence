@@ -1,4 +1,4 @@
-import { Vector } from 'src/utils/functions/linearAlgebra';
+import { Vector } from 'src/utils/classes/Vector';
 
 export class MatchState {
   ball: {

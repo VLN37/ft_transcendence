@@ -1,6 +1,6 @@
 import { Logger } from '@nestjs/common';
 import { UserDto } from 'src/users/dto/user.dto';
-import { Vector } from 'src/utils/functions/linearAlgebra';
+import { Vector } from 'src/utils/classes/Vector';
 import { rules } from '../game/rules';
 import { MatchState } from './MatchState';
 
