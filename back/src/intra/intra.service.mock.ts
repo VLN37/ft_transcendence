@@ -21,7 +21,7 @@ export class IntraServiceMock {
       tfa_secret: null,
       profile: {
         id: 42,
-        avatar_path: 'avatars/psergio-.jpeg',
+        avatar_path: '/avatars/psergio-.jpeg',
         losses: 0,
         wins: 40,
         mmr: 400,
@@ -37,7 +37,7 @@ export class IntraServiceMock {
       tfa_secret: null,
       profile: {
         id: 43,
-        avatar_path: 'avatars/jofelipe.jpeg',
+        avatar_path: '/avatars/jofelipe.jpeg',
         losses: 0,
         wins: 40,
         mmr: 400,
@@ -53,7 +53,7 @@ export class IntraServiceMock {
       tfa_secret: null,
       profile: {
         id: 44,
-        avatar_path: 'avatars/wleite.jpeg',
+        avatar_path: '/avatars/wleite.jpeg',
         losses: 40,
         wins: 0,
         mmr: 0,
@@ -115,7 +115,7 @@ export class IntraServiceMock {
       id: id,
       login: savedUser.login_intra,
       displayname: savedUser.profile.name,
-      image_url: savedUser.profile?.avatar_path ?? 'avatars/gatinho.jpeg',
+      image_url: savedUser.profile?.avatar_path ?? '/avatars/gatinho.jpeg',
     };
     return user;
   }
