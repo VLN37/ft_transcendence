@@ -104,14 +104,17 @@ export class MatchManagerService {
       this.onBothPlayersConnected(match);
   }
 
-  setMatchTickHandler(matchId: string, handler: (state: MatchState) => void) {
+  setMatchTickHandler(
+    matchId: string,
+    notifyMatchState: (state: MatchState) => void,
+  ) {
     const activeMatch = this.activeMatches.find(
       (activeMatch) => activeMatch.match.id === matchId,
     );
 
     activeMatch.onServerTick = () => {
       activeMatch.match.update();
-      handler(activeMatch.match.state);
+      notifyMatchState(activeMatch.match.state);
     };
   }
 
