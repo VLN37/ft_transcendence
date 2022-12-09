@@ -64,7 +64,7 @@ export class MemoryMatch {
     this.state.p1 = rules.playerStart;
     this.state.p2 = rules.playerStart;
     const vec = Vector.random();
-    vec.mul(9);
+    vec.mult(9);
     Logger.debug('vec mag ', vec.magnitude());
     this.state.ball = {
       x: rules.ballStart.x,

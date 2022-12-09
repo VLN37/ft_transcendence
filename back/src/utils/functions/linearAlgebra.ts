@@ -17,7 +17,7 @@ export class Vector {
     this.y = this.y / mag;
   }
 
-  mul(scalar: number) {
+  mult(scalar: number) {
     this.x *= scalar;
     this.y *= scalar;
   }
