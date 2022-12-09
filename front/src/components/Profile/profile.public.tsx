@@ -28,7 +28,7 @@ export function PublicProfile(props: {
   onClose: () => void,
 }) {
 
-  const link = process.env.REACT_APP_HOSTNAME + props.user.avatar_path;
+  const link = process.env.REACT_APP_BACK_HOSTNAME + props.user.avatar_path;
   const toast = useToast();
 
   async function addFriend() {

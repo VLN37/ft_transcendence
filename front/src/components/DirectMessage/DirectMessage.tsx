@@ -142,7 +142,7 @@ export default function DirectMessage(props: any) {
             <MessageComponent
               name={message.sender.profile.nickname}
               image={
-                process.env.REACT_APP_HOSTNAME +
+                process.env.REACT_APP_BACK_HOSTNAME +
                 message.sender.profile.avatar_path
               }
               text={message.message}

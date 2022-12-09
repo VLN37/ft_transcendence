@@ -4,7 +4,7 @@ import { RankMenu } from './RankMenu';
 
 function UserBlock(props: any) {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const link = process.env.REACT_APP_HOSTNAME + props.user.avatar_path;
+  const link = process.env.REACT_APP_BACK_HOSTNAME + props.user.avatar_path;
 
   return (
     <Tr>

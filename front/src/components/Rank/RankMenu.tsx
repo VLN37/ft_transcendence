@@ -38,7 +38,8 @@ function CustomToastExample() {
 }
 
 export function RankMenu(props: any) {
-  const url = `http://localhost:3000/users/${props.id}/friend_requests`;
+  const url =
+    `${process.env.REACT_APP_BACK_HOSTNAME}/users/${props.id}/friend_requests`;
   const toast = useToast();
   let navigate = useNavigate();
 

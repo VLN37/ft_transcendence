@@ -20,7 +20,7 @@ export class Api {
   private readonly DM_NAMESPACE = 'direct_messages';
 
   private client = axios.create({
-    baseURL: 'http://localhost:3000',
+    baseURL: process.env.REACT_APP_BACK_HOSTNAME,
   });
 
   private matchMakingSocket?: Socket;
@@ -102,7 +102,7 @@ export class Api {
   connectToChannel(data: ChannelRoomAuth): Promise<ChannelSocketResponse> {
     return new Promise((resolve) => {
       this.channelSocket = io(
-        `http://localhost:3000/${this.CHANNEL_NAMESPACE}`,
+        `${process.env.REACT_APP_BACK_HOSTNAME}/${this.CHANNEL_NAMESPACE}`,
         {
           auth: { token: this.token },
         },
@@ -118,13 +118,16 @@ export class Api {
   }
 
   connectToDM() {
-    this.dmSocket = io(`http://localhost:3000/${this.DM_NAMESPACE}`, {
+    this.dmSocket = io(
+      `${process.env.REACT_APP_BACK_HOSTNAME}/${this.DM_NAMESPACE}`,
+    {
       auth: { token: this.token },
     });
   }
 
   private connectToMatchMakingCoordinator() {
-    const url = `http://localhost:3000/${this.MATCH_MAKING_NAMESPACE}`;
+    const url =
+      `${process.env.REACT_APP_BACK_HOSTNAME}/${this.MATCH_MAKING_NAMESPACE}`;
     const options = {
       auth: {
         token: this.token,

@@ -180,7 +180,7 @@ export default function Chat(props: Channel) {
             <MessageComponent
               name={message.user.profile.nickname}
               image={
-                process.env.REACT_APP_HOSTNAME +
+                process.env.REACT_APP_BACK_HOSTNAME +
                 message.user.profile.avatar_path
               }
               text={message.message}

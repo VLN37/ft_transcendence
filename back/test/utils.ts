@@ -78,7 +78,7 @@ export async function makeUsers(amount: number) {
         id: id,
         name: faker.name.fullName(),
         nickname: nick,
-        avatar_path: 'avatars/gatinho.jpeg',
+        avatar_path: '/avatars/gatinho.jpeg',
         // status: 'OFFLINE',
         status: status,
         wins: faker.datatype.number({ min: 1, max: 1000 }),

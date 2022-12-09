@@ -47,7 +47,8 @@ function InputFileUpload(props: any) {
     const message = response.status == 201 ? '' : response.data.message;
     if (response.status == 201) {
       userApi.getUser('me').then((user) => {
-        const link = process.env.REACT_APP_HOSTNAME + user.profile.avatar_path;
+        const link =
+          process.env.REACT_APP_BACK_HOSTNAME + user.profile.avatar_path;
         userStorage.saveUser(user);
         localStorage.setItem('avatar', link);
         props.setAvatar(link);

@@ -31,7 +31,7 @@ export class IntraService {
       grant_type: 'authorization_code',
       client_id: clientId,
       client_secret: clientSecret,
-      redirect_uri: 'http://localhost/auth-callback',
+      redirect_uri: process.env.HOSTNAME + '/auth-callback',
       code: code,
     };
     this.logger.debug('autenticando na Intra', { request_body: body });

@@ -31,7 +31,8 @@ export function TableUser(user: User | void) {
         login_intra: '',
         id: 0,
         tfa_enabled: false,
-        avatar_path: 'localhost:3000/avatars/gatinho.jpeg',
+        avatar_path:
+          process.env.REACT_APP_BACK_HOSTNAME + '/avatars/gatinho.jpeg',
         nickname: '',
         wins: 0,
         losses: 0,
