@@ -12,7 +12,7 @@ import {
 import { Server, Socket } from 'socket.io';
 import { UsersService } from 'src/users/users.service';
 import { validateWsJwt } from 'src/utils/functions/validateWsConnection';
-import { MatchManagerService } from './match-manager.service';
+import { MatchManagerService } from './match-manager';
 
 @WebSocketGateway({
   namespace: '/match-manager',
@@ -58,15 +58,11 @@ export class MatchManagerGateway implements OnGatewayInit {
     try {
       this.matchManager.connectPlayer(matchId, playerId);
       this.matchManager.setMatchTickHandler(matchId, (matchState) => {
-        this.onMatchTick(matchId, matchState);
+        this.server.in(matchId).emit('match-tick', matchState);
       });
       client.join(matchId);
     } catch (e) {
       throw new WsException(e);
     }
-  }
-
-  private onMatchTick(matchId: string, matchState: any) {
-    this.server.in(matchId).emit('match-tick', matchState);
   }
 }

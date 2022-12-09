@@ -5,7 +5,7 @@ import { Match } from 'src/entities/match.entity';
 import { UsersModule } from 'src/users/users.module';
 import { MatchManagerController } from './match-manager.controller';
 import { MatchManagerGateway } from './match-manager.gateway';
-import { MatchManagerService } from './match-manager.service';
+import { MatchManagerService } from './match-manager';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Match]), UsersModule],

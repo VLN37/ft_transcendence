@@ -1,5 +1,5 @@
 import { Controller, Get, Logger, Query } from '@nestjs/common';
-import { MatchManagerService } from './match-manager.service';
+import { MatchManagerService } from './match-manager';
 import { MatchStage } from './model/MemoryMatch';
 
 @Controller('/matches')

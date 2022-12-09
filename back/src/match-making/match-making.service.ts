@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { MatchManagerService } from 'src/match-manager/match-manager.service';
+import { MatchManagerService } from 'src/match-manager/match-manager';
 import { MemoryMatch } from 'src/match-manager/model/MemoryMatch';
 import { UserDto } from 'src/users/dto/user.dto';
 import { MatchType, MATCH_TYPES } from './dto/AppendToQueueDTO';
