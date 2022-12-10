@@ -12,12 +12,12 @@ import {
   useDisclosure,
   useToast,
 } from '@chakra-ui/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Channel } from '../../models/Channel';
 import { TableUser } from '../../models/TableUser';
 import { emptyUser, User } from '../../models/User';
-import { channelApi, userApi } from '../../services/api_index';
+import { channelApi, chatApi, userApi } from '../../services/api_index';
 import userStorage from '../../services/userStorage';
 import { PublicProfile } from '../Profile/profile.public';
 
@@ -78,7 +78,7 @@ function UserDmMenu(props: {
     })
     if (response.status == 200) {
       me.friends.splice(me.friends.findIndex(i => i.id == props.user.id), 1);
-      await userStorage.saveUser(me);
+      userStorage.saveUser(me);
       props.setReload(!props.reload);
     }
   }
@@ -134,18 +134,19 @@ function PendingRequestMenu(props: {
 }) {
   const me: User = userStorage.getUser() || emptyUser();
 
-  function updateMe() {
+  async function updateMe() {
     me.friend_requests.splice(
       me.friend_requests.findIndex(user => user.id == props.user.id), 1
     )
     userStorage.saveUser(me);
+    // await userStorage.updateUser();
   }
 
   async function acceptFriend() {
     const response: any = await userApi.acceptFriend(me.id, props.user.id);
     if (response.status < 400) {
       me.friends.push(props.user2);
-      updateMe();
+      await updateMe();
       props.setReload(!props.reload)
     }
   }
@@ -153,7 +154,7 @@ function PendingRequestMenu(props: {
   async function rejectFriend() {
     const response: any = await userApi.rejectFriend(me.id, props.user.id);
     if (response.status < 400) {
-      updateMe();
+      await updateMe();
       props.setReload(!props.reload)
     }
   }
@@ -190,6 +191,19 @@ export function DmUsers(props: {
 }) {
   const [reload, setReload] = useState<boolean>(false);
   const me = userStorage.getUser() || emptyUser();
+
+  async function updateFriends(data: any) {
+    // for some reason this causes duplicate entries
+    // me.friend_requests.push(data.user);
+    // userStorage.saveUser(me);
+    await userStorage.updateUser();
+    setReload(!reload);
+  }
+
+  useEffect(() => {
+    chatApi.subscribeFriendRequest(updateFriends);
+    return () => chatApi.unsubscribeFriendRequest();
+  }, []);
 
   const userList = me.friends.map((user: User, i: number) => {
     const tableuser = TableUser(user);
