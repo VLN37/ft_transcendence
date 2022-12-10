@@ -5,6 +5,10 @@ export interface UserMessage {
   message: string;
 }
 
+export interface iFriendRequestWsPayload {
+  user: UserDto;
+}
+
 export interface iDirectMessage {
   id: number;
   sender: UserDto;

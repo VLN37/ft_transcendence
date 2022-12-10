@@ -13,7 +13,7 @@ import { TokenPayload } from 'src/auth/dto/TokenPayload';
 import { UsersService } from 'src/users/users.service';
 import { Server, Socket } from 'socket.io';
 import { DirectMessagesService } from './direct-messages.service';
-import { UserMessage } from './direct-messages.interface';
+import { iFriendRequestWsPayload, UserMessage } from './direct-messages.interface';
 
 @WebSocketGateway({
   namespace: '/direct_messages',
@@ -72,6 +72,12 @@ export class DirectMessagesGateway
     this.server.to(fromUser).emit('chat', newMessage);
     //receiver
     this.server.to(toUser).emit('chat', newMessage);
+  }
+
+  async pingFriendRequest(receiver: number, data: iFriendRequestWsPayload) {
+    const receiverSocket = this.usersSocketId[receiver];
+    if (!receiverSocket) return;
+    this.server.to(receiverSocket).emit('friend_request', data);
   }
 
   private validateConnection(client: Socket) {
