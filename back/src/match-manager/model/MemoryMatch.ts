@@ -1,17 +1,4 @@
-import { Logger } from '@nestjs/common';
 import { UserDto } from 'src/users/dto/user.dto';
-
-function seconds(secs: number) {
-  return secs * 1000;
-}
-
-function minutes(mins: number) {
-  return mins * seconds(60);
-}
-
-function hours(h: number) {
-  return h * minutes(60);
-}
 
 export type MatchStage =
   | 'AWAITING_PLAYERS'
