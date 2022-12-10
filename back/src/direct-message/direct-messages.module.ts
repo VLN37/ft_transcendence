@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DirectMessages } from 'src/entities/direct_messages.entity';
@@ -11,10 +11,10 @@ import { DirectMessagesService } from './direct-messages.service';
   imports: [
     TypeOrmModule.forFeature([DirectMessages]),
     JwtModule.register({}),
-    UsersModule,
+    forwardRef(() => UsersModule)
   ],
   controllers: [DirectMessagesController],
   providers: [DirectMessagesService, DirectMessagesGateway],
-  exports: [],
+  exports: [DirectMessagesGateway, DirectMessagesService],
 })
 export class DirectMessagesModule {}

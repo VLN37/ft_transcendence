@@ -35,7 +35,7 @@ export class ChannelsService {
     private bannedUsersRepository: Repository<BannedUsers>,
     private usersService: UsersService,
     private jwtService: JwtService,
-	@Inject(forwardRef(() => ChannelsSocketGateway))
+	  @Inject(forwardRef(() => ChannelsSocketGateway))
     private channelsSocketGateway: ChannelsSocketGateway,
   ) {}
 
