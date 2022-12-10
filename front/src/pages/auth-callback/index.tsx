@@ -53,8 +53,6 @@ const AuthCallback = ({ setUser }: any) => {
     try {
       const token = await api.authenticate2fa(tfaCode);
       api.setToken(token);
-      chatApi.setDMSocket(api);
-      mmApi.setMatchMakingSocket(api);
       const payload = jwtDecode<TokenPayload>(token);
       finishLogin(payload);
       setIsSending2fa(true);
