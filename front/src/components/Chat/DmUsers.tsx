@@ -77,8 +77,7 @@ function UserDmMenu(props: {
       description: message,
     })
     if (response.status == 200) {
-      me.friends.splice(me.friends.findIndex(i => i.id == props.user.id), 1);
-      userStorage.saveUser(me);
+      await userStorage.updateUser();
       props.setReload(!props.reload);
     }
   }
@@ -138,8 +137,8 @@ function PendingRequestMenu(props: {
     me.friend_requests.splice(
       me.friend_requests.findIndex(user => user.id == props.user.id), 1
     )
-    userStorage.saveUser(me);
-    // await userStorage.updateUser();
+    // userStorage.saveUser(me);
+    await userStorage.updateUser();
   }
 
   async function acceptFriend() {
@@ -147,7 +146,7 @@ function PendingRequestMenu(props: {
     if (response.status < 400) {
       me.friends.push(props.user2);
       await updateMe();
-      props.setReload(!props.reload)
+      props.setReload(!props.reload);
     }
   }
 
@@ -155,7 +154,7 @@ function PendingRequestMenu(props: {
     const response: any = await userApi.rejectFriend(me.id, props.user.id);
     if (response.status < 400) {
       await updateMe();
-      props.setReload(!props.reload)
+      props.setReload(!props.reload);
     }
   }
 
@@ -196,6 +195,8 @@ export function DmUsers(props: {
     // for some reason this causes duplicate entries
     // me.friend_requests.push(data.user);
     // userStorage.saveUser(me);
+
+    // console.log('callback called: ', data.user);
     await userStorage.updateUser();
     setReload(!reload);
   }

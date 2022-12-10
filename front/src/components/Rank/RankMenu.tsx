@@ -67,7 +67,7 @@ export function RankMenu(props: any) {
   }
 
   function sendUserMessage() {
-    chatApi.setDMSocket(api);
+    // chatApi.setDMSocket(api);
     navigate(`/dm?user=${props.id}`);
   }
 
