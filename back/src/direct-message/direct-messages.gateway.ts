@@ -52,15 +52,21 @@ export class DirectMessagesGateway
   async handleConnection(client: Socket) {
     const token = client.handshake.auth.token;
     const userId = (await this.usersService.getUserId(token)).toString();
+    const me = await this.usersService.getMe(token);
+    me.profile.status = 'ONLINE';
+    await this.usersService.update(me);
     this.usersSocketId[userId] = client.id;
-    this.logger.log(`Client connected ${client.id}`);
+    this.logger.log(`Client connected ${client.id} ${me.login_intra}`);
   }
 
   async handleDisconnect(client: Socket) {
     const token = client.handshake.auth.token;
     const userId = (await this.usersService.getUserId(token)).toString();
+    const me = await this.usersService.getMe(token);
+    me.profile.status = 'OFFLINE';
+    await this.usersService.update(me);
     delete this.usersSocketId[userId];
-    this.logger.log(`Client disconnected ${client.id}`);
+    this.logger.log(`Client disconnected ${client.id} ${me.login_intra}`);
   }
 
   @SubscribeMessage('chat')
