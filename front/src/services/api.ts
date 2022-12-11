@@ -2,6 +2,7 @@ import axios, { AxiosError } from 'axios';
 import { io, Socket } from 'socket.io-client';
 import { StatusCodes } from 'http-status-codes';
 import { ChannelRoomAuth, ChannelSocketResponse } from '../models/Channel';
+import { v4 as uuidV4 } from 'uuid';
 
 interface AuthenticationResponse {
   access_token: string;
@@ -30,6 +31,10 @@ export class Api {
 
   constructor() {
     console.log('Creating API class instance');
+    this.client.interceptors.request.use((config) => {
+      if (config.headers) config.headers['x-correlation-id'] = uuidV4();
+      return config;
+    });
   }
 
   getClient() {
