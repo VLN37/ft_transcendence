@@ -1,9 +1,19 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import GameWindow from '../../components/GameWindow';
+import GameWindow, { GameRules } from '../../components/GameWindow';
 import { MatchApi } from '../../services/matchApi';
 
 export default function MatchPage() {
+  const [rules, setRules] = useState<GameRules>();
+
+  useEffect(() => {
+    async function loadGameRules() {
+      const currentRules = await matchApi.getGameRules();
+      console.log('current rules', { currentRules });
+      setRules(currentRules.data);
+    }
+    loadGameRules();
+  }, []);
   const { match_id } = useParams();
   const matchApi = new MatchApi();
 
@@ -16,7 +26,7 @@ export default function MatchPage() {
 
   return (
     <div>
-      <GameWindow matchApi={matchApi} />
+      {(rules && <GameWindow matchApi={matchApi} rules={rules} />) || 'loading'}
     </div>
   );
 }

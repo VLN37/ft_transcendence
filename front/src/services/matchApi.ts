@@ -11,8 +11,7 @@ export class MatchApi {
   }
 
   connectToServer() {
-    const url =
-    `${process.env.REACT_APP_BACK_HOSTNAME}/${this.MATCH_MANAGER_NAMESPACE}`;
+    const url = `${process.env.REACT_APP_BACK_HOSTNAME}/${this.MATCH_MANAGER_NAMESPACE}`;
     const options = {
       auth: {
         token: api.getToken(),
@@ -48,6 +47,10 @@ export class MatchApi {
     this.matchSocket?.on('match-tick', (matchData) => {
       callback(matchData);
     });
+  }
+
+  getGameRules() {
+    return api.getClient().get('/matches/rules');
   }
 }
 

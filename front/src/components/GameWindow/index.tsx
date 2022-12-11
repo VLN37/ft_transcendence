@@ -7,42 +7,51 @@ import { MatchApi } from '../../services/matchApi';
 
 const BALL_RADIUS = 20;
 
+export type GameRules = {
+  worldWidth: number;
+  worldHeight: number;
+  whRatio: number;
+  ballStart: {
+    x: number;
+    y: number;
+  };
+  playerStart: number;
+  topCollisionEdge: number;
+  bottomCollisionEdge: number;
+  leftCollisionEdge: number;
+  rightCollisionEdge: number;
+};
+
 export type GameWindowProps = {
   matchApi: MatchApi;
+  rules: GameRules;
 };
 
 export default (props: GameWindowProps) => {
-  const whRatio = 858 / 525;
+  const { matchApi, rules } = props;
 
   const gameWindow = {
     width: 500,
     height: 500,
   };
 
-  const WORLD_WIDTH = 858;
-  const WORLD_HEIGHT = 525;
   let lastWindowWidth = -1;
   let lastWindowHeight = -1;
   let ball: Ball;
   let leftPlayer: Player;
   let rightPlayer: Player;
 
-  let upperBound = BALL_RADIUS;
-  let lowerBound = WORLD_HEIGHT - BALL_RADIUS;
-  let leftBound = BALL_RADIUS;
-  let rightBound = WORLD_WIDTH - BALL_RADIUS;
-
   let world: p5Types.Graphics;
 
   const setup = (p5: p5Types, canvasParentRef: Element) => {
     updateWindowProportions();
-    world = p5.createGraphics(WORLD_WIDTH, WORLD_HEIGHT);
+    world = p5.createGraphics(rules.worldWidth, rules.worldHeight);
     p5.createCanvas(gameWindow.width, gameWindow.height).parent(
       canvasParentRef,
     );
-    ball = new Ball(BALL_RADIUS, WORLD_WIDTH / 2, WORLD_HEIGHT / 2);
-    leftPlayer = new Player(PlayerSide.LEFT, 20);
-    rightPlayer = new Player(PlayerSide.RIGHT, 20);
+    ball = new Ball(BALL_RADIUS, rules.ballStart.x, rules.ballStart.y);
+    leftPlayer = new Player(PlayerSide.LEFT, rules.playerStart);
+    rightPlayer = new Player(PlayerSide.RIGHT, rules.playerStart);
   };
 
   const listenGameState = (state: MatchState) => {
@@ -52,7 +61,7 @@ export default (props: GameWindowProps) => {
     rightPlayer.y = state.p2;
   };
 
-  props.matchApi.setOnMatchTickListener(listenGameState);
+  matchApi.setOnMatchTickListener(listenGameState);
 
   const updateWindowProportions = () => {
     let currentWidth = window.innerWidth;
@@ -60,10 +69,10 @@ export default (props: GameWindowProps) => {
     lastWindowWidth = currentWidth;
     lastWindowHeight = currentHeight;
 
-    if (currentHeight * whRatio > currentWidth) {
-      currentHeight = currentWidth / whRatio;
+    if (currentHeight * rules.whRatio > currentWidth) {
+      currentHeight = currentWidth / rules.whRatio;
     } else {
-      currentWidth = currentHeight * whRatio;
+      currentWidth = currentHeight * rules.whRatio;
     }
     gameWindow.width = currentWidth;
     gameWindow.height = currentHeight;
@@ -88,23 +97,29 @@ export default (props: GameWindowProps) => {
     p5.resizeCanvas(gameWindow.width, gameWindow.height);
   };
 
-  const drawRightPlayer = (p5: p5Types) => {
+  const drawRightPlayer = () => {
     world.fill(50, 100, 200);
     world.rectMode('center');
     world.rect(world.width - 20, rightPlayer.y, 20, 100);
   };
 
-  const drawLeftPlayer = (p5: p5Types) => {
+  const drawLeftPlayer = () => {
     world.fill(240, 100, 30);
     world.rectMode('center');
     world.rect(20, leftPlayer.y, 20, 100);
   };
 
   const checkBallCollision = () => {
-    if (ball.position.y >= lowerBound || ball.position.y < upperBound) {
+    if (
+      ball.position.y >= rules.bottomCollisionEdge ||
+      ball.position.y < rules.topCollisionEdge
+    ) {
       ball.velocity.y = -ball.velocity.y;
     }
-    if (ball.position.x >= rightBound || ball.position.x < leftBound) {
+    if (
+      ball.position.x >= rules.rightCollisionEdge ||
+      ball.position.x < rules.leftCollisionEdge
+    ) {
       ball.velocity.x = -ball.velocity.x;
     }
   };
@@ -112,8 +127,8 @@ export default (props: GameWindowProps) => {
   let x = 0;
   const drawBall = () => {
     // ball.update();
-    const xRatio = (ball.position.x / WORLD_WIDTH) * 255;
-    const yRatio = (ball.position.y / WORLD_HEIGHT) * 255;
+    const xRatio = (ball.position.x / rules.worldWidth) * 255;
+    const yRatio = (ball.position.y / rules.worldHeight) * 255;
     world.fill(200 - xRatio, yRatio, xRatio);
     world.colorMode(world.HSL);
     world.fill(x, 80, 50);
@@ -136,8 +151,8 @@ export default (props: GameWindowProps) => {
     checkBallCollision();
     printFps();
     drawBall();
-    drawRightPlayer(p5);
-    drawLeftPlayer(p5);
+    drawRightPlayer();
+    drawLeftPlayer();
     p5.image(world, 0, 0, p5.width, p5.height);
   };
 

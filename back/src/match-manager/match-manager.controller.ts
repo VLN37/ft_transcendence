@@ -1,4 +1,5 @@
 import { Controller, Get, Logger, Query } from '@nestjs/common';
+import { rules } from './game/rules';
 import { MatchManager } from './match-manager';
 import { MatchStage } from './model/MemoryMatch';
 
@@ -19,5 +20,10 @@ export class MatchManagerController {
         .filter((match) => match.stage === stage);
     }
     return this.matchManager.getActiveMatches();
+  }
+
+  @Get('rules')
+  getRules() {
+    return rules;
   }
 }
