@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import {
   ConnectedSocket,
   MessageBody,
+  OnGatewayDisconnect,
   OnGatewayInit,
   SubscribeMessage,
   WebSocketGateway,
@@ -10,6 +11,7 @@ import {
   WsException,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
+import { UserDto } from 'src/users/dto/user.dto';
 import { UsersService } from 'src/users/users.service';
 import { validateWsJwt } from 'src/utils/functions/validateWsConnection';
 import { MatchManager } from './match-manager';
@@ -20,7 +22,7 @@ import { MatchManager } from './match-manager';
     origin: '*',
   },
 })
-export class MatchManagerGateway implements OnGatewayInit {
+export class MatchManagerGateway implements OnGatewayInit, OnGatewayDisconnect {
   private readonly logger = new Logger(MatchManagerGateway.name);
 
   @WebSocketServer()
@@ -66,5 +68,10 @@ export class MatchManagerGateway implements OnGatewayInit {
       this.logger.error('error connecting player', e);
       throw new WsException(e);
     }
+  }
+
+  handleDisconnect(client: Socket) {
+    const user: UserDto = client.handshake.auth['user'];
+    this.matchManager.disconnectPlayer(user.id);
   }
 }

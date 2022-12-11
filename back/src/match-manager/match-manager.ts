@@ -25,6 +25,7 @@ export class MatchManager {
   private readonly logger = new Logger('Match Manager');
 
   private activeMatches: ActiveMatch[] = [];
+  private connectedPlayers = {};
 
   constructor(
     @InjectRepository(Match)
@@ -83,9 +84,7 @@ export class MatchManager {
   }
 
   connectPlayer(matchId: string, playerId: number) {
-    const match = this.activeMatches.find(
-      (activeMatch) => activeMatch.match.id === matchId,
-    );
+    const match = this.findMatchById(matchId);
     if (!match) throw new Error('Match not found');
 
     if (
@@ -106,17 +105,29 @@ export class MatchManager {
       match.match.right_player_connected = true;
     }
 
+    this.connectedPlayers[playerId] = matchId;
+
     if (match.match.left_player_connected && match.match.right_player_connected)
       this.onBothPlayersConnected(match);
+  }
+
+  disconnectPlayer(userId: number) {
+    const matchId: string = this.connectedPlayers[userId];
+    const activeMatch = this.findMatchById(matchId);
+
+    if (userId === activeMatch.match.left_player.id) {
+      activeMatch.match.left_player_connected = false;
+    }
+    if (userId === activeMatch.match.right_player.id) {
+      activeMatch.match.right_player_connected = false;
+    }
   }
 
   setMatchTickHandler(
     matchId: string,
     notifyMatchState: (state: MatchState) => void,
   ) {
-    const activeMatch = this.activeMatches.find(
-      (activeMatch) => activeMatch.match.id === matchId,
-    );
+    const activeMatch = this.findMatchById(matchId);
 
     activeMatch.onServerTick = () => {
       activeMatch.match.update();
@@ -135,9 +146,14 @@ export class MatchManager {
   }
 
   private onBothPlayersConnected(match: ActiveMatch) {
-    this.logger.debug('both players connected');
-    clearTimeout(match.timers.waiting_timeout); // so we don't cancel the match
-    this.startPreparationTime(match);
+    // TODO: check if match was paused
+    if (match.match.stage == 'AWAITING_PLAYERS') {
+      this.logger.debug('both players connected');
+      clearTimeout(match.timers.waiting_timeout); // so we don't cancel the match
+      this.startPreparationTime(match);
+    } else {
+      this.logger.debug('pretend we are resuming the match');
+    }
   }
 
   private startPreparationTime(activeMatch: ActiveMatch) {
@@ -185,5 +201,11 @@ export class MatchManager {
   private finishMatch(match: ActiveMatch) {
     clearInterval(match.timers.tick);
     match.match.updateStage('FINISHED');
+  }
+
+  private findMatchById(matchId: string): ActiveMatch {
+    return this.activeMatches.find(
+      (activeMatch) => activeMatch.match.id === matchId,
+    );
   }
 }
