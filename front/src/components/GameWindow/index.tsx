@@ -60,8 +60,12 @@ export default (props: GameWindowProps) => {
   };
 
   const listenGameState = (state: MatchState) => {
-    ball.position.x = state.ball.x;
-    ball.position.y = state.ball.y;
+    console.log({ state });
+    const speed = state.ball.speed;
+    ball.position.x = state.ball.pos.x;
+    ball.position.y = state.ball.pos.y;
+    ball.velocity.x = state.ball.dir.x * speed * world.deltaTime;
+    ball.velocity.y = state.ball.dir.y * speed * world.deltaTime;
     leftPlayer.y = state.p1;
     rightPlayer.y = state.p2;
   };

@@ -2,9 +2,12 @@ import { Vector } from 'src/utils/classes/Vector';
 
 export class MatchState {
   ball: {
-    x: number;
-    y: number;
-    velocity: Vector;
+    pos: {
+      x: number;
+      y: number;
+    };
+    dir: Vector;
+    speed: number;
   };
   p1: number;
   p2: number;

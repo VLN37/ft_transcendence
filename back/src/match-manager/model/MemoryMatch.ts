@@ -51,11 +51,14 @@ export class MemoryMatch {
     this.state.p1 = rules.playerStart;
     this.state.p2 = rules.playerStart;
     const vec = Vector.random();
-    vec.mult(9);
+    // vec.mult(9);
     this.state.ball = {
-      x: rules.ballStart.position.x,
-      y: rules.ballStart.position.y,
-      velocity: vec,
+      pos: {
+        x: rules.ballStart.position.x,
+        y: rules.ballStart.position.y,
+      },
+      dir: vec,
+      speed: 9,
     };
   }
 
@@ -68,26 +71,27 @@ export class MemoryMatch {
     }
 
     this.checkBallCollision();
+    const speed = this.state.ball.speed;
     this.state.p1 += this.increment;
     this.state.p2 += this.increment;
-    this.state.ball.x += this.state.ball.velocity.x;
-    this.state.ball.y += this.state.ball.velocity.y;
+    this.state.ball.pos.x += this.state.ball.dir.x * speed;
+    this.state.ball.pos.y += this.state.ball.dir.y * speed;
   }
 
   private checkBallCollision() {
     const { ball } = this.state;
 
     if (
-      ball.x >= rules.rightCollisionEdge ||
-      ball.x <= rules.leftCollisionEdge
+      ball.pos.x >= rules.rightCollisionEdge ||
+      ball.pos.x <= rules.leftCollisionEdge
     ) {
-      this.state.ball.velocity.x *= -1;
+      this.state.ball.dir.x *= -1;
     }
     if (
-      ball.y <= rules.topCollisionEdge ||
-      ball.y >= rules.bottomCollisionEdge
+      ball.pos.y <= rules.topCollisionEdge ||
+      ball.pos.y >= rules.bottomCollisionEdge
     ) {
-      this.state.ball.velocity.y *= -1;
+      this.state.ball.dir.y *= -1;
     }
   }
 }
