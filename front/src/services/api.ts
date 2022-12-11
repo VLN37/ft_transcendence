@@ -120,14 +120,14 @@ export class Api {
   connectToDM() {
     this.dmSocket = io(
       `${process.env.REACT_APP_BACK_HOSTNAME}/${this.DM_NAMESPACE}`,
-    {
-      auth: { token: this.token },
-    });
+      {
+        auth: { token: this.token },
+      },
+    );
   }
 
   private connectToMatchMakingCoordinator() {
-    const url =
-      `${process.env.REACT_APP_BACK_HOSTNAME}/${this.MATCH_MAKING_NAMESPACE}`;
+    const url = `${process.env.REACT_APP_BACK_HOSTNAME}/${this.MATCH_MAKING_NAMESPACE}`;
     const options = {
       auth: {
         token: this.token,
@@ -154,6 +154,7 @@ export class Api {
   setToken(token: string) {
     this.client.defaults.headers['Authorization'] = `Bearer ${token}`;
     this.token = token;
+    localStorage.setItem('jwt-token', token);
     this.connectToMatchMakingCoordinator();
     this.connectToDM();
   }
@@ -167,7 +168,7 @@ export class Api {
   }
 
   getToken() {
-    return this.token;
+    return localStorage.getItem('jwt-token');
   }
 }
 
