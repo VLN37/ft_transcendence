@@ -42,11 +42,15 @@ export default (props: GameWindowProps) => {
 
   let lastWindowWidth = -1;
   let lastWindowHeight = -1;
+  let world: p5Types.Graphics;
+
   let ball: Ball;
   let leftPlayer: Player;
   let rightPlayer: Player;
 
-  let world: p5Types.Graphics;
+  ball = new Ball(BALL_RADIUS, rules.ballStart.position);
+  leftPlayer = new Player(PlayerSide.LEFT, rules.playerStart);
+  rightPlayer = new Player(PlayerSide.RIGHT, rules.playerStart);
 
   const setup = (p5: p5Types, canvasParentRef: Element) => {
     updateWindowProportions();
@@ -54,17 +58,15 @@ export default (props: GameWindowProps) => {
     p5.createCanvas(gameWindow.width, gameWindow.height).parent(
       canvasParentRef,
     );
-    ball = new Ball(BALL_RADIUS, rules.ballStart.position);
-    leftPlayer = new Player(PlayerSide.LEFT, rules.playerStart);
-    rightPlayer = new Player(PlayerSide.RIGHT, rules.playerStart);
   };
 
   const listenGameState = (state: MatchState) => {
     const speed = state.ball.speed;
     ball.position.x = state.ball.pos.x;
+
     ball.position.y = state.ball.pos.y;
-    ball.velocity.x = state.ball.dir.x * speed * world.deltaTime;
-    ball.velocity.y = state.ball.dir.y * speed * world.deltaTime;
+    ball.velocity.x = state.ball.dir.x;
+    ball.velocity.y = state.ball.dir.y;
     leftPlayer.y = state.p1;
     rightPlayer.y = state.p2;
   };
@@ -134,7 +136,7 @@ export default (props: GameWindowProps) => {
 
   let x = 0;
   const drawBall = () => {
-    // ball.update();
+    ball.update(world.deltaTime);
     const xRatio = (ball.position.x / rules.worldWidth) * 255;
     const yRatio = (ball.position.y / rules.worldHeight) * 255;
     world.fill(200 - xRatio, yRatio, xRatio);
@@ -153,12 +155,20 @@ export default (props: GameWindowProps) => {
     world.text('fps: ' + Math.round(1000 / world.deltaTime), 50, 50);
   };
 
+  const drawBallVelocity = () => {
+    world.stroke(255, 100, 255);
+    const x = ball.position.x + ball.velocity.x * ball.speed;
+    const y = ball.position.y + ball.velocity.y * ball.speed;
+    world.line(ball.position.x, ball.position.y, x, y);
+  };
+
   const draw = (p5: p5Types) => {
     resizeIfNecessary(p5);
     world.background(0);
     checkBallCollision();
     printFps();
     drawBall();
+    drawBallVelocity();
     drawRightPlayer();
     drawLeftPlayer();
     p5.image(world, 0, 0, p5.width, p5.height);

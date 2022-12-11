@@ -5,6 +5,7 @@ export class Ball {
   public radius: number;
   public position: p5Types.Vector;
   public velocity: p5Types.Vector;
+  public speed: number;
 
   constructor(radius: number, startingPosition: Tuple) {
     this.radius = radius;
@@ -12,9 +13,14 @@ export class Ball {
     this.position.x = startingPosition.x;
     this.position.y = startingPosition.y;
     this.velocity = new p5Types.Vector();
+    this.speed = 0;
   }
 
-  update() {
-    this.position.add(this.velocity);
+  update(deltaTime: number) {
+    const displacement = p5Types.Vector.mult(
+      this.velocity,
+      this.speed * deltaTime,
+    );
+    this.position.add(displacement);
   }
 }

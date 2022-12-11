@@ -115,6 +115,8 @@ export class MatchManager {
     const matchId: string = this.connectedPlayers[userId];
     const activeMatch = this.findMatchById(matchId);
 
+    if (!activeMatch) throw new Error('Match not found');
+
     if (userId === activeMatch.match.left_player.id) {
       activeMatch.match.left_player_connected = false;
     }

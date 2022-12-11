@@ -1,4 +1,3 @@
-import { faker } from '@faker-js/faker';
 import { Injectable, Logger, NestMiddleware } from '@nestjs/common';
 import { Request, Response } from 'express';
 
@@ -27,12 +26,4 @@ export class LoggerMiddleware implements NestMiddleware {
     });
     next();
   }
-}
-
-export function editFileName(req, file: Express.Multer.File, callback) {
-  const name = faker.random.alphaNumeric(20);
-  const fileExt = file.originalname.split('.').pop();
-  const filename = name + '.' + fileExt;
-  // console.log(file.filename);
-  callback(null, filename);
 }
