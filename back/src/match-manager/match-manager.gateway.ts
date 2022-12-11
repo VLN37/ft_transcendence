@@ -56,12 +56,14 @@ export class MatchManagerGateway implements OnGatewayInit {
     const user = client.handshake.auth.user;
     const playerId = user.id;
     try {
+      this.logger.debug('match id: ', matchId);
       this.matchManager.connectPlayer(matchId, playerId);
       this.matchManager.setMatchTickHandler(matchId, (matchState) => {
         this.server.in(matchId).emit('match-tick', matchState);
       });
       client.join(matchId);
     } catch (e) {
+      this.logger.error('error connecting player', e);
       throw new WsException(e);
     }
   }

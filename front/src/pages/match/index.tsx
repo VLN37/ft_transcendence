@@ -6,23 +6,27 @@ import { MatchApi } from '../../services/matchApi';
 export default function MatchPage() {
   const [rules, setRules] = useState<GameRules>();
 
-  useEffect(() => {
-    async function loadGameRules() {
-      const currentRules = await matchApi.getGameRules();
-      console.log('current rules', { currentRules });
-      setRules(currentRules.data);
-    }
-    loadGameRules();
-  }, []);
   const { match_id } = useParams();
-  const matchApi = new MatchApi();
 
   if (!match_id) {
     throw new Error('no match id to connect');
   }
-  matchApi.connectToServer();
-  matchApi.connectAsPlayer(match_id);
-  console.log('connected');
+
+  const [matchApi] = useState(new MatchApi());
+
+  // let matchApi: MatchApi = new MatchApi();
+
+  useEffect(() => {
+    async function loadGameRules() {
+      const currentRules = await matchApi.getGameRules();
+      console.log('rendering match page');
+      matchApi.connectToServer();
+      console.log('match id: ' + match_id);
+      matchApi.connectAsPlayer(match_id!);
+      setRules(currentRules.data);
+    }
+    loadGameRules();
+  }, []);
 
   return (
     <div>
