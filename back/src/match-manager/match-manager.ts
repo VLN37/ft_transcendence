@@ -94,11 +94,17 @@ export class MatchManager {
     )
       throw new Error('User is not a player');
 
-    if (playerId === match.match.left_player.id)
+    if (playerId === match.match.left_player.id) {
+      if (match.match.left_player_connected)
+        throw new Error('Player is already connected');
       match.match.left_player_connected = true;
+    }
 
-    if (playerId === match.match.right_player.id)
+    if (playerId === match.match.right_player.id) {
+      if (match.match.right_player_connected)
+        throw new Error('Player is already connected');
       match.match.right_player_connected = true;
+    }
 
     if (match.match.left_player_connected && match.match.right_player_connected)
       this.onBothPlayersConnected(match);
