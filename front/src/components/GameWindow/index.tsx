@@ -7,13 +7,18 @@ import { MatchApi } from '../../services/matchApi';
 
 const BALL_RADIUS = 20;
 
+export type Tuple = {
+  x: number;
+  y: number;
+};
+
 export type GameRules = {
   worldWidth: number;
   worldHeight: number;
   whRatio: number;
   ballStart: {
-    x: number;
-    y: number;
+    position: Tuple;
+    speed: number;
   };
   playerStart: number;
   topCollisionEdge: number;
@@ -49,7 +54,7 @@ export default (props: GameWindowProps) => {
     p5.createCanvas(gameWindow.width, gameWindow.height).parent(
       canvasParentRef,
     );
-    ball = new Ball(BALL_RADIUS, rules.ballStart.x, rules.ballStart.y);
+    ball = new Ball(BALL_RADIUS, rules.ballStart.position);
     leftPlayer = new Player(PlayerSide.LEFT, rules.playerStart);
     rightPlayer = new Player(PlayerSide.RIGHT, rules.playerStart);
   };

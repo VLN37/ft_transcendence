@@ -53,8 +53,8 @@ export class MemoryMatch {
     const vec = Vector.random();
     vec.mult(9);
     this.state.ball = {
-      x: rules.ballStart.x,
-      y: rules.ballStart.y,
+      x: rules.ballStart.position.x,
+      y: rules.ballStart.position.y,
       velocity: vec,
     };
   }
