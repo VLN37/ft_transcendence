@@ -76,7 +76,7 @@ function InputMessage(props: any) {
 function sendMessage(to: string) {
   const text = (document.getElementById('message') as HTMLInputElement).value;
   (document.getElementById('message') as HTMLInputElement).value = '';
-  chatApi.setChannelSocket(api);
+  // chatApi.setChannelSocket(api);
   chatApi.sendDirectMessage({ message: text, user_id: to });
   console.log('message sent');
 }

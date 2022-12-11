@@ -17,10 +17,21 @@ class UserStorage {
   async updateUser() {
     const response = await userApi.getUser('me');
     this.saveUser(response);
+    return response;
   }
 
   removeUser() {
     localStorage.removeItem('user');
+  }
+
+  getFriends() {
+    const user: User = JSON.parse(localStorage.getItem('user') || '');
+    return user.friends;
+  }
+
+  getRequests() {
+    const user: User = JSON.parse(localStorage.getItem('user') || '');
+    return user.friend_requests;
   }
 }
 

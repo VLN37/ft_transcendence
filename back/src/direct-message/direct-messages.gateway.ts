@@ -13,7 +13,7 @@ import { TokenPayload } from 'src/auth/dto/TokenPayload';
 import { UsersService } from 'src/users/users.service';
 import { Server, Socket } from 'socket.io';
 import { DirectMessagesService } from './direct-messages.service';
-import { UserMessage } from './direct-messages.interface';
+import { iFriendRequestWsPayload, UserMessage } from './direct-messages.interface';
 
 @WebSocketGateway({
   namespace: '/direct_messages',
@@ -52,15 +52,21 @@ export class DirectMessagesGateway
   async handleConnection(client: Socket) {
     const token = client.handshake.auth.token;
     const userId = (await this.usersService.getUserId(token)).toString();
+    const me = await this.usersService.getMe(token);
+    me.profile.status = 'ONLINE';
+    await this.usersService.update(me);
     this.usersSocketId[userId] = client.id;
-    this.logger.log(`Client connected ${client.id}`);
+    this.logger.log(`Client connected ${client.id} ${me.login_intra}`);
   }
 
   async handleDisconnect(client: Socket) {
     const token = client.handshake.auth.token;
     const userId = (await this.usersService.getUserId(token)).toString();
+    const me = await this.usersService.getMe(token);
+    me.profile.status = 'OFFLINE';
+    await this.usersService.update(me);
     delete this.usersSocketId[userId];
-    this.logger.log(`Client disconnected ${client.id}`);
+    this.logger.log(`Client disconnected ${client.id} ${me.login_intra}`);
   }
 
   @SubscribeMessage('chat')
@@ -72,6 +78,13 @@ export class DirectMessagesGateway
     this.server.to(fromUser).emit('chat', newMessage);
     //receiver
     this.server.to(toUser).emit('chat', newMessage);
+  }
+
+  async pingFriendRequest(receiver: number, data: iFriendRequestWsPayload) {
+    const receiverSocket = this.usersSocketId[receiver];
+    // this.logger.error('socket: ', receiverSocket);
+    if (!receiverSocket) return;
+    this.server.to(receiverSocket).emit('friend_request', data);
   }
 
   private validateConnection(client: Socket) {

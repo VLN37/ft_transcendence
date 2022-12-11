@@ -10,13 +10,17 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
+import { DirectMessagesGateway } from 'src/direct-message/direct-messages.gateway';
 import { FriendRequestsService } from './friend_requests.service';
 
 @Controller('/users/:me/friend_requests')
 export class FriendRequestsController {
   private readonly logger = new Logger(FriendRequestsController.name);
 
-  constructor(private readonly friendRequestsService: FriendRequestsService) {}
+  constructor(
+    private readonly friendRequestsService: FriendRequestsService,
+    private readonly dmGateway: DirectMessagesGateway
+  ) {}
 
   @HttpCode(200)
   @Post()
