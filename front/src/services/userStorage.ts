@@ -1,5 +1,5 @@
 import { User } from '../models/User';
-import { userApi } from "./api_index"
+import { userApi } from './api_index';
 
 class UserStorage {
   getUser(): User | null {
@@ -22,16 +22,6 @@ class UserStorage {
 
   removeUser() {
     localStorage.removeItem('user');
-  }
-
-  getFriends() {
-    const user: User = JSON.parse(localStorage.getItem('user') || '');
-    return user.friends;
-  }
-
-  getRequests() {
-    const user: User = JSON.parse(localStorage.getItem('user') || '');
-    return user.friend_requests;
   }
 }
 
