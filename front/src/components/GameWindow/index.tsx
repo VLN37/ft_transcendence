@@ -156,10 +156,21 @@ export default (props: GameWindowProps) => {
   };
 
   const drawBallVelocity = () => {
+    world.push();
     world.stroke(255, 100, 255);
-    const x = ball.position.x + ball.velocity.x * ball.speed;
-    const y = ball.position.y + ball.velocity.y * ball.speed;
-    world.line(ball.position.x, ball.position.y, x, y);
+    world.fill('green');
+    world.strokeWeight(2);
+    const line = {
+      x: ball.velocity.x * ball.radius * 2,
+      y: ball.velocity.y * ball.radius * 2,
+    };
+    world.translate(ball.position.x, ball.position.y);
+    world.line(0, 0, line.x, line.y);
+    world.rotate(ball.velocity.heading());
+    let arrowSize = 7;
+    world.translate(ball.velocity.mag() * ball.radius * 2 - arrowSize, 0);
+    world.triangle(0, arrowSize / 2, 0, -arrowSize / 2, arrowSize, 0);
+    world.pop();
   };
 
   const draw = (p5: p5Types) => {
