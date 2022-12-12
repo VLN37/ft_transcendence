@@ -1,6 +1,6 @@
 import { io, Socket } from 'socket.io-client';
+import { MatchState } from '../game/model/MatchState';
 import api from './api';
-import { MatchState } from '../components/GameWindow/model/MatchState';
 
 export class MatchApi {
   private readonly MATCH_MANAGER_NAMESPACE = 'match-manager';
