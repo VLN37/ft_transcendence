@@ -1,32 +1,13 @@
 import Sketch from 'react-p5';
 import p5Types from 'p5';
-import { Ball } from './model/Ball';
-import { MatchState } from './model/MatchState';
-import { Player, PlayerSide } from './model/Player';
+import { Ball } from '../../game/model/Ball';
+import { MatchState } from '../../game/model/MatchState';
+import { Player, PlayerSide } from '../../game/model/Player';
 import { MatchApi } from '../../services/matchApi';
+import { GameRules } from '../../game/model/GameRules';
+import { checkBallCollision } from '../../game/collisions';
 
 const BALL_RADIUS = 20;
-
-export type Tuple = {
-  x: number;
-  y: number;
-};
-
-export type GameRules = {
-  worldWidth: number;
-  worldHeight: number;
-  whRatio: number;
-  ballStart: {
-    position: Tuple;
-    speed: number;
-  };
-  maxSpeed: number;
-  playerStart: number;
-  topCollisionEdge: number;
-  bottomCollisionEdge: number;
-  leftCollisionEdge: number;
-  rightCollisionEdge: number;
-};
 
 export type GameWindowProps = {
   matchApi: MatchApi;
@@ -121,21 +102,6 @@ export default (props: GameWindowProps) => {
     world.rect(20, leftPlayer.y, 20, 100);
   };
 
-  const checkBallCollision = () => {
-    if (
-      ball.position.y >= rules.bottomCollisionEdge ||
-      ball.position.y < rules.topCollisionEdge
-    ) {
-      ball.velocity.y = -ball.velocity.y;
-    }
-    if (
-      ball.position.x >= rules.rightCollisionEdge ||
-      ball.position.x < rules.leftCollisionEdge
-    ) {
-      ball.velocity.x = -ball.velocity.x;
-    }
-  };
-
   const drawBall = () => {
     ball.update(world.deltaTime);
     world.fill(100, 80, 150);
@@ -221,7 +187,7 @@ export default (props: GameWindowProps) => {
   const draw = (p5: p5Types) => {
     resizeIfNecessary(p5);
     world.background(0);
-    checkBallCollision();
+    checkBallCollision(ball, rules);
     printFps();
     drawBall();
     drawBallVelocity();

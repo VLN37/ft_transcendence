@@ -1,5 +1,5 @@
 import p5Types from 'p5';
-import { Tuple } from '..';
+import { Tuple } from './GameRules';
 
 export class Ball {
   public radius: number;

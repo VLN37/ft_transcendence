@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import GameWindow, { GameRules } from '../../components/GameWindow';
+import GameWindow from '../../components/GameWindow';
+import { GameRules } from '../../game/model/GameRules';
 import { MatchApi } from '../../services/matchApi';
 
 export default function MatchPage() {
