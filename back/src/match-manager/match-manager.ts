@@ -4,7 +4,7 @@ import { Match } from 'src/entities/match.entity';
 import { UserDto } from 'src/users/dto/user.dto';
 import { minutes, seconds } from 'src/utils/functions/timeConvertion';
 import { Repository } from 'typeorm';
-import { NOTIFICATIONS_PER_SECOND, TICKS_PER_SECOND } from './game/rules';
+import { NOTIFICATIONS_PER_SECOND, UPDATES_PER_SECOND } from './game/rules';
 import { MatchState } from './model/MatchState';
 import { MemoryMatch } from './model/MemoryMatch';
 
@@ -194,7 +194,7 @@ export class MatchManager {
 
     match.timers.update = setInterval(() => {
       match.onMatchUpdate();
-    }, 1000 / TICKS_PER_SECOND);
+    }, 1000 / UPDATES_PER_SECOND);
 
     match.timers.notify = setInterval(() => {
       match.onServerNotify();
