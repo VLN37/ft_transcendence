@@ -20,6 +20,7 @@ export type GameRules = {
     position: Tuple;
     speed: number;
   };
+  maxSpeed: number;
   playerStart: number;
   topCollisionEdge: number;
   bottomCollisionEdge: number;
@@ -61,12 +62,13 @@ export default (props: GameWindowProps) => {
   };
 
   const listenGameState = (state: MatchState) => {
-    const speed = state.ball.speed;
-    ball.position.x = state.ball.pos.x;
+    ball.speed = state.ball.speed;
 
+    ball.position.x = state.ball.pos.x;
     ball.position.y = state.ball.pos.y;
     ball.velocity.x = state.ball.dir.x;
     ball.velocity.y = state.ball.dir.y;
+
     leftPlayer.y = state.p1;
     rightPlayer.y = state.p2;
   };
@@ -134,25 +136,32 @@ export default (props: GameWindowProps) => {
     }
   };
 
-  let x = 0;
   const drawBall = () => {
     ball.update(world.deltaTime);
-    const xRatio = (ball.position.x / rules.worldWidth) * 255;
-    const yRatio = (ball.position.y / rules.worldHeight) * 255;
-    world.fill(200 - xRatio, yRatio, xRatio);
-    world.colorMode(world.HSL);
-    world.fill(x, 80, 50);
-    x += 3;
-    if (x > 355) x = 0;
+    world.fill(100, 80, 150);
     world.colorMode(world.RGB, 255);
     const size = ball.radius * 2;
     world.ellipse(ball.position.x, ball.position.y, size, size);
   };
 
+  let fpsCounter = 0;
+  let pxPerSecond = 0;
+  let distanceCounter = 0;
   const printFps = () => {
-    world.textSize(32);
-    world.fill(0, 102, 153);
-    world.text('fps: ' + Math.round(1000 / world.deltaTime), 50, 50);
+    fpsCounter++;
+    if (fpsCounter == 60) {
+      fpsCounter = 0;
+      pxPerSecond = distanceCounter;
+      distanceCounter = 0;
+    }
+    const deltaSpeed = (ball.speed * world.deltaTime) / 1000;
+    distanceCounter += deltaSpeed;
+    world.textSize(18);
+    world.fill(40, 132, 183);
+    world.text('fps: ' + (1000 / world.deltaTime).toFixed(2), 50, 40);
+    world.text('ball speed: ' + ball.speed, 50, 60);
+    world.text('ball delta speed: ' + deltaSpeed.toFixed(2), 50, 80);
+    world.text('ball distance in last 1s: ' + pxPerSecond.toFixed(2), 50, 100);
   };
 
   const drawBallVelocity = () => {
@@ -173,6 +182,42 @@ export default (props: GameWindowProps) => {
     world.pop();
   };
 
+  let fillMeter = 0;
+  const drawRuler = () => {
+    world.push();
+    world.rectMode('corner');
+    world.fill(0);
+    world.stroke(230, 150, 23);
+    const posX = 250;
+    const posY = 10;
+    const width = 250;
+    const height = 15;
+    world.rect(posX, posY, width, height);
+    world.fill(230, 200, 53);
+    fillMeter += (ball.speed * world.deltaTime) / 1000;
+    world.rect(posX + 1, posY + 1, fillMeter, height - 2);
+    if (fillMeter > width - 2) fillMeter = 0;
+    world.pop();
+  };
+
+  const drawSpeedMeter = () => {
+    world.push();
+    world.rectMode('corner');
+    world.fill(0);
+    world.stroke(230, 150, 23);
+    const posX = 250;
+    const posY = 30;
+    const width = 250;
+    const height = 15;
+    const speedRatio = ball.speed / rules.maxSpeed;
+    world.rect(posX, posY, width, height);
+    world.stroke(0);
+    world.fill(speedRatio * 255, 255 - speedRatio * 200, 13);
+    world.rect(posX + 1, posY + 1, speedRatio * width, height - 2);
+    world.text(ball.speed + 'px/s', posX + width + 10, posY + height);
+    world.pop();
+  };
+
   const draw = (p5: p5Types) => {
     resizeIfNecessary(p5);
     world.background(0);
@@ -182,6 +227,8 @@ export default (props: GameWindowProps) => {
     drawBallVelocity();
     drawRightPlayer();
     drawLeftPlayer();
+    drawRuler();
+    drawSpeedMeter();
     p5.image(world, 0, 0, p5.width, p5.height);
   };
 

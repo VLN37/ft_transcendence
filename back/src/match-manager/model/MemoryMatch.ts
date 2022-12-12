@@ -27,6 +27,8 @@ export class MemoryMatch {
 
   onStageChange: (stage: MatchStage) => void;
 
+  private lastUpdate: number; // for delta time
+
   constructor(id: string, leftPlayer: UserDto, rightPlayer: UserDto) {
     this.id = id;
     this.left_player = leftPlayer;
@@ -51,19 +53,24 @@ export class MemoryMatch {
     this.state.p1 = rules.playerStart;
     this.state.p2 = rules.playerStart;
     const vec = Vector.random();
-    // vec.mult(9);
+    // const vec = new Vector(1, 0);
+    this.lastUpdate = Date.now();
     this.state.ball = {
       pos: {
         x: rules.ballStart.position.x,
         y: rules.ballStart.position.y,
       },
       dir: vec,
-      speed: 9,
+      speed: rules.ballStart.speed,
     };
   }
 
-  increment = 1;
+  private increment = 1;
   update() {
+    const now = Date.now();
+    const deltaTime = now - this.lastUpdate;
+    this.lastUpdate = now;
+
     if (this.state.p1 <= rules.topCollisionEdge) {
       this.increment = +1;
     } else if (this.state.p1 >= rules.bottomCollisionEdge) {
@@ -71,7 +78,7 @@ export class MemoryMatch {
     }
 
     this.checkBallCollision();
-    const speed = this.state.ball.speed;
+    const speed = (this.state.ball.speed * deltaTime) / 1000;
     this.state.p1 += this.increment;
     this.state.p2 += this.increment;
     this.state.ball.pos.x += this.state.ball.dir.x * speed;
@@ -86,12 +93,20 @@ export class MemoryMatch {
       ball.pos.x <= rules.leftCollisionEdge
     ) {
       this.state.ball.dir.x *= -1;
+      this.increaseSpeed();
     }
     if (
       ball.pos.y <= rules.topCollisionEdge ||
       ball.pos.y >= rules.bottomCollisionEdge
     ) {
       this.state.ball.dir.y *= -1;
+      this.increaseSpeed();
+    }
+  }
+
+  private increaseSpeed() {
+    if (this.state.ball.speed < rules.maxSpeed) {
+      this.state.ball.speed += 50;
     }
   }
 }

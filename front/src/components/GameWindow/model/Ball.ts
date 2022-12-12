@@ -19,7 +19,7 @@ export class Ball {
   update(deltaTime: number) {
     const displacement = p5Types.Vector.mult(
       this.velocity,
-      this.speed * deltaTime,
+      (this.speed * deltaTime) / 1000,
     );
     this.position.add(displacement);
   }

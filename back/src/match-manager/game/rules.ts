@@ -1,6 +1,9 @@
 const WIDTH = 858;
 const HEIGHT = 525;
 const BALL_RADIUS = 20;
+const BALL_INITIAL_SPEED = 250; // world units per second
+
+export const TICKS_PER_SECOND = 20;
 
 export type Tuple = {
   x: number;
@@ -15,6 +18,7 @@ export type GameRules = {
     position: Tuple;
     speed: number;
   };
+  maxSpeed: number;
   playerStart: number;
   topCollisionEdge: number;
   bottomCollisionEdge: number;
@@ -31,8 +35,9 @@ export const rules: GameRules = {
       x: WIDTH / 2,
       y: HEIGHT / 2,
     },
-    speed: 9, // world units per second
+    speed: BALL_INITIAL_SPEED,
   },
+  maxSpeed: 1000,
   playerStart: HEIGHT / 2,
   topCollisionEdge: BALL_RADIUS,
   bottomCollisionEdge: HEIGHT - BALL_RADIUS,

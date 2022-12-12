@@ -4,10 +4,9 @@ import { Match } from 'src/entities/match.entity';
 import { UserDto } from 'src/users/dto/user.dto';
 import { minutes, seconds } from 'src/utils/functions/timeConvertion';
 import { Repository } from 'typeorm';
+import { TICKS_PER_SECOND } from './game/rules';
 import { MatchState } from './model/MatchState';
 import { MemoryMatch } from './model/MemoryMatch';
-
-export const TICKS_PER_SECOND = 20;
 
 export type ActiveMatch = {
   timers: {
@@ -181,6 +180,7 @@ export class MatchManager {
 
   private startMatch(match: ActiveMatch) {
     match.match.updateStage('ONGOING');
+    match.match.resetPositions();
 
     const end_at = new Date();
     end_at.setMinutes(end_at.getMinutes() + 5);
