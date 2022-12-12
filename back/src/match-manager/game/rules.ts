@@ -3,7 +3,8 @@ const HEIGHT = 525;
 const BALL_RADIUS = 20;
 const BALL_INITIAL_SPEED = 250; // world units per second
 
-export const TICKS_PER_SECOND = 20;
+export const TICKS_PER_SECOND = 60;
+export const NOTIFICATIONS_PER_SECOND = 20;
 
 export type Tuple = {
   x: number;

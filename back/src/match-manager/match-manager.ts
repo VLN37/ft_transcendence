@@ -4,7 +4,7 @@ import { Match } from 'src/entities/match.entity';
 import { UserDto } from 'src/users/dto/user.dto';
 import { minutes, seconds } from 'src/utils/functions/timeConvertion';
 import { Repository } from 'typeorm';
-import { TICKS_PER_SECOND } from './game/rules';
+import { NOTIFICATIONS_PER_SECOND, TICKS_PER_SECOND } from './game/rules';
 import { MatchState } from './model/MatchState';
 import { MemoryMatch } from './model/MemoryMatch';
 
@@ -13,9 +13,11 @@ export type ActiveMatch = {
     waiting_timeout?: NodeJS.Timeout;
     preparation?: NodeJS.Timeout;
     ongoing?: NodeJS.Timeout;
-    tick?: NodeJS.Timer;
+    update?: NodeJS.Timer;
+    notify?: NodeJS.Timer;
   };
-  onServerTick?: () => void;
+  onMatchUpdate?: () => void;
+  onServerNotify?: () => void;
   match: MemoryMatch;
 };
 
@@ -130,9 +132,12 @@ export class MatchManager {
   ) {
     const activeMatch = this.findMatchById(matchId);
 
-    activeMatch.onServerTick = () => {
-      activeMatch.match.update();
+    activeMatch.onServerNotify = () => {
       notifyMatchState(activeMatch.match.state);
+    };
+
+    activeMatch.onMatchUpdate = () => {
+      activeMatch.match.update();
     };
   }
 
@@ -187,9 +192,14 @@ export class MatchManager {
     this.logger.debug('match finishes at ' + end_at.toISOString());
     match.match.ends_at = end_at;
 
-    match.timers.tick = setInterval(() => {
-      match.onServerTick();
+    match.timers.update = setInterval(() => {
+      match.onMatchUpdate();
     }, 1000 / TICKS_PER_SECOND);
+
+    match.timers.notify = setInterval(() => {
+      match.onServerNotify();
+    }, 1000 / NOTIFICATIONS_PER_SECOND);
+
     const onMatchFinished = () => {
       this.logger.debug(
         'match finished exactly at ' + new Date().toISOString(),
@@ -201,7 +211,7 @@ export class MatchManager {
   }
 
   private finishMatch(match: ActiveMatch) {
-    clearInterval(match.timers.tick);
+    clearInterval(match.timers.update);
     match.match.updateStage('FINISHED');
   }
 
