@@ -6,6 +6,7 @@ import { User } from '../models/User';
 import api from './api';
 import { Api } from './api';
 import userStorage from './userStorage';
+import { Channel } from '../models/Channel';
 
 class ChatApi {
   private client: AxiosInstance;
@@ -20,6 +21,12 @@ class ChatApi {
 
   disconnect() {
     this.channelSocket?.disconnect();
+  }
+
+  async leave(id: number) {
+    const response = await this.client.delete(`/channels/${id}/leave`, {});
+    userStorage.updateUser();
+    return response;
   }
 
   setChannelSocket(instance: Api) {
@@ -52,6 +59,7 @@ class ChatApi {
   }
 
   subscribeJoin(callback: any) {
+    userStorage.updateUser();
     console.log('callback registered');
     this.channelSocket?.on('join', (response: any) => {
       console.log('callback called');
@@ -90,6 +98,12 @@ class ChatApi {
 
   async getChannelMessages(id: string): Promise<Message[]> {
     const response = await this.client.get(`/channels/${id}/messages`, {});
+    // console.log(response.data);
+    return response.data;
+  }
+
+  async getChannel(id: string): Promise<Channel> {
+    const response = await this.client.get(`/channels/${id}`, {});
     // console.log(response.data);
     return response.data;
   }

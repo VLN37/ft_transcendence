@@ -17,7 +17,7 @@ export class ChannelMessages {
   @JoinColumn({ name: 'user_id' })
   user: Partial<User>;
 
-  @ManyToOne(() => Channel)
+  @ManyToOne(() => Channel, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'channel_id' })
   channel: Partial<Channel>;
 

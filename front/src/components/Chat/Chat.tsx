@@ -134,6 +134,9 @@ export default function Chat(props: Channel) {
     chatApi.subscribeLeave((data: any) => {
       if (data.user.id == myId) chatApi.disconnect();
       else delUserChannelList(data);
+      chatApi.getChannel(channel.id.toString()).then((channel: Channel) => {
+        setChannel(channel);
+      });
     });
 
     return () => {
