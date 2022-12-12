@@ -89,15 +89,15 @@ export class MemoryMatch {
     const { ball } = this.state;
 
     if (
-      ball.pos.x >= rules.rightCollisionEdge ||
-      ball.pos.x <= rules.leftCollisionEdge
+      (ball.pos.x <= rules.leftCollisionEdge && ball.dir.x < 0) ||
+      (ball.pos.x >= rules.rightCollisionEdge && ball.dir.x > 0)
     ) {
       this.state.ball.dir.x *= -1;
       this.increaseSpeed();
     }
     if (
-      ball.pos.y <= rules.topCollisionEdge ||
-      ball.pos.y >= rules.bottomCollisionEdge
+      (ball.pos.y <= rules.topCollisionEdge && ball.dir.y < 0) ||
+      (ball.pos.y >= rules.bottomCollisionEdge && ball.dir.y > 0)
     ) {
       this.state.ball.dir.y *= -1;
       this.increaseSpeed();
