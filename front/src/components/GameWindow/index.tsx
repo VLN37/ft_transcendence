@@ -7,8 +7,6 @@ import { MatchApi } from '../../services/matchApi';
 import { GameRules } from '../../game/model/GameRules';
 import { checkBallCollision } from '../../game/collisions';
 
-const BALL_RADIUS = 20;
-
 export type GameWindowProps = {
   matchApi: MatchApi;
   rules: GameRules;
@@ -30,7 +28,7 @@ export default (props: GameWindowProps) => {
   let leftPlayer: Player;
   let rightPlayer: Player;
 
-  ball = new Ball(BALL_RADIUS, rules.ballStart.position);
+  ball = new Ball(rules.ballRadius, rules.ballStart.position);
   leftPlayer = new Player(PlayerSide.LEFT, rules.playerStart);
   rightPlayer = new Player(PlayerSide.RIGHT, rules.playerStart);
 
