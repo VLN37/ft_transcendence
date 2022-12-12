@@ -28,9 +28,9 @@ async function bootstrap() {
   await app.listen(3000);
 
   // hot reload related instructions
-  if (module.hot) {
-    module.hot.accept();
-    module.hot.dispose(() => app.close());
-  }
+  // if (module.hot) {
+  //   module.hot.accept();
+  //   module.hot.dispose(() => app.close());
+  // }
 }
 bootstrap();

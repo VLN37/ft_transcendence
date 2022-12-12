@@ -14,7 +14,6 @@ import CommunityPage from './pages/community';
 import RankPage from './pages/rank';
 import ChatPage from './pages/chat';
 import LoginPage from './pages/login';
-import { useState } from 'react';
 import AuthCallback from './pages/auth-callback';
 import MatchPage from './pages/match';
 import DirectMessagePage from './pages/direct-message';
@@ -27,20 +26,18 @@ type User = {
 };
 
 type ProtectedRouteArgs = {
-  user: User | null;
   children: any;
 };
 
-const ProtectedRoute = ({ user, children }: ProtectedRouteArgs) => {
-  if (!user) {
+const ProtectedRoute = ({ children }: ProtectedRouteArgs) => {
+  const token = localStorage.getItem('jwt-token');
+  if (!token) {
     return <Navigate to="/login" replace />;
   }
   return children || <Outlet />;
 };
 
 function App() {
-  const [user, setUser] = useState<User | null>(null);
-
   return (
     <ChakraProvider theme={theme}>
       <BrowserRouter>
@@ -48,10 +45,10 @@ function App() {
           <Route
             path="/"
             element={
-              <ProtectedRoute user={user}>
+              <ProtectedRoute>
                 {/* HACK: this is used so the user can be saved on memory */
                 /* FIXME: get the user from the local storage */}
-                <Layout setUser={setUser} />
+                <Layout />
               </ProtectedRoute>
             }
           >
@@ -64,11 +61,8 @@ function App() {
 
           <Route path="match/:match_id" element={<MatchPage />} />
 
-          <Route path="/login" element={<LoginPage user={user} />} />
-          <Route
-            path="/auth-callback"
-            element={<AuthCallback setUser={setUser} />}
-          />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/auth-callback" element={<AuthCallback />} />
         </Routes>
       </BrowserRouter>
     </ChakraProvider>

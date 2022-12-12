@@ -1,29 +1,79 @@
 import Sketch from 'react-p5';
 import p5Types from 'p5';
 import { Ball } from './model/Ball';
+import { MatchState } from './model/MatchState';
+import { Player, PlayerSide } from './model/Player';
+import { MatchApi } from '../../services/matchApi';
 
 const BALL_RADIUS = 20;
 
-export default (props: any) => {
-  const whRatio = 858 / 525;
+export type Tuple = {
+  x: number;
+  y: number;
+};
+
+export type GameRules = {
+  worldWidth: number;
+  worldHeight: number;
+  whRatio: number;
+  ballStart: {
+    position: Tuple;
+    speed: number;
+  };
+  maxSpeed: number;
+  playerStart: number;
+  topCollisionEdge: number;
+  bottomCollisionEdge: number;
+  leftCollisionEdge: number;
+  rightCollisionEdge: number;
+};
+
+export type GameWindowProps = {
+  matchApi: MatchApi;
+  rules: GameRules;
+};
+
+export default (props: GameWindowProps) => {
+  const { matchApi, rules } = props;
 
   const gameWindow = {
     width: 500,
     height: 500,
   };
 
-  const WORLD_WIDTH = 858;
-  const WORLD_HEIGHT = 525;
   let lastWindowWidth = -1;
   let lastWindowHeight = -1;
-  let ball: Ball;
-
-  let upperBound = BALL_RADIUS;
-  let lowerBound = WORLD_HEIGHT - BALL_RADIUS;
-  let leftBound = BALL_RADIUS;
-  let rightBound = WORLD_WIDTH - BALL_RADIUS;
-
   let world: p5Types.Graphics;
+
+  let ball: Ball;
+  let leftPlayer: Player;
+  let rightPlayer: Player;
+
+  ball = new Ball(BALL_RADIUS, rules.ballStart.position);
+  leftPlayer = new Player(PlayerSide.LEFT, rules.playerStart);
+  rightPlayer = new Player(PlayerSide.RIGHT, rules.playerStart);
+
+  const setup = (p5: p5Types, canvasParentRef: Element) => {
+    updateWindowProportions();
+    world = p5.createGraphics(rules.worldWidth, rules.worldHeight);
+    p5.createCanvas(gameWindow.width, gameWindow.height).parent(
+      canvasParentRef,
+    );
+  };
+
+  const listenGameState = (state: MatchState) => {
+    ball.speed = state.ball.speed;
+
+    ball.position.x = state.ball.pos.x;
+    ball.position.y = state.ball.pos.y;
+    ball.velocity.x = state.ball.dir.x;
+    ball.velocity.y = state.ball.dir.y;
+
+    leftPlayer.y = state.p1;
+    rightPlayer.y = state.p2;
+  };
+
+  matchApi.setOnMatchTickListener(listenGameState);
 
   const updateWindowProportions = () => {
     let currentWidth = window.innerWidth;
@@ -31,10 +81,10 @@ export default (props: any) => {
     lastWindowWidth = currentWidth;
     lastWindowHeight = currentHeight;
 
-    if (currentHeight * whRatio > currentWidth) {
-      currentHeight = currentWidth / whRatio;
+    if (currentHeight * rules.whRatio > currentWidth) {
+      currentHeight = currentWidth / rules.whRatio;
     } else {
-      currentWidth = currentHeight * whRatio;
+      currentWidth = currentHeight * rules.whRatio;
     }
     gameWindow.width = currentWidth;
     gameWindow.height = currentHeight;
@@ -45,15 +95,6 @@ export default (props: any) => {
       x: (p5.mouseX * world.width) / gameWindow.width,
       y: (p5.mouseY * world.height) / gameWindow.height,
     };
-  };
-
-  const setup = (p5: p5Types, canvasParentRef: Element) => {
-    updateWindowProportions();
-    world = p5.createGraphics(WORLD_WIDTH, WORLD_HEIGHT);
-    p5.createCanvas(gameWindow.width, gameWindow.height).parent(
-      canvasParentRef,
-    );
-    ball = new Ball(BALL_RADIUS, WORLD_WIDTH / 2, WORLD_HEIGHT / 2);
   };
 
   const resizeIfNecessary = (p5: p5Types) => {
@@ -68,46 +109,113 @@ export default (props: any) => {
     p5.resizeCanvas(gameWindow.width, gameWindow.height);
   };
 
-  const drawRightPlayer = (p5: p5Types) => {
+  const drawRightPlayer = () => {
     world.fill(50, 100, 200);
     world.rectMode('center');
-    world.rect(world.width - 20, worldMouse(p5).y, 20, 100);
+    world.rect(world.width - 20, rightPlayer.y, 20, 100);
   };
 
-  const drawLeftPlayer = (p5: p5Types) => {
+  const drawLeftPlayer = () => {
     world.fill(240, 100, 30);
     world.rectMode('center');
-    world.rect(20, world.height - worldMouse(p5).y, 20, 100);
+    world.rect(20, leftPlayer.y, 20, 100);
   };
 
   const checkBallCollision = () => {
-    if (ball.position.y >= lowerBound || ball.position.y < upperBound) {
+    if (
+      ball.position.y >= rules.bottomCollisionEdge ||
+      ball.position.y < rules.topCollisionEdge
+    ) {
       ball.velocity.y = -ball.velocity.y;
     }
-    if (ball.position.x >= rightBound || ball.position.x < leftBound) {
+    if (
+      ball.position.x >= rules.rightCollisionEdge ||
+      ball.position.x < rules.leftCollisionEdge
+    ) {
       ball.velocity.x = -ball.velocity.x;
     }
   };
 
-  let x = 0;
   const drawBall = () => {
-    ball.update();
-    const xRatio = (ball.position.x / WORLD_WIDTH) * 255;
-    const yRatio = (ball.position.y / WORLD_HEIGHT) * 255;
-    world.fill(200 - xRatio, yRatio, xRatio);
-    world.colorMode(world.HSL);
-    world.fill(x, 80, 50);
-    x += 3;
-    if (x > 355) x = 0;
+    ball.update(world.deltaTime);
+    world.fill(100, 80, 150);
     world.colorMode(world.RGB, 255);
     const size = ball.radius * 2;
     world.ellipse(ball.position.x, ball.position.y, size, size);
   };
 
+  let fpsCounter = 0;
+  let pxPerSecond = 0;
+  let distanceCounter = 0;
   const printFps = () => {
-    world.textSize(32);
-    world.fill(0, 102, 153);
-    world.text('fps: ' + Math.round(1000 / world.deltaTime), 50, 50);
+    fpsCounter++;
+    if (fpsCounter == 60) {
+      fpsCounter = 0;
+      pxPerSecond = distanceCounter;
+      distanceCounter = 0;
+    }
+    const deltaSpeed = (ball.speed * world.deltaTime) / 1000;
+    distanceCounter += deltaSpeed;
+    world.textSize(18);
+    world.fill(40, 132, 183);
+    world.text('fps: ' + (1000 / world.deltaTime).toFixed(2), 50, 40);
+    world.text('ball speed: ' + ball.speed, 50, 60);
+    world.text('ball delta speed: ' + deltaSpeed.toFixed(2), 50, 80);
+    world.text('ball distance in last 1s: ' + pxPerSecond.toFixed(2), 50, 100);
+  };
+
+  const drawBallVelocity = () => {
+    world.push();
+    world.stroke(255, 100, 255);
+    world.fill('green');
+    world.strokeWeight(2);
+    const line = {
+      x: ball.velocity.x * ball.radius * 2,
+      y: ball.velocity.y * ball.radius * 2,
+    };
+    world.translate(ball.position.x, ball.position.y);
+    world.line(0, 0, line.x, line.y);
+    world.rotate(ball.velocity.heading());
+    let arrowSize = 7;
+    world.translate(ball.velocity.mag() * ball.radius * 2 - arrowSize, 0);
+    world.triangle(0, arrowSize / 2, 0, -arrowSize / 2, arrowSize, 0);
+    world.pop();
+  };
+
+  let fillMeter = 0;
+  const drawRuler = () => {
+    world.push();
+    world.rectMode('corner');
+    world.fill(0);
+    world.stroke(230, 150, 23);
+    const posX = 250;
+    const posY = 10;
+    const width = 250;
+    const height = 15;
+    world.rect(posX, posY, width, height);
+    world.fill(230, 200, 53);
+    fillMeter += (ball.speed * world.deltaTime) / 1000;
+    world.rect(posX + 1, posY + 1, fillMeter, height - 2);
+    if (fillMeter > width - 2) fillMeter = 0;
+    world.pop();
+  };
+
+  const drawSpeedMeter = () => {
+    world.push();
+    world.rectMode('corner');
+    world.fill(0);
+    world.stroke(230, 150, 23);
+    const posX = 250;
+    const posY = 30;
+    const width = 250;
+    const height = 15;
+    const speedRatio = ball.speed / rules.maxSpeed;
+    world.rect(posX, posY, width, height);
+    world.stroke(0);
+    world.fill(speedRatio * 255, 255 - speedRatio * 200, 13);
+    world.rect(posX + 1, posY + 1, speedRatio * width, height - 2);
+    world.text(ball.speed + 'px/s', posX + width + 10, posY + height);
+    world.pop();
   };
 
   const draw = (p5: p5Types) => {
@@ -116,8 +224,11 @@ export default (props: any) => {
     checkBallCollision();
     printFps();
     drawBall();
-    drawRightPlayer(p5);
-    drawLeftPlayer(p5);
+    drawBallVelocity();
+    drawRightPlayer();
+    drawLeftPlayer();
+    drawRuler();
+    drawSpeedMeter();
     p5.image(world, 0, 0, p5.width, p5.height);
   };
 

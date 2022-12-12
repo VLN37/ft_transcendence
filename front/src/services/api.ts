@@ -2,6 +2,7 @@ import axios, { AxiosError } from 'axios';
 import { io, Socket } from 'socket.io-client';
 import { StatusCodes } from 'http-status-codes';
 import { ChannelRoomAuth, ChannelSocketResponse } from '../models/Channel';
+import { v4 as uuidV4 } from 'uuid';
 
 interface AuthenticationResponse {
   access_token: string;
@@ -30,6 +31,10 @@ export class Api {
 
   constructor() {
     console.log('Creating API class instance');
+    this.client.interceptors.request.use((config) => {
+      if (config.headers) config.headers['x-correlation-id'] = uuidV4();
+      return config;
+    });
   }
 
   getClient() {
@@ -120,14 +125,14 @@ export class Api {
   connectToDM() {
     this.dmSocket = io(
       `${process.env.REACT_APP_BACK_HOSTNAME}/${this.DM_NAMESPACE}`,
-    {
-      auth: { token: this.token },
-    });
+      {
+        auth: { token: this.token },
+      },
+    );
   }
 
   private connectToMatchMakingCoordinator() {
-    const url =
-      `${process.env.REACT_APP_BACK_HOSTNAME}/${this.MATCH_MAKING_NAMESPACE}`;
+    const url = `${process.env.REACT_APP_BACK_HOSTNAME}/${this.MATCH_MAKING_NAMESPACE}`;
     const options = {
       auth: {
         token: this.token,
@@ -154,6 +159,7 @@ export class Api {
   setToken(token: string) {
     this.client.defaults.headers['Authorization'] = `Bearer ${token}`;
     this.token = token;
+    localStorage.setItem('jwt-token', token);
     this.connectToMatchMakingCoordinator();
     this.connectToDM();
   }
@@ -167,7 +173,7 @@ export class Api {
   }
 
   getToken() {
-    return this.token;
+    return localStorage.getItem('jwt-token');
   }
 }
 

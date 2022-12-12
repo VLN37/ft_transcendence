@@ -4,10 +4,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Profile } from 'src/entities/profile.entity';
 import { ProfileController } from './profile.controller';
 import { ProfileService } from './profile.service';
-import { editFileName } from 'src/middlewares/LoggerMiddleware';
+import { editFileName } from 'src/middlewares/EditFileName';
 import { diskStorage } from 'multer';
 import { UsersModule } from 'src/users/users.module';
-
 
 @Module({
   imports: [

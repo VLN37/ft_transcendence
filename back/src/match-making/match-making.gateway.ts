@@ -91,8 +91,8 @@ export class MatchMakingGateway
   }
 
   private async dequeueUser(client: Socket) {
-    const user = await this.getUser(client);
-    this.matchMakingService.dequeue(user);
+    const user = client.handshake.auth['user'];
+    this.matchMakingService.dequeueUser(user.id);
     try {
     } catch (e) {
       throw new WsException(e);

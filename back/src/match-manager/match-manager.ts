@@ -4,6 +4,8 @@ import { Match } from 'src/entities/match.entity';
 import { UserDto } from 'src/users/dto/user.dto';
 import { minutes, seconds } from 'src/utils/functions/timeConvertion';
 import { Repository } from 'typeorm';
+import { TICKS_PER_SECOND } from './game/rules';
+import { MatchState } from './model/MatchState';
 import { MemoryMatch } from './model/MemoryMatch';
 
 export type ActiveMatch = {
@@ -11,16 +13,18 @@ export type ActiveMatch = {
     waiting_timeout?: NodeJS.Timeout;
     preparation?: NodeJS.Timeout;
     ongoing?: NodeJS.Timeout;
+    tick?: NodeJS.Timer;
   };
+  onServerTick?: () => void;
   match: MemoryMatch;
 };
 
 @Injectable()
-export class MatchManagerService {
+export class MatchManager {
   private readonly logger = new Logger('Match Manager');
 
-  private memoryMatches: MemoryMatch[] = [];
   private activeMatches: ActiveMatch[] = [];
+  private connectedPlayers = {};
 
   constructor(
     @InjectRepository(Match)
@@ -63,10 +67,6 @@ export class MatchManagerService {
     return memoryMatch;
   }
 
-  getActiveMatch(matchId: string): MemoryMatch {
-    return this.memoryMatches.find((match) => match.id === matchId);
-  }
-
   getActiveMatches(): Partial<MemoryMatch>[] {
     return this.activeMatches.map((activeMatch) => {
       return activeMatch.match;
@@ -83,9 +83,7 @@ export class MatchManagerService {
   }
 
   connectPlayer(matchId: string, playerId: number) {
-    const match = this.activeMatches.find(
-      (match) => match.match.id === matchId,
-    );
+    const match = this.findMatchById(matchId);
     if (!match) throw new Error('Match not found');
 
     if (
@@ -94,14 +92,48 @@ export class MatchManagerService {
     )
       throw new Error('User is not a player');
 
-    if (playerId === match.match.left_player.id)
+    if (playerId === match.match.left_player.id) {
+      if (match.match.left_player_connected)
+        throw new Error('Player is already connected');
       match.match.left_player_connected = true;
+    }
 
-    if (playerId === match.match.right_player.id)
+    if (playerId === match.match.right_player.id) {
+      if (match.match.right_player_connected)
+        throw new Error('Player is already connected');
       match.match.right_player_connected = true;
+    }
+
+    this.connectedPlayers[playerId] = matchId;
 
     if (match.match.left_player_connected && match.match.right_player_connected)
       this.onBothPlayersConnected(match);
+  }
+
+  disconnectPlayer(userId: number) {
+    const matchId: string = this.connectedPlayers[userId];
+    const activeMatch = this.findMatchById(matchId);
+
+    if (!activeMatch) throw new Error('Match not found');
+
+    if (userId === activeMatch.match.left_player.id) {
+      activeMatch.match.left_player_connected = false;
+    }
+    if (userId === activeMatch.match.right_player.id) {
+      activeMatch.match.right_player_connected = false;
+    }
+  }
+
+  setMatchTickHandler(
+    matchId: string,
+    notifyMatchState: (state: MatchState) => void,
+  ) {
+    const activeMatch = this.findMatchById(matchId);
+
+    activeMatch.onServerTick = () => {
+      activeMatch.match.update();
+      notifyMatchState(activeMatch.match.state);
+    };
   }
 
   private startWaitingTime(activeMatch: ActiveMatch) {
@@ -115,9 +147,14 @@ export class MatchManagerService {
   }
 
   private onBothPlayersConnected(match: ActiveMatch) {
-    this.logger.debug('both players connected');
-    clearTimeout(match.timers.waiting_timeout); // so we don't cancel the match
-    this.startPreparationTime(match);
+    // TODO: check if match was paused
+    if (match.match.stage == 'AWAITING_PLAYERS') {
+      this.logger.debug('both players connected');
+      clearTimeout(match.timers.waiting_timeout); // so we don't cancel the match
+      this.startPreparationTime(match);
+    } else {
+      this.logger.debug('pretend we are resuming the match');
+    }
   }
 
   private startPreparationTime(activeMatch: ActiveMatch) {
@@ -137,18 +174,22 @@ export class MatchManagerService {
     // start match in 15 seconds after both players connected
     activeMatch.timers.preparation = setTimeout(
       onPreparationTimeEnd,
-      seconds(15),
+      seconds(5),
     );
   }
 
   private startMatch(match: ActiveMatch) {
     match.match.updateStage('ONGOING');
+    match.match.resetPositions();
 
     const end_at = new Date();
     end_at.setMinutes(end_at.getMinutes() + 5);
     this.logger.debug('match finishes at ' + end_at.toISOString());
     match.match.ends_at = end_at;
 
+    match.timers.tick = setInterval(() => {
+      match.onServerTick();
+    }, 1000 / TICKS_PER_SECOND);
     const onMatchFinished = () => {
       this.logger.debug(
         'match finished exactly at ' + new Date().toISOString(),
@@ -160,6 +201,13 @@ export class MatchManagerService {
   }
 
   private finishMatch(match: ActiveMatch) {
+    clearInterval(match.timers.tick);
     match.match.updateStage('FINISHED');
+  }
+
+  private findMatchById(matchId: string): ActiveMatch {
+    return this.activeMatches.find(
+      (activeMatch) => activeMatch.match.id === matchId,
+    );
   }
 }

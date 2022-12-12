@@ -1,6 +1,6 @@
 import { io, Socket } from 'socket.io-client';
-import userStorage from './userStorage';
 import api from './api';
+import { MatchState } from '../components/GameWindow/model/MatchState';
 
 export class MatchApi {
   private readonly MATCH_MANAGER_NAMESPACE = 'match-manager';
@@ -11,8 +11,7 @@ export class MatchApi {
   }
 
   connectToServer() {
-    const url =
-    `${process.env.REACT_APP_BACK_HOSTNAME}/${this.MATCH_MANAGER_NAMESPACE}`;
+    const url = `${process.env.REACT_APP_BACK_HOSTNAME}/${this.MATCH_MANAGER_NAMESPACE}`;
     const options = {
       auth: {
         token: api.getToken(),
@@ -39,6 +38,19 @@ export class MatchApi {
     this.matchSocket.emit('connect-as-player', {
       match_id: matchId,
     });
+  }
+
+  setOnMatchTickListener(callback: (state: MatchState) => void) {
+    if (!this.matchSocket) {
+      throw new Error('match socket is not set');
+    }
+    this.matchSocket?.on('match-tick', (matchData) => {
+      callback(matchData);
+    });
+  }
+
+  getGameRules() {
+    return api.getClient().get('/matches/rules');
   }
 }
 

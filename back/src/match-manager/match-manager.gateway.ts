@@ -3,15 +3,18 @@ import { JwtService } from '@nestjs/jwt';
 import {
   ConnectedSocket,
   MessageBody,
+  OnGatewayDisconnect,
   OnGatewayInit,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
+  WsException,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
+import { UserDto } from 'src/users/dto/user.dto';
 import { UsersService } from 'src/users/users.service';
 import { validateWsJwt } from 'src/utils/functions/validateWsConnection';
-import { MatchManagerService } from './match-manager.service';
+import { MatchManager } from './match-manager';
 
 @WebSocketGateway({
   namespace: '/match-manager',
@@ -19,7 +22,7 @@ import { MatchManagerService } from './match-manager.service';
     origin: '*',
   },
 })
-export class MatchManagerGateway implements OnGatewayInit {
+export class MatchManagerGateway implements OnGatewayInit, OnGatewayDisconnect {
   private readonly logger = new Logger(MatchManagerGateway.name);
 
   @WebSocketServer()
@@ -28,7 +31,7 @@ export class MatchManagerGateway implements OnGatewayInit {
   constructor(
     private jwtService: JwtService,
     private usersService: UsersService,
-    private matchManager: MatchManagerService,
+    private matchManager: MatchManager,
   ) {}
 
   afterInit(server: any) {
@@ -54,6 +57,25 @@ export class MatchManagerGateway implements OnGatewayInit {
   ) {
     const user = client.handshake.auth.user;
     const playerId = user.id;
-    this.matchManager.connectPlayer(matchId, playerId);
+    try {
+      this.logger.debug('match id: ', matchId);
+      this.matchManager.connectPlayer(matchId, playerId);
+      this.matchManager.setMatchTickHandler(matchId, (matchState) => {
+        this.server.in(matchId).emit('match-tick', matchState);
+      });
+      client.join(matchId);
+    } catch (e) {
+      this.logger.error('error connecting player', e);
+      throw new WsException(e);
+    }
+  }
+
+  handleDisconnect(client: Socket) {
+    try {
+      const user: UserDto = client.handshake.auth['user'];
+      this.matchManager.disconnectPlayer(user.id);
+    } catch (e) {
+      this.logger.error('error disconnecting player', e);
+    }
   }
 }

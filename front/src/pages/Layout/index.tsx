@@ -9,7 +9,7 @@ import {
   IconButton,
 } from '@chakra-ui/react';
 import { useState } from 'react';
-import { Link, Outlet } from 'react-router-dom';
+import { Link, Outlet, useNavigate } from 'react-router-dom';
 import MatchFinder from '../../components/MatchFinder';
 import NeonButton from '../../components/NeonButton';
 import { Profile } from '../../components/Profile/profile';
@@ -21,14 +21,18 @@ import userStorage from '../../services/userStorage';
 import './style.css';
 
 export default function Layout({ setUser }: any) {
-  const user = userStorage.getUser() || emptyUser();
+  const navigate = useNavigate();
   const [notification, setNotification] = useState(0);
   const [avatar, setAvatar] = useState<string>(
     JSON.parse(localStorage.getItem('user') || '').profile.avatar_path || '',
   );
+
+  const user = userStorage.getUser() || emptyUser();
+
   chatApi.subscribeDirectMessage((message: iDirectMessage) => {
     if (message.sender.id != user.id) setNotification(notification + 1);
   });
+
   return (
     <Container
       maxW="1200px"
@@ -82,7 +86,15 @@ export default function Layout({ setUser }: any) {
               </li>
             </ul>
             <Profile />
-            <Button marginY={'auto'} onClick={() => setUser(null)}>logout</Button>
+            <Button
+              marginY={'auto'}
+              onClick={() => {
+                localStorage.removeItem('jwt-token');
+                navigate('/login');
+              }}
+            >
+              logout
+            </Button>
           </nav>
         </GridItem>
 

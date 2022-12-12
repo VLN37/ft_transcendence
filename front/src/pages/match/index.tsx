@@ -1,24 +1,36 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import GameWindow from '../../components/GameWindow';
+import GameWindow, { GameRules } from '../../components/GameWindow';
 import { MatchApi } from '../../services/matchApi';
 
 export default function MatchPage() {
+  const [rules, setRules] = useState<GameRules>();
+
   const { match_id } = useParams();
-  const matchApi = new MatchApi();
+
+  if (!match_id) {
+    throw new Error('no match id to connect');
+  }
+
+  const [matchApi] = useState(new MatchApi());
+
+  // let matchApi: MatchApi = new MatchApi();
 
   useEffect(() => {
-    if (!match_id) {
-      throw new Error('no match id to connect');
+    async function loadGameRules() {
+      const currentRules = await matchApi.getGameRules();
+      console.log('rendering match page');
+      matchApi.connectToServer();
+      console.log('match id: ' + match_id);
+      matchApi.connectAsPlayer(match_id!);
+      setRules(currentRules.data);
     }
-    matchApi.connectToServer();
-    matchApi.connectAsPlayer(match_id);
-    console.log('connected');
+    loadGameRules();
   }, []);
 
   return (
     <div>
-      <GameWindow />
+      {(rules && <GameWindow matchApi={matchApi} rules={rules} />) || 'loading'}
     </div>
   );
 }

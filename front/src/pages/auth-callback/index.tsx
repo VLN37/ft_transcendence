@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react';
 import { Navigate, useSearchParams } from 'react-router-dom';
 import LoadDualSpinner from '../../components/LoadDualSpinner';
 import { TokenPayload } from '../../models/TokenPayload';
-import { User } from '../../models/User';
 import { chatApi, mmApi } from '../../services/api_index';
 import { api, userApi } from '../../services/api_index';
 import userStorage from '../../services/userStorage';
@@ -11,7 +10,7 @@ import { TFAModal } from './components/2fa-modal';
 
 import './style.css';
 
-const AuthCallback = ({ setUser }: any) => {
+const AuthCallback = () => {
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [params] = useSearchParams();
@@ -70,7 +69,6 @@ const AuthCallback = ({ setUser }: any) => {
         process.env.REACT_APP_BACK_HOSTNAME + user.profile.avatar_path;
       localStorage.setItem('avatar', link);
       userStorage.saveUser(user);
-      setUser(user);
       setLoading(false);
     });
   };
