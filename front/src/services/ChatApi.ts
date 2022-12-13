@@ -7,6 +7,7 @@ import api from './api';
 import { Api } from './api';
 import userStorage from './userStorage';
 import { Channel } from '../models/Channel';
+import { iDirectLastMessage } from '../models/DirectMessages';
 
 class ChatApi {
   private client: AxiosInstance;
@@ -114,7 +115,7 @@ class ChatApi {
     return response.data;
   }
 
-  async getLastDirectMessages(): Promise<User[]> {
+  async getLastDirectMessages(): Promise<iDirectLastMessage[]> {
     const response = await this.client.get(`/direct_messages/last`, {});
     // console.log(response.data);
     return response.data;

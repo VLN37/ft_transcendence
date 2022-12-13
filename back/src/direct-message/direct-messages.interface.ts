@@ -15,3 +15,9 @@ export interface iDirectMessage {
   receiver: UserDto;
   message: string;
 }
+
+export interface iDirectLastMessage {
+  id: number;
+  message: string;
+  subject: UserDto;
+}

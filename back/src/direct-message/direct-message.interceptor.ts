@@ -41,9 +41,9 @@ export class DirectMessagesGetLastInterceptor implements NestInterceptor {
     const request = context.switchToHttp().getRequest();
     return next.handle().pipe(
       map((data) => {
-        data.map((user) => {
-          delete user.tfa_enabled;
-          delete user.tfa_secret;
+        data.map((messages) => {
+          delete messages.subject.tfa_enabled;
+          delete messages.subject.tfa_secret;
         });
         return data;
       }),
