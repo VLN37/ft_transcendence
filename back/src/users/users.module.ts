@@ -13,6 +13,7 @@ import { FriendService } from './friends/friends.service';
 import { JwtService } from '@nestjs/jwt';
 import { DirectMessagesGateway } from 'src/direct-message/direct-messages.gateway';
 import { DirectMessagesModule } from 'src/direct-message/direct-messages.module';
+import { ProfileService } from 'src/profile/profile.service';
 
 @Module({
   imports: [
@@ -34,6 +35,6 @@ import { DirectMessagesModule } from 'src/direct-message/direct-messages.module'
     JwtService,
     DirectMessagesGateway,
   ],
-  exports: [UsersService],
+  exports: [UsersService, ProfileModule],
 })
 export class UsersModule {}

@@ -6,6 +6,7 @@ import { UsersModule } from 'src/users/users.module';
 import { MatchManagerController } from './match-manager.controller';
 import { MatchManagerGateway } from './match-manager.gateway';
 import { MatchManager } from './match-manager';
+import { UsersService } from 'src/users/users.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Match]), UsersModule],
