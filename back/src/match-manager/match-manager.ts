@@ -212,6 +212,7 @@ export class MatchManager {
 
   private finishMatch(match: ActiveMatch) {
     clearInterval(match.timers.update);
+    clearInterval(match.timers.notify);
     match.match.updateStage('FINISHED');
   }
 
