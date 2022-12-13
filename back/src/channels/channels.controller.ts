@@ -62,9 +62,9 @@ export class ChannelsController {
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
   updateChannel(
-    @Param('id') id: number,
     @Req() request: Request,
-    @Body() data: {
+    @Body()
+    data: {
       channel: ChannelDto;
       oldPassword: string | null;
       newPassword: string | null;
@@ -120,5 +120,14 @@ export class ChannelsController {
     @Param('channel') channel: number,
   ) {
     this.channelsService.delAdmin(token, channel, target);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete(':id/leave')
+  leaveChannel(
+    @Headers('Authorization') token: string,
+    @Param('id') id: number,
+  ) {
+    return this.channelsService.leaveChannel(token, id);
   }
 }

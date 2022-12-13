@@ -1,4 +1,4 @@
-import { LockIcon, UnlockIcon } from '@chakra-ui/icons';
+import { LockIcon, RepeatIcon, UnlockIcon } from '@chakra-ui/icons';
 import {
   TableContainer,
   Input,
@@ -22,6 +22,7 @@ import {
   FormControl,
   FormLabel,
   useToast,
+  IconButton,
 } from '@chakra-ui/react';
 import { useState, useEffect, ChangeEvent } from 'react';
 import { useForm } from 'react-hook-form';
@@ -197,9 +198,11 @@ function AskPassword(channel: Channel) {
     api.connectToChannel({ room: channel.id, password }).then((res) => {
       chatApi.setChannelSocket(api);
       if (res.status == StatusCodes.OK) {
-        channelApi.getChannel(channel.id.toString()).then((channel: Channel) => {
-          navigate('/chat', { state: { ...channel } });
-        });
+        channelApi
+          .getChannel(channel.id.toString())
+          .then((channel: Channel) => {
+            navigate('/chat', { state: { ...channel } });
+          });
       } else {
         toast({
           title: 'Failed to join channel',
@@ -259,14 +262,28 @@ export function ChannelTable() {
   const toast = useToast();
   let navigate = useNavigate();
   const user = userStorage.getUser();
+  const [reload, setReload] = useState<boolean>(false);
+
+  const isMember = (channel: Channel) => {
+    return user?.channels.find((channel_user) => channel_user.id == channel.id);
+  };
+
+  const leaveChannel = (channel_id: number) => {
+    chatApi.leave(channel_id).then(() => {
+      setReload(!reload);
+    });
+    return;
+  };
 
   const join = (channel: Channel) => {
     api.connectToChannel({ room: channel.id }).then((res) => {
       chatApi.setChannelSocket(api);
       if (res.status == StatusCodes.OK) {
-        channelApi.getChannel(channel.id.toString()).then((channel: Channel) => {
-          navigate('/chat', { state: { ...channel } });
-        });
+        channelApi
+          .getChannel(channel.id.toString())
+          .then((channel: Channel) => {
+            navigate('/chat', { state: { ...channel } });
+          });
       } else {
         toast({
           title: 'Failed to join channel',
@@ -292,12 +309,28 @@ export function ChannelTable() {
       setChannels(channels);
       setBkpChannels(channels);
     });
+  }, [reload]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      channelApi.getChannels().then((channels) => {
+        setChannels(channels);
+        setBkpChannels(channels);
+      });
+    }, 5000);
+
+    return () => clearInterval(interval);
   }, []);
 
   return (
     <>
       <HStack>
         <Input onChange={filterChannel} placeholder="Search channel room" />
+        <IconButton
+          onClick={() => setReload(!reload)}
+          aria-label="Refresh channel list"
+          icon={<RepeatIcon />}
+        />
         <CreateChannel />
       </HStack>
       <TableContainer
@@ -330,6 +363,14 @@ export function ChannelTable() {
                   </Td>
                   <Td>{channel.owner_id}</Td>
                   <Td>
+                    <Button
+                      onClick={() => leaveChannel(channel.id)}
+                      visibility={isMember(channel) ? 'visible' : 'hidden'}
+                      marginRight={'2rem'}
+                      colorScheme={'red'}
+                    >
+                      leave
+                    </Button>
                     {channel.type == 'PROTECTED' &&
                     user?.id != channel.owner_id ? (
                       <AskPassword {...channel} />

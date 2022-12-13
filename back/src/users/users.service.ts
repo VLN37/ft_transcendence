@@ -106,9 +106,9 @@ export class UsersService {
       );
     }
     const user = await this.findCompleteUserById(id);
-    delete user.tfa_secret;
     if (!user) throw new NotFoundException(`User with id=${id} not found`);
     this.logger.debug('Returning my user', { user });
+    delete user.tfa_secret;
     return user;
   }
 

@@ -75,21 +75,6 @@ export class ChannelsSocketGateway
     return { status: 200, message: 'Ok' };
   }
 
-  @SubscribeMessage('leave')
-  async handleLeave(client: Socket, room: string) {
-    client.leave(room);
-    const token = client.handshake.auth.token;
-    const userId = (await this.usersService.getUserId(token)).toString();
-    this.server.to(room).emit('leave', {
-      data: {
-        user: {
-          id: userId,
-        },
-      },
-    });
-    return { status: 200, message: 'Ok' };
-  }
-
   @SubscribeMessage('chat')
   async handleMessage(client: Socket, data: ChannelRoomMessage) {
     this.logger.debug('Received a message from ' + client.id);
@@ -98,7 +83,7 @@ export class ChannelsSocketGateway
     this.server.to(newMessage.channel.id.toString()).emit('chat', newMessage);
   }
 
-  kickUser(userId: number, room: string) {
+  removeUser(userId: number, room: string) {
     const client = this.usersSocketId[userId] || '';
     if (!client) return;
     this.server.to(room).emit('leave', {

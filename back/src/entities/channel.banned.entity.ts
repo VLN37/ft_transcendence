@@ -18,7 +18,7 @@ export class BannedUsers {
   })
   user_id: number;
 
-  @ManyToOne(() => Channel)
+  @ManyToOne(() => Channel, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'channel_id' })
   channel: Partial<Channel>;
 
