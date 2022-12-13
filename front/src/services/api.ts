@@ -3,6 +3,7 @@ import { io, Socket } from 'socket.io-client';
 import { StatusCodes } from 'http-status-codes';
 import { ChannelRoomAuth, ChannelSocketResponse } from '../models/Channel';
 import { v4 as uuidV4 } from 'uuid';
+import { chatApi } from './api_index';
 
 interface AuthenticationResponse {
   access_token: string;
@@ -170,6 +171,8 @@ export class Api {
     this.token = undefined;
     this.channelSocket?.disconnect();
     this.dmSocket?.disconnect();
+	this.matchMakingSocket?.disconnect();
+	chatApi.disconnect();
   }
 
   getToken() {

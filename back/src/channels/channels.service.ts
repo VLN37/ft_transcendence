@@ -35,7 +35,7 @@ export class ChannelsService {
     private bannedUsersRepository: Repository<BannedUsers>,
     private usersService: UsersService,
     private jwtService: JwtService,
-	  @Inject(forwardRef(() => ChannelsSocketGateway))
+    @Inject(forwardRef(() => ChannelsSocketGateway))
     private channelsSocketGateway: ChannelsSocketGateway,
   ) {}
 
@@ -68,7 +68,7 @@ export class ChannelsService {
       throw new BadRequestException('You are not an admin of this channel');
     if (!channel.users.find((elem) => elem.id == token.id))
       throw new BadRequestException('User is not in the channel');
-    this.channelsSocketGateway.kickUser(ban, chId.toString());
+    this.channelsSocketGateway.removeUser(ban, chId.toString());
     channel.users = channel.users.filter((user) => user.id != ban);
     channel.admins = channel.admins.filter((user) => user.id != ban);
     channel.allowed_users = channel.allowed_users.filter(
@@ -211,7 +211,6 @@ export class ChannelsService {
   }
 
   async delete(id: number) {
-    //TODO: disconnect all users from this channel/socket
     const channel = await this.getOne(id);
     this.logger.debug('Channel deleted', { channel });
     await this.channelsRepository.delete({ id: id });
@@ -281,6 +280,33 @@ export class ChannelsService {
     await this.update(channel);
     console.log(channel);
     this.logger.log(`Delete succesful. Updated channel ${channel}`);
+  }
+
+  async leaveChannel(token: string, channel_id: number) {
+    const user_id = await this.usersService.getUserId(token);
+    const channel = await this.getOne(channel_id);
+
+    channel.users = channel.users.filter((user) => user.id != user_id);
+    channel.admins = channel.admins.filter((user) => user.id != user_id);
+
+    if (channel.owner_id == user_id) {
+      if (channel.admins.length) {
+        channel.owner_id = channel.admins[0].id;
+      } else if (channel.users.length) {
+        channel.owner_id = channel.users[0].id;
+        channel.admins.push(
+          await this.usersService.getOne(channel.users[0].id),
+        );
+      } else {
+        this.channelsSocketGateway.removeUser(user_id, channel_id.toString());
+        return await this.delete(channel.id);
+      }
+    }
+
+    await this.update(channel);
+
+    this.channelsSocketGateway.removeUser(user_id, channel_id.toString());
+    return channel;
   }
 
   private validateChannel(channel: ChannelDto): string {
