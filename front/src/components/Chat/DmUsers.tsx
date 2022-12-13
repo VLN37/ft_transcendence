@@ -1,4 +1,4 @@
-import { CheckIcon, CloseIcon, StarIcon } from '@chakra-ui/icons';
+import { CheckIcon, CloseIcon, StarIcon, ViewOffIcon } from '@chakra-ui/icons';
 import {
   Box,
   Flex,
@@ -107,6 +107,7 @@ function UserDmMenu(props: {
       ></PublicProfile>
       <Menu isLazy>
         <CircleIcon color={color}></CircleIcon>
+        {isBlocked ? <ViewOffIcon></ViewOffIcon> : null}
         <MenuButton>
           {props.user.nickname}
         </MenuButton>
