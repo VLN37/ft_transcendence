@@ -141,6 +141,19 @@ class ChatApi {
     this.dmSocket?.off('friend_request');
   }
 
+  subscribeUserStatus(callback: any) {
+    this.dmSocket?.on('user_status', (user: User) => {
+      // console.log('callback called');
+      callback(user)
+    })
+    // console.log('callback registered');
+  }
+
+  unsubscribeUserStatus() {
+    // console.log('callback unregistered');
+    this.dmSocket?.off('user_status');
+  }
+
   subscribeMessage(callback: any) {
     this.channelSocket?.on('chat', (message: Message) => {
       const blocked = userStorage.getUser()?.blocked || [];
