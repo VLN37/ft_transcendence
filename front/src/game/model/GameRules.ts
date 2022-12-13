@@ -7,12 +7,12 @@ export type GameRules = {
   worldWidth: number;
   worldHeight: number;
   whRatio: number;
-  ballStart: {
-    position: Tuple;
-    speed: number;
+  ball: {
+    startingPosition: Tuple;
+    startingSpeed: number;
+    radius: number;
+    maxSpeed: number;
   };
-  ballRadius: number;
-  maxSpeed: number;
   playerStart: number;
   topCollisionEdge: number;
   bottomCollisionEdge: number;

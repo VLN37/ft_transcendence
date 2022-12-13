@@ -15,35 +15,35 @@ export type GameRules = {
   worldWidth: number;
   worldHeight: number;
   whRatio: number;
-  ballStart: {
-    position: Tuple;
-    speed: number;
+  ball: {
+    startingPosition: Tuple;
+    startingSpeed: number;
+    radius: number;
+    maxSpeed: number;
   };
-  maxSpeed: number;
   playerStart: number;
   topCollisionEdge: number;
   bottomCollisionEdge: number;
   leftCollisionEdge: number;
   rightCollisionEdge: number;
-  ballRadius: number;
 };
 
 export const rules: GameRules = {
   worldWidth: WIDTH,
   worldHeight: HEIGHT,
   whRatio: WIDTH / HEIGHT,
-  ballStart: {
-    position: {
+  ball: {
+    startingPosition: {
       x: WIDTH / 2,
       y: HEIGHT / 2,
     },
-    speed: BALL_INITIAL_SPEED,
+    startingSpeed: BALL_INITIAL_SPEED,
+    radius: BALL_RADIUS,
+    maxSpeed: 1000,
   },
-  maxSpeed: 1000,
   playerStart: HEIGHT / 2,
   topCollisionEdge: BALL_RADIUS,
   bottomCollisionEdge: HEIGHT - BALL_RADIUS,
   leftCollisionEdge: BALL_RADIUS,
   rightCollisionEdge: WIDTH - BALL_RADIUS,
-  ballRadius: BALL_RADIUS,
 };

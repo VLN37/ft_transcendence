@@ -57,11 +57,11 @@ export class MemoryMatch {
     this.lastUpdate = Date.now();
     this.state.ball = {
       pos: {
-        x: rules.ballStart.position.x,
-        y: rules.ballStart.position.y,
+        x: rules.ball.startingPosition.x,
+        y: rules.ball.startingPosition.y,
       },
       dir: vec,
-      speed: rules.ballStart.speed,
+      speed: rules.ball.startingSpeed,
     };
   }
 
@@ -105,7 +105,7 @@ export class MemoryMatch {
   }
 
   private increaseSpeed() {
-    if (this.state.ball.speed < rules.maxSpeed) {
+    if (this.state.ball.speed < rules.ball.maxSpeed) {
       this.state.ball.speed += 50;
     }
   }

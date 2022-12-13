@@ -28,7 +28,7 @@ export default (props: GameWindowProps) => {
   let leftPlayer: Player;
   let rightPlayer: Player;
 
-  ball = new Ball(rules.ballRadius, rules.ballStart.position);
+  ball = new Ball(rules.ball.radius, rules.ball.startingPosition);
   leftPlayer = new Player(PlayerSide.LEFT, rules.playerStart);
   rightPlayer = new Player(PlayerSide.RIGHT, rules.playerStart);
 
@@ -173,7 +173,7 @@ export default (props: GameWindowProps) => {
     const posY = 30;
     const width = 250;
     const height = 15;
-    const speedRatio = ball.speed / rules.maxSpeed;
+    const speedRatio = ball.speed / rules.ball.maxSpeed;
     world.rect(posX, posY, width, height);
     world.stroke(0);
     world.fill(speedRatio * 255, 255 - speedRatio * 200, 13);
