@@ -143,7 +143,9 @@ export class ChannelsSocketGateway
       if (banned_user.user_id == user.id) return banned_user;
     });
     if (banned_user) {
-      const time = banned_user.expiration.toLocaleString();
+      const time = banned_user.expiration.toLocaleString('pt-BR', {
+        timeZone: 'America/Sao_Paulo',
+      });
       return {
         status: 403,
         message: `Banned from channel until ${time}.`,

@@ -81,9 +81,7 @@ export class ChannelsService {
     return this.bannedUsersRepository.save({
       user_id: ban,
       channel: { id: channel.id },
-      expiration: date.toLocaleString('pt-BR', {
-        timeZone: 'America/Sao_Paulo',
-      }),
+      expiration: date,
     });
   }
 
@@ -165,9 +163,7 @@ export class ChannelsService {
   }
 
   async getOne(id: number): Promise<ChannelDto> {
-    const date = new Date().toLocaleString('pt-BR', {
-      timeZone: 'America/Sao_Paulo',
-    });
+    const date = new Date();
     const localeDate = new Date(date);
     const channel = await this.channelsRepository.findOne({
       relations: [
