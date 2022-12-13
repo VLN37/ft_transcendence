@@ -17,6 +17,7 @@ import {
   iFriendRequestWsPayload,
   UserMessage,
 } from './direct-messages.interface';
+import { UserDto } from 'src/users/dto/user.dto';
 
 @WebSocketGateway({
   namespace: '/direct_messages',
@@ -60,6 +61,10 @@ export class DirectMessagesGateway
       me.profile.status = 'ONLINE';
       await this.usersService.update(me);
       this.usersSocketId[userId] = client.id;
+      const updateStatus = [];
+      for (const index in me.friends)
+        updateStatus.push(this.usersSocketId[me.friends[index].id]);
+      this.pingStatusChange(updateStatus, me);
       this.logger.log(`Client connected ${client.id} ${me.login_intra}`);
     } catch (error) {
       this.logger.error(`handleConnection ${error}`);
@@ -74,6 +79,10 @@ export class DirectMessagesGateway
       me.profile.status = 'OFFLINE';
       await this.usersService.update(me);
       delete this.usersSocketId[userId];
+      const updateStatus = [];
+      for (const index in me.friends)
+        updateStatus.push(this.usersSocketId[me.friends[index].id]);
+      this.pingStatusChange(updateStatus, me);
       this.logger.log(`Client disconnected ${client.id} ${me.login_intra}`);
     } catch (error) {
 		this.logger.error(`handleDisconnect ${error}`);
@@ -96,6 +105,16 @@ export class DirectMessagesGateway
     // this.logger.error('socket: ', receiverSocket);
     if (!receiverSocket) return;
     this.server.to(receiverSocket).emit('friend_request', data);
+  }
+
+  async pingStatusChange(receiver: string[], user: UserDto) {
+    console.log('to aqui', {data: user});
+    console.log('to aqui', receiver);
+    if (!receiver.length) {
+      console.log('nothing to report')
+      return;
+    }
+    return this.server.to(receiver).emit('user_status', { user: user });
   }
 
   private validateConnection(client: Socket) {
