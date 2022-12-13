@@ -92,6 +92,13 @@ export class MemoryMatch {
       (ball.pos.x <= rules.leftCollisionEdge && ball.dir.x < 0) ||
       (ball.pos.x >= rules.rightCollisionEdge && ball.dir.x > 0)
     ) {
+      if (ball.dir.x < 0) {
+        const overflow = rules.leftCollisionEdge - ball.pos.x;
+        ball.pos.x = ball.pos.x + overflow * 2;
+      } else {
+        const overflow = ball.pos.x - rules.rightCollisionEdge;
+        ball.pos.x = ball.pos.x - overflow * 2;
+      }
       this.state.ball.dir.x *= -1;
       this.increaseSpeed();
     }
@@ -99,6 +106,13 @@ export class MemoryMatch {
       (ball.pos.y <= rules.topCollisionEdge && ball.dir.y < 0) ||
       (ball.pos.y >= rules.bottomCollisionEdge && ball.dir.y > 0)
     ) {
+      if (ball.dir.y < 0) {
+        const overflow = rules.topCollisionEdge - ball.pos.y;
+        ball.pos.y = ball.pos.y + overflow * 2;
+      } else {
+        const overflow = ball.pos.y - rules.bottomCollisionEdge;
+        ball.pos.y = ball.pos.y - overflow * 2;
+      }
       this.state.ball.dir.y *= -1;
       this.increaseSpeed();
     }
