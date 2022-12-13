@@ -10,8 +10,8 @@ import {
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { iDirectMessage } from '../../models/DirectMessage';
-import { User } from '../../models/User';
-import { api, chatApi } from '../../services/api_index';
+import { iDirectLastMessage } from '../../models/DirectMessages';
+import { chatApi } from '../../services/api_index';
 import userStorage from '../../services/userStorage';
 import { DmUsers } from '../Chat/DmUsers';
 
@@ -55,22 +55,27 @@ function MessageBoxComponent(props: any) {
 }
 
 export default function DirectMessagesComponent(props: any) {
-  const [users, setUsers] = useState<User[]>([]);
-
-  chatApi.subscribeDirectMessage((message: iDirectMessage) => {
-    chatApi.getLastDirectMessages().then((dm_users: User[]) => {
-      setUsers(dm_users);
-    });
-  });
+  const [messages, setMessages] = useState<iDirectLastMessage[]>([]);
 
   useEffect(() => {
     async function fetchUser() {
       await userStorage.updateUser();
     }
-    chatApi.getLastDirectMessages().then((dm_users: User[]) => {
-      setUsers(dm_users);
-      fetchUser();
+
+    chatApi.subscribeDirectMessage((message: iDirectMessage) => {
+      chatApi
+        .getLastDirectMessages()
+        .then((dm_messages: iDirectLastMessage[]) => {
+          setMessages(dm_messages);
+        });
     });
+
+    chatApi
+      .getLastDirectMessages()
+      .then((dm_messages: iDirectLastMessage[]) => {
+        setMessages(dm_messages);
+        fetchUser();
+      });
   }, []);
 
   return (
@@ -96,15 +101,16 @@ export default function DirectMessagesComponent(props: any) {
         colSpan={8}
         overflowY={'scroll'}
       >
-        {users.map((user, index) => {
+        {messages.map((message, index) => {
           return (
             <MessageBoxComponent
-              user_id={user.id}
-              name={user.profile.nickname}
+              user_id={message.subject.id}
+              name={message.subject.profile.nickname}
               image={
-                process.env.REACT_APP_BACK_HOSTNAME + user.profile.avatar_path
+                process.env.REACT_APP_BACK_HOSTNAME +
+                message.subject.profile.avatar_path
               }
-              text={''}
+              text={message.message}
               key={index}
             />
           );
