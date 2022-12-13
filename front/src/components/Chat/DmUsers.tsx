@@ -212,9 +212,23 @@ export function DmUsers(props: {
     setMe({... me});
   }
 
+  async function updateStatus (data: any){
+    console.log(data);
+    console.log(data.user.id);
+    const index = me.friends.findIndex(elem => elem.id == data.user.id);
+    if (index == -1)
+      return;
+    me.friends[index].profile.status = data.user.profile.status;
+    setMe({... me});
+  }
+
   useEffect(() => {
     chatApi.subscribeFriendRequest(updateFriends);
-    return () => chatApi.unsubscribeFriendRequest();
+    chatApi.subscribeUserStatus(updateStatus);
+    return () => {
+      chatApi.unsubscribeFriendRequest()
+      chatApi.unsubscribeUserStatus();
+    };
   }, []);
 
   const userList = me.friends.map((user: User, i: number) => {
