@@ -15,7 +15,7 @@ import NeonButton from '../../components/NeonButton';
 import { Profile } from '../../components/Profile/profile';
 import { iDirectMessage } from '../../models/DirectMessage';
 import { emptyUser } from '../../models/User';
-import { chatApi } from '../../services/api_index';
+import { api, chatApi } from '../../services/api_index';
 import userStorage from '../../services/userStorage';
 
 import './style.css';
@@ -89,6 +89,7 @@ export default function Layout({ setUser }: any) {
             <Button
               marginY={'auto'}
               onClick={() => {
+				api.removeToken();
                 localStorage.removeItem('jwt-token');
                 navigate('/login');
               }}
