@@ -6,11 +6,13 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
+  useDisclosure,
 } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 import { emptyUser, User } from '../../models/User';
 import { api, chatApi } from '../../services/api_index';
 import userStorage from '../../services/userStorage';
+import { MatchHistory } from '../matchHistory/MatchHistory';
 
 function AddToast() {
   const toast = useToast();
@@ -71,13 +73,20 @@ export function RankMenu(props: any) {
     navigate(`/dm?user=${props.id}`);
   }
 
+  const { isOpen, onOpen, onClose } = useDisclosure();
   return (
-    <Menu isLazy>
+    <Menu>
       <MenuButton>{props.input}</MenuButton>
       <MenuList>
         {/* MenuItems are not rendered unless Menu is open */}
-        <MenuItem onClick={clickCallback}>addFriend</MenuItem>
+        <MenuItem onClick={clickCallback}>add friend</MenuItem>
         <MenuItem onClick={sendUserMessage}>send a message</MenuItem>
+        <MenuItem onClick={onOpen}>match history</MenuItem>
+        <MatchHistory
+          isOpen={isOpen}
+          onClose={onClose}
+          username={props.input}
+        ></MatchHistory>
         {/* <MenuItem>Open Closed Tab</MenuItem> */}
         {/* <MenuItem>Open File</MenuItem> */}
       </MenuList>

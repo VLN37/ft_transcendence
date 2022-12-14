@@ -9,7 +9,6 @@ class MMApi {
   constructor(public _client: Api) {
     console.log('Creating matchmaking api class instance');
     this.matchMakingSocket = _client.getMatchMakingSocket();
-    console.log('socket mm', this.matchMakingSocket);
     this.client = _client.getClient();
   }
 

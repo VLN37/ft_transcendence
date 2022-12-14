@@ -61,9 +61,9 @@ class ChatApi {
 
   subscribeJoin(callback: any) {
     userStorage.updateUser();
-    console.log('callback registered');
+    // console.log('callback registered');
     this.channelSocket?.on('join', (response: any) => {
-      console.log('callback called');
+      // console.log('callback called');
       callback(response.data);
     });
   }
@@ -74,9 +74,9 @@ class ChatApi {
   }
 
   subscribeLeave(callback: any) {
-    console.log('callback registered');
+    // console.log('callback registered');
     this.channelSocket?.on('leave', (response: any) => {
-      console.log('callback called');
+      // console.log('callback called');
       callback(response.data);
     });
   }
@@ -86,9 +86,9 @@ class ChatApi {
   }
 
   subscribeChannelDisconnect(callback: any) {
-    console.log('callback registered');
+    // console.log('callback registered');
     this.channelSocket?.on('disconnect', () => {
-      console.log('callback called');
+      // console.log('callback called');
       callback();
     });
   }

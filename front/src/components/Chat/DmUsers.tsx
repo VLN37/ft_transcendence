@@ -214,8 +214,6 @@ export function DmUsers(props: {
   }
 
   async function updateStatus (data: any){
-    console.log(data);
-    console.log(data.user.id);
     const index = me.friends.findIndex(elem => elem.id == data.user.id);
     if (index == -1)
       return;
