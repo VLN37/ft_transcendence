@@ -108,12 +108,8 @@ export class DirectMessagesGateway
   }
 
   async pingStatusChange(receiver: string[], user: UserDto) {
-    console.log('to aqui', {data: user});
-    console.log('to aqui', receiver);
-    if (!receiver.length) {
-      console.log('nothing to report')
+    if (!receiver.length)
       return;
-    }
     return this.server.to(receiver).emit('user_status', { user: user });
   }
 
