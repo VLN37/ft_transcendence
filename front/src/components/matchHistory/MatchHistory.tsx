@@ -14,18 +14,9 @@ import {
   Thead,
   Tr,
 } from '@chakra-ui/react';
-import { emptyUser, User } from '../../models/User';
+import { Match } from '../../models/Match';
+import { emptyUser } from '../../models/User';
 import userStorage from '../../services/userStorage';
-
-interface Match {
-  id: string;
-  left_player: User;
-  right_player: User;
-  left_player_score: number;
-  right_player_score: number;
-  stage: string;
-  created_at: Date;
-}
 
 function less<T>(a: T, b: T): number {
   return a === b ? 0 : a > b ? 1 : -1;
@@ -40,6 +31,7 @@ function randomMatch() {
     right_player_score: Math.floor(Math.random() * 3),
     stage: 'FINISHED',
     created_at: new Date(),
+    type: 'NORMAL',
   };
 }
 
@@ -111,7 +103,9 @@ function MatchTable(props: any) {
 }
 
 export function MatchHistory(props: {
-  isOpen: any, onClose: any, username: string
+  isOpen: any;
+  onClose: any;
+  username: string;
 }) {
   return (
     <Modal isOpen={props.isOpen} onClose={props.onClose} size={'3xl'}>
