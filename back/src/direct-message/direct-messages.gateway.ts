@@ -27,7 +27,11 @@ import { UsersService } from 'src/users/users.service';
   },
 })
 export class DirectMessagesGateway
-  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect, OnApplicationBootstrap
+  implements
+    OnGatewayInit,
+    OnGatewayConnection,
+    OnGatewayDisconnect,
+    OnApplicationBootstrap
 {
   @WebSocketServer() server: Server;
   private readonly logger = new Logger(DirectMessagesGateway.name);
@@ -37,7 +41,7 @@ export class DirectMessagesGateway
     private dmService: DirectMessagesService,
     private jwtService: JwtService,
     private friendRequestsService: FriendRequestsService,
-    private usersService: UsersService
+    private usersService: UsersService,
   ) {}
 
   afterInit(_: Server) {
@@ -91,7 +95,7 @@ export class DirectMessagesGateway
       this.pingStatusChange(updateStatus, me);
       this.logger.log(`Client disconnected ${client.id} ${me.login_intra}`);
     } catch (error) {
-		this.logger.error(`handleDisconnect ${error}`);
+      this.logger.error(`handleDisconnect ${error}`);
     }
   }
 
@@ -114,8 +118,7 @@ export class DirectMessagesGateway
   }
 
   async pingStatusChange(receiver: string[], user: UserDto) {
-    if (!receiver.length)
-      return;
+    if (!receiver.length) return;
     return this.server.to(receiver).emit('user_status', { user: user });
   }
 

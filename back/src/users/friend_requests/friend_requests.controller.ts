@@ -10,7 +10,6 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-import { DirectMessagesGateway } from 'src/direct-message/direct-messages.gateway';
 import { FriendRequestsService } from './friend_requests.service';
 
 @Controller('/users/:me/friend_requests')

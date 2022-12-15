@@ -1,6 +1,5 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DirectMessagesGateway } from 'src/direct-message/direct-messages.gateway';
 import { iFriendRequestWsPayload } from 'src/direct-message/direct-messages.interface';
 import { User } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';

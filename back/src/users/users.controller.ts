@@ -8,11 +8,7 @@ import {
   Delete,
   Query,
   Headers,
-  forwardRef,
-  Inject,
 } from '@nestjs/common';
-import { DirectMessagesGateway } from 'src/direct-message/direct-messages.gateway';
-import { DirectMessagesService } from 'src/direct-message/direct-messages.service';
 import { UserDto } from './dto/user.dto';
 import { UsersService } from './users.service';
 
