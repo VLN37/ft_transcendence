@@ -35,6 +35,6 @@ import { ProfileService } from 'src/profile/profile.service';
     JwtService,
     DirectMessagesGateway,
   ],
-  exports: [UsersService, ProfileModule],
+  exports: [UsersService, ProfileModule, FriendRequestsService],
 })
 export class UsersModule {}

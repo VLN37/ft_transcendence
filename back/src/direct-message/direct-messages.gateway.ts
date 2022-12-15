@@ -1,4 +1,4 @@
-import { Logger } from '@nestjs/common';
+import { Logger, OnApplicationBootstrap } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import {
   WebSocketGateway,
@@ -10,7 +10,6 @@ import {
   WsException,
 } from '@nestjs/websockets';
 import { TokenPayload } from 'src/auth/dto/TokenPayload';
-import { UsersService } from 'src/users/users.service';
 import { Server, Socket } from 'socket.io';
 import { DirectMessagesService } from './direct-messages.service';
 import {
@@ -18,6 +17,8 @@ import {
   UserMessage,
 } from './direct-messages.interface';
 import { UserDto } from 'src/users/dto/user.dto';
+import { FriendRequestsService } from 'src/users/friend_requests/friend_requests.service';
+import { UsersService } from 'src/users/users.service';
 
 @WebSocketGateway({
   namespace: '/direct_messages',
@@ -26,7 +27,7 @@ import { UserDto } from 'src/users/dto/user.dto';
   },
 })
 export class DirectMessagesGateway
-  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
+  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect, OnApplicationBootstrap
 {
   @WebSocketServer() server: Server;
   private readonly logger = new Logger(DirectMessagesGateway.name);
@@ -35,7 +36,8 @@ export class DirectMessagesGateway
   constructor(
     private dmService: DirectMessagesService,
     private jwtService: JwtService,
-    private usersService: UsersService,
+    private friendRequestsService: FriendRequestsService,
+    private usersService: UsersService
   ) {}
 
   afterInit(_: Server) {
@@ -51,6 +53,10 @@ export class DirectMessagesGateway
           return next(new Error(err));
         });
     });
+  }
+
+  onApplicationBootstrap() {
+    this.friendRequestsService.setNotify(this.pingFriendRequest.bind(this));
   }
 
   async handleConnection(client: Socket) {

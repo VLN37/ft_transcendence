@@ -20,8 +20,6 @@ import { UsersService } from './users.service';
 export class UsersController {
   constructor(
     private readonly usersService: UsersService,
-    @Inject(forwardRef(() => DirectMessagesGateway))
-    private readonly dmService: DirectMessagesGateway
   ) {}
 
   //dev

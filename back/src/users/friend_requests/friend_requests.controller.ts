@@ -19,7 +19,6 @@ export class FriendRequestsController {
 
   constructor(
     private readonly friendRequestsService: FriendRequestsService,
-    private readonly dmGateway: DirectMessagesGateway
   ) {}
 
   @HttpCode(200)
