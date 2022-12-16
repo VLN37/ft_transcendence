@@ -1,4 +1,10 @@
-import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  Logger,
+  OnApplicationBootstrap,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import {
   OnGatewayConnection,
@@ -25,7 +31,11 @@ import { validateWsJwt } from 'src/utils/functions/validateWsConnection';
 })
 @Injectable()
 export class ChannelsSocketGateway
-  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
+  implements
+    OnGatewayInit,
+    OnGatewayConnection,
+    OnGatewayDisconnect,
+    OnApplicationBootstrap
 {
   @WebSocketServer() server: Server;
   private readonly logger = new Logger(ChannelsSocketGateway.name);
@@ -34,9 +44,12 @@ export class ChannelsSocketGateway
   constructor(
     private jwtService: JwtService,
     private usersService: UsersService,
-    @Inject(forwardRef(() => ChannelsService))
     private channelsService: ChannelsService,
   ) {}
+
+  onApplicationBootstrap() {
+    this.channelsService.setNotify(this.removeUser.bind(this));
+  }
 
   afterInit(_: Server) {
     this.logger.debug('channel gateway afterInit');
