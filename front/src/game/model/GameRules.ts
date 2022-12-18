@@ -13,7 +13,11 @@ export type GameRules = {
     radius: number;
     maxSpeed: number;
   };
-  playerStart: number;
+  player: {
+    startingPosition: number;
+    width: number;
+    height: number;
+  }
   topCollisionEdge: number;
   bottomCollisionEdge: number;
   leftCollisionEdge: number;

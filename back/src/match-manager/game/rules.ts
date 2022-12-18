@@ -21,7 +21,11 @@ export type GameRules = {
     radius: number;
     maxSpeed: number;
   };
-  playerStart: number;
+  player: {
+    startingPosition: number;
+    width: number;
+    height: number;
+  }
   topCollisionEdge: number;
   bottomCollisionEdge: number;
   leftCollisionEdge: number;
@@ -41,7 +45,11 @@ export const rules: GameRules = {
     radius: BALL_RADIUS,
     maxSpeed: 1000,
   },
-  playerStart: HEIGHT / 2,
+  player: {
+    startingPosition: HEIGHT / 2,
+    width: 20,
+    height: 100,
+  },
   topCollisionEdge: BALL_RADIUS,
   bottomCollisionEdge: HEIGHT - BALL_RADIUS,
   leftCollisionEdge: BALL_RADIUS,

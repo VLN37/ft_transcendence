@@ -50,8 +50,8 @@ export class MemoryMatch {
   }
 
   resetPositions() {
-    this.state.p1 = rules.playerStart;
-    this.state.p2 = rules.playerStart;
+    this.state.p1 = rules.player.startingPosition;
+    this.state.p2 = rules.player.startingPosition;
     const vec = Vector.random();
     // const vec = new Vector(1, 0);
     this.lastUpdate = Date.now();
@@ -74,13 +74,15 @@ export class MemoryMatch {
     } else if (this.state.p1 >= rules.bottomCollisionEdge) {
       this.increment = -1;
     }
-
-    this.checkBallCollision();
     const speed = (this.state.ball.speed * deltaTime) / 1000;
-    this.state.p1 += this.increment;
-    this.state.p2 += this.increment;
+    // this.state.p1 += this.increment;
+    // this.state.p2 += this.increment;
     this.state.ball.pos.x += this.state.ball.dir.x * speed;
     this.state.ball.pos.y += this.state.ball.dir.y * speed;
+    this.state.p1 = this.state.ball.pos.y;
+    this.state.p2 = this.state.ball.pos.y;
+
+    this.checkBallCollision();
   }
 
   private checkBallCollision() {
@@ -100,6 +102,12 @@ export class MemoryMatch {
       this.state.ball.dir.x *= -1;
       this.increaseSpeed();
     }
+    this.checkBallSideCollision()
+    this.checkBallPlayerCollision()
+  }
+
+  private checkBallSideCollision() {
+    const { ball } = this.state;
     if (
       (ball.pos.y <= rules.topCollisionEdge && ball.dir.y < 0) ||
       (ball.pos.y >= rules.bottomCollisionEdge && ball.dir.y > 0)
@@ -112,7 +120,23 @@ export class MemoryMatch {
         ball.pos.y = ball.pos.y - overflow * 2;
       }
       this.state.ball.dir.y *= -1;
-      this.increaseSpeed();
+    }
+  }
+
+  private checkBallPlayerCollision() {
+    const { ball } = this.state;
+    if (
+      (ball.pos.y <= rules.topCollisionEdge && ball.dir.y < 0) ||
+      (ball.pos.y >= rules.bottomCollisionEdge && ball.dir.y > 0)
+    ) {
+      if (ball.dir.y < 0) {
+        const overflow = rules.topCollisionEdge - ball.pos.y;
+        ball.pos.y = ball.pos.y + overflow * 2;
+      } else {
+        const overflow = ball.pos.y - rules.bottomCollisionEdge;
+        ball.pos.y = ball.pos.y - overflow * 2;
+      }
+      this.state.ball.dir.y *= -1;
     }
   }
 

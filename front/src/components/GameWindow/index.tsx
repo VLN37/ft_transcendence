@@ -29,8 +29,8 @@ export default (props: GameWindowProps) => {
   let rightPlayer: Player;
 
   ball = new Ball(rules.ball.radius, rules.ball.startingPosition);
-  leftPlayer = new Player(PlayerSide.LEFT, rules.playerStart);
-  rightPlayer = new Player(PlayerSide.RIGHT, rules.playerStart);
+  leftPlayer = new Player(PlayerSide.LEFT, rules.player.startingPosition);
+  rightPlayer = new Player(PlayerSide.RIGHT, rules.player.startingPosition);
 
   const setup = (p5: p5Types, canvasParentRef: Element) => {
     updateWindowProportions();
