@@ -67,9 +67,7 @@ export class MemoryMatch {
 
   private increment = 1;
   update() {
-    const now = Date.now();
-    const deltaTime = now - this.lastUpdate;
-    this.lastUpdate = now;
+    const deltaTime = this.getDeltaTime();
 
     if (this.state.p1 <= rules.topCollisionEdge) {
       this.increment = +1;
@@ -116,6 +114,13 @@ export class MemoryMatch {
       this.state.ball.dir.y *= -1;
       this.increaseSpeed();
     }
+  }
+
+  private getDeltaTime(): number {
+    const now = Date.now();
+    const deltaTime = now - this.lastUpdate;
+    this.lastUpdate = now;
+    return deltaTime
   }
 
   private increaseSpeed() {

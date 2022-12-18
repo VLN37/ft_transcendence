@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { randomInt } from 'crypto';
 import { Match } from 'src/entities/match.entity';
 import { UserDto } from 'src/users/dto/user.dto';
 import { minutes, seconds } from 'src/utils/functions/timeConvertion';
@@ -213,6 +214,8 @@ export class MatchManager {
   private finishMatch(match: ActiveMatch) {
     clearInterval(match.timers.update);
     clearInterval(match.timers.notify);
+    match.match.left_player_score = randomInt(3, 20);
+    match.match.right_player_score = randomInt(3, 20);
     match.match.updateStage('FINISHED');
   }
 
