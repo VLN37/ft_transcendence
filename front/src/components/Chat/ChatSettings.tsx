@@ -203,7 +203,7 @@ export function ChatSettings(props: {
     setRemovePasswordForm(!removePasswordForm);
   }
 
-  function flipChangePass() {
+  function flipChPass() {
     setChangePasswordForm(!changePasswordForm);
   }
 
@@ -219,10 +219,14 @@ export function ChatSettings(props: {
         {
         channelType == 'PUBLIC'
           ? <Button size={'sm'} onClick={flipPass}>Make Private</Button>
-          : <>
-            <Button size={'sm'} onClick={flipRemPass}>Make Public</Button>
-            <Button size={'sm'} onClick={flipChangePass}>Change Password</Button>
-            </>
+          : (
+            channelType == 'PROTECTED'
+              ? <>
+              <Button size={'sm'} onClick={flipRemPass}>Make Public</Button>
+              <Button size={'sm'} onClick={flipChPass}>Change Password</Button>
+              </>
+              : null
+          )
         }
         {
           passwordForm

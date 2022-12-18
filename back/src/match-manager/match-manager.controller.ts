@@ -1,4 +1,6 @@
-import { Controller, Get, Logger, Query } from '@nestjs/common';
+import { Controller, Get, Logger, Param, Post, Query } from '@nestjs/common';
+import axios from 'axios';
+import { UsersService } from 'src/users/users.service';
 import { rules } from './game/rules';
 import { MatchManager } from './match-manager';
 import { MatchStage } from './model/MemoryMatch';
@@ -7,7 +9,18 @@ import { MatchStage } from './model/MemoryMatch';
 export class MatchManagerController {
   private readonly logger = new Logger(MatchManagerController.name);
 
-  constructor(private readonly matchManager: MatchManager) {}
+  constructor(
+    private readonly matchManager: MatchManager,
+    private readonly usersService: UsersService,
+    ) {}
+
+  @Get('/generate/:qty')
+  async generateMatches(@Param('qty') qty: number) {
+    const p1 = await this.usersService.getOne(43);
+    const p2 = await this.usersService.getOne(44);
+    for (var i = 0; i < qty; i++)
+      this.matchManager.createMatch(p1, p2);
+  }
 
   @Get()
   getOngoingMatches(@Query('stage') stage: MatchStage) {

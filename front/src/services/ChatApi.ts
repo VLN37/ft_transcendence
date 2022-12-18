@@ -7,6 +7,7 @@ import api from './api';
 import { Api } from './api';
 import userStorage from './userStorage';
 import { Channel } from '../models/Channel';
+import { iDirectLastMessage } from '../models/DirectMessages';
 
 class ChatApi {
   private client: AxiosInstance;
@@ -60,9 +61,9 @@ class ChatApi {
 
   subscribeJoin(callback: any) {
     userStorage.updateUser();
-    console.log('callback registered');
+    // console.log('callback registered');
     this.channelSocket?.on('join', (response: any) => {
-      console.log('callback called');
+      // console.log('callback called');
       callback(response.data);
     });
   }
@@ -73,9 +74,9 @@ class ChatApi {
   }
 
   subscribeLeave(callback: any) {
-    console.log('callback registered');
+    // console.log('callback registered');
     this.channelSocket?.on('leave', (response: any) => {
-      console.log('callback called');
+      // console.log('callback called');
       callback(response.data);
     });
   }
@@ -85,9 +86,9 @@ class ChatApi {
   }
 
   subscribeChannelDisconnect(callback: any) {
-    console.log('callback registered');
+    // console.log('callback registered');
     this.channelSocket?.on('disconnect', () => {
-      console.log('callback called');
+      // console.log('callback called');
       callback();
     });
   }
@@ -114,7 +115,7 @@ class ChatApi {
     return response.data;
   }
 
-  async getLastDirectMessages(): Promise<User[]> {
+  async getLastDirectMessages(): Promise<iDirectLastMessage[]> {
     const response = await this.client.get(`/direct_messages/last`, {});
     // console.log(response.data);
     return response.data;
@@ -139,6 +140,19 @@ class ChatApi {
   unsubscribeFriendRequest() {
     // console.log('callback unregistered');
     this.dmSocket?.off('friend_request');
+  }
+
+  subscribeUserStatus(callback: any) {
+    this.dmSocket?.on('user_status', (user: User) => {
+      // console.log('callback called');
+      callback(user)
+    })
+    // console.log('callback registered');
+  }
+
+  unsubscribeUserStatus() {
+    // console.log('callback unregistered');
+    this.dmSocket?.off('user_status');
   }
 
   subscribeMessage(callback: any) {

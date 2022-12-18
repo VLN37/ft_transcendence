@@ -1,4 +1,4 @@
-import { Logger } from '@nestjs/common';
+import { Logger, OnApplicationBootstrap } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import {
   WebSocketGateway,
@@ -10,13 +10,15 @@ import {
   WsException,
 } from '@nestjs/websockets';
 import { TokenPayload } from 'src/auth/dto/TokenPayload';
-import { UsersService } from 'src/users/users.service';
 import { Server, Socket } from 'socket.io';
 import { DirectMessagesService } from './direct-messages.service';
 import {
   iFriendRequestWsPayload,
   UserMessage,
 } from './direct-messages.interface';
+import { UserDto } from 'src/users/dto/user.dto';
+import { FriendRequestsService } from 'src/users/friend_requests/friend_requests.service';
+import { UsersService } from 'src/users/users.service';
 
 @WebSocketGateway({
   namespace: '/direct_messages',
@@ -25,7 +27,11 @@ import {
   },
 })
 export class DirectMessagesGateway
-  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
+  implements
+    OnGatewayInit,
+    OnGatewayConnection,
+    OnGatewayDisconnect,
+    OnApplicationBootstrap
 {
   @WebSocketServer() server: Server;
   private readonly logger = new Logger(DirectMessagesGateway.name);
@@ -34,6 +40,7 @@ export class DirectMessagesGateway
   constructor(
     private dmService: DirectMessagesService,
     private jwtService: JwtService,
+    private friendRequestsService: FriendRequestsService,
     private usersService: UsersService,
   ) {}
 
@@ -52,6 +59,10 @@ export class DirectMessagesGateway
     });
   }
 
+  onApplicationBootstrap() {
+    this.friendRequestsService.setNotify(this.pingFriendRequest.bind(this));
+  }
+
   async handleConnection(client: Socket) {
     const token = client.handshake.auth.token;
     try {
@@ -60,6 +71,10 @@ export class DirectMessagesGateway
       me.profile.status = 'ONLINE';
       await this.usersService.update(me);
       this.usersSocketId[userId] = client.id;
+      const updateStatus = [];
+      for (const index in me.friends)
+        updateStatus.push(this.usersSocketId[me.friends[index].id]);
+      this.pingStatusChange(updateStatus, me);
       this.logger.log(`Client connected ${client.id} ${me.login_intra}`);
     } catch (error) {
       this.logger.error(`handleConnection ${error}`);
@@ -74,9 +89,13 @@ export class DirectMessagesGateway
       me.profile.status = 'OFFLINE';
       await this.usersService.update(me);
       delete this.usersSocketId[userId];
+      const updateStatus = [];
+      for (const index in me.friends)
+        updateStatus.push(this.usersSocketId[me.friends[index].id]);
+      this.pingStatusChange(updateStatus, me);
       this.logger.log(`Client disconnected ${client.id} ${me.login_intra}`);
     } catch (error) {
-		this.logger.error(`handleDisconnect ${error}`);
+      this.logger.error(`handleDisconnect ${error}`);
     }
   }
 
@@ -96,6 +115,11 @@ export class DirectMessagesGateway
     // this.logger.error('socket: ', receiverSocket);
     if (!receiverSocket) return;
     this.server.to(receiverSocket).emit('friend_request', data);
+  }
+
+  async pingStatusChange(receiver: string[], user: UserDto) {
+    if (!receiver.length) return;
+    return this.server.to(receiver).emit('user_status', { user: user });
   }
 
   private validateConnection(client: Socket) {

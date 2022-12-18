@@ -2,10 +2,10 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Socket } from 'socket.io';
 import { DirectMessages } from 'src/entities/direct_messages.entity';
-import { User } from 'src/entities/user.entity';
+import { UserDto } from 'src/users/dto/user.dto';
 import { UsersService } from 'src/users/users.service';
 import { In, Repository } from 'typeorm';
-import { iDirectMessage, UserMessage } from './direct-messages.interface';
+import { iDirectLastMessage, iDirectMessage, UserMessage } from './direct-messages.interface';
 
 @Injectable()
 export class DirectMessagesService {
@@ -69,7 +69,7 @@ export class DirectMessagesService {
     return messages;
   }
 
-  async getLastMessages(token: string): Promise<Partial<User>[]> {
+  async getLastMessages(token: string): Promise<iDirectLastMessage[]> {
     const myId = await this.usersService.getUserId(token);
     const result = await this.dmRepository.find({
       where: [
@@ -87,12 +87,26 @@ export class DirectMessagesService {
       relations: ['sender.profile', 'receiver.profile'],
       order: { id: 'DESC' },
     });
-    let users = result.map((message) => {
-      if (message.sender.id != myId) return message.sender;
-      else return message.receiver;
+    let messages = result.map((message) => {
+      const newMessage: iDirectLastMessage = {
+        id: message.id,
+        message: message.message,
+        subject: <UserDto>{},
+      };
+      if (message.sender.id != myId) {
+        newMessage.subject = <UserDto>message.sender;
+      } else {
+        newMessage.subject = <UserDto>message.receiver;
+      }
+      return newMessage;
     });
-    users = users.filter((user, index) => users.indexOf(user) === index);
 
-    return users;
+    messages = messages.filter(
+      (msg, index, self) =>
+        index ===
+        self.findIndex((foundMsg) => foundMsg.subject.id === msg.subject.id),
+    );
+
+    return messages;
   }
 }

@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DirectMessagesGateway } from 'src/direct-message/direct-messages.gateway';
+import { iFriendRequestWsPayload } from 'src/direct-message/direct-messages.interface';
 import { User } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
 import { UsersService } from '../users.service';
@@ -8,13 +8,18 @@ import { UsersService } from '../users.service';
 @Injectable()
 export class FriendRequestsService {
   private readonly logger = new Logger(FriendRequestsService.name);
+  private notifyService:
+    (arg0: number, arg1: iFriendRequestWsPayload) => void | null = null;
 
   constructor(
     private usersService: UsersService,
     @InjectRepository(User)
     private usersRepository: Repository<User>,
-    private readonly dmGateway: DirectMessagesGateway
   ) {}
+
+  setNotify(callback: typeof this.notifyService) {
+    this.notifyService = callback;
+  }
 
   private async userSentPendingFriendRequests(
     id: number,
@@ -97,7 +102,11 @@ export class FriendRequestsService {
     );
 
     await this.usersService.update(userToAdd);
-    this.dmGateway.pingFriendRequest(target, {user});
+    // this.dmGateway.pingFriendRequest(target, {user});
+    if (this.notifyService) {
+      console.log('params',me, target);
+      this.notifyService(target, {user});
+    }
     return await this.userSentPendingFriendRequests(me);
   }
 

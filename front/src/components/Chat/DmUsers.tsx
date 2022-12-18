@@ -1,4 +1,4 @@
-import { CheckIcon, CloseIcon, StarIcon } from '@chakra-ui/icons';
+import { CheckIcon, CloseIcon, StarIcon, ViewOffIcon } from '@chakra-ui/icons';
 import {
   Box,
   Flex,
@@ -107,6 +107,7 @@ function UserDmMenu(props: {
       ></PublicProfile>
       <Menu isLazy>
         <CircleIcon color={color}></CircleIcon>
+        {isBlocked ? <ViewOffIcon></ViewOffIcon> : null}
         <MenuButton>
           {props.user.nickname}
         </MenuButton>
@@ -212,9 +213,21 @@ export function DmUsers(props: {
     setMe({... me});
   }
 
+  async function updateStatus (data: any){
+    const index = me.friends.findIndex(elem => elem.id == data.user.id);
+    if (index == -1)
+      return;
+    me.friends[index].profile.status = data.user.profile.status;
+    setMe({... me});
+  }
+
   useEffect(() => {
     chatApi.subscribeFriendRequest(updateFriends);
-    return () => chatApi.unsubscribeFriendRequest();
+    chatApi.subscribeUserStatus(updateStatus);
+    return () => {
+      chatApi.unsubscribeFriendRequest()
+      chatApi.unsubscribeUserStatus();
+    };
   }, []);
 
   const userList = me.friends.map((user: User, i: number) => {

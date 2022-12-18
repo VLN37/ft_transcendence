@@ -1,4 +1,10 @@
-import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  Logger,
+  OnApplicationBootstrap,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import {
   OnGatewayConnection,
@@ -25,7 +31,11 @@ import { validateWsJwt } from 'src/utils/functions/validateWsConnection';
 })
 @Injectable()
 export class ChannelsSocketGateway
-  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
+  implements
+    OnGatewayInit,
+    OnGatewayConnection,
+    OnGatewayDisconnect,
+    OnApplicationBootstrap
 {
   @WebSocketServer() server: Server;
   private readonly logger = new Logger(ChannelsSocketGateway.name);
@@ -34,9 +44,12 @@ export class ChannelsSocketGateway
   constructor(
     private jwtService: JwtService,
     private usersService: UsersService,
-    @Inject(forwardRef(() => ChannelsService))
     private channelsService: ChannelsService,
   ) {}
+
+  onApplicationBootstrap() {
+    this.channelsService.setNotify(this.removeUser.bind(this));
+  }
 
   afterInit(_: Server) {
     this.logger.debug('channel gateway afterInit');
@@ -143,7 +156,9 @@ export class ChannelsSocketGateway
       if (banned_user.user_id == user.id) return banned_user;
     });
     if (banned_user) {
-      const time = banned_user.expiration.toLocaleString();
+      const time = banned_user.expiration.toLocaleString('pt-BR', {
+        timeZone: 'America/Sao_Paulo',
+      });
       return {
         status: 403,
         message: `Banned from channel until ${time}.`,

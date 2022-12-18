@@ -164,7 +164,7 @@ export default function Chat(props: Channel) {
         <ChannelTitle>{`${props.name} #${props.id}`}</ChannelTitle>
       </GridItem>
       <GridItem colStart={10}>
-        {myId == props.owner_id ? (
+        {myId == props.owner_id  && props.type != 'PRIVATE' ? (
           <ChatSettings setChannel={setChannel} channel={props}></ChatSettings>
         ) : null}
       </GridItem>

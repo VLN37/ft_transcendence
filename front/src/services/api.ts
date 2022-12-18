@@ -116,7 +116,7 @@ export class Api {
       this.channelSocket.emit('join', data, (res: ChannelSocketResponse) => {
         if (res.status == StatusCodes.OK)
           console.log(`Client connected to the room ${data.room}`);
-        console.log(res);
+        // console.log(res);
         resolve(res);
         return data;
       });

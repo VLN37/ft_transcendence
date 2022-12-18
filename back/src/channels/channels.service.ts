@@ -1,8 +1,6 @@
 import { faker } from '@faker-js/faker';
 import {
   BadRequestException,
-  forwardRef,
-  Inject,
   Injectable,
   Logger,
   NotFoundException,
@@ -11,7 +9,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { isArray, isString } from 'class-validator';
 import { Channel } from 'src/entities/channel.entity';
 import { UsersService } from 'src/users/users.service';
-import { MoreThan, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { ChannelDto } from './dto/channel.dto';
 import * as bcrypt from 'bcrypt';
 import { ChannelRoomMessage, Message } from './channels.interface';
@@ -20,11 +18,11 @@ import { Socket } from 'socket.io';
 import { JwtService } from '@nestjs/jwt';
 import { UserDto } from 'src/users/dto/user.dto';
 import { BannedUsers } from 'src/entities/channel.banned.entity';
-import { ChannelsSocketGateway } from './channels.gateway';
 
 @Injectable()
 export class ChannelsService {
   private readonly logger = new Logger(ChannelsService.name);
+  private notifyService: (userId: number, room: string) => void | null = null;
 
   constructor(
     @InjectRepository(Channel)
@@ -35,9 +33,11 @@ export class ChannelsService {
     private bannedUsersRepository: Repository<BannedUsers>,
     private usersService: UsersService,
     private jwtService: JwtService,
-    @Inject(forwardRef(() => ChannelsSocketGateway))
-    private channelsSocketGateway: ChannelsSocketGateway,
   ) {}
+
+  setNotify(callback: (userId: number, room: string) => void) {
+    this.notifyService = callback;
+  }
 
   async generateChannels(amount: number) {
     const statusArr = ['PUBLIC', 'PRIVATE', 'PROTECTED'];
@@ -68,7 +68,7 @@ export class ChannelsService {
       throw new BadRequestException('You are not an admin of this channel');
     if (!channel.users.find((elem) => elem.id == token.id))
       throw new BadRequestException('User is not in the channel');
-    this.channelsSocketGateway.removeUser(ban, chId.toString());
+    this.notifyService(ban, chId.toString());
     channel.users = channel.users.filter((user) => user.id != ban);
     channel.admins = channel.admins.filter((user) => user.id != ban);
     channel.allowed_users = channel.allowed_users.filter(
@@ -81,9 +81,7 @@ export class ChannelsService {
     return this.bannedUsersRepository.save({
       user_id: ban,
       channel: { id: channel.id },
-      expiration: date.toLocaleString('pt-BR', {
-        timeZone: 'America/Sao_Paulo',
-      }),
+      expiration: date,
     });
   }
 
@@ -165,9 +163,7 @@ export class ChannelsService {
   }
 
   async getOne(id: number): Promise<ChannelDto> {
-    const date = new Date().toLocaleString('pt-BR', {
-      timeZone: 'America/Sao_Paulo',
-    });
+    const date = new Date();
     const localeDate = new Date(date);
     const channel = await this.channelsRepository.findOne({
       relations: [
@@ -298,14 +294,14 @@ export class ChannelsService {
           await this.usersService.getOne(channel.users[0].id),
         );
       } else {
-        this.channelsSocketGateway.removeUser(user_id, channel_id.toString());
+        this.notifyService(user_id, channel.id.toString());
         return await this.delete(channel.id);
       }
     }
 
     await this.update(channel);
 
-    this.channelsSocketGateway.removeUser(user_id, channel_id.toString());
+    this.notifyService(user_id, channel.id.toString());
     return channel;
   }
 
