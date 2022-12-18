@@ -196,5 +196,28 @@ export default (props: GameWindowProps) => {
     p5.image(world, 0, 0, p5.width, p5.height);
   };
 
-  return <Sketch setup={setup} draw={draw} />;
+  const onKeyPress = (p5: p5Types) => {
+    if (p5.keyCode == p5.UP_ARROW || p5.key.toLowerCase() == 'w') {
+      console.log('key up pressed');
+    } else if (p5.keyCode == p5.DOWN_ARROW || p5.key.toLowerCase() == 's') {
+      console.log('key down pressed');
+    }
+  };
+
+  const onKeyRelease = (p5: p5Types) => {
+    if (p5.keyCode == p5.UP_ARROW || p5.key.toLowerCase() == 'w') {
+      console.log('key up released');
+    } else if (p5.keyCode == p5.DOWN_ARROW || p5.key.toLowerCase() == 's') {
+      console.log('key down released');
+    }
+  };
+
+  return (
+    <Sketch
+      setup={setup}
+      draw={draw}
+      keyPressed={onKeyPress}
+      keyReleased={onKeyRelease}
+    />
+  );
 };
