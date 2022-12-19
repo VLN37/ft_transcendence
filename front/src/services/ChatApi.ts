@@ -26,7 +26,7 @@ class ChatApi {
 
   async leave(id: number) {
     const response = await this.client.delete(`/channels/${id}/leave`, {});
-    userStorage.updateUser();
+    await userStorage.updateUser();
     return response;
   }
 
@@ -60,7 +60,10 @@ class ChatApi {
   }
 
   subscribeJoin(callback: any) {
-    userStorage.updateUser();
+    async function updateUser() {
+      await userStorage.updateUser();
+    }
+    updateUser();
     // console.log('callback registered');
     this.channelSocket?.on('join', (response: any) => {
       // console.log('callback called');
@@ -130,10 +133,10 @@ class ChatApi {
   }
 
   subscribeFriendRequest(callback: any) {
-    this.dmSocket?.on('friend_request', ((user: User) => {
+    this.dmSocket?.on('friend_request', (user: User) => {
       // console.log('callback called');
       callback(user);
-    }))
+    });
     // console.log('callback registered');
   }
 
@@ -145,8 +148,8 @@ class ChatApi {
   subscribeUserStatus(callback: any) {
     this.dmSocket?.on('user_status', (user: User) => {
       // console.log('callback called');
-      callback(user)
-    })
+      callback(user);
+    });
     // console.log('callback registered');
   }
 

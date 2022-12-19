@@ -40,8 +40,7 @@ function CustomToastExample() {
 }
 
 export function RankMenu(props: any) {
-  const url =
-    `${process.env.REACT_APP_BACK_HOSTNAME}/users/${props.id}/friend_requests`;
+  const url = `${process.env.REACT_APP_BACK_HOSTNAME}/users/${props.id}/friend_requests`;
   const toast = useToast();
   let navigate = useNavigate();
 
@@ -60,7 +59,7 @@ export function RankMenu(props: any) {
     const body = await response.json();
     const status = response.ok ? 'success' : 'error';
     const message = response.ok ? '' : body.message;
-    if (response.ok) userStorage.updateUser();
+    if (response.ok) await userStorage.updateUser();
     toast({
       title: 'Friend request sent',
       status: status,
