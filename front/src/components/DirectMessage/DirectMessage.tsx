@@ -43,7 +43,7 @@ function MessageComponent(props: any) {
       </Box>
       <Flex paddingRight={'1rem'} alignItems={'center'}>
         <Text wordBreak={'break-word'} paddingX={'0.2rem'}>
-          {props.text}
+          <div dangerouslySetInnerHTML={{ __html: props.text }} />
         </Text>
       </Flex>
     </Flex>
@@ -147,6 +147,7 @@ export default function DirectMessage(props: any) {
         overflowY={'scroll'}
       >
         {messages.map((message) => {
+          message.message = message.message.replaceAll('\n', '<br/>');
           return (
             <MessageComponent
               name={message.sender.profile.nickname}
