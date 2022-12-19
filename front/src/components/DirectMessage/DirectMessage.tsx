@@ -86,12 +86,14 @@ export default function DirectMessage(props: any) {
   const [messages, setMessages] = useState<iDirectMessage[]>([]);
   const [chatTitle, setChatTitle] = useState('');
   const userId = searchParams.get('user') || '';
+  const myId = userStorage.getUser()?.id;
   userApi.getUser(userId).then((user) => {
     setChatTitle(user.profile.nickname);
   });
 
   const updateMessages = (message: iDirectMessage) => {
-    setMessages([...messages, message]);
+    if (message.sender.id.toString() == userId || message.sender.id == myId)
+      setMessages([...messages, message]);
   };
 
   useEffect(() => {
