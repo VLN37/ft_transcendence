@@ -51,6 +51,12 @@ function MessageComponent(props: any) {
 }
 
 function InputMessage(props: any) {
+  const keyEnter = (event: any) => {
+    if (event.key == 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      sendMessage(props.to);
+    }
+  };
   return (
     <>
       <Flex h={'100%'} alignItems={'center'}>
@@ -60,6 +66,7 @@ function InputMessage(props: any) {
           padding={'1rem'}
           marginX={'0.5rem'}
           placeholder={props.placeholder}
+          onKeyDown={keyEnter}
         />
         <Box padding={'1rem'}>
           <IconButton
