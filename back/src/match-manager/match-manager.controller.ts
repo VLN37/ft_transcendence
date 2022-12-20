@@ -51,6 +51,7 @@ export class MatchManagerController {
   }
 
   @Get('/user/:qty')
+  @UseInterceptors(MatchManagerInterceptor)
   getUserMatches(
     @Headers('Authorization') token: string,
     @Param('qty') qty: number,
