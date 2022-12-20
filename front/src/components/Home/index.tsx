@@ -21,20 +21,22 @@ function formatMatchName(match: Match): string {
     ' X ' +
     match.right_player_score +
     ' ' +
-    match.left_player.profile.nickname
+    match.right_player.profile.nickname
   );
 }
 
 function formatMatchSubTitle(match: Match): string {
-  const date = match.created_at.toLocaleDateString('pt-BR', {});
-  return date + ' | ' + match.type;
+  const tmp = new Date(match.created_at);
+  const date = tmp.toLocaleDateString('pt-BR', {});
+//   return date + ' | ' + match.type;
+  return date + ' | ' + 'TURBO';
 }
 
 function UserComp(user: User) {
   const [matches, setMatches] = useState<Match[]>([]);
 
   useEffect(() => {
-    matchesApi.getLastMatches(9).then((matchs: Match[]) => setMatches(matchs));
+    matchesApi.getLiveMatches(10).then((matchs: Match[]) => setMatches(matchs));
   }, []);
 
   return (
@@ -189,7 +191,7 @@ export function Home() {
 
   useEffect(() => {
     userApi.getMe().then((_user) => setUser(_user));
-    matchesApi.getLastMatches(9).then((matchs: Match[]) => setMatches(matchs));
+    matchesApi.getLiveMatches(10).then((matchs: Match[]) => setMatches(matchs));
   }, []);
 
   return (
