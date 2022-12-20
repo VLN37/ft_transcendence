@@ -36,7 +36,7 @@ function UserComp(user: User) {
   const [matches, setMatches] = useState<Match[]>([]);
 
   useEffect(() => {
-    matchesApi.getLiveMatches(10).then((matchs: Match[]) => setMatches(matchs));
+    matchesApi.getUserMatches(10).then((matchs: Match[]) => setMatches(matchs));
   }, []);
 
   return (

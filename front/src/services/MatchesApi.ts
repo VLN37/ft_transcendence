@@ -14,6 +14,11 @@ class MatchesApi {
     const response = await this.client.get(`/matches/live/${qty}`, {});
     return response.data;
   }
+
+  async getUserMatches(qty: number): Promise<Match[]> {
+    const response = await this.client.get(`/matches/user/${qty}`, {});
+    return response.data;
+  }
 }
 
 export default new MatchesApi(api);
