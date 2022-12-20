@@ -26,6 +26,7 @@ export class MatchManagerService {
         where: {
           stage: 'FINISHED',
         },
+        relations: ['left_player.profile', 'right_player.profile'],
         take: qty - liveMatches.length,
       });
     }
