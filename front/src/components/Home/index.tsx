@@ -1,10 +1,44 @@
 import './style.css';
 import { Box, Button, Flex, Icon, Image, Text } from '@chakra-ui/react';
 import { IoDiamond } from 'react-icons/io5';
+import { TfiFaceSad } from 'react-icons/tfi';
 import { DmUsers } from '../Chat/DmUsers';
-import userStorage from '../../services/userStorage';
+import { emptyUser, User } from '../../models/User';
+import userApi from '../../services/UserApi';
+import { useEffect, useState } from 'react';
+import { Match } from '../../models/Match';
+import matchesApi from '../../services/MatchesApi';
 
-function User() {
+function getUserRank(user: User) {
+  return <Icon mx={'auto'} my={'auto'} fontSize={'60px'} as={IoDiamond} />;
+}
+
+function formatMatchName(match: Match): string {
+  return (
+    match.left_player.profile.nickname +
+    ' ' +
+    match.left_player_score +
+    ' X ' +
+    match.right_player_score +
+    ' ' +
+    match.right_player.profile.nickname
+  );
+}
+
+function formatMatchSubTitle(match: Match): string {
+  const tmp = new Date(match.created_at);
+  const date = tmp.toLocaleDateString('pt-BR', {});
+//   return date + ' | ' + match.type;
+  return date + ' | ' + 'TURBO';
+}
+
+function UserComp(user: User) {
+  const [matches, setMatches] = useState<Match[]>([]);
+
+  useEffect(() => {
+    matchesApi.getUserMatches(10).then((matchs: Match[]) => setMatches(matchs));
+  }, []);
+
   return (
     <Flex width={'100%'} padding={'1rem'} gap={5}>
       <Flex flex={2} flexDirection={'column'}>
@@ -13,7 +47,10 @@ function User() {
           borderRadius={'10px'}
           boxShadow="dark-lg"
           rounded="md"
-          src="http://localhost:3000/avatars/wleite.jpeg"
+          src={
+            user.profile.avatar_path &&
+            process.env.REACT_APP_BACK_HOSTNAME + user.profile.avatar_path
+          }
           marginBottom={'1rem'}
         />
         <Box
@@ -24,10 +61,7 @@ function User() {
           bg={'gray.800'}
           height={'100%'}
         >
-          <DmUsers
-            users={userStorage.getUser()?.friends || []}
-            requests={userStorage.getUser()?.friend_requests || []}
-          />
+          <DmUsers users={user.friends} requests={user.friend_requests} />
         </Box>
       </Flex>
       <Flex flex={5} flexDirection={'column'}>
@@ -44,75 +78,54 @@ function User() {
               Rank: 12
             </Text>
             <Text as={'b'} size={'lg'}>
-              Victories: 42
+              Victories: {user.profile.wins}
             </Text>
             <Text as={'b'} size={'lg'}>
-              Losses: 21
+              Losses: {user.profile.losses}
             </Text>
           </Flex>
-          <Icon mx={'auto'} my={'auto'} fontSize={'60px'} as={IoDiamond} />
+          {getUserRank(user)}
         </Box>
         <Flex my={'0.5rem'} direction={'column'} gap={'0.5rem'}>
           <Text textAlign={'center'} fontSize={'xl'}>
-            Your Matches
+            MATCH HISTORY
           </Text>
-          <Text
-            py={'0.5rem'}
-            textAlign={'center'}
-            bg={'gray.800'}
-            fontSize={'lg'}
-            borderRadius={'5px'}
-            boxShadow={'dark-lg'}
-            border={'1px solid rgba(255, 255, 255, 0.3)'}
-          >
-            João 13 X 23 Paulo
-          </Text>
-          <Text
-            py={'0.5rem'}
-            textAlign={'center'}
-            bg={'gray.800'}
-            fontSize={'lg'}
-            borderRadius={'5px'}
-            boxShadow={'dark-lg'}
-            border={'1px solid rgba(255, 255, 255, 0.3)'}
-          >
-            João 13 X 23 Paulo
-          </Text>
-          <Text
-            py={'0.5rem'}
-            textAlign={'center'}
-            bg={'gray.800'}
-            fontSize={'lg'}
-            borderRadius={'5px'}
-            boxShadow={'dark-lg'}
-            border={'1px solid rgba(255, 255, 255, 0.3)'}
-          >
-            João 13 X 23 Paulo
-          </Text>
+
+          {matches.map((match, index) => {
+            return (
+              <Box
+                key={index}
+                bg={'gray.800'}
+                borderRadius={'5px'}
+                boxShadow={'dark-lg'}
+                border={'1px solid rgba(255, 255, 255, 0.3)'}
+              >
+                <Text textAlign={'center'} fontSize={'lg'}>
+                  {formatMatchName(match)}
+                </Text>
+                <Text color={'gray.300'} textAlign={'center'} fontSize={'xs'}>
+                  {formatMatchSubTitle(match)}
+                </Text>
+              </Box>
+            );
+          })}
+          {!matches.length && (
+            <>
+              <Text fontSize={'3xl'} align={'center'}>
+                No matches found
+              </Text>
+              <Icon mx={'auto'} fontSize={'80px'} as={TfiFaceSad} />
+            </>
+          )}
         </Flex>
       </Flex>
     </Flex>
   );
 }
 
-function Matches() {
-  const matches = [
-    'Gabriel 4 X 4 Henrique | 02:45 | 0 / 0',
-    'Wleite 4 X 4 Henrique | 02:45 | 0 / 0',
-    'Gabriel 4 X 4 Henrique | 02:45 | 0 / 0',
-    'Gabriel 4 X 4 Henrique | 02:45 | 0 / 0',
-    'Gabriel 4 X 4 Henrique | 02:45 | 0 / 0',
-    'Gabriel 4 X 4 Henrique | 02:45 | 0 / 0',
-    'Gabriel 4 X 4 Henrique | 02:45 | 0 / 0',
-    'Gabriel 4 X 4 Henrique | 02:45 | 0 / 0',
-    'Gabriel 4 X 4 Henrique | 02:45 | 0 / 0',
-    'Gabriel 4 X 4 Henrique | 02:45 | 0 / 0',
-    'Gabriel 4 X 4 Henrique | 02:45 | 0 / 0',
-    'Gabriel 4 X 4 Henrique | 02:45 | 0 / 0',
-    'Gabriel 4 X 4 Henrique | 02:45 | 0 / 0',
-    'Wleite 4 X 4 Henrique | 02:45 | 0 / 0',
-  ];
-  matches.splice(8);
+function Matches(matches: Match[]) {
+  matches = Object.values(matches);
+
   return (
     <Flex mx={'auto'} width={'100%'} flexDirection={'row'}>
       <Flex
@@ -123,44 +136,71 @@ function Matches() {
         gap={'0.5rem'}
       >
         <Text textAlign={'center'} fontSize={'xl'}>
-          LAST MATCHES
+          PUBLIC MATCHES
         </Text>
         {matches.map((match, index) => {
           return (
             <Flex
+              key={index}
               bg={'gray.800'}
-              paddingY={'0.5rem'}
+              paddingY={'0.35rem'}
               borderRadius={'5px'}
               boxShadow={'dark-lg'}
               border={'1px solid rgba(255, 255, 255, 0.3)'}
               marginY={'0.1rem'}
             >
               <Flex flex={4}>
-                <Text as={'b'} margin={'auto'}>
-                  {match}
-                </Text>
+                <Box mx={'auto'}>
+                  <Text textAlign={'center'} fontSize={'lg'}>
+                    {formatMatchName(match)}
+                  </Text>
+                  <Text color={'gray.300'} textAlign={'center'} fontSize={'xs'}>
+                    {formatMatchSubTitle(match)}
+                  </Text>
+                </Box>
               </Flex>
               <Flex flex={1}>
-                <Button bg={'red'} fontSize={'md'} borderRadius={'2px'}>
+                <Button
+                  bg={'red'}
+                  fontSize={'md'}
+                  borderRadius={'2px'}
+                  visibility={match.stage === 'ONGOING' ? 'visible' : 'hidden'}
+                >
                   LIVE
                 </Button>
               </Flex>
             </Flex>
           );
         })}
+        {!matches.length && (
+          <>
+            <Text fontSize={'5xl'} align={'center'}>
+              No matches found
+            </Text>
+            <Icon mx={'auto'} fontSize={'80px'} as={TfiFaceSad} />
+          </>
+        )}
       </Flex>
     </Flex>
   );
 }
 
 export function Home() {
+  const [user, setUser] = useState(emptyUser());
+  const [matches, setMatches] = useState<Match[]>([]);
+
+  useEffect(() => {
+    userApi.getMe().then((_user) => setUser(_user));
+    matchesApi.getLiveMatches(10).then((matchs: Match[]) => setMatches(matchs));
+  }, []);
+
   return (
-    <Flex className="homeWrapper" height={'75vh'} gap={2} overflow={'scroll'}>
+    <Flex className="homeWrapper" height={'75vh'} gap={2} overflowY={'scroll'}>
       <Flex minH={'100%'} bg={'gray.700'} flex={2} borderRadius={'5px'}>
-        <User />
+        <UserComp {...user} />
       </Flex>
       <Flex minH={'100%'} bg={'gray.700'} flex={2} borderRadius={'5px'}>
-        <Matches />
+        <Matches {...matches} />
       </Flex>
     </Flex>
   );

@@ -5,6 +5,8 @@ import {
   Flex,
   Grid,
   GridItem,
+  Skeleton,
+  Stack,
   Text,
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
@@ -115,6 +117,17 @@ export default function DirectMessagesComponent(props: any) {
             />
           );
         })}
+        {!messages.length && (
+          <Stack>
+            <Skeleton height="80px" />
+            <Skeleton height="80px" />
+            <Skeleton height="80px" />
+            <Skeleton height="80px" />
+            <Skeleton height="80px" />
+            <Skeleton height="80px" />
+            <Skeleton height="80px" />
+          </Stack>
+        )}
       </GridItem>
     </Grid>
   );

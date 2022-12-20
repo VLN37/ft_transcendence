@@ -23,11 +23,10 @@ import { profileApi } from '../../services/api_index';
 import userStorage from '../../services/userStorage';
 
 export function PublicProfile(props: {
-  user: TableUser,
-  isOpen: boolean,
-  onClose: () => void,
+  user: TableUser;
+  isOpen: boolean;
+  onClose: () => void;
 }) {
-
   const link = process.env.REACT_APP_BACK_HOSTNAME + props.user.avatar_path;
   const toast = useToast();
 
@@ -37,8 +36,7 @@ export function PublicProfile(props: {
     const response: any = await profileApi.addFriend(myId, props.user.id);
     const status = response.status == 200 ? 'success' : 'error';
     const message = response.status == 200 ? '' : response.data.message;
-    if (response.status == 200)
-      userStorage.updateUser();
+    if (response.status == 200) await userStorage.updateUser();
     toast({
       title: 'Friend request sent',
       status: status,
