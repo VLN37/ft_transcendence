@@ -9,6 +9,6 @@ export class MatchState {
     dir: Vector;
     speed: number;
   };
-  p1: number;
-  p2: number;
+  pl: number;
+  pr: number;
 }

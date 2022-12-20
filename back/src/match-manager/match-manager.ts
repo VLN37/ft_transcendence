@@ -185,6 +185,8 @@ export class MatchManager {
   }
 
   private startMatch(match: ActiveMatch) {
+    match.match.left_player_score = randomInt(0, 4);
+    match.match.right_player_score = randomInt(0, 4);
     match.match.updateStage('ONGOING');
     match.match.resetPositions();
 

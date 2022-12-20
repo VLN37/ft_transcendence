@@ -38,6 +38,7 @@ export default (props: GameWindowProps) => {
     p5.createCanvas(gameWindow.width, gameWindow.height).parent(
       canvasParentRef,
     );
+    p5.frameRate(60)
   };
 
   const listenGameState = (state: MatchState) => {
@@ -48,8 +49,8 @@ export default (props: GameWindowProps) => {
     ball.velocity.x = state.ball.dir.x;
     ball.velocity.y = state.ball.dir.y;
 
-    leftPlayer.y = state.p1;
-    rightPlayer.y = state.p2;
+    leftPlayer.y = state.pl;
+    rightPlayer.y = state.pr;
   };
 
   matchApi.setOnMatchTickListener(listenGameState);
@@ -91,13 +92,15 @@ export default (props: GameWindowProps) => {
   const drawRightPlayer = () => {
     world.fill(50, 100, 200);
     world.rectMode('center');
-    world.rect(world.width - 20, rightPlayer.y, 20, 100);
+    rightPlayer.y = ball.position.y;
+    world.rect(rules.player.rightLine, rightPlayer.y, 20, 100);
   };
 
   const drawLeftPlayer = () => {
     world.fill(240, 100, 30);
     world.rectMode('center');
-    world.rect(20, leftPlayer.y, 20, 100);
+    leftPlayer.y = ball.position.y;
+    world.rect(rules.player.leftLine, leftPlayer.y, 20, 100);
   };
 
   const drawBall = () => {
@@ -108,17 +111,17 @@ export default (props: GameWindowProps) => {
     world.ellipse(ball.position.x, ball.position.y, size, size);
   };
 
-  let fpsCounter = 0;
+  let totalTime = 0;
   let pxPerSecond = 0;
   let distanceCounter = 0;
-  const printFps = () => {
-    fpsCounter++;
-    if (fpsCounter == 60) {
-      fpsCounter = 0;
+  const printFps = (p5: p5Types) => {
+    const deltaSpeed = (ball.speed * world.deltaTime) / 1000;
+    totalTime += world.deltaTime / 1000;
+    if (totalTime > 1) {
+      totalTime = 0;
       pxPerSecond = distanceCounter;
       distanceCounter = 0;
     }
-    const deltaSpeed = (ball.speed * world.deltaTime) / 1000;
     distanceCounter += deltaSpeed;
     world.textSize(18);
     world.fill(40, 132, 183);
@@ -126,6 +129,7 @@ export default (props: GameWindowProps) => {
     world.text('ball speed: ' + ball.speed, 50, 60);
     world.text('ball delta speed: ' + deltaSpeed.toFixed(2), 50, 80);
     world.text('ball distance in last 1s: ' + pxPerSecond.toFixed(2), 50, 100);
+    console.log('frame rate: ' + p5.frameRate());
   };
 
   const drawBallVelocity = () => {
@@ -186,12 +190,12 @@ export default (props: GameWindowProps) => {
     resizeIfNecessary(p5);
     world.background(0);
     checkBallCollision(ball, rules);
-    printFps();
+    printFps(p5);
     drawBall();
     drawBallVelocity();
     drawRightPlayer();
     drawLeftPlayer();
-    drawRuler();
+    // drawRuler();
     drawSpeedMeter();
     p5.image(world, 0, 0, p5.width, p5.height);
   };

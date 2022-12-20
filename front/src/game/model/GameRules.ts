@@ -17,6 +17,8 @@ export type GameRules = {
     startingPosition: number;
     width: number;
     height: number;
+    leftLine: number;
+    rightLine: number;
   }
   topCollisionEdge: number;
   bottomCollisionEdge: number;

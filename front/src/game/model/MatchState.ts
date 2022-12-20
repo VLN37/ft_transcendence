@@ -6,6 +6,6 @@ export type MatchState = {
     dir: Tuple;
     speed: number;
   };
-  p1: number;
-  p2: number;
+  pl: number;
+  pr: number;
 };

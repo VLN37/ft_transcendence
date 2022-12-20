@@ -25,6 +25,8 @@ export type GameRules = {
     startingPosition: number;
     width: number;
     height: number;
+    leftLine: number;
+    rightLine: number;
   }
   topCollisionEdge: number;
   bottomCollisionEdge: number;
@@ -49,6 +51,8 @@ export const rules: GameRules = {
     startingPosition: HEIGHT / 2,
     width: 20,
     height: 100,
+    leftLine: 20,
+    rightLine: WIDTH - 20,
   },
   topCollisionEdge: BALL_RADIUS,
   bottomCollisionEdge: HEIGHT - BALL_RADIUS,
