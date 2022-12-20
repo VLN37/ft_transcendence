@@ -3,6 +3,7 @@ import {
   Get,
   Logger,
   Param,
+  Headers,
   Query,
   UseInterceptors,
 } from '@nestjs/common';
@@ -47,6 +48,14 @@ export class MatchManagerController {
   @UseInterceptors(MatchManagerInterceptor)
   getLiveMatches(@Param('qty') qty: number) {
     return this.matchManagerService.getLiveMatches(qty);
+  }
+
+  @Get('/user/:qty')
+  getUserMatches(
+    @Headers('Authorization') token: string,
+    @Param('qty') qty: number,
+  ) {
+    return this.matchManagerService.getUserMatches(token, qty);
   }
 
   @Get('rules')
