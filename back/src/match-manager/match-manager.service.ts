@@ -20,6 +20,7 @@ export class MatchManagerService {
       },
       relations: ['left_player.profile', 'right_player.profile'],
       take: qty,
+      order: { created_at: 'DESC' },
     });
     if (liveMatches.length < qty) {
       finishedMatches = await this.matchRepository.find({
@@ -28,6 +29,7 @@ export class MatchManagerService {
         },
         relations: ['left_player.profile', 'right_player.profile'],
         take: qty - liveMatches.length,
+        order: { created_at: 'DESC' },
       });
     }
     const matches = liveMatches.concat(finishedMatches);
