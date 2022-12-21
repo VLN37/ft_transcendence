@@ -1,7 +1,8 @@
 import { UserDto } from 'src/users/dto/user.dto';
-import { Vector } from 'src/utils/classes/Vector';
 import { rules } from '../game/rules';
 import { MatchState } from './MatchState';
+import { World } from 'src/lib/c2.js/physics';
+import { Rect, Vector } from 'src/lib/c2.js/geometry';
 
 export type MatchStage =
   | 'AWAITING_PLAYERS'
@@ -11,6 +12,7 @@ export type MatchStage =
   | 'CANCELED';
 
 export class MemoryMatch {
+  world: World;
   id: string;
   left_player: UserDto;
   right_player: UserDto;
@@ -36,6 +38,7 @@ export class MemoryMatch {
     this.left_player_score = 0;
     this.right_player_score = 0;
     this.stage = 'AWAITING_PLAYERS';
+    this.world = new World(new Rect(0, 0, rules.worldWidth, rules.worldHeight));
     this.init();
   }
 
@@ -60,7 +63,10 @@ export class MemoryMatch {
         x: rules.ball.startingPosition.x,
         y: rules.ball.startingPosition.y,
       },
-      dir: vec,
+      dir: {
+        x: vec.x,
+        y: vec.y
+      },
       speed: rules.ball.startingSpeed,
     };
   }

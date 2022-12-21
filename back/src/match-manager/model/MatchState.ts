@@ -1,12 +1,12 @@
-import { Vector } from 'src/utils/classes/Vector';
+export class Tuple {
+  x: number;
+  y: number;
+}
 
 export class MatchState {
   ball: {
-    pos: {
-      x: number;
-      y: number;
-    };
-    dir: Vector;
+    pos: Tuple;
+    dir: Tuple;
     speed: number;
   };
   pl: number;
