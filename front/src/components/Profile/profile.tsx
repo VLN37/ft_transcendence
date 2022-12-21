@@ -12,7 +12,6 @@ import {
   useDisclosure,
   Grid,
   GridItem,
-  Switch,
   Input,
   InputGroup,
   InputRightElement,
@@ -28,6 +27,7 @@ import { useState } from 'react';
 import { emptyUser, User } from '../../models/User';
 import { userApi, profileApi } from '../../services/api_index';
 import userStorage from '../../services/userStorage';
+import TwoFa from '../TwoFA/TwoFA';
 
 function InputFileUpload(props: any) {
   const [value, setValue] = useState<File | null>(null);
@@ -170,9 +170,9 @@ export function Profile() {
                   <Stack spacing={4}>
                     <NicknameUpdate user={user} setNickname={setNickname} />
                     <InputFileUpload setAvatar={setAvatar} />
-                    <Switch>2FA</Switch>
                   </Stack>
                 </GridItem>
+              <TwoFa></TwoFa>
               </Grid>
             </Stack>
           </ModalBody>
