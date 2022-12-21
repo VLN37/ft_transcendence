@@ -142,7 +142,7 @@ export class ChannelsSocketGateway
       await this.usersService.update(user);
     }
     client.join(data.room.toString());
-    this.server.emit('join', {
+    this.server.to(data.room.toString()).emit('join', {
       data: { user: user },
     });
     return {

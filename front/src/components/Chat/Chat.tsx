@@ -47,7 +47,7 @@ function MessageComponent(props: any) {
       </Box>
       <Flex paddingRight={'1rem'} alignItems={'center'}>
         <Text wordBreak={'break-word'} paddingX={'0.2rem'}>
-          {props.text}
+          <div dangerouslySetInnerHTML={{ __html: props.text }} />
         </Text>
       </Flex>
     </Flex>
@@ -55,6 +55,12 @@ function MessageComponent(props: any) {
 }
 
 function InputMessage(props: any) {
+  const keyEnter = (event: any) => {
+    if (event.key == 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      sendMessage(props.room);
+    }
+  };
   return (
     <>
       <Flex h={'100%'} alignItems={'center'}>
@@ -64,6 +70,7 @@ function InputMessage(props: any) {
           padding={'1rem'}
           marginX={'0.5rem'}
           placeholder={props.placeholder}
+          onKeyDown={keyEnter}
         />
         <Box padding={'1rem'}>
           <IconButton
@@ -164,7 +171,7 @@ export default function Chat(props: Channel) {
         <ChannelTitle>{`${props.name} #${props.id}`}</ChannelTitle>
       </GridItem>
       <GridItem colStart={10}>
-        {myId == props.owner_id  && props.type != 'PRIVATE' ? (
+        {myId == props.owner_id && props.type != 'PRIVATE' ? (
           <ChatSettings setChannel={setChannel} channel={props}></ChatSettings>
         ) : null}
       </GridItem>
@@ -179,6 +186,7 @@ export default function Chat(props: Channel) {
         overflowY={'scroll'}
       >
         {messages.map((message) => {
+          message.message = message.message.replaceAll('\n', '<br/>');
           return (
             <MessageComponent
               name={message.user.profile.nickname}

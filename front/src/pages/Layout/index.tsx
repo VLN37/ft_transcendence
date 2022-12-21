@@ -9,7 +9,7 @@ import {
   IconButton,
 } from '@chakra-ui/react';
 import { useState } from 'react';
-import { Link, Outlet, useNavigate } from 'react-router-dom';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import MatchFinder from '../../components/MatchFinder';
 import NeonButton from '../../components/NeonButton';
 import { Profile } from '../../components/Profile/profile';
@@ -22,6 +22,7 @@ import './style.css';
 
 export default function Layout({ setUser }: any) {
   const navigate = useNavigate();
+  const location = useLocation();
   const [notification, setNotification] = useState(0);
   const [avatar, setAvatar] = useState<string>(
     JSON.parse(localStorage.getItem('user') || '').profile.avatar_path || '',
@@ -30,7 +31,8 @@ export default function Layout({ setUser }: any) {
   const user = userStorage.getUser() || emptyUser();
 
   chatApi.subscribeDirectMessage((message: iDirectMessage) => {
-    if (message.sender.id != user.id) setNotification(notification + 1);
+    if (location.pathname == '/dm') setNotification(0);
+    else if (message.sender.id != user.id) setNotification(notification + 1);
   });
 
   return (
@@ -89,7 +91,7 @@ export default function Layout({ setUser }: any) {
             <Button
               marginY={'auto'}
               onClick={() => {
-				api.removeToken();
+                api.removeToken();
                 localStorage.removeItem('jwt-token');
                 navigate('/login');
               }}
