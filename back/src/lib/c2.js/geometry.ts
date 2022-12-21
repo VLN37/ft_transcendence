@@ -128,6 +128,14 @@ export class Vector {
         let dy = this.y - v.y;
         return dx * dx + dy * dy;
     }
+
+    static random(): Vector {
+        const x = Math.random() - 0.5;
+        const y = Math.random() - 0.5;
+        const vec = new Vector(x, y);
+        vec.normalize();
+        return vec;
+    }
 }
 
 
