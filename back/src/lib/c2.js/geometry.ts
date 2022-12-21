@@ -133,8 +133,7 @@ export class Vector {
         const x = Math.random() - 0.5;
         const y = Math.random() - 0.5;
         const vec = new Vector(x, y);
-        vec.normalize();
-        return vec;
+        return vec.normalize();
     }
 }
 
