@@ -35,18 +35,20 @@ export class AuthController {
   @Get('2fa') // /auth/2fa
   @UseGuards(JwtAuthGuard)
   async generate2fa(@Req() req: Request, @Res() res: Response) {
-    this.logger.log(
-      'generating new 2FA QRCode for user ' + req.user.login_intra,
-    );
-    const { otpAuthUrl } = await this.authService.generata2faSecret(req.user);
+    const auth = await this.authService.generata2faSecret(req.user);
 
-    const dataURL = await this.authService.generateDataQrCode(otpAuthUrl);
-    return res
-      .setHeader('Content-type', 'text/html')
-      .send(`<img src="${dataURL}" />`);
-    // return res.json({
-    //   qrcode_data: dataURL,
-    // });
+    const dataURL = await this.authService.generateDataQrCode(
+      auth.otpAuthUrl
+    );
+    const response = {
+      qrcode_data: dataURL,
+      secret: auth.secret,
+      link: auth.otpAuthUrl,
+    }
+    this.logger.log(
+      'generating new 2FA code for user ' + req.user.login_intra, response
+    );
+    return res.json(response);
   }
 
   @Put('2fa') // /auth/2fa
@@ -72,6 +74,7 @@ export class AuthController {
   @Post('2fa') // /auth/2fa
   @UseGuards(Jwt2faAuthGuard)
   async loginWith2fa(@Req() req: Request, @Body() body: TFAPayload) {
+
     const code = body.tfa_code;
     const user = req.user;
 

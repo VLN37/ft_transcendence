@@ -81,19 +81,44 @@ export class Api {
     return response.data.access_token;
   }
 
-  async authenticate2fa(tfaCode: string): Promise<string> {
-    const response = await this.client.post<AuthenticationResponse>(
-      '/auth/2fa',
-      {
-        tfa_code: tfaCode,
-      },
-    );
+  async get2faQRcode() {
+    const response = await this.client.get('/auth/2fa');
+    if (response.status != 200)
+      throw new Error('2fa code generation failed');
+    return response.data;
+  }
 
-    if (response.status != 201) {
-      throw new Error('2FA authentication failed');
+  async toggle2fa(tfaCode: string, state: 'ENABLED' | 'DISABLED') {
+    try {
+      const response = await this.client.put<AuthenticationResponse>(
+        '/auth/2fa',
+        {
+          tfa_code: tfaCode,
+          state: state,
+        },
+      );
+      return response;
+
+    } catch(err) {
+      console.log(err);
+      return (err as AxiosError).response;
     }
+  }
 
-    return response.data.access_token;
+  async authenticate2fa(tfaCode: string): Promise<any> {
+    try {
+      const response = await this.client.post<AuthenticationResponse>(
+        '/auth/2fa',
+        {
+          tfa_code: tfaCode,
+        },
+      );
+      return response;
+
+    } catch(err) {
+      console.log(err);
+      return (err as AxiosError).response;
+    }
   }
 
   async createChannel(data: any): Promise<any> {
