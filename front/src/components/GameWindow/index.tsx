@@ -113,19 +113,22 @@ export default (props: GameWindowProps) => {
 
   let totalTime = 0;
   let pxPerSecond = 0;
+  let fps = 0;
   let distanceCounter = 0;
+  let deltaSpeed = 0;
   const printFps = (p5: p5Types) => {
-    const deltaSpeed = (ball.speed * world.deltaTime) / 1000;
     totalTime += world.deltaTime / 1000;
     if (totalTime > 1) {
       totalTime = 0;
+      deltaSpeed = (ball.speed * world.deltaTime) / 1000;
+      fps = 1000 / world.deltaTime;
       pxPerSecond = distanceCounter;
       distanceCounter = 0;
     }
     distanceCounter += deltaSpeed;
     world.textSize(18);
     world.fill(40, 132, 183);
-    world.text('fps: ' + (1000 / world.deltaTime).toFixed(2), 50, 40);
+    world.text('fps: ' + fps.toFixed(2), 50, 40);
     world.text('ball speed: ' + ball.speed, 50, 60);
     world.text('ball delta speed: ' + deltaSpeed.toFixed(2), 50, 80);
     world.text('ball distance in last 1s: ' + pxPerSecond.toFixed(2), 50, 100);
@@ -150,24 +153,6 @@ export default (props: GameWindowProps) => {
     world.pop();
   };
 
-  let fillMeter = 0;
-  const drawRuler = () => {
-    world.push();
-    world.rectMode('corner');
-    world.fill(0);
-    world.stroke(230, 150, 23);
-    const posX = 250;
-    const posY = 10;
-    const width = 250;
-    const height = 15;
-    world.rect(posX, posY, width, height);
-    world.fill(230, 200, 53);
-    fillMeter += (ball.speed * world.deltaTime) / 1000;
-    world.rect(posX + 1, posY + 1, fillMeter, height - 2);
-    if (fillMeter > width - 2) fillMeter = 0;
-    world.pop();
-  };
-
   const drawSpeedMeter = () => {
     world.push();
     world.rectMode('corner');
@@ -188,6 +173,8 @@ export default (props: GameWindowProps) => {
 
   const draw = (p5: p5Types) => {
     resizeIfNecessary(p5);
+    if (!world)
+      world = p5.createGraphics(rules.worldWidth, rules.worldHeight);
     world.background(0);
     checkBallCollision(ball, rules);
     printFps(p5);
@@ -195,7 +182,6 @@ export default (props: GameWindowProps) => {
     drawBallVelocity();
     drawRightPlayer();
     drawLeftPlayer();
-    // drawRuler();
     drawSpeedMeter();
     p5.image(world, 0, 0, p5.width, p5.height);
   };
