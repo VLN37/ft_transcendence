@@ -8,6 +8,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { ChannelsInterceptor } from './channels.interceptor';
 import { ChannelMessages } from 'src/entities/channel_messages.entity';
 import { BannedUsers } from 'src/entities/channel.banned.entity';
+import { ChannelsSocketGateway } from './channels.gateway';
 
 @Module({
   imports: [
@@ -16,7 +17,7 @@ import { BannedUsers } from 'src/entities/channel.banned.entity';
     UsersModule,
   ],
   controllers: [ChannelsController],
-  providers: [ChannelsService, ChannelsInterceptor],
+  providers: [ChannelsService, ChannelsInterceptor, ChannelsSocketGateway],
   exports: [],
 })
 export class ChannelsModule {}
