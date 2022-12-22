@@ -38,15 +38,18 @@ export class AuthController {
     this.logger.log(
       'generating new 2FA QRCode for user ' + req.user.login_intra,
     );
-    const { otpAuthUrl } = await this.authService.generata2faSecret(req.user);
+    const auth = await this.authService.generata2faSecret(req.user);
 
-    const dataURL = await this.authService.generateDataQrCode(otpAuthUrl);
-    return res
-      .setHeader('Content-type', 'text/html')
-      .send(`<img src="${dataURL}" />`);
-    // return res.json({
-    //   qrcode_data: dataURL,
-    // });
+    const dataURL = await this.authService.generateDataQrCode(
+      auth.otpAuthUrl
+    );
+    this.logger.error({e: auth});
+    console.log()
+    return res.json({
+      qrcode_data: dataURL,
+      secret: auth.secret,
+      link: auth.otpAuthUrl,
+    });
   }
 
   @Put('2fa') // /auth/2fa
