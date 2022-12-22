@@ -4,7 +4,9 @@ import { emptyUser, User } from "../../models/User";
 import api from "../../services/api";
 import userStorage from "../../services/userStorage";
 
-function Setup2FA() {
+function Setup2FA(props: {
+  setInProgress: any,
+}) {
   const toast = useToast();
 
   const [pin, setPin] = useState<string>('');
@@ -34,8 +36,10 @@ function Setup2FA() {
     if (response.status == 200) {
       api.setToken(response.data.access_token);
       await userStorage.updateUser();
+      props.setInProgress(false);
     }
-    setPin('');
+    else
+      setPin('');
     toast({
       title: '2FA verified',
       status: status,
@@ -118,7 +122,7 @@ export default function TwoFa() {
     }
     {
       enable2FA && inProgress
-        ? <Setup2FA></Setup2FA>
+        ? <Setup2FA setInProgress={setInProgress}></Setup2FA>
         : null
     }
   </Box>
