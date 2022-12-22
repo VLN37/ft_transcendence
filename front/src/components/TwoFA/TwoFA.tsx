@@ -1,7 +1,77 @@
-import { Switch, Button, Text, Box } from "@chakra-ui/react"
-import { useState } from "react";
+import { Switch, Button, Text, Box, Image, PinInput, PinInputField, useToast } from "@chakra-ui/react"
+import { useEffect, useState } from "react";
 import { emptyUser, User } from "../../models/User";
+import api from "../../services/api";
 import userStorage from "../../services/userStorage";
+
+function Setup2FA() {
+  const toast = useToast();
+
+  const [pin, setPin] = useState<string>('');
+  const [QRCode, setQRCode] = useState<any>({
+    qrcode_data: '',
+    link: '',
+    secret: '',
+  });
+  useEffect(() => {
+    async function fetchQRCode() {
+      const response = await api.get2faQRcode();
+      console.log(response);
+      setQRCode(response);
+      // await userStorage.updateUser();
+    };
+    fetchQRCode();
+  }, [])
+
+  async function check2fa(tfa_code: string) {
+    console.log(tfa_code);
+    if (tfa_code.length < 6)
+      return;
+    const response: any = await api.authenticate2fa(tfa_code);
+
+    const message = response.status == 201 ? '' : response.data.message;
+    const status = response.status == 201 ? 'success' : 'error';
+    if (response.status == 201) api.setToken(response.data.access_token);
+    setPin('');
+    toast({
+      title: '2FA verified',
+      status: status,
+      description: message,
+    })
+  }
+
+  return (
+    <Box>
+      <Text>Configuring Google Authenticator</Text>
+      <ol>
+        <li>Install Google Authenticator (IoS - Android)</li>
+        <li>In the authenticator app, select "+" icon.</li>
+        <li>Select "Scan a barcode (or QR code)"
+          and use the phone camera to scan it</li>
+      </ol>
+    <Image
+    src={QRCode.qrcode_data} alignSelf={'center'}></Image>
+    <Text>Or use this link <a href={QRCode.link}>link</a></Text>
+    <Text>Or use the secret in the authenticator</Text>
+    <Text wordBreak={'break-all'}>{QRCode.secret}</Text>
+    <PinInput otp
+      onChange={(value: string) => {
+        setPin(value)
+      }}
+      onComplete={(pin: string) => check2fa(pin)}
+      value={pin}
+      focusBorderColor='yellow.100'
+    >
+      <PinInputField />
+      <PinInputField />
+      <PinInputField />
+      <PinInputField />
+      <PinInputField />
+      <PinInputField />
+    </PinInput>
+    </Box>
+  )
+}
 
 export default function TwoFa() {
   const user: User = userStorage.getUser() || emptyUser();
@@ -45,22 +115,7 @@ export default function TwoFa() {
     }
     {
       enable2FA && inProgress
-        ? <Text>enable 2fa flow
-          <Button
-          bgColor={'red.500'}
-          onClick={() => {
-            setIsChecked(false)
-            setEnable2FA(false)
-            setInProgress(false)
-          }}>failure</Button>
-          <Button
-          bgColor={'green.500'}
-          onClick={() => {
-            setIsChecked(true)
-            setEnable2FA(false)
-            setInProgress(false)
-          }}>success</Button>
-          </Text>
+        ? <Setup2FA></Setup2FA>
         : null
     }
   </Box>
