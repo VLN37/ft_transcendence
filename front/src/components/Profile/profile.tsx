@@ -27,7 +27,7 @@ import { useState } from 'react';
 import { emptyUser, User } from '../../models/User';
 import { userApi, profileApi } from '../../services/api_index';
 import userStorage from '../../services/userStorage';
-import TwoFa from '../TwoFA/TwoFA';
+import TwoFA from '../TwoFA/TwoFA';
 
 function InputFileUpload(props: any) {
   const [value, setValue] = useState<File | null>(null);
@@ -172,7 +172,7 @@ export function Profile() {
                     <InputFileUpload setAvatar={setAvatar} />
                   </Stack>
                 </GridItem>
-              <TwoFa></TwoFa>
+              <TwoFA></TwoFA>
               </Grid>
             </Stack>
           </ModalBody>

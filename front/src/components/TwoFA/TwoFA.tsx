@@ -4,7 +4,7 @@ import { emptyUser, User } from "../../models/User";
 import api from "../../services/api";
 import userStorage from "../../services/userStorage";
 
-function Setup2FA(props: {
+function Enable2FA(props: {
   setInProgress: any,
 }) {
   const toast = useToast();
@@ -80,7 +80,7 @@ function Setup2FA(props: {
   )
 }
 
-export default function TwoFa() {
+export default function TwoFA() {
   const user: User = userStorage.getUser() || emptyUser();
   const [enable2FA, setEnable2FA] = useState(false);
   const [disable2FA, setDisable2FA] = useState(false);
@@ -122,7 +122,7 @@ export default function TwoFa() {
     }
     {
       enable2FA && inProgress
-        ? <Setup2FA setInProgress={setInProgress}></Setup2FA>
+        ? <Enable2FA setInProgress={setInProgress}></Enable2FA>
         : null
     }
   </Box>
