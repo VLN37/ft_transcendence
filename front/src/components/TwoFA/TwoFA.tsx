@@ -16,22 +16,25 @@ function Setup2FA() {
   useEffect(() => {
     async function fetchQRCode() {
       const response = await api.get2faQRcode();
-      console.log(response);
       setQRCode(response);
-      // await userStorage.updateUser();
     };
     fetchQRCode();
   }, [])
 
   async function check2fa(tfa_code: string) {
-    console.log(tfa_code);
+    // console.log('tfa code', tfa_code);
     if (tfa_code.length < 6)
       return;
-    const response: any = await api.authenticate2fa(tfa_code);
+    const response: any = await api.toggle2fa(tfa_code, 'ENABLED');
 
-    const message = response.status == 201 ? '' : response.data.message;
-    const status = response.status == 201 ? 'success' : 'error';
-    if (response.status == 201) api.setToken(response.data.access_token);
+    const message = response.status == 200
+      ? 'don\'t lose your token'
+      : response.data.message;
+    const status = response.status == 200 ? 'success' : 'error';
+    if (response.status == 200) {
+      api.setToken(response.data.access_token);
+      await userStorage.updateUser();
+    }
     setPin('');
     toast({
       title: '2FA verified',
@@ -51,10 +54,10 @@ function Setup2FA() {
       </ol>
     <Image
     src={QRCode.qrcode_data} alignSelf={'center'}></Image>
-    <Text>Or use this link <a href={QRCode.link}>link</a></Text>
+    <Text>Or use this link <a href={QRCode.link}>click me</a></Text>
     <Text>Or use the secret in the authenticator</Text>
     <Text wordBreak={'break-all'}>{QRCode.secret}</Text>
-    <PinInput otp
+    <PinInput
       onChange={(value: string) => {
         setPin(value)
       }}

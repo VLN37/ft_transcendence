@@ -75,6 +75,7 @@ export class AuthController {
   @Post('2fa') // /auth/2fa
   @UseGuards(Jwt2faAuthGuard)
   async loginWith2fa(@Req() req: Request, @Body() body: TFAPayload) {
+
     const code = body.tfa_code;
     const user = req.user;
 

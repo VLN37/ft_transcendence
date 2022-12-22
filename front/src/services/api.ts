@@ -88,6 +88,23 @@ export class Api {
     return response.data;
   }
 
+  async toggle2fa(tfaCode: string, state: 'ENABLED' | 'DISABLED') {
+    try {
+      const response = await this.client.put<AuthenticationResponse>(
+        '/auth/2fa',
+        {
+          tfa_code: tfaCode,
+          state: state,
+        },
+      );
+      return response;
+
+    } catch(err) {
+      console.log(err);
+      return (err as AxiosError).response;
+    }
+  }
+
   async authenticate2fa(tfaCode: string): Promise<any> {
     try {
       const response = await this.client.post<AuthenticationResponse>(
