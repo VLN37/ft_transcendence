@@ -35,21 +35,20 @@ export class AuthController {
   @Get('2fa') // /auth/2fa
   @UseGuards(JwtAuthGuard)
   async generate2fa(@Req() req: Request, @Res() res: Response) {
-    this.logger.log(
-      'generating new 2FA QRCode for user ' + req.user.login_intra,
-    );
     const auth = await this.authService.generata2faSecret(req.user);
 
     const dataURL = await this.authService.generateDataQrCode(
       auth.otpAuthUrl
     );
-    this.logger.error({e: auth});
-    console.log()
-    return res.json({
+    const response = {
       qrcode_data: dataURL,
       secret: auth.secret,
       link: auth.otpAuthUrl,
-    });
+    }
+    this.logger.log(
+      'generating new 2FA code for user ' + req.user.login_intra, response
+    );
+    return res.json(response);
   }
 
   @Put('2fa') // /auth/2fa
