@@ -86,17 +86,21 @@ function Enable2FA(props: {
       return;
     const response: any = await api.toggle2fa(tfa_code, 'ENABLED');
 
-    const message = response.status == 200
-      ? 'don\'t lose your token'
-      : response.data.message;
-    const status = response.status == 200 ? 'success' : 'error';
+    let message: string;
+    let status: 'success' | 'error';
     if (response.status == 200) {
+      message = 'don\'t lose your token';
+      status = 'success';
       api.setToken(response.data.access_token);
       await userStorage.updateUser();
       props.setInProgress(false);
+      props.setEnable2FA(false);
     }
-    else
+    else {
+      message = response.data.message;
+      status = 'error';
       setPin('');
+    }
     toast({
       title: '2FA verified',
       status: status,
@@ -119,9 +123,7 @@ function Enable2FA(props: {
     <Text>Or use the secret in the authenticator</Text>
     <Text wordBreak={'break-all'}>{QRCode.secret}</Text>
     <PinInput
-      onChange={(value: string) => {
-        setPin(value)
-      }}
+      onChange={(value: string) => {setPin(value)}}
       onComplete={(pin: string) => check2fa(pin)}
       value={pin}
       focusBorderColor='yellow.100'
@@ -159,27 +161,18 @@ export default function TwoFA() {
     </Switch>
     {
       disable2FA && inProgress
-        ? <Text>disable 2fa flow
-          <Button
-          bgColor={'red.500'}
-          onClick={() => {
-            setIsChecked(true)
-            setDisable2FA(false)
-            setInProgress(false)
-          }}>failure</Button>
-          <Button
-          bgColor={'green.500'}
-          onClick={() => {
-            setIsChecked(false)
-            setDisable2FA(false)
-            setInProgress(false)
-          }}>success</Button>
-          </Text>
+        ? <Disable2FA
+          setInProgress={setInProgress}
+          setDisable2FA={setDisable2FA}
+        ></Disable2FA>
         : null
     }
     {
       enable2FA && inProgress
-        ? <Enable2FA setInProgress={setInProgress}></Enable2FA>
+        ? <Enable2FA
+        setInProgress={setInProgress}
+        setEnable2FA={setEnable2FA}
+        ></Enable2FA>
         : null
     }
   </Box>
