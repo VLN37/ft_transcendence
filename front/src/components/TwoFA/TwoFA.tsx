@@ -4,8 +4,65 @@ import { emptyUser, User } from "../../models/User";
 import api from "../../services/api";
 import userStorage from "../../services/userStorage";
 
+function Disable2FA(props: {
+  setInProgress: any,
+  setDisable2FA: any,
+}) {
+  const [pin, setPin] = useState<string>('');
+  const toast = useToast();
+
+  async function check2fa(tfa_code: string) {
+    // console.log('tfa code', tfa_code);
+    if (tfa_code.length < 6)
+      return;
+    const response: any = await api.toggle2fa(tfa_code, 'DISABLED');
+
+    let message: string;
+    let status: 'success' | 'error';
+    if (response.status == 200) {
+      message = '2FA authentication removed';
+      status = 'success';
+      console.log('new token', response.data);
+      api.setToken(response.data.access_token);
+      await userStorage.updateUser();
+      props.setInProgress(false);
+      props.setDisable2FA(false);
+    }
+    else {
+      message = response.data.message;
+      status = 'error';
+      setPin('');
+    }
+    toast({
+      title: 'Code verified',
+      status: status,
+      description: message,
+    })
+  }
+
+  return (
+    <Box>
+      <Text>Confirm your pin to remove 2FA</Text>
+      <PinInput
+      onChange={(value: string) => {setPin(value)}}
+      onComplete={(pin: string) => check2fa(pin)}
+      value={pin}
+      focusBorderColor='yellow.100'
+    >
+      <PinInputField />
+      <PinInputField />
+      <PinInputField />
+      <PinInputField />
+      <PinInputField />
+      <PinInputField />
+    </PinInput>
+    </Box>
+  );
+}
+
 function Enable2FA(props: {
   setInProgress: any,
+  setEnable2FA: any,
 }) {
   const toast = useToast();
 
