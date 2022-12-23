@@ -1,35 +1,25 @@
-.top-bar {
-	display: flex;
-	flex-direction: row;
-	justify-content: space-evenly;
+.menu-mobile {
+	display: none !important;
 }
 
-.nav-links {
-	display: flex;
-	flex-direction: row;
-	justify-content: space-evenly;
-	justify-items: stretch;
+.menu-itens {
+	display: flex !important;
+	gap: 2rem;
 }
 
-.nav-links li {
-	display: flex;
-	margin: 2rem 1rem 1rem 1rem;
-}
-
-.page {
-	display: flex;
-	flex: 1;
-}
-
-@media only screen and (max-width: 1100px) {
-	.top-bar .neon-text {
+@media only screen and (max-width: 1000px) {
+	.menu-itens .neon-text {
 		font-size: 1rem;
 	}
 }
 
 @media only screen and (max-width: 768px) {
-	.top-bar .neon-text {
-		font-size: 0.1rem;
+	.menu-itens {
+		display: none !important;
+	}
+
+	.menu-mobile {
+		display: flex !important;
 	}
 }
 
