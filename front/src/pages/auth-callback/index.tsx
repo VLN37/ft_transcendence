@@ -50,7 +50,7 @@ const AuthCallback = () => {
   const handleSendClick = async (tfaCode: string) => {
     setIsSending2fa(true);
     try {
-      const token = await api.authenticate2fa(tfaCode);
+      const token = (await api.authenticate2fa(tfaCode)).data.access_token;
       api.setToken(token);
       const payload = jwtDecode<TokenPayload>(token);
       finishLogin(payload);

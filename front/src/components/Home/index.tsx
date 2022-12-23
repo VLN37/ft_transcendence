@@ -111,10 +111,13 @@ function UserComp(user: User) {
           })}
           {!matches.length && (
             <>
-              <Text fontSize={'3xl'} align={'center'}>
+              <Text fontSize={'2xl'} align={'center'}>
                 No matches found
               </Text>
-              <Icon mx={'auto'} fontSize={'80px'} as={TfiFaceSad} />
+              <Text fontSize={'2xl'} align={'center'}>
+              Go play some!
+              </Text>
+              {/* <Icon mx={'auto'} fontSize={'80px'} as={TfiFaceSad} /> */}
             </>
           )}
         </Flex>
@@ -174,10 +177,13 @@ function Matches(matches: Match[]) {
         })}
         {!matches.length && (
           <>
-            <Text fontSize={'5xl'} align={'center'}>
+            <Text fontSize={'2xl'} align={'center'}>
               No matches found
             </Text>
-            <Icon mx={'auto'} fontSize={'80px'} as={TfiFaceSad} />
+            <Text fontSize={'2xl'} align={'center'}>
+              Go play some!
+            </Text>
+            {/* <Icon mx={'auto'} fontSize={'80px'} as={TfiFaceSad} /> */}
           </>
         )}
       </Flex>

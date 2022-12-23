@@ -65,7 +65,7 @@ export class MemoryMatch {
       },
       dir: {
         x: vec.x,
-        y: vec.y
+        y: vec.y,
       },
       speed: rules.ball.startingSpeed,
     };
@@ -108,8 +108,8 @@ export class MemoryMatch {
       this.state.ball.dir.x *= -1;
       this.increaseBallSpeed();
     }
-    this.checkBallSideCollision()
-    this.checkBallPlayerCollision()
+    this.checkBallSideCollision();
+    this.checkBallPlayerCollision();
   }
 
   private checkBallSideCollision() {
@@ -152,8 +152,10 @@ export class MemoryMatch {
 
     const playerBody = rules.player.leftLine + rules.player.width / 2;
     if (ball.pos.x + rules.ball.radius < playerBody && ball.dir.x < 0) {
-      if (ball.pos.y + rules.ball.radius < leftPlayer + rules.player.height / 2 && 
-        ball.pos.y  + rules.ball.radius> leftPlayer - rules.player.height / 2) {
+      if (
+        ball.pos.y + rules.ball.radius < leftPlayer + rules.player.height / 2 &&
+        ball.pos.y + rules.ball.radius > leftPlayer - rules.player.height / 2
+      ) {
         return true;
       }
     }
@@ -165,8 +167,10 @@ export class MemoryMatch {
 
     const playerBody = rules.player.rightLine - rules.player.width / 2;
     if (ball.pos.x + rules.ball.radius > playerBody && ball.dir.x > 0) {
-      if (ball.pos.y < rightPlayer + rules.player.height / 2 && 
-      ball.pos.y > rightPlayer - rules.player.height / 2) {
+      if (
+        ball.pos.y < rightPlayer + rules.player.height / 2 &&
+        ball.pos.y > rightPlayer - rules.player.height / 2
+      ) {
         return true;
       }
     }
@@ -177,7 +181,7 @@ export class MemoryMatch {
     const now = Date.now();
     const deltaTime = now - this.lastUpdate;
     this.lastUpdate = now;
-    return deltaTime
+    return deltaTime;
   }
 
   private increaseBallSpeed() {
