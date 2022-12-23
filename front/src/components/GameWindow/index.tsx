@@ -5,7 +5,7 @@ import { MatchState } from '../../game/model/MatchState';
 import { Player, PlayerSide } from '../../game/model/Player';
 import { MatchApi } from '../../services/matchApi';
 import { GameRules } from '../../game/model/GameRules';
-import { System, Circle, Box, BodyOptions } from 'detect-collisions';
+import { System, Circle, Box } from 'detect-collisions';
 import {
   drawBall,
   drawBallVelocity,
@@ -119,13 +119,6 @@ export default (props: GameWindowProps) => {
     }
     gameWindow.width = currentWidth;
     gameWindow.height = currentHeight;
-  };
-
-  const worldMouse = (p5: p5Types) => {
-    return {
-      x: (p5.mouseX * world.width) / gameWindow.width,
-      y: (p5.mouseY * world.height) / gameWindow.height,
-    };
   };
 
   const resizeIfNecessary = (p5: p5Types) => {
