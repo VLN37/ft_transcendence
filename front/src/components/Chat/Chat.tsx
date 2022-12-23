@@ -47,7 +47,7 @@ function MessageComponent(props: any) {
       </Box>
       <Flex paddingRight={'1rem'} alignItems={'center'}>
         <Text wordBreak={'break-word'} paddingX={'0.2rem'}>
-          <div dangerouslySetInnerHTML={{ __html: props.text }} />
+          {props.text}
         </Text>
       </Flex>
     </Flex>

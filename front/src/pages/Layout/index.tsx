@@ -1,12 +1,17 @@
-import { EmailIcon } from '@chakra-ui/icons';
+import { EmailIcon, HamburgerIcon } from '@chakra-ui/icons';
 import {
   Badge,
+  Box,
   Button,
   Container,
   Flex,
   Grid,
   GridItem,
   IconButton,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
@@ -19,6 +24,49 @@ import { api, chatApi } from '../../services/api_index';
 import userStorage from '../../services/userStorage';
 
 import './style.css';
+
+function DesktopMenu() {
+  return (
+    <Box className={'menu-itens'}>
+      <Link to="/">
+        <NeonButton>HOME</NeonButton>
+      </Link>
+      <Link to="/rank">
+        <NeonButton>RANK</NeonButton>
+      </Link>
+      <Link to="/community">
+        <NeonButton>COMMUNITY</NeonButton>
+      </Link>
+    </Box>
+  );
+}
+
+function MobileMenu() {
+  return (
+    <Menu>
+      <MenuButton
+        className={'menu-mobile'}
+        as={IconButton}
+        aria-label="Options"
+        icon={<HamburgerIcon />}
+        variant="outline"
+        fontSize="30px"
+        size="lg"
+      />
+      <MenuList width={'90vw'}>
+        <Link to={'/'}>
+          <MenuItem>HOME</MenuItem>
+        </Link>
+        <Link to={'/rank'}>
+          <MenuItem>RANK</MenuItem>
+        </Link>
+        <Link to={'/community'}>
+          <MenuItem>COMMUNITY</MenuItem>
+        </Link>
+      </MenuList>
+    </Menu>
+  );
+}
 
 export default function Layout({ setUser }: any) {
   const navigate = useNavigate();
@@ -49,24 +97,13 @@ export default function Layout({ setUser }: any) {
         h={'100%'}
       >
         <GridItem rowSpan={1} colSpan={1} maxW="100%">
-          <nav className="top-bar">
-            <ul className="nav-links">
-              <li>
-                <Link to="/">
-                  <NeonButton>HOME</NeonButton>
-                </Link>
-              </li>
-              <li>
-                <Link to="/rank">
-                  <NeonButton>RANK</NeonButton>
-                </Link>
-              </li>
-              <li>
-                <Link to="/community">
-                  <NeonButton>COMMUNITY</NeonButton>
-                </Link>
-              </li>
-              <li>
+          <Flex mt={'1rem'}>
+            <Flex flex={1} my={'auto'}>
+              <DesktopMenu />
+              <MobileMenu />
+            </Flex>
+            <Flex flex={3} justifyContent={'end'} gap={'2.5rem'}>
+              <Box my={'auto'}>
                 <Link
                   onClick={() => setNotification(0)}
                   className="button"
@@ -74,10 +111,11 @@ export default function Layout({ setUser }: any) {
                 >
                   <IconButton
                     variant="link"
-                    fontSize="50px"
+                    fontSize="60px"
                     size="lg"
                     aria-label="Message Notification"
                     icon={<EmailIcon />}
+                    mt={'0.5rem'}
                   />
                   {notification ? (
                     <Badge className="badge" ml="1" colorScheme="green">
@@ -85,20 +123,20 @@ export default function Layout({ setUser }: any) {
                     </Badge>
                   ) : null}
                 </Link>
-              </li>
-            </ul>
-            <Profile />
-            <Button
-              marginY={'auto'}
-              onClick={() => {
-                api.removeToken();
-                localStorage.removeItem('jwt-token');
-                navigate('/login');
-              }}
-            >
-              logout
-            </Button>
-          </nav>
+              </Box>
+              <Profile />
+              <Button
+                marginY={'auto'}
+                onClick={() => {
+                  api.removeToken();
+                  localStorage.removeItem('jwt-token');
+                  navigate('/login');
+                }}
+              >
+                logout
+              </Button>
+            </Flex>
+          </Flex>
         </GridItem>
 
         <GridItem rowSpan={10} colSpan={1} maxW="100%" overflow={'hidden'}>

@@ -16,7 +16,7 @@ class UserApi {
   }
 
   async getMe(): Promise<User> {
-    const response = await this.client.get(`/users/me`, {});
+    const response = await this.client.get(`/users/v2/me`, {});
     return response.data;
   }
 

@@ -15,7 +15,7 @@ class UserStorage {
   }
 
   async updateUser() {
-    const response = await userApi.getUser('me');
+    const response = await userApi.getUser('v2/me');
     this.saveUser(response);
     return response;
   }
