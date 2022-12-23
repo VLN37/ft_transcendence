@@ -119,7 +119,7 @@ class ChatApi {
   }
 
   async getLastDirectMessages(): Promise<iDirectLastMessage[]> {
-    const response = await this.client.get(`/direct_messages/last`, {});
+    const response = await this.client.get(`/direct_messages/v2/last`, {});
     // console.log(response.data);
     return response.data;
   }
