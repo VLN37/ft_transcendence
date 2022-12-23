@@ -24,6 +24,7 @@ export const drawBall = (world: p5Types.Graphics, gBall: Circle) => {
 
 let totalTime = 0;
 let pxPerSecond = 0;
+let frameCount = 0;
 let fps = 0;
 let distanceCounter = 0;
 let deltaSpeed = 0;
@@ -32,10 +33,12 @@ export const printFps = (world: p5Types.Graphics, ball: Ball) => {
   if (totalTime > 1) {
     totalTime = 0;
     deltaSpeed = (ball.speed * world.deltaTime) / 1000;
-    fps = 1000 / world.deltaTime;
+    fps = frameCount;
     pxPerSecond = distanceCounter;
     distanceCounter = 0;
+    frameCount = 0;
   }
+  frameCount++;
   distanceCounter += deltaSpeed;
   world.textSize(18);
   world.fill(40, 132, 183);
