@@ -41,7 +41,7 @@ export class MatchManagerService {
 
   async getUserMatches(token: string, qty: number): Promise<Match[]> {
     const myId = await this.usersService.getUserId(token);
-    this.logger.error(myId);
+    // this.logger.error(myId);
     const matches = await this.matchRepository.find({
       where: [
         {

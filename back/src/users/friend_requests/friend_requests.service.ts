@@ -106,7 +106,7 @@ export class FriendRequestsService {
     await this.usersService.update(userToAdd);
     // this.dmGateway.pingFriendRequest(target, {user});
     if (this.notifyService) {
-      console.log('params', me, target);
+      // console.log('params', me, target);
       this.notifyService(target, { user });
     }
     return await this.userSentPendingFriendRequests(me);

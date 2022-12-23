@@ -37,7 +37,7 @@ export class ProfileService {
 
   async saveAvatar(token: string, image: Express.Multer.File) {
     if (!image.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
-      fs.unlink(image.path, (err) => console.log(err));
+      fs.unlink(image.path, (err) => this.logger.warn(err));
       throw new BadRequestException('Invalid file type');
     }
     let user: UserDto = await this.usersService.getMe(token);

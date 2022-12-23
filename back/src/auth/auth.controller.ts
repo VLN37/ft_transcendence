@@ -34,7 +34,6 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   async generate2fa(@Req() req: Request, @Res() res: Response) {
     const code: QRCodeDto = await this.authService.generateQRCode(req.user);
-    this.logger.log('generating 2FA code for user ' + req.user.login_intra);
     return res.json(code);
   }
 
@@ -43,7 +42,6 @@ export class AuthController {
   async toggle2fa(@Req() req: Request, @Body() body: ToggleTFAPayload) {
     const user = req.user;
     this.authService.validate2fa(body.tfa_code, user);
-    this.logger.log('toggling 2fa for user ', { user });
     return await this.authService.toggle2fa(user, body.state);
   }
 
@@ -52,7 +50,6 @@ export class AuthController {
   async loginWith2fa(@Req() req: Request, @Body() body: TFAPayload) {
     const user = req.user;
     this.authService.validate2fa(body.tfa_code, user);
-    this.logger.log(`Logging user with 2fa`, { user })
     return this.authService.loginWith2fa(req.user);
   }
 }
