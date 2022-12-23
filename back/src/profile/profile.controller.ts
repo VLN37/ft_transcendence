@@ -22,8 +22,8 @@ export class ProfileController {
     @Headers('Authorization') token: string,
   ) {
     this.logger.log('Incoming avatar upload request');
-    this.logger.debug(file);
-    console.log('token', token);
-    return this.ProfileService.saveAvatar(token, file);
+    const response = this.ProfileService.saveAvatar(token, file);
+    this.logger.log('Avatar succesfully uploaded');
+    return response;
   }
 }
