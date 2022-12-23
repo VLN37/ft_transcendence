@@ -49,7 +49,7 @@ export class IntraService {
     }
 
     const result = await response.json();
-    this.logger.log({ result });
+    this.logger.debug({ result });
 
     return result;
   }

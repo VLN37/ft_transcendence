@@ -65,7 +65,7 @@ export class MatchManagerGateway implements OnGatewayInit, OnGatewayDisconnect {
       });
       client.join(matchId);
     } catch (e) {
-      this.logger.error('error connecting player', e);
+      this.logger.warn('error connecting player', e);
       throw new WsException(e);
     }
   }
@@ -75,7 +75,7 @@ export class MatchManagerGateway implements OnGatewayInit, OnGatewayDisconnect {
       const user: UserDto = client.handshake.auth['user'];
       this.matchManager.disconnectPlayer(user.id);
     } catch (e) {
-      this.logger.error('error disconnecting player', e);
+      this.logger.warn('error disconnecting player', e);
     }
   }
 }

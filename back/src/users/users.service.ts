@@ -91,7 +91,7 @@ export class UsersService {
       delete user.tfa_enabled;
       delete user.tfa_secret;
     });
-    this.logger.debug('Returning users', { users });
+    // this.logger.debug('Returning users', { users });
     return users;
   }
 
@@ -107,7 +107,6 @@ export class UsersService {
     }
     const user = await this.findCompleteUserById(id);
     if (!user) throw new NotFoundException(`User with id=${id} not found`);
-    this.logger.debug('Returning my user', { user });
     delete user.tfa_secret;
     return user;
   }
@@ -122,7 +121,6 @@ export class UsersService {
       delete user.tfa_enabled;
       delete user.tfa_secret;
     });
-    this.logger.debug('Returning user', { user });
     return user;
   }
 
@@ -181,7 +179,7 @@ export class UsersService {
       this.logger.debug('Returning user', { find });
       return find;
     } catch (error) {
-      this.logger.error(error);
+      this.logger.warn('error handled on findUserById', {error});
       throw new BadRequestException(
         `Failed to process request with id '${id}'`,
       );
@@ -249,7 +247,6 @@ export class UsersService {
       delete user.tfa_enabled;
       delete user.tfa_secret;
     });
-    this.logger.debug('Returning users', { users });
     return users;
   }
 

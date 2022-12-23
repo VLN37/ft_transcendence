@@ -19,10 +19,24 @@ export class LoggerMiddleware implements NestMiddleware {
     }
 
     res.on('close', () => {
-      const strResponse =
-        `Returning response ${res.statusCode} for request ` +
-        `${req.method} ${req.path}`;
-      this.logger.log(strResponse);
+      if (res.statusCode >= 400) {
+        const strResponse =
+          `Returning response ${res.statusCode} for request ` +
+          `${req.method} ${req.path}`;
+        this.logger.warn(strResponse);
+      }
+      else if (res.statusCode >= 500) {
+        const strResponse =
+          `Returning response ${res.statusCode} for request ` +
+          `${req.method} ${req.path}`;
+        this.logger.error(strResponse);
+      }
+      else {
+        const strResponse =
+          `Returning response ${res.statusCode} for request ` +
+          `${req.method} ${req.path}`;
+        this.logger.log(strResponse);
+      }
     });
     next();
   }

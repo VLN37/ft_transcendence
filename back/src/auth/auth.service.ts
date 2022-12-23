@@ -2,6 +2,7 @@ import {
   Injectable,
   InternalServerErrorException,
   Logger,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { IntraService } from 'src/intra/intra.service';
@@ -11,6 +12,7 @@ import { authenticator } from 'otplib';
 import { toDataURL } from 'qrcode';
 import { TokenPayload } from './dto/TokenPayload';
 import { IntraUser } from 'src/users/dto/intraUser.dto';
+import { QRCodeDto } from './dto/QRCodePayload';
 
 @Injectable()
 export class AuthService {
@@ -43,7 +45,7 @@ export class AuthService {
   }
 
   private makeTokenResponse(payload: TokenPayload) {
-    this.logger.debug({ payload });
+    // this.logger.debug({ payload });
     return {
       access_token: this.jwtService.sign(payload, {
         secret: process.env.JWT_SECRET,
@@ -56,7 +58,7 @@ export class AuthService {
     const token = await this.intraService.getUserToken(code);
 
     const intraUser = await this.intraService.getUserInfo(token.access_token);
-    this.logger.log('user fetched: ' + intraUser.login);
+    // this.logger.log('user fetched: ' + intraUser.login);
 
     let ourUser = await this.usersService.findCompleteUserById(intraUser.id);
     if (!ourUser)
@@ -67,18 +69,31 @@ export class AuthService {
       tfa_enabled: ourUser.tfa_enabled,
       is_authenticated_twice: false,
     };
-
     return this.makeTokenResponse(payload);
   }
 
   validate2fa(code: string, user: Express.User) {
     if (!user.tfa_secret || user.tfa_secret == '')
       throw new InternalServerErrorException("User doesn't have a 2FA secret");
-
-    return authenticator.verify({
+    const isValid =  authenticator.verify({
       token: code,
       secret: user.tfa_secret,
     });
+    if (!isValid)
+      throw new UnauthorizedException('Wrong authentication code');
+    return isValid;
+  }
+
+  async generateQRCode(user: Express.User): Promise<QRCodeDto> {
+    const auth = await this.generata2faSecret(user);
+    const dataURL = await this.generateDataQrCode(
+      auth.otpAuthUrl
+    );
+    return {
+      qrcode_data: dataURL,
+      secret: auth.secret,
+      link: auth.otpAuthUrl,
+    }
   }
 
   loginWith2fa(user: Express.User) {
@@ -87,31 +102,26 @@ export class AuthService {
       tfa_enabled: true,
       is_authenticated_twice: true,
     };
-
     return this.makeTokenResponse(payload);
   }
 
   async generata2faSecret(user: Express.User) {
     const secret = authenticator.generateSecret(64);
-
     const appName = 'Transcendence';
     const otpAuthUrl = authenticator.keyuri(user.login_intra, appName, secret);
-
     await this.usersService.set2faSecret(user.id, secret);
-
     return {
       secret,
       otpAuthUrl,
     };
   }
 
+
+
   async toggle2fa(user: Express.User, action: 'ENABLED' | 'DISABLED') {
     const shouldEnable = action == 'ENABLED';
 
     await this.usersService.set2faEnabled(user.id, shouldEnable);
-
-    console.log('opa');
-
     const result = this.loginWith2fa(user);
     this.logger.debug('logando usuário dentro do 2fa toggle', { user });
     return {
@@ -119,7 +129,6 @@ export class AuthService {
       state: action,
     };
   }
-
   generateDataQrCode(otpAuthUrl: string) {
     return toDataURL(otpAuthUrl);
   }

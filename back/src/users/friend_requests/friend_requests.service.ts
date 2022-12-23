@@ -8,8 +8,10 @@ import { UsersService } from '../users.service';
 @Injectable()
 export class FriendRequestsService {
   private readonly logger = new Logger(FriendRequestsService.name);
-  private notifyService:
-    (arg0: number, arg1: iFriendRequestWsPayload) => void | null = null;
+  private notifyService: (
+    arg0: number,
+    arg1: iFriendRequestWsPayload,
+  ) => void | null = null;
 
   constructor(
     private usersService: UsersService,
@@ -97,15 +99,15 @@ export class FriendRequestsService {
 
     userToAdd.friend_requests.push(user);
 
-    this.logger.log(
+    this.logger.debug(
       `User ${user.login_intra} send a friend request to ${userToAdd.login_intra}`,
     );
 
     await this.usersService.update(userToAdd);
     // this.dmGateway.pingFriendRequest(target, {user});
     if (this.notifyService) {
-      console.log('params',me, target);
-      this.notifyService(target, {user});
+      // console.log('params', me, target);
+      this.notifyService(target, { user });
     }
     return await this.userSentPendingFriendRequests(me);
   }
@@ -125,10 +127,11 @@ export class FriendRequestsService {
         'You do not have a pending friend request with this user',
       );
 
-    myProfile.friend_requests =
-      myProfile.friend_requests.filter((user) => user.id != target);
+    myProfile.friend_requests = myProfile.friend_requests.filter(
+      (user) => user.id != target,
+    );
 
-    this.logger.log(
+    this.logger.debug(
       `User ${user.login_intra} cancel a pending friend request with ${target}`,
     );
 
@@ -161,8 +164,10 @@ export class FriendRequestsService {
     user.friends.push(await this.usersService.findUserById(target));
     userToAccept.friends.push(await this.usersService.findUserById(me));
 
-    this.logger.log(
-      `User ${user.login_intra} accepted a pending friend request with ${userToAccept.login_intra}`,
+    this.logger.debug(
+      'User ' +
+        user.login_intra +
+        ' accepted a pending friend request with ${userToAccept.login_intra}',
     );
 
     await this.usersService.update(user);
@@ -183,22 +188,19 @@ export class FriendRequestsService {
       throw new BadRequestException(
         "You can't accept/decline a friend request sent to yourself",
       );
-
-    const userToUpdateRequest = await this.usersService.findUserById(target);
-
+    await this.usersService.findUserById(target);
     if (status == 'ACCEPTED') return await this.acceptRequest(me, target);
     if (status == 'DECLINED') return await this.cancelRequest(me, target);
-
     throw new BadRequestException('Invalid param, (ACCEPTED/DECLINED)');
   }
 
   async pendingRequest(me: number, type: string) {
     await this.usersService.findUserById(me);
 
-    if (type == 'sent') return await this.userSentPendingFriendRequests(me);
+    if (type == 'sent')
+      return await this.userSentPendingFriendRequests(me);
     if (type == 'received')
       return await this.userReceivedPendingFriendRequests(me);
-
     throw new BadRequestException('Invalid param, (sent/received)');
   }
 }

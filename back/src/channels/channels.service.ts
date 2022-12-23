@@ -109,7 +109,7 @@ export class ChannelsService {
         admins: [{ id: channel.owner_id }],
       })
       .catch((err: any) => {
-        console.log(err);
+        this.logger.warn('DB error on channel creation', {err});
         throw new BadRequestException('Channel: ' + err?.driverError);
       });
     this.logger.debug('Channel created', { newChannel });
@@ -157,8 +157,7 @@ export class ChannelsService {
     const channels = await this.channelsRepository.find({
       relations: ['allowed_users.profile'],
     });
-    // this.logger.debug('Returning channels', { channels });
-    this.logger.debug('Returning channels');
+    this.logger.debug('Returning channels', { channels });
     return channels;
   }
 
@@ -256,7 +255,7 @@ export class ChannelsService {
     channel.admins.push(newAdmin);
     if (channel.type == 'PUBLIC') delete channel.allowed_users;
     await this.update(channel);
-    this.logger.log(`Admin added. Updated channel: ${channel}`);
+    this.logger.debug(`Admin added. Updated channel: ${channel}`);
   }
 
   async delAdmin(token: string, channelId: number, target: number) {
@@ -274,8 +273,7 @@ export class ChannelsService {
     channel.admins.splice(index);
     if (channel.type == 'PUBLIC') delete channel.allowed_users;
     await this.update(channel);
-    console.log(channel);
-    this.logger.log(`Delete succesful. Updated channel ${channel}`);
+    this.logger.debug(`Delete succesful. Updated channel ${channel}`);
   }
 
   async leaveChannel(token: string, channel_id: number) {

@@ -11,6 +11,7 @@ import { BlockedService } from './blocked.service';
 
 @Controller('/users/:target/blocked_users')
 export class BlockedController {
+
   constructor(private readonly blockedService: BlockedService) {}
 
   @Get()
