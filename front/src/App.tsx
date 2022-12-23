@@ -46,8 +46,6 @@ function App() {
             path="/"
             element={
               <ProtectedRoute>
-                {/* HACK: this is used so the user can be saved on memory */
-                /* FIXME: get the user from the local storage */}
                 <Layout />
               </ProtectedRoute>
             }
