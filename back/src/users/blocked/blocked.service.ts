@@ -9,7 +9,7 @@ export class BlockedService {
   constructor(private usersService: UsersService) {}
 
   async get(from: number): Promise<Partial<UserDto>[]> {
-	const updatedUser = await this.usersService.findUserById(from);
+    const updatedUser = await this.usersService.findUserById(from);
     updatedUser.blocked.map((user) => {
       delete user.tfa_enabled;
       delete user.tfa_secret;
@@ -19,23 +19,16 @@ export class BlockedService {
 
   async block(from: number, to: number) {
     const user = await this.usersService.findUserById(from);
-
     if (user.id == to)
       throw new BadRequestException("You can't block yourself");
-
     const userToBlock = await this.usersService.findUserById(to);
-
     if (user.blocked.find((userToBlock) => userToBlock.id == to))
       throw new BadRequestException('User has already been blocked');
-
     user.blocked.push(userToBlock);
-
-    this.logger.log(
+    this.logger.debug(
       `User ${user.login_intra} blocked user ${userToBlock.login_intra}`,
     );
-
     await this.usersService.update(user);
-
     const updatedUser = await this.usersService.findUserById(from);
     updatedUser.blocked.map((user) => {
       delete user.tfa_enabled;
@@ -49,27 +42,23 @@ export class BlockedService {
 
     if (user.id == to)
       throw new BadRequestException("You can't unblock yourself");
-
     const userToUnblock = await this.usersService.findUserById(to);
-
     if (!user.blocked.find((userToUnblock) => userToUnblock.id == to))
       throw new BadRequestException('User was not blocked');
 
     user.blocked = user.blocked.filter(
       (userToUnblock) => userToUnblock.id != to,
     );
-
-    this.logger.log(
-      `User ${user.login_intra} unblocked user ${userToUnblock.login_intra}`,
-    );
-
     await this.usersService.update(user);
-
-	const updatedUser = await this.usersService.findUserById(from);
+    const updatedUser = await this.usersService.findUserById(from);
     updatedUser.blocked.map((user) => {
       delete user.tfa_enabled;
       delete user.tfa_secret;
     });
+
+    this.logger.debug(
+      `User ${user.login_intra} unblocked user ${userToUnblock.login_intra}`,
+    );
     return updatedUser.blocked;
   }
 }
