@@ -43,7 +43,7 @@ export default (props: GameWindowProps) => {
 
   let lastWindowWidth = -1;
   let lastWindowHeight = -1;
-  let world: p5Types.Graphics;
+  let image: p5Types.Graphics;
   let gBall = new Circle(rules.ball.startingPosition, rules.ball.radius);
 
   let lPlayer = generatePlayerBox(PlayerSide.LEFT, rules);
@@ -85,7 +85,7 @@ export default (props: GameWindowProps) => {
 
   const setup = (p5: p5Types, canvasParentRef: Element) => {
     updateWindowProportions();
-    world = p5.createGraphics(rules.worldWidth, rules.worldHeight);
+    image = p5.createGraphics(rules.worldWidth, rules.worldHeight);
     p5.createCanvas(gameWindow.width, gameWindow.height).parent(
       canvasParentRef,
     );
@@ -136,7 +136,7 @@ export default (props: GameWindowProps) => {
   const handleInput = () => {};
 
   const processGameLogic = () => {
-    ball.update(world.deltaTime);
+    ball.update(image.deltaTime);
     gBall.setPosition(ball.position.x, ball.position.y);
   };
 
@@ -156,21 +156,21 @@ export default (props: GameWindowProps) => {
   };
 
   const render = (p5: p5Types) => {
-    world.background(0);
-    drawBall(world, gBall);
-    drawBallVelocity(world, ball);
-    drawRightPlayer(world, rPlayer);
-    drawLeftPlayer(world, lPlayer);
-    drawSpeedMeter(world, ball, rules);
+    image.background(0);
+    drawBall(image, gBall);
+    drawBallVelocity(image, ball);
+    drawRightPlayer(image, rPlayer);
+    drawLeftPlayer(image, lPlayer);
+    drawSpeedMeter(image, ball, rules);
     resizeIfNecessary(p5);
     // gWorld.update();
     // checkBallCollision(ball, rules);
-    printFps(world, ball);
-    p5.image(world, 0, 0, p5.width, p5.height);
+    printFps(image, ball);
+    p5.image(image, 0, 0, p5.width, p5.height);
   };
 
   const draw = (p5: p5Types) => {
-    if (!world) world = p5.createGraphics(rules.worldWidth, rules.worldHeight);
+    if (!image) image = p5.createGraphics(rules.worldWidth, rules.worldHeight);
     handleInput();
     processGameLogic();
 
