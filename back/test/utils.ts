@@ -7,6 +7,7 @@ import { ChannelMessages } from 'src/entities/channel_messages.entity';
 import { Profile } from 'src/entities/profile.entity';
 import { User } from 'src/entities/user.entity';
 import { UserDto } from 'src/users/dto/user.dto';
+import { UsersService } from 'src/users/users.service';
 
 export const url = 'http://localhost:3000';
 
@@ -58,7 +59,7 @@ export function generateUsers(amount: number): UserDto[] {
   return users;
 }
 
-export async function makeUsers(amount: number) {
+export async function makeUsers(amount: number, usersService: UsersService) {
   const statusArr = ['OFFLINE', 'ONLINE', 'PLAYING', 'SEARCHING'];
   let users = [];
   var i = 1;
@@ -89,10 +90,9 @@ export async function makeUsers(amount: number) {
       friend_requests: [],
     };
     try {
-      await axios.post(url + '/users', newUser);
+      await usersService.create(newUser);
       users.push(newUser);
     } catch (error) {
-      i--;
       continue;
     }
   }

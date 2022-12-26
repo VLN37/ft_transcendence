@@ -64,7 +64,7 @@ const AuthCallback = () => {
   const finishLogin = (payload: TokenPayload) => {
     console.log({ payload });
 
-    userApi.getUser('me').then((user) => {
+    userApi.getUser('v2/me').then((user) => {
       const link =
         process.env.REACT_APP_BACK_HOSTNAME + user.profile.avatar_path;
       localStorage.setItem('avatar', link);

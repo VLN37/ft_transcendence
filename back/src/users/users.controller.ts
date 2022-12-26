@@ -8,15 +8,16 @@ import {
   Delete,
   Query,
   Headers,
+  UseGuards,
 } from '@nestjs/common';
+import { JwtAuthGuard } from 'src/auth/guard/jwt.guard';
 import { UserDto } from './dto/user.dto';
 import { UsersService } from './users.service';
 
+// @UseGuards(JwtAuthGuard)
 @Controller('users')
 export class UsersController {
-  constructor(
-    private readonly usersService: UsersService,
-  ) {}
+  constructor(private readonly usersService: UsersService) {}
 
   //dev
   @Post()
@@ -45,13 +46,13 @@ export class UsersController {
     return this.usersService.getAll(sort, order);
   }
 
-  @Get('me')
-  getMe(@Headers('Authorization') token: string) {
-    return this.usersService.getMe(token);
-  }
-
   @Get(':id')
   getOne(@Param('id') id: number) {
     return this.usersService.getOne(id);
+  }
+
+  @Get('/v2/me')
+  getMe(@Headers('Authorization') token: string) {
+    return this.usersService.getMe(token);
   }
 }

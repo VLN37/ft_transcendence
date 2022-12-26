@@ -109,7 +109,7 @@ export class ChannelsController {
     @Param('id') target: number,
     @Param('channel') channel: number,
   ) {
-    this.channelsService.addAdmin(token, channel, target);
+    return this.channelsService.addAdmin(token, channel, target);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -119,7 +119,7 @@ export class ChannelsController {
     @Param('id') target: number,
     @Param('channel') channel: number,
   ) {
-    this.channelsService.delAdmin(token, channel, target);
+    return this.channelsService.delAdmin(token, channel, target);
   }
 
   @UseGuards(JwtAuthGuard)
