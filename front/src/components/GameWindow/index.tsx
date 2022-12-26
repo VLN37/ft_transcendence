@@ -5,12 +5,10 @@ import { MatchState } from '../../game/model/MatchState';
 import { Player, PlayerSide } from '../../game/model/Player';
 import { MatchApi } from '../../services/matchApi';
 import { GameRules } from '../../game/model/GameRules';
-import { System, Circle, Box } from 'detect-collisions';
 import {
   drawBall,
   drawBallVelocity,
-  drawLeftPlayer,
-  drawRightPlayer,
+  drawPlayer,
   drawSpeedMeter,
   printFps,
 } from './render';
@@ -19,19 +17,6 @@ export type GameWindowProps = {
   matchApi: MatchApi;
   rules: GameRules;
 };
-
-function generatePlayerBox(side: PlayerSide, rules: GameRules) {
-  let xPos;
-  if (side == PlayerSide.LEFT) xPos = rules.player.leftLine;
-  else xPos = rules.player.rightLine;
-
-  const position = {
-    x: xPos,
-    y: rules.player.startingPosition,
-  };
-
-  return new Box(position, rules.player.width, rules.player.height);
-}
 
 export default (props: GameWindowProps) => {
   const { matchApi, rules } = props;
@@ -44,39 +29,10 @@ export default (props: GameWindowProps) => {
   let lastWindowWidth = -1;
   let lastWindowHeight = -1;
   let image: p5Types.Graphics;
-  let gBall = new Circle(rules.ball.startingPosition, rules.ball.radius);
 
-  let lPlayer = generatePlayerBox(PlayerSide.LEFT, rules);
-  let rPlayer = generatePlayerBox(PlayerSide.RIGHT, rules);
-  let gWorld = new System();
-  gWorld.insert(lPlayer);
-  gWorld.insert(rPlayer);
-  gWorld.insert(gBall);
-
-  let topWall = gWorld.createLine(
-    { x: 0, y: 0 },
-    { x: rules.worldWidth, y: 0 },
-  );
-  let bottomWall = gWorld.createLine(
-    { x: 0, y: rules.worldHeight },
-    { x: rules.worldWidth, y: rules.worldHeight },
-  );
-  let leftWall = gWorld.createLine(
-    { x: 0, y: 0 },
-    { x: 0, y: rules.worldHeight },
-  );
-  let rightWall = gWorld.createLine(
-    { x: rules.worldWidth, y: 0 },
-    { x: rules.worldWidth, y: rules.worldHeight },
-  );
-
-  let ball: Ball;
-  let leftPlayer: Player;
-  let rightPlayer: Player;
-
-  ball = new Ball(rules.ball.radius, rules.ball.startingPosition);
-  leftPlayer = new Player(PlayerSide.LEFT, rules.player.startingPosition);
-  rightPlayer = new Player(PlayerSide.RIGHT, rules.player.startingPosition);
+  let ball = new Ball(rules);
+  let leftPlayer = new Player(PlayerSide.LEFT, rules);
+  let rightPlayer = new Player(PlayerSide.RIGHT, rules);
 
   ball.speed = 300;
   ball.velocity = p5Types.Vector.random2D().normalize();
@@ -135,32 +91,41 @@ export default (props: GameWindowProps) => {
 
   const handleInput = () => {};
 
+  const updateWorld = () => {};
+
   const processGameLogic = () => {
     ball.update(image.deltaTime);
-    gBall.setPosition(ball.position.x, ball.position.y);
   };
 
   const handleCollisions = () => {
-    gWorld.checkOne(gBall, (response: SAT.Response) => {
-      switch (response.b) {
-        case topWall:
-        case bottomWall:
-          ball.velocity.y *= -1;
-          break;
-        case leftWall:
-        case rightWall:
-          ball.velocity.x *= -1;
-          break;
-      }
-    });
+    let overlapY = 0;
+    let overlapX = 0;
+    if (ball.position.y < rules.topCollisionEdge) {
+      overlapY = ball.position.y - rules.topCollisionEdge;
+    } else if (ball.position.y > rules.bottomCollisionEdge) {
+      overlapY = ball.position.y - rules.bottomCollisionEdge;
+    }
+    ball.position.y -= overlapY * 2;
+    if (overlapY != 0) {
+      ball.velocity.y *= -1;
+    }
+    if (ball.position.x < rules.leftCollisionEdge) {
+      overlapX = ball.position.x - rules.leftCollisionEdge;
+    } else if (ball.position.x > rules.rightCollisionEdge) {
+      overlapX = ball.position.x - rules.rightCollisionEdge;
+    }
+    if (overlapX != 0) {
+      ball.velocity.x *= -1;
+    }
+    ball.position.x -= overlapX * 2;
   };
 
   const render = (p5: p5Types) => {
     image.background(0);
-    drawBall(image, gBall);
+    drawBall(image, ball);
     drawBallVelocity(image, ball);
-    drawRightPlayer(image, rPlayer);
-    drawLeftPlayer(image, lPlayer);
+    drawPlayer(image, rightPlayer, rules);
+    drawPlayer(image, leftPlayer, rules);
     drawSpeedMeter(image, ball, rules);
     resizeIfNecessary(p5);
     // gWorld.update();
@@ -174,7 +139,7 @@ export default (props: GameWindowProps) => {
     handleInput();
     processGameLogic();
 
-    gWorld.update();
+    updateWorld();
 
     handleCollisions();
     render(p5);

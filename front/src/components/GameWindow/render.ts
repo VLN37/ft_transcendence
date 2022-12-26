@@ -1,25 +1,38 @@
-import { Box, Circle } from 'detect-collisions';
 import p5Types from 'p5';
 import { Ball } from '../../game/model/Ball';
 import { GameRules } from '../../game/model/GameRules';
+import { Player, PlayerSide } from '../../game/model/Player';
 
-export const drawRightPlayer = (image: p5Types.Graphics, rPlayer: Box) => {
-  image.fill(50, 100, 200);
-  image.rectMode('center');
-  image.rect(rPlayer.x, rPlayer.y, rPlayer.width, rPlayer.height);
+const getPlayerColor = (side: PlayerSide, image: p5Types.Graphics) => {
+  let color: p5Types.Color;
+  if (side == PlayerSide.LEFT) {
+    color = image.color(50, 100, 200);
+  } else {
+    color = image.color(200, 100, 50);
+  }
+  return color;
 };
 
-export const drawLeftPlayer = (image: p5Types.Graphics, lPlayer: Box) => {
-  image.fill(240, 100, 30);
+export const drawPlayer = (
+  image: p5Types.Graphics,
+  rPlayer: Player,
+  rules: GameRules,
+) => {
+  image.fill(getPlayerColor(rPlayer.side, image));
   image.rectMode('center');
-  image.rect(lPlayer.x, lPlayer.y, lPlayer.width, lPlayer.height);
+  image.rect(
+    rPlayer.getX(),
+    rPlayer.y,
+    rules.player.width,
+    rules.player.height,
+  );
 };
 
-export const drawBall = (image: p5Types.Graphics, gBall: Circle) => {
+export const drawBall = (image: p5Types.Graphics, ball: Ball) => {
   image.fill(100, 80, 150);
   image.colorMode(image.RGB, 255);
-  const size = gBall.r * 2;
-  image.ellipse(gBall.x, gBall.y, size, size);
+  const size = ball.radius * 2;
+  image.ellipse(ball.position.x, ball.position.x, size, size);
 };
 
 let totalTime = 0;

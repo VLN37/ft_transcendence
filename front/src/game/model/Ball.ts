@@ -1,5 +1,5 @@
 import p5Types from 'p5';
-import { Tuple } from './GameRules';
+import { GameRules, Tuple } from './GameRules';
 
 export class Ball {
   public radius: number;
@@ -7,13 +7,13 @@ export class Ball {
   public velocity: p5Types.Vector;
   public speed: number;
 
-  constructor(radius: number, startingPosition: Tuple) {
-    this.radius = radius;
-    this.position = new p5Types.Vector();
-    this.position.x = startingPosition.x;
-    this.position.y = startingPosition.y;
+  constructor(rules: GameRules) {
+    this.radius = rules.ball.radius;
     this.velocity = new p5Types.Vector();
-    this.speed = 0;
+    this.position = new p5Types.Vector();
+    this.position.x = rules.ball.startingPosition.x;
+    this.position.y = rules.ball.startingPosition.y;
+    this.speed = rules.ball.startingSpeed;
   }
 
   update(deltaTime: number) {
