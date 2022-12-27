@@ -34,6 +34,7 @@ export function PublicProfile(props: {
     const me: User = userStorage.getUser() || emptyUser();
     const myId: number = me.id;
     const response: any = await profileApi.addFriend(myId, props.user.id);
+	if (!response) return;
     const status = response.status == 200 ? 'success' : 'error';
     const message = response.status == 200 ? '' : response.data.message;
     if (response.status == 200) await userStorage.updateUser();

@@ -66,10 +66,10 @@ function CreateChannel() {
     values = formatValues(values);
     api.createChannel(values).then((response) => {
       onClose();
-      if (response.status != 201) {
+      if (!response || response.status != 201) {
         toast({
           title: 'Failed to create channel',
-          description: response.data.message,
+          description: response?.data?.message,
           status: 'error',
           duration: 2000,
           isClosable: true,

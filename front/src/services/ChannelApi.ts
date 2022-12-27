@@ -1,7 +1,7 @@
-import { AxiosError, AxiosInstance } from "axios";
-import { Channel } from "../models/Channel";
+import { AxiosError, AxiosInstance } from 'axios';
+import { Channel } from '../models/Channel';
 import api from './api';
-import { Api } from './api'
+import { Api } from './api';
 
 class ChannelApi {
   private client: AxiosInstance;
@@ -29,15 +29,21 @@ class ChannelApi {
   }
 
   async getChannel(id: string): Promise<Channel> {
-    const response = await this.client.get<Channel>(`/channels/${id}`, {});
-    // console.log(response.data);
-    return response.data;
+    try {
+      const response = await this.client.get<Channel>(`/channels/${id}`, {});
+      return response.data;
+    } catch (error) {
+      return <Channel>{};
+    }
   }
 
   async getChannels(): Promise<Channel[]> {
-    const response = await this.client.get<Channel[]>('/channels', {});
-    // console.log(response.data);
-    return response.data;
+    try {
+      const response = await this.client.get<Channel[]>('/channels', {});
+      return response.data;
+    } catch (error) {
+      return [];
+    }
   }
 
   async banUser(channelId: number, targetId: number, seconds: number) {
@@ -46,7 +52,7 @@ class ChannelApi {
         `/channels/${channelId}/ban/${targetId}`,
         {
           seconds: seconds,
-        }
+        },
       );
       return response;
     } catch (err) {
@@ -59,7 +65,7 @@ class ChannelApi {
     try {
       const response = await this.client.delete<any>(
         `/channels/${channelId}/ban/${targetId}`,
-      )
+      );
       return response;
     } catch (err) {
       console.log(err);
