@@ -9,7 +9,7 @@ export interface Channel {
   allowed_users: User[];
   admins: User[];
   users: User[];
-  banned_users: number[];
+  banned_users: any[];
 }
 
 export interface ChannelSocketResponse {

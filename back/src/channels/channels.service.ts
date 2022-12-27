@@ -69,11 +69,7 @@ export class ChannelsService {
     if (!channel.users.find((elem) => elem.id == token.id))
       throw new BadRequestException('User is not in the channel');
     this.notifyService(ban, chId.toString());
-    channel.users = channel.users.filter((user) => user.id != ban);
     channel.admins = channel.admins.filter((user) => user.id != ban);
-    channel.allowed_users = channel.allowed_users.filter(
-      (user) => user.id != ban,
-    );
     await this.update(channel);
     const date = new Date();
     date.setSeconds(date.getSeconds() + time);
