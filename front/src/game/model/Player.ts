@@ -1,3 +1,5 @@
+import { GameRules } from './GameRules';
+
 export enum PlayerSide {
   RIGHT,
   LEFT,
@@ -6,9 +8,20 @@ export enum PlayerSide {
 export class Player {
   side: PlayerSide;
   y: number;
+  width: number;
+  height: number;
+  private x: number;
 
-  constructor(side: PlayerSide, y: number) {
+  constructor(side: PlayerSide, rules: GameRules) {
     this.side = side;
-    this.y = y;
+    this.y = rules.player.startingPosition;
+    this.x =
+      side == PlayerSide.LEFT ? rules.player.leftLine : rules.player.rightLine;
+    this.width = rules.player.width;
+    this.height = rules.player.height;
+  }
+
+  getX() {
+    return this.x;
   }
 }

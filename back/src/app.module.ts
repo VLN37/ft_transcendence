@@ -89,6 +89,7 @@ export class AppModule implements NestModule {
         FriendRequestsController,
         DirectMessagesController,
         ChannelsController,
+        AuthController,
       );
   }
 }
