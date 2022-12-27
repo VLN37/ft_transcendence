@@ -32,7 +32,7 @@ export const drawBall = (image: p5Types.Graphics, ball: Ball) => {
   image.fill(100, 80, 150);
   image.colorMode(image.RGB, 255);
   const size = ball.radius * 2;
-  image.ellipse(ball.position.x, ball.position.x, size, size);
+  image.ellipse(ball.position.x, ball.position.y, size, size);
 };
 
 let totalTime = 0;

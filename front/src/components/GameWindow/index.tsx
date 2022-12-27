@@ -12,6 +12,11 @@ import {
   drawSpeedMeter,
   printFps,
 } from './render';
+import {
+  handleBallCollision,
+  handleBallPaddleCollision,
+} from '../../game/collisions';
+import { Vector } from '../../game/math/Vector';
 
 export type GameWindowProps = {
   matchApi: MatchApi;
@@ -35,9 +40,8 @@ export default (props: GameWindowProps) => {
   let rightPlayer = new Player(PlayerSide.RIGHT, rules);
 
   ball.speed = 300;
-  ball.velocity = p5Types.Vector.random2D().normalize();
-  // ball.velocity = new p5Types.Vector();
-  // ball.velocity.x = 1;
+  // ball.velocity = p5Types.Vector.random2D().normalize();
+  ball.velocity = new Vector(1, 0.152).normalize();
 
   const setup = (p5: p5Types, canvasParentRef: Element) => {
     updateWindowProportions();
@@ -91,33 +95,16 @@ export default (props: GameWindowProps) => {
 
   const handleInput = () => {};
 
-  const updateWorld = () => {};
-
-  const processGameLogic = () => {
+  const updateWorld = () => {
     ball.update(image.deltaTime);
   };
 
+  const processGameLogic = () => {};
+
   const handleCollisions = () => {
-    let overlapY = 0;
-    let overlapX = 0;
-    if (ball.position.y < rules.topCollisionEdge) {
-      overlapY = ball.position.y - rules.topCollisionEdge;
-    } else if (ball.position.y > rules.bottomCollisionEdge) {
-      overlapY = ball.position.y - rules.bottomCollisionEdge;
-    }
-    ball.position.y -= overlapY * 2;
-    if (overlapY != 0) {
-      ball.velocity.y *= -1;
-    }
-    if (ball.position.x < rules.leftCollisionEdge) {
-      overlapX = ball.position.x - rules.leftCollisionEdge;
-    } else if (ball.position.x > rules.rightCollisionEdge) {
-      overlapX = ball.position.x - rules.rightCollisionEdge;
-    }
-    if (overlapX != 0) {
-      ball.velocity.x *= -1;
-    }
-    ball.position.x -= overlapX * 2;
+    handleBallCollision(ball, rules);
+    handleBallPaddleCollision(ball, leftPlayer);
+    handleBallPaddleCollision(ball, rightPlayer);
   };
 
   const render = (p5: p5Types) => {
@@ -136,6 +123,7 @@ export default (props: GameWindowProps) => {
 
   const draw = (p5: p5Types) => {
     if (!image) image = p5.createGraphics(rules.worldWidth, rules.worldHeight);
+    if (p5.deltaTime > 500) p5.deltaTime = 500;
     handleInput();
     processGameLogic();
 
