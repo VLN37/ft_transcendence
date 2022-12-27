@@ -1,6 +1,8 @@
-import { INestApplication } from '@nestjs/common';
+import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { AuthModule } from 'src/auth/auth.module';
+import { JwtAuthGuard } from 'src/auth/guard/jwt.guard';
 import { User } from 'src/entities/user.entity';
 import { UserDto } from 'src/users/dto/user.dto';
 import { UsersModule } from 'src/users/users.module';
@@ -13,11 +15,27 @@ describe('Users endpoints', () => {
   let app: INestApplication;
   const users = generateUsers(3);
 
+  const customUser = {
+    login_intra: 'eu',
+    id: 42,
+    tfa_enabled: false,
+  };
+
+  process.env.JWT_SECRET = 'fake';
   beforeAll(async () => {
     const testDbModule = getTestDbModule();
     const moduleRef = await Test.createTestingModule({
       imports: [testDbModule, UsersModule],
-    }).compile();
+    })
+      .overrideGuard(JwtAuthGuard)
+      .useValue({
+        canActivate: (context: ExecutionContext) => {
+          const req = context.switchToHttp().getRequest();
+          req.user = customUser;
+          return true;
+        },
+      })
+      .compile();
 
     app = moduleRef.createNestApplication();
     const usersRepositoryToken = getRepositoryToken(User);
