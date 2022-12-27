@@ -4,10 +4,13 @@ import {
   UploadedFile,
   UseInterceptors,
   Headers,
+  UseGuards,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { JwtAuthGuard } from 'src/auth/guard/jwt.guard';
 import { ProfileService } from './profile.service';
 
+@UseGuards(JwtAuthGuard)
 @Controller('profile')
 export class ProfileController {
 

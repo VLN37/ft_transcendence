@@ -9,9 +9,12 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
 } from '@nestjs/common';
+import { JwtAuthGuard } from 'src/auth/guard/jwt.guard';
 import { FriendRequestsService } from './friend_requests.service';
 
+@UseGuards(JwtAuthGuard)
 @Controller('/users/:me/friend_requests')
 export class FriendRequestsController {
   private readonly logger = new Logger(FriendRequestsController.name);

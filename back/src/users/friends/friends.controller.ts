@@ -1,6 +1,8 @@
-import { Controller, Delete, Get, Param } from '@nestjs/common';
+import { Controller, Delete, Get, Param, UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from 'src/auth/guard/jwt.guard';
 import { FriendService } from './friends.service';
 
+@UseGuards(JwtAuthGuard)
 @Controller('/users/:from/friends')
 export class FriendsController {
   constructor(private readonly friendService: FriendService) {}
