@@ -142,7 +142,7 @@ function UserMenu(props: { channel: Channel; user: TableUser; user2: User }) {
   const isBlocked = me.blocked.find((user) => props.user.id == user.id);
   const isAdmin = props.channel.admins.find((user) => props.user.id == user.id);
   const amAdmin = props.channel.admins.find((user) => me.id == user.id);
-  const isBanned = props.channel.banned_users.find((i) => i == props.user.id);
+  const isBanned = props.channel.banned_users.find((i) => i.user_id == props.user.id);
   let color;
   if (props.user.status == 'ONLINE') color = 'green.500';
   else if (props.user.status == 'OFFLINE') color = 'grey.500';
@@ -155,7 +155,7 @@ function UserMenu(props: { channel: Channel; user: TableUser; user2: User }) {
         onClose={onClose}
       ></PublicProfile>
       <Menu isLazy>
-        <MenuButton>
+        <MenuButton color={isBanned ? 'red' : 'white'}>
           <CircleIcon color={color}></CircleIcon>
           {isBlocked ? <ViewOffIcon></ViewOffIcon> : null}
           {isAdmin ? <StarIcon></StarIcon> : null}
