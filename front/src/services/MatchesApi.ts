@@ -11,13 +11,21 @@ class MatchesApi {
   }
 
   async getLiveMatches(qty: number): Promise<Match[]> {
-    const response = await this.client.get(`/matches/live/${qty}`, {});
-    return response.data;
+    try {
+      const response = await this.client.get(`/matches/live/${qty}`, {});
+      return response.data;
+    } catch (error) {
+      return [];
+    }
   }
 
   async getUserMatches(qty: number): Promise<Match[]> {
-    const response = await this.client.get(`/matches/user/${qty}`, {});
-    return response.data;
+    try {
+      const response = await this.client.get(`/matches/user/${qty}`, {});
+      return response.data;
+    } catch (error) {
+      return [];
+    }
   }
 }
 

@@ -31,31 +31,26 @@ export class UsersController {
     return this.usersService.generateUsers(amount);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Patch(':id')
   edit(@Param('id') id: number, @Body() user: UserDto) {
     return this.usersService.edit(id, user);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   delete(@Param('id') id: number) {
     return this.usersService.delete(id);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get()
   getAll(@Query('sort') sort: string, @Query('order') order: string) {
     return this.usersService.getAll(sort, order);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get(':id')
   getOne(@Param('id') id: number) {
     return this.usersService.getOne(id);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get('/v2/me')
   getMe(@Headers('Authorization') token: string) {
     return this.usersService.getMe(token);
