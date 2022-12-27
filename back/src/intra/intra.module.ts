@@ -6,7 +6,7 @@ import { JwtModule } from '@nestjs/jwt';
 // import { IntraService } from './intra.service';
 
 @Module({
-  imports: [JwtModule.register({}), forwardRef(() => UsersModule)],
+  imports: [JwtModule.register({}), UsersModule],
   providers: [
     {
       provide: IntraService,

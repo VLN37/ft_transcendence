@@ -1,5 +1,5 @@
 import { HttpModule } from '@nestjs/axios';
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { IntraModule } from 'src/intra/intra.module';
 import { UsersModule } from 'src/users/users.module';
@@ -13,10 +13,10 @@ import { Jwt2faStrategy } from './strategy/jwt2fa.strategy';
     HttpModule,
     JwtModule.register({}),
     IntraModule,
-    forwardRef(() => UsersModule),
+    UsersModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy, Jwt2faStrategy, JwtService],
-  exports: [JwtService],
+  exports: [],
 })
 export class AuthModule {}
