@@ -15,7 +15,6 @@
     "@types/react": "^18.0.20",
     "@types/react-dom": "^18.0.6",
     "axios": "^1.1.2",
-    "detect-collisions": "^6.6.9",
     "framer-motion": "^6.5.1",
     "http-status-codes": "^2.2.0",
     "jwt-decode": "^3.1.2",
