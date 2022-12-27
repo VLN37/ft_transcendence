@@ -35,6 +35,7 @@ export function RankTable(props: any) {
   useEffect(() => {
     async function queryDatabase() {
       const result: User[] = await userApi.getRankedUsers();
+      if (!result.length) return;
       const restructure: TableUser[] = result.map((user) => {
         return TableUser(user);
       });

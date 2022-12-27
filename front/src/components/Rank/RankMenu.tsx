@@ -43,18 +43,24 @@ export function RankMenu(props: any) {
   const url = `${process.env.REACT_APP_BACK_HOSTNAME}/users/${props.id}/friend_requests`;
   const toast = useToast();
   let navigate = useNavigate();
+  let response;
 
   async function clickCallback() {
     const user: User = userStorage.getUser() || emptyUser();
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/JSON',
-      },
-      body: JSON.stringify({
-        user_id: user.id,
-      }),
-    });
+
+    try {
+      response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/JSON',
+        },
+        body: JSON.stringify({
+          user_id: user.id,
+        }),
+      });
+    } catch (error) {
+      return;
+    }
 
     const body = await response.json();
     const status = response.ok ? 'success' : 'error';

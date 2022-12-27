@@ -1,5 +1,5 @@
 import { AxiosError, AxiosInstance } from 'axios';
-import { User } from '../models/User';
+import { emptyUser, User } from '../models/User';
 import api from './api';
 import { Api } from './api';
 
@@ -11,24 +11,35 @@ class UserApi {
   }
 
   async getUser(id: string): Promise<User> {
-    const response = await this.client.get(`/users/${id}`, {});
-    return response.data;
+    try {
+      const response = await this.client.get(`/users/${id}`, {});
+      return response.data;
+    } catch (error) {
+      return emptyUser();
+    }
   }
 
   async getMe(): Promise<User> {
-    const response = await this.client.get(`/users/v2/me`, {});
-    return response.data;
+    try {
+      const response = await this.client.get(`/users/v2/me`, {});
+      return response.data;
+    } catch (error) {
+      return emptyUser();
+    }
   }
 
   async getRankedUsers(): Promise<User[]> {
-    const response = await this.client.get<User[]>('/users', {
-      params: {
-        sort: 'mmr',
-        order: 'DESC',
-      },
-    });
-    // console.log(response.data);
-    return response.data;
+    try {
+      const response = await this.client.get<User[]>('/users', {
+        params: {
+          sort: 'mmr',
+          order: 'DESC',
+        },
+      });
+      return response.data;
+    } catch (error) {
+      return [];
+    }
   }
 
   async updateFriendRequest(me: number, target: number, status: string) {

@@ -2,6 +2,7 @@ import {
   Avatar,
   Box,
   Center,
+  Container,
   Flex,
   Grid,
   GridItem,
@@ -89,7 +90,7 @@ export default function DirectMessagesComponent(props: any) {
       h={'100%'}
     >
       <GridItem borderRadius={'5px'} rowSpan={1} colSpan={10}>
-        <ChatTitle>Direct Messages</ChatTitle>
+        {messages.length ? <ChatTitle>Direct Messages</ChatTitle> : null}
       </GridItem>
       <GridItem borderRadius={'5px'} rowSpan={12} colSpan={2} bg="gray.700">
         <DmUsers
@@ -118,15 +119,14 @@ export default function DirectMessagesComponent(props: any) {
           );
         })}
         {!messages.length && (
-          <Stack>
-            <Skeleton height="80px" />
-            <Skeleton height="80px" />
-            <Skeleton height="80px" />
-            <Skeleton height="80px" />
-            <Skeleton height="80px" />
-            <Skeleton height="80px" />
-            <Skeleton height="80px" />
-          </Stack>
+          <>
+            <Text textAlign={'center'} fontSize={'2xl'}>
+              No direct messages found
+            </Text>
+            <Text textAlign={'center'} fontSize={'2xl'}>
+              Go go talk to someone!
+            </Text>
+          </>
         )}
       </GridItem>
     </Grid>

@@ -6,9 +6,12 @@ import {
   HttpCode,
   Param,
   Post,
+  UseGuards,
 } from '@nestjs/common';
+import { JwtAuthGuard } from 'src/auth/guard/jwt.guard';
 import { BlockedService } from './blocked.service';
 
+@UseGuards(JwtAuthGuard)
 @Controller('/users/:target/blocked_users')
 export class BlockedController {
 

@@ -43,6 +43,7 @@ function InputFileUpload(props: any) {
     formdata.append('avatar', value);
 
     const response: any = await profileApi.uploadAvatar(formdata);
+    if (!response) return;
     const status = response.status == 201 ? 'success' : 'error';
     const message = response.status == 201 ? '' : response.data.message;
     if (response.status == 201) {
@@ -89,6 +90,7 @@ function NicknameUpdate(props: { user: User; setNickname: any }) {
   async function UploadName() {
     if (name === props.user.profile.nickname) return;
     const response: any = await profileApi.uploadNickname(props.user, name);
+    if (!response) return;
     const status = response.status == 200 ? 'success' : 'error';
     const message = response.status == 200 ? '' : response.data.message;
     if (response.status == 200) {
@@ -172,7 +174,7 @@ export function Profile() {
                     <InputFileUpload setAvatar={setAvatar} />
                   </Stack>
                 </GridItem>
-              <TwoFA></TwoFA>
+                <TwoFA></TwoFA>
               </Grid>
             </Stack>
           </ModalBody>

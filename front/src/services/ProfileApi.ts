@@ -1,5 +1,5 @@
-import { AxiosError, AxiosInstance } from "axios";
-import { User } from "../models/User";
+import { AxiosError, AxiosInstance } from 'axios';
+import { User } from '../models/User';
 import api from './api';
 import { Api } from './api';
 
@@ -50,14 +50,17 @@ class ProfileApi {
   }
 
   async getRankedUsers(): Promise<User[]> {
-    const response = await this.client.get<User[]>('/users', {
-      params: {
-        sort: 'mmr',
-        order: 'DESC',
-      },
-    });
-    // console.log(response.data);
-    return response.data;
+    try {
+      const response = await this.client.get<User[]>('/users', {
+        params: {
+          sort: 'mmr',
+          order: 'DESC',
+        },
+      });
+      return response.data;
+    } catch (error) {
+      return [];
+    }
   }
 
   async addFriend(myId: number, targetId: number) {

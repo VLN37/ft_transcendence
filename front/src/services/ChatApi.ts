@@ -101,27 +101,39 @@ class ChatApi {
   }
 
   async getChannelMessages(id: string): Promise<Message[]> {
-    const response = await this.client.get(`/channels/${id}/messages`, {});
-    // console.log(response.data);
-    return response.data;
+    try {
+      const response = await this.client.get(`/channels/${id}/messages`, {});
+      return response.data;
+    } catch (error) {
+      return [];
+    }
   }
 
   async getChannel(id: string): Promise<Channel> {
-    const response = await this.client.get(`/channels/${id}`, {});
-    // console.log(response.data);
-    return response.data;
+    try {
+      const response = await this.client.get(`/channels/${id}`, {});
+      return response.data;
+    } catch (error) {
+      return <Channel>{};
+    }
   }
 
   async getDirectMessages(id: string): Promise<iDirectMessage[]> {
-    const response = await this.client.get(`/direct_messages/${id}`, {});
-    // console.log(response.data);
-    return response.data;
+    try {
+      const response = await this.client.get(`/direct_messages/${id}`, {});
+      return response.data;
+    } catch (error) {
+      return [];
+    }
   }
 
   async getLastDirectMessages(): Promise<iDirectLastMessage[]> {
-    const response = await this.client.get(`/direct_messages/v2/last`, {});
-    // console.log(response.data);
-    return response.data;
+    try {
+      const response = await this.client.get(`/direct_messages/v2/last`, {});
+      return response.data;
+    } catch (error) {
+      return [];
+    }
   }
 
   sendMessage(data: any) {

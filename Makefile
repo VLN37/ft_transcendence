@@ -13,7 +13,7 @@ down:
 test:
 	docker-compose -f docker-compose.test.yml up -d
 	npm --prefix ./back run test:e2e
-	docker-compose -f docker-compose.test.yml down
+	docker kill database-test && docker rm database-test
 
 restart:
 	make down

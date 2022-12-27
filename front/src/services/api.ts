@@ -176,10 +176,6 @@ export class Api {
     this.matchMakingSocket.on('disconnect', () => {
       console.log(`connection for socket ${this.MATCH_MAKING_NAMESPACE} lost`);
     });
-
-    this.matchMakingSocket.on('connect_error', (err) => {
-      console.error('error connecting to the server', err);
-    });
   }
 
   setToken(token: string) {
