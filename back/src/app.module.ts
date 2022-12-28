@@ -24,6 +24,8 @@ import { DirectMessagesModule } from './direct-message/direct-messages.module';
 import { DirectMessages } from './entities/direct_messages.entity';
 import { BannedUsers } from './entities/channel.banned.entity';
 import { ChannelsController } from './channels/channels.controller';
+import { AvatarUploadModule } from './avatar-upload/avatar-upload.module';
+import { AvatarUploadController } from './avatar-upload/avatar-upload.controller';
 
 const environment = process.env.ENVIRONMENT;
 const dbHost = process.env.DB_HOST;
@@ -72,6 +74,7 @@ declare global {
     ChannelsModule,
     MatchMakingModule,
     DirectMessagesModule,
+    AvatarUploadModule
   ],
   controllers: [],
   providers: [],
@@ -90,6 +93,7 @@ export class AppModule implements NestModule {
         DirectMessagesController,
         ChannelsController,
         AuthController,
+        AvatarUploadController,
       );
   }
 }
