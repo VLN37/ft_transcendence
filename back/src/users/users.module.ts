@@ -30,6 +30,6 @@ import { JwtService } from '@nestjs/jwt';
     FriendRequestsService,
     JwtService,
   ],
-  exports: [UsersService, ProfileModule, FriendRequestsService],
+  exports: [UsersService, ProfileModule, FriendRequestsService, TypeOrmModule],
 })
 export class UsersModule {}

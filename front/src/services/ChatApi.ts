@@ -146,28 +146,42 @@ class ChatApi {
 
   subscribeFriendRequest(callback: any) {
     this.dmSocket?.on('friend_request', (user: User) => {
-      // console.log('callback called');
       callback(user);
     });
-    // console.log('callback registered');
   }
 
   unsubscribeFriendRequest() {
-    // console.log('callback unregistered');
     this.dmSocket?.off('friend_request');
   }
 
   subscribeUserStatus(callback: any) {
     this.dmSocket?.on('user_status', (user: User) => {
-      // console.log('callback called');
       callback(user);
     });
-    // console.log('callback registered');
   }
 
   unsubscribeUserStatus() {
-    // console.log('callback unregistered');
     this.dmSocket?.off('user_status');
+  }
+
+  subscribeUserUpdated(callback: any) {
+    this.dmSocket?.on('user_updated', (user: User) => {
+      callback(user);
+    });
+  }
+
+  unsubscribeUserUpdated() {
+    this.dmSocket?.off('user_updated');
+  }
+
+  subscribeChannelsUpdate(callback: any) {
+    this.dmSocket?.on('channels_updated', () => {
+      callback();
+    });
+  }
+
+  unsubscribeChannelsUpdate() {
+    this.dmSocket?.off('channels_updated');
   }
 
   subscribeMessage(callback: any) {

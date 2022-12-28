@@ -38,7 +38,7 @@ class ProfileApi {
     };
     try {
       const response = await this.client.post<any>(
-        '/profile/avatar',
+        '/avatar',
         body,
         config,
       );

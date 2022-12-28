@@ -304,23 +304,18 @@ export function ChannelTable() {
     setChannels(filteredChannels);
   };
 
+  chatApi.subscribeChannelsUpdate(() => setReload(!reload));
+
+  useEffect(() => {
+    return chatApi.unsubscribeChannelsUpdate();
+  }, []);
+
   useEffect(() => {
     channelApi.getChannels().then((channels) => {
       setChannels(channels);
       setBkpChannels(channels);
     });
   }, [reload]);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      channelApi.getChannels().then((channels) => {
-        setChannels(channels);
-        setBkpChannels(channels);
-      });
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, []);
 
   return (
     <>

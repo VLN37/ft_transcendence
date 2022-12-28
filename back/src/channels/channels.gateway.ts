@@ -1,10 +1,4 @@
-import {
-  forwardRef,
-  Inject,
-  Injectable,
-  Logger,
-  OnApplicationBootstrap,
-} from '@nestjs/common';
+import { Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import {
   OnGatewayConnection,
@@ -48,7 +42,7 @@ export class ChannelsSocketGateway
   ) {}
 
   onApplicationBootstrap() {
-    this.channelsService.setNotify(this.removeUser.bind(this));
+    this.channelsService.setRemoveUser(this.removeUser.bind(this));
   }
 
   afterInit(_: Server) {

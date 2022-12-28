@@ -1,13 +1,14 @@
 import './style.css';
 import { Box, Button, Flex, Icon, Image, Text } from '@chakra-ui/react';
 import { IoDiamond } from 'react-icons/io5';
-import { TfiFaceSad } from 'react-icons/tfi';
 import { DmUsers } from '../Chat/DmUsers';
 import { emptyUser, User } from '../../models/User';
 import userApi from '../../services/UserApi';
 import { useEffect, useState } from 'react';
 import { Match } from '../../models/Match';
 import matchesApi from '../../services/MatchesApi';
+import ChatApi from '../../services/ChatApi';
+import userStorage from '../../services/userStorage';
 
 function getUserRank(user: User) {
   return <Icon mx={'auto'} my={'auto'} fontSize={'60px'} as={IoDiamond} />;
@@ -28,12 +29,14 @@ function formatMatchName(match: Match): string {
 function formatMatchSubTitle(match: Match): string {
   const tmp = new Date(match.created_at);
   const date = tmp.toLocaleDateString('pt-BR', {});
-//   return date + ' | ' + match.type;
+  //   return date + ' | ' + match.type;
   return date + ' | ' + 'TURBO';
 }
 
 function UserComp(user: User) {
   const [matches, setMatches] = useState<Match[]>([]);
+  const userFallback = userStorage.getUser() || emptyUser();
+  if (!user.login_intra) user = userFallback;
 
   useEffect(() => {
     matchesApi.getUserMatches(10).then((matchs: Match[]) => setMatches(matchs));
@@ -115,7 +118,7 @@ function UserComp(user: User) {
                 No matches found
               </Text>
               <Text fontSize={'2xl'} align={'center'}>
-              Go play some!
+                Go play some!
               </Text>
               {/* <Icon mx={'auto'} fontSize={'80px'} as={TfiFaceSad} /> */}
             </>
@@ -183,7 +186,6 @@ function Matches(matches: Match[]) {
             <Text fontSize={'2xl'} align={'center'}>
               Go play some!
             </Text>
-            {/* <Icon mx={'auto'} fontSize={'80px'} as={TfiFaceSad} /> */}
           </>
         )}
       </Flex>
@@ -195,9 +197,12 @@ export function Home() {
   const [user, setUser] = useState(emptyUser());
   const [matches, setMatches] = useState<Match[]>([]);
 
+  ChatApi.subscribeUserUpdated(setUser);
+
   useEffect(() => {
     userApi.getMe().then((_user) => setUser(_user));
     matchesApi.getLiveMatches(10).then((matchs: Match[]) => setMatches(matchs));
+    return ChatApi.unsubscribeUserUpdated();
   }, []);
 
   return (
