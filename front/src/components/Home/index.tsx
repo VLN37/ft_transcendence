@@ -1,7 +1,6 @@
 import './style.css';
 import { Box, Button, Flex, Icon, Image, Text } from '@chakra-ui/react';
 import { IoDiamond } from 'react-icons/io5';
-import { TfiFaceSad } from 'react-icons/tfi';
 import { DmUsers } from '../Chat/DmUsers';
 import { emptyUser, User } from '../../models/User';
 import userApi from '../../services/UserApi';
@@ -42,7 +41,7 @@ function UserComp(user: User) {
   return (
     <Flex width={'100%'} padding={'1rem'} gap={5}>
       <Flex flex={2} flexDirection={'column'}>
-        <Image
+        {/* <Image
           bg={'black'}
           borderRadius={'10px'}
           boxShadow="dark-lg"
@@ -52,7 +51,7 @@ function UserComp(user: User) {
             process.env.REACT_APP_BACK_HOSTNAME + user.profile.avatar_path
           }
           marginBottom={'1rem'}
-        />
+        /> */}
         <Box
           borderRadius={'5px'}
           padding={'0.2rem'}
