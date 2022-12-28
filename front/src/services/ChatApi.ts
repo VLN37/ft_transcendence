@@ -174,6 +174,16 @@ class ChatApi {
     this.dmSocket?.off('user_updated');
   }
 
+  subscribeChannelsUpdate(callback: any) {
+    this.dmSocket?.on('channels_updated', () => {
+      callback();
+    });
+  }
+
+  unsubscribeChannelsUpdate() {
+    this.dmSocket?.off('channels_updated');
+  }
+
   subscribeMessage(callback: any) {
     this.channelSocket?.on('chat', (message: Message) => {
       const blocked = userStorage.getUser()?.blocked || [];
