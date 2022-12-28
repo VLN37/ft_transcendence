@@ -41,6 +41,7 @@ function UserMenu(props: {
     const response: any = await channelApi.blockUser(
       me.id, props.user.id
     );
+    if (!response) return;
     const status = response.status == 201 ? 'success' : 'error';
     const message = response.status == 201 ? '' : response.data.message;
     toast({
@@ -56,6 +57,7 @@ function UserMenu(props: {
     const response: any = await channelApi.unblockUser(
       me.id, props.user.id
     );
+    if (!response) return;
     const status = response.status == 200 ? 'success' : 'error';
     const message = response.status == 200 ? '' : response.data.message;
     toast({
@@ -71,6 +73,7 @@ function UserMenu(props: {
     const response: any = await channelApi.delAdmin(
       props.user.id, props.channel.id
     );
+    if (!response) return;
     const status = response.status == 200 ? 'success' : 'error';
     const message = response.status == 200 ? '' : response.data.message;
     toast({
@@ -90,6 +93,7 @@ function UserMenu(props: {
     const response: any = await channelApi.addAdmin(
       props.user.id, props.channel.id
     );
+    if (!response) return;
     const status = response.status == 201 ? 'success' : 'error';
     const message = response.status == 201 ? '' : response.data.message;
     toast({
@@ -106,6 +110,7 @@ function UserMenu(props: {
     const response: any = await channelApi.banUser(
       props.channel.id, props.user.id, 360
       );
+    if (!response) return;
     const status = response.status == 201 ? 'success' : 'error';
     const message = response.status == 201
       ? '5 minutes timeout'
@@ -124,6 +129,7 @@ function UserMenu(props: {
     const response: any = await channelApi.unbanUser(
       props.channel.id, props.user.id
     );
+    if (!response) return;
     const status = response.status == 200 ? 'success' : 'error';
     const message = response.status == 200 ? '' : response.data.message;
     toast({

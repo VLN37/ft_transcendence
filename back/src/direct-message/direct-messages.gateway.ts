@@ -19,6 +19,8 @@ import {
 import { UserDto } from 'src/users/dto/user.dto';
 import { FriendRequestsService } from 'src/users/friend_requests/friend_requests.service';
 import { UsersService } from 'src/users/users.service';
+import { AvatarUploadService } from 'src/avatar-upload/avatar-upload.service';
+import { ChannelsService } from 'src/channels/channels.service';
 
 @WebSocketGateway({
   namespace: '/direct_messages',
@@ -42,6 +44,8 @@ export class DirectMessagesGateway
     private jwtService: JwtService,
     private friendRequestsService: FriendRequestsService,
     private usersService: UsersService,
+    private avatarUploadService: AvatarUploadService,
+    private channelsService: ChannelsService,
   ) {}
 
   afterInit(_: Server) {
@@ -61,6 +65,9 @@ export class DirectMessagesGateway
 
   onApplicationBootstrap() {
     this.friendRequestsService.setNotify(this.pingFriendRequest.bind(this));
+    this.usersService.setNotify(this.pingUserUpdate.bind(this));
+    this.avatarUploadService.setNotify(this.pingUserUpdate.bind(this));
+    this.channelsService.setUpdateChannels(this.pingChannelUpdate.bind(this));
   }
 
   async handleConnection(client: Socket) {
@@ -120,6 +127,15 @@ export class DirectMessagesGateway
   async pingStatusChange(receiver: string[], user: UserDto) {
     if (!receiver.length) return;
     return this.server.to(receiver).emit('user_status', { user: user });
+  }
+
+  async pingUserUpdate(receiver: number, user: UserDto) {
+    const receiverSocket = this.usersSocketId[receiver];
+    return this.server.to(receiverSocket.toString()).emit('user_updated', user);
+  }
+
+  pingChannelUpdate() {
+    this.server.emit('channels_updated');
   }
 
   private validateConnection(client: Socket) {

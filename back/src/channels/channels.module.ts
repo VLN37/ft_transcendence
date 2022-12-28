@@ -18,6 +18,6 @@ import { ChannelsSocketGateway } from './channels.gateway';
   ],
   controllers: [ChannelsController],
   providers: [ChannelsService, ChannelsInterceptor, ChannelsSocketGateway],
-  exports: [],
+  exports: [ChannelsService],
 })
 export class ChannelsModule {}

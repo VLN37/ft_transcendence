@@ -22,7 +22,8 @@ import { BannedUsers } from 'src/entities/channel.banned.entity';
 @Injectable()
 export class ChannelsService {
   private readonly logger = new Logger(ChannelsService.name);
-  private notifyService: (userId: number, room: string) => void | null = null;
+  private removeUser: (userId: number, room: string) => void | null = null;
+  private updateChannels: () => void | null = null;
 
   constructor(
     @InjectRepository(Channel)
@@ -35,8 +36,12 @@ export class ChannelsService {
     private jwtService: JwtService,
   ) {}
 
-  setNotify(callback: (userId: number, room: string) => void) {
-    this.notifyService = callback;
+  setRemoveUser(callback: (userId: number, room: string) => void) {
+    this.removeUser = callback;
+  }
+
+  setUpdateChannels(callback: () => void) {
+    this.updateChannels = callback;
   }
 
   async generateChannels(amount: number) {
@@ -68,7 +73,7 @@ export class ChannelsService {
       throw new BadRequestException('You are not an admin of this channel');
     if (!channel.users.find((elem) => elem.id == token.id))
       throw new BadRequestException('User is not in the channel');
-    this.notifyService(ban, chId.toString());
+    this.removeUser(ban, chId.toString());
     channel.admins = channel.admins.filter((user) => user.id != ban);
     await this.update(channel);
     const date = new Date();
@@ -105,10 +110,11 @@ export class ChannelsService {
         admins: [{ id: channel.owner_id }],
       })
       .catch((err: any) => {
-        this.logger.warn('DB error on channel creation', {err});
+        this.logger.warn('DB error on channel creation', { err });
         throw new BadRequestException('Channel: ' + err?.driverError);
       });
     this.logger.debug('Channel created', { newChannel });
+    this.updateChannels();
     return newChannel;
   }
 
@@ -143,6 +149,7 @@ export class ChannelsService {
     delete data.channel.admins;
     delete data.channel.banned_users;
     this.logger.debug('Channel updated', data.channel);
+    this.updateChannels();
     return this.channelsRepository.update(
       { id: data.channel.id },
       data.channel,
@@ -205,6 +212,7 @@ export class ChannelsService {
     const channel = await this.getOne(id);
     this.logger.debug('Channel deleted', { channel });
     await this.channelsRepository.delete({ id: id });
+	this.updateChannels();
   }
 
   async update(channel: ChannelDto) {
@@ -288,14 +296,14 @@ export class ChannelsService {
           await this.usersService.getOne(channel.users[0].id),
         );
       } else {
-        this.notifyService(user_id, channel.id.toString());
+        this.removeUser(user_id, channel.id.toString());
         return await this.delete(channel.id);
       }
     }
 
     await this.update(channel);
 
-    this.notifyService(user_id, channel.id.toString());
+    this.removeUser(user_id, channel.id.toString());
     return channel;
   }
 
