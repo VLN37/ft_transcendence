@@ -101,10 +101,10 @@ export default (props: GameWindowProps) => {
 
   const processGameLogic = () => {};
 
-  const handleCollisions = () => {
+  const handleCollisions = (deltaTime: number) => {
     handleBallCollision(ball, rules);
-    handleBallPaddleCollision(ball, leftPlayer);
-    handleBallPaddleCollision(ball, rightPlayer);
+    handleBallPaddleCollision(ball, leftPlayer, deltaTime, rules);
+    handleBallPaddleCollision(ball, rightPlayer, deltaTime, rules);
   };
 
   const render = (p5: p5Types) => {
@@ -129,7 +129,7 @@ export default (props: GameWindowProps) => {
 
     updateWorld();
 
-    handleCollisions();
+    handleCollisions(p5.deltaTime);
     render(p5);
   };
 
