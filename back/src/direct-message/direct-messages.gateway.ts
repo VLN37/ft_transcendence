@@ -19,6 +19,7 @@ import {
 import { UserDto } from 'src/users/dto/user.dto';
 import { FriendRequestsService } from 'src/users/friend_requests/friend_requests.service';
 import { UsersService } from 'src/users/users.service';
+import { AvatarUploadService } from 'src/avatar-upload/avatar-upload.service';
 
 @WebSocketGateway({
   namespace: '/direct_messages',
@@ -42,6 +43,7 @@ export class DirectMessagesGateway
     private jwtService: JwtService,
     private friendRequestsService: FriendRequestsService,
     private usersService: UsersService,
+    private avatarUploadService: AvatarUploadService,
   ) {}
 
   afterInit(_: Server) {
@@ -61,6 +63,8 @@ export class DirectMessagesGateway
 
   onApplicationBootstrap() {
     this.friendRequestsService.setNotify(this.pingFriendRequest.bind(this));
+    this.usersService.setNotify(this.pingUserUpdate.bind(this));
+    this.avatarUploadService.setNotify(this.pingUserUpdate.bind(this));
   }
 
   async handleConnection(client: Socket) {
@@ -120,6 +124,13 @@ export class DirectMessagesGateway
   async pingStatusChange(receiver: string[], user: UserDto) {
     if (!receiver.length) return;
     return this.server.to(receiver).emit('user_status', { user: user });
+  }
+
+  async pingUserUpdate(receiver: number, user: UserDto) {
+	const receiverSocket = this.usersSocketId[receiver];
+    return this.server
+      .to(receiverSocket.toString())
+      .emit('user_updated', user);
   }
 
   private validateConnection(client: Socket) {

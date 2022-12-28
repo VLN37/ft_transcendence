@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { AvatarUploadModule } from 'src/avatar-upload/avatar-upload.module';
 import { DirectMessages } from 'src/entities/direct_messages.entity';
 import { UsersModule } from 'src/users/users.module';
 import { DirectMessagesController } from './direct-messages.controller';
@@ -11,7 +12,8 @@ import { DirectMessagesService } from './direct-messages.service';
   imports: [
     TypeOrmModule.forFeature([DirectMessages]),
     JwtModule.register({}),
-    UsersModule
+    UsersModule,
+    AvatarUploadModule,
   ],
   controllers: [DirectMessagesController],
   providers: [DirectMessagesService, DirectMessagesGateway],

@@ -16,6 +16,8 @@ import { JwtService } from '@nestjs/jwt';
 @Injectable()
 export class UsersService {
   private readonly logger = new Logger(UsersService.name);
+  private notifyService: (receiver: number, user: UserDto) => void | null =
+    null;
 
   constructor(
     @InjectRepository(User)
@@ -23,6 +25,10 @@ export class UsersService {
     private profileService: ProfileService,
     private jwtService: JwtService,
   ) {}
+
+  setNotify(callback: (receiver: number, user: UserDto) => void) {
+    this.notifyService = callback;
+  }
 
   async create(dto: UserDto): Promise<User> {
     const find = await this.usersRepository.findOne({
@@ -69,6 +75,7 @@ export class UsersService {
     delete updatedUser.blocked;
     delete updatedUser.friend_requests;
     this.logger.debug('User updated', { updatedUser });
+    this.notifyService(id, updatedUser);
     return updatedUser;
   }
 
