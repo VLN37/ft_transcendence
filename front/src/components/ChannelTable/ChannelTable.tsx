@@ -311,7 +311,10 @@ export function ChannelTable() {
     });
   }, [reload]);
 
-  useEffect(() => {
+  // TODO(wleite) :
+  // if you want this functionality receive the new channels via websocket
+
+ /*  useEffect(() => {
     const interval = setInterval(() => {
       channelApi.getChannels().then((channels) => {
         setChannels(channels);
@@ -320,7 +323,7 @@ export function ChannelTable() {
     }, 5000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, []); */
 
   return (
     <>
