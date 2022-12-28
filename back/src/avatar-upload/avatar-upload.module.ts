@@ -16,9 +16,10 @@ import { editFileName } from 'src/middlewares/EditFileName';
         destination: './uploads',
         filename: editFileName,
       }),
-    }),],
+    }),
+  ],
   controllers: [AvatarUploadController],
   providers: [AvatarUploadService, UsersService, JwtService],
-  exports: [AvatarUploadService]
+  exports: [AvatarUploadService],
 })
 export class AvatarUploadModule {}

@@ -1,25 +1,11 @@
-import { forwardRef, Module } from '@nestjs/common';
-import { MulterModule } from '@nestjs/platform-express';
+import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Profile } from 'src/entities/profile.entity';
-import { ProfileController } from './profile.controller';
 import { ProfileService } from './profile.service';
-import { editFileName } from 'src/middlewares/EditFileName';
-import { diskStorage } from 'multer';
-import { UsersModule } from 'src/users/users.module';
 
 @Module({
-  imports: [
-    forwardRef(() => UsersModule),
-    TypeOrmModule.forFeature([Profile]),
-    MulterModule.register({
-      storage: diskStorage({
-        destination: './uploads',
-        filename: editFileName,
-      }),
-    }),
-  ],
-  controllers: [ProfileController],
+  imports: [TypeOrmModule.forFeature([Profile])],
+  controllers: [],
   providers: [ProfileService],
   exports: [ProfileService],
 })

@@ -7,9 +7,7 @@ import * as fs from 'fs';
 export class AvatarUploadService {
   private readonly logger = new Logger(AvatarUploadService.name);
 
-  constructor(
-    private usersService: UsersService,
-  ) {}
+  constructor(private usersService: UsersService) {}
 
   async saveAvatar(token: string, image: Express.Multer.File) {
     if (!image.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {

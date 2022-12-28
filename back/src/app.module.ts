@@ -74,7 +74,7 @@ declare global {
     ChannelsModule,
     MatchMakingModule,
     DirectMessagesModule,
-    AvatarUploadModule
+    AvatarUploadModule,
   ],
   controllers: [],
   providers: [],
