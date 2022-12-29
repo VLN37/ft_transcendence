@@ -23,7 +23,8 @@ import { BannedUsers } from 'src/entities/channel.banned.entity';
 export class ChannelsService {
   private readonly logger = new Logger(ChannelsService.name);
   private removeUser: (userId: number, room: string) => void | null = null;
-  private updateChannels: () => void | null = null;
+  private notifyService: (event: string, channel: ChannelDto) => void | null =
+    null;
 
   constructor(
     @InjectRepository(Channel)
@@ -40,8 +41,8 @@ export class ChannelsService {
     this.removeUser = callback;
   }
 
-  setUpdateChannels(callback: () => void) {
-    this.updateChannels = callback;
+  setNotify(callback: (event: string, channel: ChannelDto) => void) {
+    this.notifyService = callback;
   }
 
   async generateChannels(amount: number) {
@@ -114,7 +115,7 @@ export class ChannelsService {
         throw new BadRequestException('Channel: ' + err?.driverError);
       });
     this.logger.debug('Channel created', { newChannel });
-    this.updateChannels();
+    this.notifyService('created', newChannel);
     return newChannel;
   }
 
@@ -149,7 +150,7 @@ export class ChannelsService {
     delete data.channel.admins;
     delete data.channel.banned_users;
     this.logger.debug('Channel updated', data.channel);
-    this.updateChannels();
+    this.notifyService('updated', data.channel);
     return this.channelsRepository.update(
       { id: data.channel.id },
       data.channel,
@@ -212,7 +213,7 @@ export class ChannelsService {
     const channel = await this.getOne(id);
     this.logger.debug('Channel deleted', { channel });
     await this.channelsRepository.delete({ id: id });
-	this.updateChannels();
+    this.notifyService('delete', channel);
   }
 
   async update(channel: ChannelDto) {
@@ -295,6 +296,7 @@ export class ChannelsService {
         channel.admins.push(
           await this.usersService.getOne(channel.users[0].id),
         );
+        this.notifyService('updated', channel);
       } else {
         this.removeUser(user_id, channel.id.toString());
         return await this.delete(channel.id);

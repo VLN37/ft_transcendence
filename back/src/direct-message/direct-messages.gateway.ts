@@ -21,6 +21,7 @@ import { FriendRequestsService } from 'src/users/friend_requests/friend_requests
 import { UsersService } from 'src/users/users.service';
 import { AvatarUploadService } from 'src/avatar-upload/avatar-upload.service';
 import { ChannelsService } from 'src/channels/channels.service';
+import { ChannelDto } from 'src/channels/dto/channel.dto';
 
 @WebSocketGateway({
   namespace: '/direct_messages',
@@ -67,7 +68,7 @@ export class DirectMessagesGateway
     this.friendRequestsService.setNotify(this.pingFriendRequest.bind(this));
     this.usersService.setNotify(this.pingUserUpdate.bind(this));
     this.avatarUploadService.setNotify(this.pingUserUpdate.bind(this));
-    this.channelsService.setUpdateChannels(this.pingChannelUpdate.bind(this));
+    this.channelsService.setNotify(this.pingChannelUpdate.bind(this));
   }
 
   async handleConnection(client: Socket) {
@@ -134,8 +135,11 @@ export class DirectMessagesGateway
     return this.server.to(receiverSocket.toString()).emit('user_updated', user);
   }
 
-  pingChannelUpdate() {
-    this.server.emit('channels_updated');
+  pingChannelUpdate(event: string, channel: ChannelDto) {
+    this.server.emit('channel_status', {
+      event,
+      channel,
+    });
   }
 
   private validateConnection(client: Socket) {

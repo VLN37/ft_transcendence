@@ -9,6 +9,11 @@ import userStorage from './userStorage';
 import { Channel } from '../models/Channel';
 import { iDirectLastMessage } from '../models/DirectMessages';
 
+export interface ChannelStatus {
+  event: string;
+  channel: Channel;
+}
+
 class ChatApi {
   private client: AxiosInstance;
   private channelSocket?: Socket;
@@ -174,14 +179,14 @@ class ChatApi {
     this.dmSocket?.off('user_updated');
   }
 
-  subscribeChannelsUpdate(callback: any) {
-    this.dmSocket?.on('channels_updated', () => {
-      callback();
+  subscribeChannelStatus(callback: any) {
+    this.dmSocket?.on('channel_status', (channelStatus: ChannelStatus) => {
+      callback(channelStatus);
     });
   }
 
-  unsubscribeChannelsUpdate() {
-    this.dmSocket?.off('channels_updated');
+  unsubscribeChannelStatus() {
+    this.dmSocket?.off('channel_status');
   }
 
   subscribeMessage(callback: any) {
