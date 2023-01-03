@@ -41,7 +41,7 @@ export default (props: GameWindowProps) => {
 
   ball.speed = 300;
   // ball.velocity = p5Types.Vector.random2D().normalize();
-  ball.velocity = new Vector(1, 0.152).normalize();
+  ball.velocity = new Vector(7, 1);
 
   const setup = (p5: p5Types, canvasParentRef: Element) => {
     updateWindowProportions();
@@ -101,10 +101,10 @@ export default (props: GameWindowProps) => {
 
   const processGameLogic = () => {};
 
-  const handleCollisions = (deltaTime: number) => {
+  const handleCollisions = () => {
     handleBallCollision(ball, rules);
-    handleBallPaddleCollision(ball, leftPlayer, deltaTime, rules);
-    handleBallPaddleCollision(ball, rightPlayer, deltaTime, rules);
+    handleBallPaddleCollision(ball, leftPlayer, rules);
+    handleBallPaddleCollision(ball, rightPlayer, rules);
   };
 
   const render = (p5: p5Types) => {
@@ -129,7 +129,7 @@ export default (props: GameWindowProps) => {
 
     updateWorld();
 
-    handleCollisions(p5.deltaTime);
+    handleCollisions();
     render(p5);
   };
 

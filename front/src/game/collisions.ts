@@ -1,7 +1,7 @@
 import { Vector } from './math/Vector';
 import { Ball } from './model/Ball';
 import { GameRules } from './model/GameRules';
-import { Player, PlayerSide } from './model/Player';
+import { Player } from './model/Player';
 
 export const handleBallCollision = (ball: Ball, rules: GameRules) => {
   let overlapY = 0;
@@ -26,22 +26,9 @@ export const handleBallCollision = (ball: Ball, rules: GameRules) => {
   ball.position.x -= overlapX * 2;
 };
 
-const getDistance = (ball: Ball, paddle: Player) => {
-  const nearestX = Math.max(
-    paddle.x - paddle.width / 2,
-    Math.min(ball.position.x, paddle.x + paddle.width / 2),
-  );
-  const nearestY = Math.max(
-    paddle.y - paddle.height / 2,
-    Math.min(ball.position.y, paddle.y + paddle.height / 2),
-  );
-  return new Vector(ball.position.x - nearestX, ball.position.y - nearestY);
-};
-
 export const handleBallPaddleCollision = (
   ball: Ball,
   player: Player,
-  deltaTime: number,
   rules: GameRules,
 ) => {
   doBatBall(player, ball, rules);
