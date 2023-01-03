@@ -2,7 +2,7 @@ import { io, Socket } from 'socket.io-client';
 import { MatchState } from '../game/model/MatchState';
 import api from './api';
 
-export class MatchApi {
+export class GameApi {
   private readonly MATCH_MANAGER_NAMESPACE = 'match-manager';
   private matchSocket?: Socket;
 

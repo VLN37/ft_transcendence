@@ -3,7 +3,7 @@ import p5Types from 'p5';
 import { Ball } from '../../game/model/Ball';
 import { MatchState } from '../../game/model/MatchState';
 import { Player, PlayerSide } from '../../game/model/Player';
-import { MatchApi } from '../../services/matchApi';
+import { GameApi } from '../../services/gameApi';
 import { GameRules } from '../../game/model/GameRules';
 import {
   drawBall,
@@ -19,12 +19,12 @@ import {
 import { Vector } from '../../game/math/Vector';
 
 export type GameWindowProps = {
-  matchApi: MatchApi;
+  gameApi: GameApi;
   rules: GameRules;
 };
 
 export default (props: GameWindowProps) => {
-  const { matchApi, rules } = props;
+  const { gameApi: matchApi, rules } = props;
 
   const gameWindow = {
     width: 500,
