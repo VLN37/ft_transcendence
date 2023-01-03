@@ -18,10 +18,6 @@ export class Ball {
   }
 
   update(deltaTime: number) {
-    const displacement = Vector.mult(
-      this.velocity,
-      (this.speed * deltaTime) / 1000,
-    );
-    this.position.addVector(displacement);
+    this.position.addVector(this.velocity);
   }
 }

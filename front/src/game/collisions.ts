@@ -1,7 +1,7 @@
 import { Vector } from './math/Vector';
 import { Ball } from './model/Ball';
 import { GameRules } from './model/GameRules';
-import { Player } from './model/Player';
+import { Player, PlayerSide } from './model/Player';
 
 export const handleBallCollision = (ball: Ball, rules: GameRules) => {
   let overlapY = 0;
@@ -44,121 +44,110 @@ export const handleBallPaddleCollision = (
   deltaTime: number,
   rules: GameRules,
 ) => {
-  doBatBall(player, ball, deltaTime, rules);
+  doBatBall(player, ball, rules);
 };
 
 const ballShadow = {
-  x: 0,
-  y: 0,
-  dx: 0,
-  dy: 0,
+  // this is used to do calcs that may be dumped
+  r: 50,
+  x: 50,
+  y: 50,
+  vx: 0.2,
+  vy: 0.2,
 };
-
-//=============================================================================
 // THE FUNCTION THAT DOES THE BALL BAT sim.
 // the ball and bat are at new position
-function doBatBall(
-  bat: Player,
-  ball: Ball,
-  deltaTime: number,
-  rules: GameRules,
-) {
+function doBatBall(bat: Player, ball: Ball, rules: GameRules) {
   var mirrorX = 1;
   var mirrorY = 1;
-
-  const ballDeltaSpeed = (ball.speed * deltaTime) / 1000;
-  const ballDelta = {
-    x: ball.velocity.x * ballDeltaSpeed,
-    y: ball.velocity.y * ballDeltaSpeed,
-  };
 
   const s = ballShadow; // alias
   s.x = ball.position.x;
   s.y = ball.position.y;
-  s.dx = ballDelta.x;
-  s.dy = ballDelta.y;
-  s.x -= s.dx; // set ball where it was last frame
-  s.y -= s.dy; // set ball where it was last frame
+  s.vx = ball.velocity.x;
+  s.vy = ball.velocity.y;
+  s.x -= s.vx;
+  s.y -= s.vy;
 
   // get the bat half width height
   const batW2 = bat.width / 2;
   const batH2 = bat.height / 2;
 
   // and bat size plus radius of ball
-  var batH = batH2 + rules.ball.radius;
-  var batW = batW2 + rules.ball.radius;
+  var batH = batH2 + ball.radius;
+  var batW = batW2 + ball.radius;
 
   // set ball position relative to bats last pos
   s.x -= bat.x;
   s.y -= bat.y;
 
   // set ball delta relative to bat
-  // s.dx -= bat.dx;
-  // s.dy -= bat.dy;
+  // s.vx -= bat.velocity.x;
+  // s.vy -= bat.velocity.y;
 
   // mirror x and or y if needed
   if (s.x < 0) {
     mirrorX = -1;
     s.x = -s.x;
-    s.dx = -s.dx;
+    s.vx = -s.vx;
   }
   if (s.y < 0) {
     mirrorY = -1;
     s.y = -s.y;
-    s.dy = -s.dy;
+    s.vy = -s.vy;
   }
 
   // bat now only has a bottom, right sides and bottom right corner
   var distY = batH - s.y; // distance from bottom
   var distX = batW - s.x; // distance from right
 
-  if (s.dx > 0 && s.dy > 0) {
+  if (s.vx > 0 && s.vy > 0) {
     return;
   } // ball moving away so no hit
 
-  var ballSpeed = Math.sqrt(s.dx * s.dx + s.dy * s.dy); // get ball speed relative to bat
+  var ballSpeed = Math.sqrt(s.vx * s.vx + s.vy * s.vy); // get ball speed relative to bat
 
   // get x location of intercept for bottom of bat
-  var bottomX = s.x + (s.dx / s.dy) * distY;
+  var bottomX = s.x + (s.vx / s.vy) * distY;
 
   // get y location of intercept for right of bat
-  var rightY = s.y + (s.dy / s.dx) * distX;
+  var rightY = s.y + (s.vy / s.vx) * distX;
 
   // get distance to bottom and right intercepts
   var distB = Math.hypot(bottomX - s.x, batH - s.y);
   var distR = Math.hypot(batW - s.x, rightY - s.y);
   var hit = false;
 
-  if (s.dy < 0 && bottomX <= batW2 && distB <= ballSpeed && distB < distR) {
+  if (s.vy < 0 && bottomX <= batW2 && distB <= ballSpeed && distB < distR) {
     // if hit is on bottom and bottom hit is closest
     hit = true;
-    s.y = batH - s.dy * ((ballSpeed - distB) / ballSpeed);
-    s.dy = -s.dy;
+    s.y = batH - s.vy * ((ballSpeed - distB) / ballSpeed);
+    s.vy = -s.vy;
   }
   if (
     !hit &&
-    s.dx < 0 &&
+    s.vx < 0 &&
     rightY <= batH2 &&
     distR <= ballSpeed &&
     distR <= distB
   ) {
     // if hit is on right and right hit is closest
     hit = true;
-    s.x = batW - s.dx * ((ballSpeed - distR) / ballSpeed);
-    s.dx = -s.dx;
+    s.x = batW - s.vx * ((ballSpeed - distR) / ballSpeed);
+    s.vx = -s.vx;
   }
   if (!hit) {
     // if no hit may have intercepted the corner.
     // find the distance that the corner is from the line segment from the balls pos to the next pos
     const u =
-      ((batW2 - s.x) * s.dx + (batH2 - s.y) * s.dy) / (ballSpeed * ballSpeed);
+      ((batW2 - s.x) * s.vx + (batH2 - s.y) * s.vy) / (ballSpeed * ballSpeed);
 
     // get the closest point on the line to the corner
-    var cpx = s.x + s.dx * u;
-    var cpy = s.y + s.dy * u;
+    var cpx = s.x + s.vx * u;
+    var cpy = s.y + s.vy * u;
 
     // get ball radius squared
-    const radSqr = Math.pow(rules.ball.radius, 2);
+    const radSqr = ball.radius * ball.radius;
 
     // get the distance of that point from the corner squared
     const dist = (cpx - batW2) * (cpx - batW2) + (cpy - batH2) * (cpy - batH2);
@@ -172,8 +161,8 @@ function doBatBall(
     var d = Math.sqrt(radSqr - dist) / ballSpeed;
 
     // intercept point is closest to line start
-    cpx -= s.dx * d;
-    cpy -= s.dy * d;
+    cpx -= s.vx * d;
+    cpy -= s.vy * d;
 
     // get the distance from the ball current pos to the intercept point
     d = Math.hypot(cpx - s.x, cpy - s.y);
@@ -187,28 +176,28 @@ function doBatBall(
     s.y = cpy;
 
     // find the normalised tangent at intercept point
-    const ty = (cpx - batW2) / rules.ball.radius;
-    const tx = -(cpy - batH2) / rules.ball.radius;
+    const ty = (cpx - batW2) / ball.radius;
+    const tx = -(cpy - batH2) / ball.radius;
 
     // calculate the reflection vector
-    const bsx = s.dx / ballSpeed; // normalise ball speed
-    const bsy = s.dy / ballSpeed;
+    const bsx = s.vx / ballSpeed; // normalise ball speed
+    const bsy = s.vy / ballSpeed;
     const dot = (bsx * tx + bsy * ty) * 2;
 
     // get the distance the ball travels past the intercept
     d = ballSpeed - d;
 
     // the reflected vector is the balls new delta (this delta is normalised)
-    s.dx = tx * dot - bsx;
-    s.dy = ty * dot - bsy;
+    s.vx = tx * dot - bsx;
+    s.vy = ty * dot - bsy;
 
     // move the ball the remaining distance away from corner
-    s.x += s.dx * d;
-    s.y += s.dy * d;
+    s.x += s.vx * d;
+    s.y += s.vy * d;
 
     // set the ball delta to the balls speed
-    s.dx *= ballSpeed;
-    s.dy *= ballSpeed;
+    s.vx *= ballSpeed <= rules.ball.maxSpeed ? ballSpeed : rules.ball.maxSpeed;
+    s.vy *= ballSpeed <= rules.ball.maxSpeed ? ballSpeed : rules.ball.maxSpeed;
     hit = true;
   }
 
@@ -216,22 +205,24 @@ function doBatBall(
   if (hit) {
     // reverse mirror
     s.x *= mirrorX;
-    s.dx *= mirrorX;
+    s.vx *= mirrorX;
     s.y *= mirrorY;
-    s.dy *= mirrorY;
+    s.vy *= mirrorY;
 
     // remove bat relative position
     s.x += bat.x;
     s.y += bat.y;
 
-    // // remove bat relative delta
-    // s.dx += bat.dx;
-    // s.dy += bat.dy;
+    // remove bat relative delta
+    // s.vx += bat.vx;
+    // s.vy += bat.vy;
 
     // set the balls new position and delta
     ball.position.x = s.x;
     ball.position.y = s.y;
-    ballDelta.x = s.dx;
-    ballDelta.y = s.dy;
+
+    ball.velocity.x = s.vx;
+    ball.velocity.y = s.vy;
   }
 }
+// Strengthened plow
