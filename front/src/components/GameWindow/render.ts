@@ -19,8 +19,12 @@ export const drawPlayer = (
   rules: GameRules,
 ) => {
   image.fill(getPlayerColor(rPlayer.side, image));
-  image.rectMode('center');
-  image.rect(rPlayer.x, rPlayer.y, rules.player.width, rules.player.height);
+  image.rect(
+    rPlayer.x - rPlayer.width / 2,
+    rPlayer.y - rPlayer.height / 2,
+    rules.player.width,
+    rules.player.height,
+  );
 };
 
 export const drawBall = (image: p5Types.Graphics, ball: Ball) => {
