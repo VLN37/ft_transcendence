@@ -33,6 +33,7 @@ import { Channel } from '../../models/Channel';
 import { channelApi, api } from '../../services/api_index';
 import userStorage from '../../services/userStorage';
 import { StatusCodes } from 'http-status-codes';
+import { ChannelStatus } from '../../services/ChatApi';
 
 function formatValues(values: any) {
   if (values.hasOwnProperty('allowed_users')) {
@@ -304,10 +305,33 @@ export function ChannelTable() {
     setChannels(filteredChannels);
   };
 
-  chatApi.subscribeChannelsUpdate(() => setReload(!reload));
+  chatApi.subscribeChannelStatus((channelStatus: ChannelStatus) => {
+    if (channelStatus.event == 'created')
+      setChannels([channelStatus.channel, ...channels]);
+    if (channelStatus.event == 'updated') {
+      const index = channels
+        .map((chn) => chn.id)
+        .indexOf(channelStatus.channel.id);
+      if (index != -1) {
+        let tmpChannels = [...channels];
+        tmpChannels[index] = channelStatus.channel;
+        setChannels(tmpChannels);
+      }
+    }
+    if (channelStatus.event == 'delete') {
+      const index = channels
+        .map((chn) => chn.id)
+        .indexOf(channelStatus.channel.id);
+      if (index != -1) {
+        let tmpChannels = [...channels];
+        tmpChannels.splice(index, 1);
+        setChannels(tmpChannels);
+      }
+    }
+  });
 
   useEffect(() => {
-    return chatApi.unsubscribeChannelsUpdate();
+    return chatApi.unsubscribeChannelStatus();
   }, []);
 
   useEffect(() => {
