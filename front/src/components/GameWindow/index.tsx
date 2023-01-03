@@ -41,7 +41,7 @@ export default (props: GameWindowProps) => {
 
   ball.speed = 300;
   // ball.velocity = p5Types.Vector.random2D().normalize();
-  ball.velocity = new Vector(1, 0.152).normalize();
+  ball.velocity = new Vector(7, 1);
 
   const setup = (p5: p5Types, canvasParentRef: Element) => {
     updateWindowProportions();
@@ -103,8 +103,8 @@ export default (props: GameWindowProps) => {
 
   const handleCollisions = () => {
     handleBallCollision(ball, rules);
-    handleBallPaddleCollision(ball, leftPlayer);
-    handleBallPaddleCollision(ball, rightPlayer);
+    handleBallPaddleCollision(ball, leftPlayer, rules);
+    handleBallPaddleCollision(ball, rightPlayer, rules);
   };
 
   const render = (p5: p5Types) => {
@@ -115,8 +115,6 @@ export default (props: GameWindowProps) => {
     drawPlayer(image, leftPlayer, rules);
     drawSpeedMeter(image, ball, rules);
     resizeIfNecessary(p5);
-    // gWorld.update();
-    // checkBallCollision(ball, rules);
     printFps(image, ball);
     p5.image(image, 0, 0, p5.width, p5.height);
   };
