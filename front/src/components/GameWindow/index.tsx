@@ -115,8 +115,6 @@ export default (props: GameWindowProps) => {
     drawPlayer(image, leftPlayer, rules);
     drawSpeedMeter(image, ball, rules);
     resizeIfNecessary(p5);
-    // gWorld.update();
-    // checkBallCollision(ball, rules);
     printFps(image, ball);
     p5.image(image, 0, 0, p5.width, p5.height);
   };
