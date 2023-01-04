@@ -7,6 +7,7 @@ import { GameApi } from '../../services/gameApi';
 import { GameRules } from '../../game/model/GameRules';
 import {
   drawBall,
+  drawBallCoords,
   drawBallVelocity,
   drawPlayer,
   drawSpeedMeter,
@@ -109,6 +110,7 @@ export default (props: GameWindowProps) => {
     drawSpeedMeter(image, ball, rules);
     resizeIfNecessary(p5);
     printFps(image, ball);
+    drawBallCoords(image, ball);
     p5.image(image, 0, 0, p5.width, p5.height);
   };
 

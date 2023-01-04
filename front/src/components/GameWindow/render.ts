@@ -103,3 +103,10 @@ export const drawSpeedMeter = (
   image.text(ballSpeed + 'px/s', posX + width + 10, posY + height);
   image.pop();
 };
+
+export const drawBallCoords = (image: p5Types.Graphics, ball: Ball) => {
+  image.push();
+  image.stroke(110, 150, 230);
+  image.text(`ball:\nx: ${ball.position.x}\ny:${ball.position.y}`, 30, 120);
+  image.pop();
+};

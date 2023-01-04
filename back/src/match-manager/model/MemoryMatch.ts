@@ -55,7 +55,7 @@ export class MemoryMatch {
   resetPositions() {
     this.leftPaddle.y = rules.player.startingPosition;
     this.rightPaddle.y = rules.player.startingPosition;
-    const vec = Vector.random();
+    const vec = Vector.random().mult(rules.ball.startingSpeed);
     // const vec = new Vector(1, 0);
     this.lastUpdate = Date.now();
     this.ball.position.x = rules.ball.startingPosition.x;
@@ -79,12 +79,12 @@ export class MemoryMatch {
     const deltaTime = this.getDeltaTime();
     this.ball.update(deltaTime);
 
-    const ballSpeed = this.ball.velocity.mag();
-    const deltaSpeed = ballSpeed * deltaTime;
+    // const ballSpeed = this.ball.velocity.mag();
+    // const deltaSpeed = ballSpeed * deltaTime;
     // this.state.p1 += this.increment;
     // this.state.p2 += this.increment;
-    this.ball.position.x += this.ball.velocity.x * deltaSpeed;
-    this.ball.position.y += this.ball.velocity.y * deltaSpeed;
+    // this.ball.position.x += this.ball.velocity.x * deltaSpeed;
+    // this.ball.position.y += this.ball.velocity.y * deltaSpeed;
     this.leftPaddle.y = this.ball.position.y;
     this.rightPaddle.y = this.ball.position.y;
 
@@ -130,10 +130,6 @@ export class MemoryMatch {
   }
 
   private checkBallPlayerCollision() {}
-
-  private checkLeftPlayerBallCollision() {}
-
-  private checkRightPlayerBallCollision() {}
 
   private getDeltaTime(): number {
     const now = Date.now();
