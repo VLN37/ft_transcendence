@@ -10,8 +10,9 @@ export class GameRequestsService {
     user: UserDto,
   ) => void | null = null;
   private updateNotifyService: (
-    receiver: number,
-    user: UserDto,
+    status: string,
+    user1: UserDto,
+    user2: UserDto,
   ) => void | null = null;
 
   constructor(private usersService: UsersService) {}
@@ -20,12 +21,21 @@ export class GameRequestsService {
     this.inviteNotifyService = callback;
   }
 
+  setUpdateNotify(
+    callback: (status: string, user1: UserDto, user2: UserDto) => void,
+  ) {
+    this.updateNotifyService = callback;
+  }
+
   async invite(target: number, user: UserDto) {
     this.inviteNotifyService(target, user);
     return;
   }
 
-  updateInvite(me: number, target: number, status: string) {
+  updateInvite(status: string, user1: UserDto, user2: UserDto) {
+    if (status == 'DECLINED') {
+      this.updateNotifyService(status, user1, user2);
+    }
     return;
   }
 }

@@ -155,6 +155,22 @@ export class DirectMessagesGateway
     });
   }
 
+  pingUpdateGameRequest(
+    status: string,
+    user1: number,
+    user2: number,
+    id: number,
+  ) {
+    const receiverSocket1 = this.usersSocketId[user1];
+    const receiverSocket2 = this.usersSocketId[user2];
+    this.server
+      .to([receiverSocket1.toString(), receiverSocket2.toString()])
+      .emit('update', {
+        status,
+        id,
+      });
+  }
+
   private validateConnection(client: Socket) {
     const token = client.handshake.auth.token;
     try {

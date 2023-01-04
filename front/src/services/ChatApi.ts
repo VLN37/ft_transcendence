@@ -68,7 +68,7 @@ class ChatApi {
     console.log('game request listener activated');
     this.dmSocket?.on('invite', (response: any) => {
       callback(response.data);
-    })
+    });
   }
 
   unsubscribeGameInvite() {

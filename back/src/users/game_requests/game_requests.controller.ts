@@ -20,19 +20,16 @@ export class GameRequestsController {
   constructor(private readonly gameRequestsService: GameRequestsService) {}
 
   @Post()
-  async invite(
-    @Body('user') user: UserDto,
-    @Param('target') target: number,
-  ) {
+  async invite(@Body('user') user: UserDto, @Param('target') target: number) {
     return await this.gameRequestsService.invite(target, user);
   }
 
   @Put()
   updateInvite(
-    @Param('me') me: number,
-    @Param('target') target: number,
     @Body('status') status: 'ACCEPTED' | 'DECLINED',
+    @Body('user1') user1,
+    @Body('user2') user2,
   ) {
-    return this.gameRequestsService.updateInvite(me, target, status);
+    return this.gameRequestsService.updateInvite(status, user1, user2);
   }
 }

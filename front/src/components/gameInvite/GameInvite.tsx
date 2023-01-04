@@ -10,14 +10,17 @@ import {
   Text,
   useDisclosure,
 } from '@chakra-ui/react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { emptyUser } from '../../models/User';
 import { chatApi } from '../../services/api_index';
 import ChatApi from '../../services/ChatApi';
 
 export default function GameInvite(props: {}) {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [user, setUser] = useState(emptyUser());
   useEffect(() => {
-    ChatApi.subscribeGameInvite(() => {
+    ChatApi.subscribeGameInvite((user: any) => {
+      setUser({ ...user });
       onOpen();
     });
     return () => chatApi.unsubscribeGameInvite();
@@ -29,7 +32,7 @@ export default function GameInvite(props: {}) {
         <ModalHeader>Game invitation</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <Text>body</Text>
+          <Text>{user.login_intra}</Text>
         </ModalBody>
         <ModalFooter>
           <Button>Accept</Button>
