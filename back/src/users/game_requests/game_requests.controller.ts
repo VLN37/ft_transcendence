@@ -21,11 +21,11 @@ export class GameRequestsController {
 
   @Post()
   async invite(@Body('user') user: UserDto, @Param('target') target: number) {
-    return await this.gameRequestsService.invite(target, user);
+    return this.gameRequestsService.invite(target, user);
   }
 
   @Put()
-  updateInvite(
+  async updateInvite(
     @Body('status') status: 'ACCEPTED' | 'DECLINED',
     @Body('user1') user1,
     @Body('user2') user2,

@@ -1,4 +1,6 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
+import { MatchManager } from 'src/match-manager/match-manager';
+import { MemoryMatch } from 'src/match-manager/model/MemoryMatch';
 import { UserDto } from '../dto/user.dto';
 import { UsersService } from '../users.service';
 
@@ -13,10 +15,13 @@ export class GameRequestsService {
     status: string,
     user1: UserDto,
     user2: UserDto,
-    id: number,
+    id: string,
   ) => void | null = null;
 
-  constructor(private usersService: UsersService) {}
+  constructor(
+    @Inject(forwardRef(() => UsersService))
+    private matchManager: MatchManager,
+  ) {}
 
   setInviteNotify(callback: (receiver: number, user: UserDto) => void) {
     this.inviteNotifyService = callback;
@@ -27,7 +32,7 @@ export class GameRequestsService {
       status: string,
       user1: UserDto,
       user2: UserDto,
-      id: number,
+      id: string,
     ) => void,
   ) {
     this.updateNotifyService = callback;
@@ -38,8 +43,9 @@ export class GameRequestsService {
     return;
   }
 
-  updateInvite(status: string, user1: UserDto, user2: UserDto) {
-    this.updateNotifyService(status, user1, user2, 1);
+  async updateInvite(status: string, user1: UserDto, user2: UserDto) {
+    const match: MemoryMatch = await this.matchManager.createMatch(user1, user2);
+    this.updateNotifyService(status, user1, user2, match.id);
     return;
   }
 }

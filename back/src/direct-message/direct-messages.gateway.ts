@@ -160,7 +160,7 @@ export class DirectMessagesGateway
     status: string,
     user1: UserDto,
     user2: UserDto,
-    id: number,
+    id: string,
   ) {
     const receiverSocket1 = this.usersSocketId[user1.id];
     const receiverSocket2 = this.usersSocketId[user2.id];
