@@ -46,7 +46,7 @@ export default function GameInvite(props: {}) {
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent my={'auto'}>
         <ModalHeader>Game invitation</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
