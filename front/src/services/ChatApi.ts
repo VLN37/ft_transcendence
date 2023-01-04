@@ -64,6 +64,19 @@ class ChatApi {
     this.dmSocket?.off('chat', callback);
   }
 
+  subscribeGameInvite(callback: any) {
+    console.log('callback registered');
+    this.dmSocket?.on('invite', (response: any) => {
+      console.log('trigger activated');
+      callback(response.data);
+    })
+  }
+
+  unsubscribeGameInvite() {
+    console.log('game request listener removed');
+    this.dmSocket?.off('invite');
+  }
+
   subscribeJoin(callback: any) {
     async function updateUser() {
       await userStorage.updateUser();
