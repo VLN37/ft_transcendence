@@ -20,7 +20,7 @@ class MMApi {
   async sendGameRequest(user: User, recipient: number) {
     try {
       const response = await this.client.post(
-        `/matches/friendly/${recipient}`,
+        `/users/${recipient}/game_requests`,
         {
           user: user,
         },

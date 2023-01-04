@@ -11,17 +11,17 @@ import { FriendRequestsService } from './friend_requests/friend_requests.service
 import { FriendsController } from './friends/friends.controller';
 import { FriendService } from './friends/friends.service';
 import { JwtService } from '@nestjs/jwt';
+import { GameRequestsController } from './game_requests/game_requests.controller';
+import { GameRequestsService } from './game_requests/game_requests.service';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([User]),
-    ProfileModule,
-  ],
+  imports: [TypeOrmModule.forFeature([User]), ProfileModule],
   controllers: [
     UsersController,
     FriendsController,
     BlockedController,
     FriendRequestsController,
+    GameRequestsController,
   ],
   providers: [
     UsersService,
@@ -29,7 +29,14 @@ import { JwtService } from '@nestjs/jwt';
     BlockedService,
     FriendRequestsService,
     JwtService,
+    GameRequestsService,
   ],
-  exports: [UsersService, ProfileModule, FriendRequestsService, TypeOrmModule],
+  exports: [
+    UsersService,
+    GameRequestsService,
+    ProfileModule,
+    FriendRequestsService,
+    TypeOrmModule,
+  ],
 })
 export class UsersModule {}
