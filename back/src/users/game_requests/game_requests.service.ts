@@ -2,7 +2,6 @@ import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import { MatchManager } from 'src/match-manager/match-manager';
 import { MemoryMatch } from 'src/match-manager/model/MemoryMatch';
 import { UserDto } from '../dto/user.dto';
-import { UsersService } from '../users.service';
 
 @Injectable()
 export class GameRequestsService {
@@ -19,7 +18,7 @@ export class GameRequestsService {
   ) => void | null = null;
 
   constructor(
-    @Inject(forwardRef(() => UsersService))
+    @Inject(forwardRef(() => MatchManager))
     private matchManager: MatchManager,
   ) {}
 
