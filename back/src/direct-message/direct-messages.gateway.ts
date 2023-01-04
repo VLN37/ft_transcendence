@@ -151,7 +151,7 @@ export class DirectMessagesGateway
   pingGameRequest(receiver: number, user: UserDto) {
     const receiverSocket = this.usersSocketId[receiver];
     this.server.to(receiverSocket.toString()).emit('invite', {
-      user,
+      data: { user: user },
     });
   }
 
