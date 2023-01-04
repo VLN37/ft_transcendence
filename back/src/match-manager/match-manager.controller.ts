@@ -6,7 +6,12 @@ import {
   Headers,
   Query,
   UseInterceptors,
+  Post,
+  UseGuards,
+  Body,
 } from '@nestjs/common';
+import { Jwt2faAuthGuard } from 'src/auth/guard/jwt2fa.guard';
+import { UserDto } from 'src/users/dto/user.dto';
 import { UsersService } from 'src/users/users.service';
 import { rules } from './game/rules';
 import { MatchManager } from './match-manager';
@@ -62,5 +67,11 @@ export class MatchManagerController {
   @Get('rules')
   getRules() {
     return rules;
+  }
+
+  @UseGuards(Jwt2faAuthGuard)
+  @Post('friendly/:id')
+  gameRequest(@Body('user') user: UserDto, @Param('id') recipient: number) {
+    return this.matchManagerService.sendGameRequest(user, recipient);
   }
 }

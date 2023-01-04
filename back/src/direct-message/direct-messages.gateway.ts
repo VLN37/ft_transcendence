@@ -22,6 +22,7 @@ import { UsersService } from 'src/users/users.service';
 import { AvatarUploadService } from 'src/avatar-upload/avatar-upload.service';
 import { ChannelsService } from 'src/channels/channels.service';
 import { ChannelDto } from 'src/channels/dto/channel.dto';
+import { MatchManagerService } from 'src/match-manager/match-manager.service';
 
 @WebSocketGateway({
   namespace: '/direct_messages',
@@ -47,6 +48,7 @@ export class DirectMessagesGateway
     private usersService: UsersService,
     private avatarUploadService: AvatarUploadService,
     private channelsService: ChannelsService,
+    private matchManagerService: MatchManagerService,
   ) {}
 
   afterInit(_: Server) {
@@ -69,6 +71,7 @@ export class DirectMessagesGateway
     this.usersService.setNotify(this.pingUserUpdate.bind(this));
     this.avatarUploadService.setNotify(this.pingUserUpdate.bind(this));
     this.channelsService.setNotify(this.pingChannelUpdate.bind(this));
+    this.matchManagerService.setNotify(this.pingGameRequest.bind(this));
   }
 
   async handleConnection(client: Socket) {
@@ -141,6 +144,13 @@ export class DirectMessagesGateway
       channel,
     });
   }
+
+  pingGameRequest(receiver: number, user: UserDto) {
+    const receiverSocket = this.usersSocketId[receiver];
+    this.server.to(receiverSocket.toString()).emit('invite', {
+      user,
+    });
+  };
 
   private validateConnection(client: Socket) {
     const token = client.handshake.auth.token;
