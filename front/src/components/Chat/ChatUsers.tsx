@@ -14,7 +14,7 @@ import { useState } from 'react';
 import { Channel } from '../../models/Channel';
 import { TableUser } from '../../models/TableUser';
 import { emptyUser, User } from '../../models/User';
-import { channelApi } from '../../services/api_index';
+import { channelApi, mmApi } from '../../services/api_index';
 import userStorage from '../../services/userStorage';
 import { PublicProfile } from '../Profile/profile.public';
 
@@ -140,8 +140,20 @@ function UserMenu(props: {
     if (response.status == 200)
       props.channel.banned_users.splice(
         props.channel.banned_users.indexOf(props.user.id), 1
-      );
+    );
     setReload(!reload);
+  }
+
+  async function gameInvite() {
+    const response: any = await mmApi.sendGameRequest(me, props.user.id);
+    const status = response.status == 201 ? 'success' : 'error';
+    const message = response.status == 201 ? '' : response.data.message;
+    toast({
+      title: 'Game request sent',
+      status: status,
+      description: message,
+    });
+    // setReload(!reload);
   }
 
   const isMyself = me.id == props.user.id;
@@ -173,7 +185,7 @@ function UserMenu(props: {
         </MenuButton>
         <MenuList>
           <MenuItem onClick={onOpen}>view profile</MenuItem>
-          <MenuItem>invite to game</MenuItem>
+          <MenuItem onClick={gameInvite}>invite to game</MenuItem>
           {
             isMyself
               ? null
