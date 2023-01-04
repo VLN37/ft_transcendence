@@ -1,6 +1,6 @@
-import { AxiosError, AxiosInstance } from "axios";
-import { Socket } from "socket.io-client";
-import { User } from "../models/User";
+import { AxiosError, AxiosInstance } from 'axios';
+import { Socket } from 'socket.io-client';
+import { User } from '../models/User';
 import api from './api';
 import { Api } from './api';
 
@@ -25,6 +25,20 @@ class MMApi {
           user: user,
         },
       );
+      return response;
+    } catch (err) {
+      console.log(err);
+      return (err as AxiosError).response;
+    }
+  }
+
+  async updateGameRequest(status: string, user1: User, user2: User) {
+    try {
+      const response = await this.client.put(`/users/1/game_requests`, {
+        status: status,
+        user1: user1,
+        user2: user2,
+      });
       return response;
     } catch (err) {
       console.log(err);

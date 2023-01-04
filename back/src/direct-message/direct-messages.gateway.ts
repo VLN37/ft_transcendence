@@ -75,6 +75,9 @@ export class DirectMessagesGateway
     this.channelsService.setNotify(this.pingChannelUpdate.bind(this));
     this.matchManagerService.setNotify(this.pingGameRequest.bind(this));
     this.gameRequestsService.setInviteNotify(this.pingGameRequest.bind(this));
+    this.gameRequestsService.setUpdateNotify(
+      this.pingUpdateGameRequest.bind(this),
+    );
   }
 
   async handleConnection(client: Socket) {
@@ -150,22 +153,24 @@ export class DirectMessagesGateway
 
   pingGameRequest(receiver: number, user: UserDto) {
     const receiverSocket = this.usersSocketId[receiver];
-    this.server.to(receiverSocket.toString()).emit('invite', {data: user});
+    this.server.to(receiverSocket.toString()).emit('invite', { data: user });
   }
 
   pingUpdateGameRequest(
     status: string,
-    user1: number,
-    user2: number,
+    user1: UserDto,
+    user2: UserDto,
     id: number,
   ) {
-    const receiverSocket1 = this.usersSocketId[user1];
-    const receiverSocket2 = this.usersSocketId[user2];
+    const receiverSocket1 = this.usersSocketId[user1.id];
+    const receiverSocket2 = this.usersSocketId[user2.id];
     this.server
       .to([receiverSocket1.toString(), receiverSocket2.toString()])
       .emit('update', {
-        status,
-        id,
+        data: {
+          status,
+          id,
+        },
       });
   }
 

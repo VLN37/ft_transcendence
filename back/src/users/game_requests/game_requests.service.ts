@@ -13,6 +13,7 @@ export class GameRequestsService {
     status: string,
     user1: UserDto,
     user2: UserDto,
+    id: number,
   ) => void | null = null;
 
   constructor(private usersService: UsersService) {}
@@ -22,7 +23,12 @@ export class GameRequestsService {
   }
 
   setUpdateNotify(
-    callback: (status: string, user1: UserDto, user2: UserDto) => void,
+    callback: (
+      status: string,
+      user1: UserDto,
+      user2: UserDto,
+      id: number,
+    ) => void,
   ) {
     this.updateNotifyService = callback;
   }
@@ -33,9 +39,7 @@ export class GameRequestsService {
   }
 
   updateInvite(status: string, user1: UserDto, user2: UserDto) {
-    if (status == 'DECLINED') {
-      this.updateNotifyService(status, user1, user2);
-    }
+    this.updateNotifyService(status, user1, user2, 1);
     return;
   }
 }
