@@ -6,8 +6,7 @@ export class Tuple {
 export class MatchState {
   ball: {
     pos: Tuple;
-    dir: Tuple;
-    speed: number;
+    vel: Tuple;
   };
   pl: number;
   pr: number;
