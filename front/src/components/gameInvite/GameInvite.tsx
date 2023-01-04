@@ -19,8 +19,8 @@ export default function GameInvite(props: {}) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [user, setUser] = useState(emptyUser());
   useEffect(() => {
-    ChatApi.subscribeGameInvite((data: any) => {
-      setUser({ ...data.user });
+    ChatApi.subscribeGameInvite((user: any) => {
+      setUser({ ...user });
       onOpen();
     });
     return () => chatApi.unsubscribeGameInvite();
