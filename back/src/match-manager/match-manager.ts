@@ -134,7 +134,7 @@ export class MatchManager {
     const activeMatch = this.findMatchById(matchId);
 
     activeMatch.onServerNotify = () => {
-      notifyMatchState(activeMatch.match.state);
+      notifyMatchState(activeMatch.match.getCurrentState());
     };
 
     activeMatch.onMatchUpdate = () => {

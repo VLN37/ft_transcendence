@@ -63,6 +63,17 @@ export class MemoryMatch {
     this.ball.velocity = vec;
   }
 
+  getCurrentState(): MatchState {
+    return {
+      ball: {
+        pos: this.ball.position,
+        vel: this.ball.velocity,
+      },
+      pl: this.leftPaddle.y,
+      pr: this.rightPaddle.y,
+    };
+  }
+
   private increment = 1;
   update() {
     const deltaTime = this.getDeltaTime();
@@ -72,29 +83,29 @@ export class MemoryMatch {
     const deltaSpeed = ballSpeed * deltaTime;
     // this.state.p1 += this.increment;
     // this.state.p2 += this.increment;
-    this.state.ball.pos.x += this.state.ball.vel.x * deltaSpeed;
-    this.state.ball.pos.y += this.state.ball.vel.y * deltaSpeed;
-    this.state.pl = this.state.ball.pos.y;
-    this.state.pr = this.state.ball.pos.y;
+    this.ball.position.x += this.ball.velocity.x * deltaSpeed;
+    this.ball.position.y += this.ball.velocity.y * deltaSpeed;
+    this.leftPaddle.y = this.ball.position.y;
+    this.rightPaddle.y = this.ball.position.y;
 
     this.checkBallCollision();
   }
 
   private checkBallCollision() {
-    const { ball } = this.state;
+    const ball = this.ball;
 
     if (
-      (ball.pos.x <= rules.leftCollisionEdge && ball.vel.x < 0) ||
-      (ball.pos.x >= rules.rightCollisionEdge && ball.vel.x > 0)
+      (ball.position.x <= rules.leftCollisionEdge && ball.velocity.x < 0) ||
+      (ball.position.x >= rules.rightCollisionEdge && ball.velocity.x > 0)
     ) {
-      if (ball.vel.x < 0) {
-        const overflow = rules.leftCollisionEdge - ball.pos.x;
-        ball.pos.x = ball.pos.x + overflow * 2;
+      if (ball.velocity.x < 0) {
+        const overflow = rules.leftCollisionEdge - ball.position.x;
+        ball.position.x = ball.position.x + overflow * 2;
       } else {
-        const overflow = ball.pos.x - rules.rightCollisionEdge;
-        ball.pos.x = ball.pos.x - overflow * 2;
+        const overflow = ball.position.x - rules.rightCollisionEdge;
+        ball.position.x = ball.position.x - overflow * 2;
       }
-      this.state.ball.vel.x *= -1;
+      ball.velocity.x *= -1;
       this.increaseBallSpeed();
     }
     this.checkBallSideCollision();
@@ -102,69 +113,27 @@ export class MemoryMatch {
   }
 
   private checkBallSideCollision() {
-    const { ball } = this.state;
+    const ball = this.ball;
     if (
-      (ball.pos.y <= rules.topCollisionEdge && ball.vel.y < 0) ||
-      (ball.pos.y >= rules.bottomCollisionEdge && ball.vel.y > 0)
+      (ball.position.y <= rules.topCollisionEdge && ball.velocity.y < 0) ||
+      (ball.position.y >= rules.bottomCollisionEdge && ball.velocity.y > 0)
     ) {
-      if (ball.vel.y < 0) {
-        const overflow = rules.topCollisionEdge - ball.pos.y;
-        ball.pos.y = ball.pos.y + overflow * 2;
+      if (ball.velocity.y < 0) {
+        const overflow = rules.topCollisionEdge - ball.position.y;
+        ball.position.y = ball.position.y + overflow * 2;
       } else {
-        const overflow = ball.pos.y - rules.bottomCollisionEdge;
-        ball.pos.y = ball.pos.y - overflow * 2;
+        const overflow = ball.position.y - rules.bottomCollisionEdge;
+        ball.position.y = ball.position.y - overflow * 2;
       }
-      this.state.ball.vel.y *= -1;
+      ball.velocity.y *= -1;
     }
   }
 
-  private checkBallPlayerCollision() {
-    let leftPlayerCollided: boolean = false;
-    let rightPlayerCollided: boolean = false;
+  private checkBallPlayerCollision() {}
 
-    if (this.checkLeftPlayerBallCollision()) {
-      leftPlayerCollided = true;
-    }
+  private checkLeftPlayerBallCollision() {}
 
-    if (!leftPlayerCollided && this.checkRightPlayerBallCollision()) {
-      rightPlayerCollided = true;
-    }
-
-    if (leftPlayerCollided || rightPlayerCollided) {
-      this.state.ball.vel.x *= -1;
-      this.increaseBallSpeed();
-    }
-  }
-
-  private checkLeftPlayerBallCollision(): boolean {
-    const { ball, pl: leftPlayer } = this.state;
-
-    const playerBody = rules.player.leftLine + rules.player.width / 2;
-    if (ball.pos.x + rules.ball.radius < playerBody && ball.vel.x < 0) {
-      if (
-        ball.pos.y + rules.ball.radius < leftPlayer + rules.player.height / 2 &&
-        ball.pos.y + rules.ball.radius > leftPlayer - rules.player.height / 2
-      ) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  private checkRightPlayerBallCollision(): boolean {
-    const { ball, pr: rightPlayer } = this.state;
-
-    const playerBody = rules.player.rightLine - rules.player.width / 2;
-    if (ball.pos.x + rules.ball.radius > playerBody && ball.vel.x > 0) {
-      if (
-        ball.pos.y < rightPlayer + rules.player.height / 2 &&
-        ball.pos.y > rightPlayer - rules.player.height / 2
-      ) {
-        return true;
-      }
-    }
-    return false;
-  }
+  private checkRightPlayerBallCollision() {}
 
   private getDeltaTime(): number {
     const now = Date.now();
@@ -174,8 +143,8 @@ export class MemoryMatch {
   }
 
   private increaseBallSpeed() {
-    if (this.state.ball.speed < rules.ball.maxSpeed) {
-      this.state.ball.speed += 50;
+    if (this.ball.speed < rules.ball.maxSpeed) {
+      this.ball.speed += 50;
     }
   }
 }

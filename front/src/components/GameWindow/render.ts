@@ -41,10 +41,13 @@ let fps = 0;
 let distanceCounter = 0;
 let deltaSpeed = 0;
 export const printFps = (image: p5Types.Graphics, ball: Ball) => {
-  totalTime += image.deltaTime / 1000;
+  const deltaTime = image.deltaTime / 1000;
+  const ballSpeed = ball.velocity.mag();
+
+  totalTime += deltaTime;
   if (totalTime > 1) {
     totalTime = 0;
-    deltaSpeed = (ball.speed * image.deltaTime) / 1000;
+    deltaSpeed = ballSpeed * deltaTime;
     fps = frameCount;
     pxPerSecond = distanceCounter;
     distanceCounter = 0;
@@ -55,7 +58,7 @@ export const printFps = (image: p5Types.Graphics, ball: Ball) => {
   image.textSize(18);
   image.fill(40, 132, 183);
   image.text('fps: ' + fps.toFixed(2), 50, 40);
-  image.text('ball speed: ' + ball.speed, 50, 60);
+  image.text('ball speed: ' + ballSpeed, 50, 60);
   image.text('ball delta speed: ' + deltaSpeed.toFixed(2), 50, 80);
   image.text('ball distance in last 1s: ' + pxPerSecond.toFixed(2), 50, 100);
 };
@@ -66,8 +69,8 @@ export const drawBallVelocity = (image: p5Types.Graphics, ball: Ball) => {
   image.fill('green');
   image.strokeWeight(2);
   const line = {
-    x: ball.velocity.x * ball.radius * 2,
-    y: ball.velocity.y * ball.radius * 2,
+    x: ball.velocity.x / 10,
+    y: ball.velocity.y / 10,
   };
   image.translate(ball.position.x, ball.position.y);
   image.line(0, 0, line.x, line.y);
@@ -87,15 +90,16 @@ export const drawSpeedMeter = (
   image.rectMode('corner');
   image.fill(0);
   image.stroke(230, 150, 23);
+  const ballSpeed = ball.velocity.mag();
   const posX = 250;
   const posY = 30;
   const width = 250;
   const height = 15;
-  const speedRatio = ball.speed / rules.ball.maxSpeed;
+  const speedRatio = ballSpeed / rules.ball.maxSpeed;
   image.rect(posX, posY, width, height);
   image.stroke(0);
   image.fill(speedRatio * 255, 255 - speedRatio * 200, 13);
   image.rect(posX + 1, posY + 1, speedRatio * width, height - 2);
-  image.text(ball.speed + 'px/s', posX + width + 10, posY + height);
+  image.text(ballSpeed + 'px/s', posX + width + 10, posY + height);
   image.pop();
 };

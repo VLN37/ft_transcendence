@@ -6,7 +6,6 @@ export class Ball {
   public radius: number;
   public position: Point;
   public velocity: Vector;
-  public speed: number;
 
   constructor(rules: GameRules) {
     this.radius = rules.ball.radius;
@@ -14,10 +13,13 @@ export class Ball {
     this.position = new Point();
     this.position.x = rules.ball.startingPosition.x;
     this.position.y = rules.ball.startingPosition.y;
-    this.speed = rules.ball.startingSpeed;
   }
 
   update(deltaTime: number) {
-    this.position.addVector(this.velocity);
+    const deltaVector = new Vector(
+      this.velocity.x * deltaTime,
+      this.velocity.y * deltaTime,
+    );
+    this.position.addVector(deltaVector);
   }
 }

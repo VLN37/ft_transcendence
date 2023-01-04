@@ -39,26 +39,19 @@ export default (props: GameWindowProps) => {
   let leftPlayer = new Player(PlayerSide.LEFT, rules);
   let rightPlayer = new Player(PlayerSide.RIGHT, rules);
 
-  ball.speed = 300;
-  // ball.velocity = p5Types.Vector.random2D().normalize();
-  ball.velocity = new Vector(7, 1);
-
   const setup = (p5: p5Types, canvasParentRef: Element) => {
     updateWindowProportions();
     image = p5.createGraphics(rules.worldWidth, rules.worldHeight);
     p5.createCanvas(gameWindow.width, gameWindow.height).parent(
       canvasParentRef,
     );
-    p5.frameRate(60);
   };
 
   const listenGameState = (state: MatchState) => {
-    ball.speed = state.ball.speed;
-
     ball.position.x = state.ball.pos.x;
     ball.position.y = state.ball.pos.y;
-    ball.velocity.x = state.ball.dir.x;
-    ball.velocity.y = state.ball.dir.y;
+    ball.velocity.x = state.ball.vel.x;
+    ball.velocity.y = state.ball.vel.y;
 
     leftPlayer.y = state.pl;
     rightPlayer.y = state.pr;
@@ -96,7 +89,7 @@ export default (props: GameWindowProps) => {
   const handleInput = () => {};
 
   const updateWorld = () => {
-    ball.update(image.deltaTime);
+    ball.update(image.deltaTime / 1000);
   };
 
   const processGameLogic = () => {};

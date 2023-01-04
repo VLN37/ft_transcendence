@@ -3,8 +3,7 @@ import { Tuple } from './GameRules';
 export type MatchState = {
   ball: {
     pos: Tuple;
-    dir: Tuple;
-    speed: number;
+    vel: Tuple;
   };
   pl: number;
   pr: number;
