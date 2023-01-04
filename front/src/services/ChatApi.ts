@@ -65,9 +65,8 @@ class ChatApi {
   }
 
   subscribeGameInvite(callback: any) {
-    console.log('callback registered');
+    console.log('game request listener activated');
     this.dmSocket?.on('invite', (response: any) => {
-      console.log('trigger activated');
       callback(response.data);
     })
   }

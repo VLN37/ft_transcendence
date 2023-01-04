@@ -17,9 +17,7 @@ import ChatApi from '../../services/ChatApi';
 export default function GameInvite(props: {}) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   useEffect(() => {
-    console.log('listening to game requests');
     ChatApi.subscribeGameInvite(() => {
-      console.log('callback called');
       onOpen();
     });
     return () => chatApi.unsubscribeGameInvite();
