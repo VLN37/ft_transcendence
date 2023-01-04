@@ -50,11 +50,11 @@ export default function GameInvite(props: {}) {
         <ModalHeader>Game invitation</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <Text>{user.login_intra}</Text>
+          <Text><b>{user.login_intra}</b> invited you to play a friendly match</Text>
         </ModalBody>
         <ModalFooter>
-          <Button onClick={() => updateGameRequest('ACCEPTED')}>Accept</Button>
-          <Button onClick={() => updateGameRequest('DECLINED')}>Decline</Button>
+          <Button bg={'red.500'} onClick={() => updateGameRequest('DECLINED')}>Decline</Button>
+          <Button bg={'green.500'} ml={3} onClick={() => updateGameRequest('ACCEPTED')}>Accept</Button>
         </ModalFooter>
       </ModalContent>
     </Modal>
