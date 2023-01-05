@@ -28,6 +28,10 @@ export function handleBallLeftPaddleCollision(
     ball.getLowerBorder() >= player.getUpperBorder() &&
     ball.getUpperBorder() <= player.getLowerBorder()
   ) {
+    const penetrationDepth = player.getRightBorder() - ball.getLeftBorder();
+    if (penetrationDepth > player.width) {
+      return;
+    }
     ball.velocity.x *= -1;
   }
 }
@@ -44,6 +48,11 @@ export function handleBallRightPaddleCollision(
     ball.getLowerBorder() >= player.getUpperBorder() &&
     ball.getUpperBorder() <= player.getLowerBorder()
   ) {
+    const penetrationDepth = ball.getRightBorder() - player.getLeftBorder();
+    if (penetrationDepth > player.width) {
+      return;
+    }
+    ball.position.x -= penetrationDepth;
     ball.velocity.x *= -1;
   }
 }

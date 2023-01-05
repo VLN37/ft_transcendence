@@ -40,8 +40,8 @@ export default (props: GameWindowProps) => {
   let ball = new Ball(rules);
   ball.velocity = Vector.random().mult(700);
   ball.velocity.x = -200;
-  ball.velocity.y = 72;
-  ball.velocity.normalize().mult(500);
+  ball.velocity.y = 216;
+  ball.velocity.normalize().mult(100);
   let leftPlayer = new Player(PlayerSide.LEFT, rules);
   let rightPlayer = new Player(PlayerSide.RIGHT, rules);
 
