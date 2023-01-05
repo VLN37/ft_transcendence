@@ -30,8 +30,12 @@ export const drawPlayer = (
 export const drawBall = (image: p5Types.Graphics, ball: Ball) => {
   image.fill(100, 80, 150);
   image.colorMode(image.RGB, 255);
-  const size = ball.radius * 2;
-  image.ellipse(ball.position.x, ball.position.y, size, size);
+  image.rect(
+    ball.position.x - ball.width / 2,
+    ball.position.y - ball.height / 2,
+    ball.width,
+    ball.height,
+  );
 };
 
 let totalTime = 0;
@@ -76,7 +80,7 @@ export const drawBallVelocity = (image: p5Types.Graphics, ball: Ball) => {
   image.line(0, 0, line.x, line.y);
   image.rotate(ball.velocity.heading());
   let arrowSize = 7;
-  image.translate(ball.velocity.mag() * ball.radius * 2 - arrowSize, 0);
+  image.translate(ball.velocity.mag() * ball.width * 2 - arrowSize, 0);
   image.triangle(0, arrowSize / 2, 0, -arrowSize / 2, arrowSize, 0);
   image.pop();
 };

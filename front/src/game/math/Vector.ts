@@ -51,4 +51,10 @@ export class Vector {
     this.y = Math.sin(newHeading) * mag;
     return this;
   }
+
+  static random(): Vector {
+    const x = Math.random() * 2 - 1;
+    const y = Math.random() * 2 - 1;
+    return new Vector(x, y).normalize();
+  }
 }

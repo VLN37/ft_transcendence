@@ -1,4 +1,4 @@
-import { GameRules } from './GameRules';
+import { GameRules } from '../rules';
 
 export enum PlayerSide {
   RIGHT,

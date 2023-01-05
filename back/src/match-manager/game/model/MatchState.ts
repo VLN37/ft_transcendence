@@ -1,4 +1,4 @@
-import { Tuple } from './GameRules';
+import { Tuple } from '../rules';
 
 export type MatchState = {
   ball: {

@@ -10,7 +10,7 @@ export type GameRules = {
   ball: {
     startingPosition: Tuple;
     startingSpeed: number;
-    radius: number;
+    size: number;
     maxSpeed: number;
   };
   player: {
@@ -19,7 +19,7 @@ export type GameRules = {
     height: number;
     leftLine: number;
     rightLine: number;
-  }
+  };
   topCollisionEdge: number;
   bottomCollisionEdge: number;
   leftCollisionEdge: number;

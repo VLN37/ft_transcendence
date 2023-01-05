@@ -13,11 +13,12 @@ import {
   drawSpeedMeter,
   printFps,
 } from './render';
+import { Vector } from '../../game/math/Vector';
 import {
   handleBallCollision,
-  handleBallPaddleCollision,
-} from '../../game/collisions';
-import { Vector } from '../../game/math/Vector';
+  handleBallLeftPaddleCollision,
+  handleBallRightPaddleCollision,
+} from '../../game/math/collision';
 
 export type GameWindowProps = {
   gameApi: GameApi;
@@ -37,6 +38,9 @@ export default (props: GameWindowProps) => {
   let image: p5Types.Graphics;
 
   let ball = new Ball(rules);
+  ball.velocity = Vector.random().mult(700);
+  ball.velocity.x = -200;
+  ball.velocity.y = 31;
   let leftPlayer = new Player(PlayerSide.LEFT, rules);
   let rightPlayer = new Player(PlayerSide.RIGHT, rules);
 
@@ -97,20 +101,20 @@ export default (props: GameWindowProps) => {
 
   const handleCollisions = () => {
     handleBallCollision(ball, rules);
-    handleBallPaddleCollision(ball, leftPlayer, rules);
-    handleBallPaddleCollision(ball, rightPlayer, rules);
+    handleBallLeftPaddleCollision(ball, leftPlayer, rules);
+    handleBallRightPaddleCollision(ball, rightPlayer, rules);
   };
 
   const render = (p5: p5Types) => {
     image.background(0);
     drawBall(image, ball);
-    drawBallVelocity(image, ball);
+    // drawBallVelocity(image, ball);
     drawPlayer(image, rightPlayer, rules);
     drawPlayer(image, leftPlayer, rules);
     drawSpeedMeter(image, ball, rules);
     resizeIfNecessary(p5);
     printFps(image, ball);
-    drawBallCoords(image, ball);
+    // drawBallCoords(image, ball);
     p5.image(image, 0, 0, p5.width, p5.height);
   };
 

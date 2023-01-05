@@ -1,15 +1,15 @@
 import { Point } from '../math/Point';
 import { Vector } from '../math/Vector';
-import { GameRules } from './GameRules';
+import { GameRules } from '../rules';
 
 export class Ball {
-  public radius: number;
+  public width: number;
+  public height: number;
   public position: Point;
   public velocity: Vector;
   public speed: number;
 
   constructor(rules: GameRules) {
-    this.radius = rules.ball.radius;
     this.velocity = new Vector();
     this.position = new Point();
     this.position.x = rules.ball.startingPosition.x;

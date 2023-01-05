@@ -3,12 +3,14 @@ import { Vector } from '../math/Vector';
 import { GameRules } from './GameRules';
 
 export class Ball {
-  public radius: number;
+  public width: number;
+  public height: number;
   public position: Point;
   public velocity: Vector;
 
   constructor(rules: GameRules) {
-    this.radius = rules.ball.radius;
+    this.width = rules.ball.size;
+    this.height = rules.ball.size;
     this.velocity = new Vector();
     this.position = new Point();
     this.position.x = rules.ball.startingPosition.x;
@@ -21,5 +23,21 @@ export class Ball {
       this.velocity.y * deltaTime,
     );
     this.position.addVector(deltaVector);
+  }
+
+  getLeftBorder() {
+    return this.position.x - this.width / 2;
+  }
+
+  getRightBorder() {
+    return this.position.x + this.width / 2;
+  }
+
+  getUpperBorder() {
+    return this.position.y - this.height / 2;
+  }
+
+  getLowerBorder() {
+    return this.position.y + this.height / 2;
   }
 }

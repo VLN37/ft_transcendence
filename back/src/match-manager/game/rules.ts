@@ -1,6 +1,6 @@
 const WIDTH = 858;
 const HEIGHT = 525;
-const BALL_RADIUS = 14;
+const BALL_SIZE = 20;
 const BALL_INITIAL_SPEED = 250; // world units per second
 
 export const UPDATES_PER_SECOND = 60;
@@ -18,7 +18,7 @@ export type GameRules = {
   ball: {
     startingPosition: Tuple;
     startingSpeed: number;
-    radius: number;
+    size: number;
     maxSpeed: number;
   };
   player: {
@@ -44,7 +44,7 @@ export const rules: GameRules = {
       y: HEIGHT / 2,
     },
     startingSpeed: BALL_INITIAL_SPEED,
-    radius: BALL_RADIUS,
+    size: BALL_SIZE,
     maxSpeed: 1000,
   },
   player: {
@@ -54,8 +54,8 @@ export const rules: GameRules = {
     leftLine: 20,
     rightLine: WIDTH - 20,
   },
-  topCollisionEdge: BALL_RADIUS,
-  bottomCollisionEdge: HEIGHT - BALL_RADIUS,
-  leftCollisionEdge: BALL_RADIUS,
-  rightCollisionEdge: WIDTH - BALL_RADIUS,
+  topCollisionEdge: BALL_SIZE / 2,
+  bottomCollisionEdge: HEIGHT - BALL_SIZE / 2,
+  leftCollisionEdge: BALL_SIZE / 2,
+  rightCollisionEdge: WIDTH - BALL_SIZE / 2,
 };
