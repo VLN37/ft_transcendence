@@ -1,9 +1,8 @@
-import { CheckIcon, CloseIcon, StarIcon, ViewOffIcon } from '@chakra-ui/icons';
+import { CheckIcon, CloseIcon, ViewOffIcon } from '@chakra-ui/icons';
 import {
   Box,
   Flex,
   Icon,
-  IconButton,
   Menu,
   MenuButton,
   MenuItem,
@@ -14,7 +13,6 @@ import {
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Channel } from '../../models/Channel';
 import { TableUser } from '../../models/TableUser';
 import { emptyUser, User } from '../../models/User';
 import { channelApi, chatApi, userApi } from '../../services/api_index';
@@ -192,10 +190,7 @@ function PendingRequestMenu(props: {
   )
 }
 
-export function DmUsers(props: {
-  users: User[],
-  requests: User[]
-}) {
+export function DmUsers() {
   const [reload, setReload] = useState<boolean>(false);
   const [me, setMe] = useState<User>(
     userStorage.getUser() || emptyUser()

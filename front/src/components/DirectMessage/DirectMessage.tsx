@@ -134,10 +134,7 @@ export default function DirectMessage(props: any) {
         <ChatTitle>{chatTitle}</ChatTitle>
       </GridItem>
       <GridItem borderRadius={'5px'} rowSpan={11} colSpan={2} bg="gray.700">
-        <DmUsers
-          users={userStorage.getUser()?.friends || []}
-          requests={userStorage.getUser()?.friend_requests || []}
-        />
+        <DmUsers />
       </GridItem>
       <GridItem
         borderRadius={'5px'}
