@@ -15,7 +15,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TableUser } from '../../models/TableUser';
 import { emptyUser, User } from '../../models/User';
-import { channelApi, chatApi, userApi } from '../../services/api_index';
+import { channelApi, chatApi, mmApi, userApi } from '../../services/api_index';
 import userStorage from '../../services/userStorage';
 import { PublicProfile } from '../Profile/profile.public';
 
@@ -88,6 +88,17 @@ function UserDmMenu(props: {
     }
   }
 
+  async function gameInvite() {
+    const response: any = await mmApi.sendGameRequest(props.me, props.user.id);
+    const status = response.status == 201 ? 'success' : 'error';
+    const message = response.status == 201 ? '' : response.data.message;
+    toast({
+      title: 'Game request sent',
+      status: status,
+      description: message,
+    });
+  }
+
   const isMyself = props.me.id == props.user.id;
   const isBlocked = props.me.blocked.find((user) => props.user.id == user.id);
   let color;
@@ -115,7 +126,7 @@ function UserDmMenu(props: {
           <MenuItem onClick={() => navigate(`/dm?user=${props.user.id}`)}>
             send message
           </MenuItem>
-          <MenuItem>invite to game</MenuItem>
+          <MenuItem onClick={gameInvite}>invite to game</MenuItem>
           <MenuItem onClick={removeFriend}>remove friend</MenuItem>
           {
             isMyself
