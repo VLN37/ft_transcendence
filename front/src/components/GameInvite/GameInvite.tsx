@@ -63,11 +63,10 @@ export default function GameInvite(props: {}) {
   });
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal closeOnOverlayClick={false} isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent my={'auto'}>
         <ModalHeader>Game invitation</ModalHeader>
-        <ModalCloseButton />
         <ModalBody>
           <Flex>
           <Image

@@ -175,7 +175,6 @@ function PendingRequestMenu(props: {
     }
   }
 
-
   return (
     <Flex
       padding={1}
@@ -202,19 +201,18 @@ function PendingRequestMenu(props: {
 }
 
 export function DmUsers() {
-  const [reload, setReload] = useState<boolean>(false);
   const [me, setMe] = useState<User>(
     userStorage.getUser() || emptyUser()
   );
   const [requests, setRequests] = useState<User[]>(
     userStorage.getUser()?.friend_requests || []
   );
+
   async function updateFriends(data: any) {
     // for some reason this causes duplicate entries
     // me.friend_requests.push(data.user);
     // userStorage.saveUser(me);
 
-    // console.log('callback called: ', data.user);
     me.friend_requests.push(data.user);
     userStorage.saveUser(me);
     setMe({... me});
@@ -249,6 +247,7 @@ export function DmUsers() {
     ></UserDmMenu>
     );
   });
+
   const requestList = me.friend_requests.map((user: User, i: number) => {
     const tableuser = TableUser(user);
     return <PendingRequestMenu
@@ -259,6 +258,7 @@ export function DmUsers() {
       setMe={setMe}
     />
   })
+
   return (
     <>
       <Text as={'b'} paddingLeft={1}>Friends</Text>
@@ -270,4 +270,5 @@ export function DmUsers() {
       {requestList}
     </>
   );
+
 }
