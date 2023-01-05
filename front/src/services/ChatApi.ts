@@ -60,8 +60,9 @@ class ChatApi {
     this.channelSocket?.off('chat', callback);
   }
 
-  unsubscribeDirectMessage(callback: any) {
-    this.dmSocket?.off('chat', callback);
+  unsubscribeDirectMessage() {
+    this.dmSocket?.off('chat');
+	this.dmSocket?.removeAllListeners();
   }
 
   subscribeGameInvite(callback: any) {
