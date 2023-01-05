@@ -35,7 +35,7 @@ export class FriendRequestsController {
   @Put(':target')
   async updateRequest(
     @Param('me') me: number,
-    @Param('him') him: number,
+    @Param('target') him: number,
     @Body('status') status: 'ACCEPTED' | 'DECLINED',
   ) {
     return await this.friendRequestsService.updateRequest(me, him, status);

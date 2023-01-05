@@ -15,6 +15,7 @@ import {
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import GameInvite from '../../components/GameInvite/GameInvite';
 import MatchFinder from '../../components/MatchFinder';
 import NeonButton from '../../components/NeonButton';
 import { Profile } from '../../components/Profile/profile';
@@ -124,6 +125,7 @@ export default function Layout({ setUser }: any) {
                   ) : null}
                 </Link>
               </Box>
+              <GameInvite />
               <Profile />
               <Button
                 marginY={'auto'}

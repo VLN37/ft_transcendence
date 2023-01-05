@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AvatarUploadModule } from 'src/avatar-upload/avatar-upload.module';
 import { ChannelsModule } from 'src/channels/channels.module';
 import { DirectMessages } from 'src/entities/direct_messages.entity';
+import { MatchManagerModule } from 'src/match-manager/match-manager.module';
 import { UsersModule } from 'src/users/users.module';
 import { DirectMessagesController } from './direct-messages.controller';
 import { DirectMessagesGateway } from './direct-messages.gateway';
@@ -15,7 +16,8 @@ import { DirectMessagesService } from './direct-messages.service';
     JwtModule.register({}),
     UsersModule,
     AvatarUploadModule,
-	ChannelsModule
+	  ChannelsModule,
+    MatchManagerModule,
   ],
   controllers: [DirectMessagesController],
   providers: [DirectMessagesService, DirectMessagesGateway],

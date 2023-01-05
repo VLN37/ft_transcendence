@@ -74,13 +74,13 @@ const AuthCallback = () => {
   };
 
   const onClose = () => {
-    console.log('closing modal');
+    // console.log('closing modal');
     setIsModalOpen(false);
     setLoading(false);
   };
 
   const start2faFlow = () => {
-    console.log('opening modal');
+    // console.log('opening modal');
     setIsModalOpen(true);
   };
 

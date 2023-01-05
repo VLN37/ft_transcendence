@@ -1,9 +1,8 @@
-import { CheckIcon, CloseIcon, StarIcon, ViewOffIcon } from '@chakra-ui/icons';
+import { CheckIcon, CloseIcon, ViewOffIcon } from '@chakra-ui/icons';
 import {
   Box,
   Flex,
   Icon,
-  IconButton,
   Menu,
   MenuButton,
   MenuItem,
@@ -14,10 +13,9 @@ import {
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Channel } from '../../models/Channel';
 import { TableUser } from '../../models/TableUser';
 import { emptyUser, User } from '../../models/User';
-import { channelApi, chatApi, userApi } from '../../services/api_index';
+import { channelApi, chatApi, mmApi, userApi } from '../../services/api_index';
 import userStorage from '../../services/userStorage';
 import { PublicProfile } from '../Profile/profile.public';
 
@@ -90,6 +88,17 @@ function UserDmMenu(props: {
     }
   }
 
+  async function gameInvite() {
+    const response: any = await mmApi.sendGameRequest(props.me, props.user.id);
+    const status = response.status == 201 ? 'success' : 'error';
+    const message = response.status == 201 ? '' : response.data.message;
+    toast({
+      title: 'Game request sent',
+      status: status,
+      description: message,
+    });
+  }
+
   const isMyself = props.me.id == props.user.id;
   const isBlocked = props.me.blocked.find((user) => props.user.id == user.id);
   let color;
@@ -117,7 +126,7 @@ function UserDmMenu(props: {
           <MenuItem onClick={() => navigate(`/dm?user=${props.user.id}`)}>
             send message
           </MenuItem>
-          <MenuItem>invite to game</MenuItem>
+          <MenuItem onClick={gameInvite}>invite to game</MenuItem>
           <MenuItem onClick={removeFriend}>remove friend</MenuItem>
           {
             isMyself
@@ -166,7 +175,6 @@ function PendingRequestMenu(props: {
     }
   }
 
-
   return (
     <Flex
       padding={1}
@@ -192,23 +200,19 @@ function PendingRequestMenu(props: {
   )
 }
 
-export function DmUsers(props: {
-  users: User[],
-  requests: User[]
-}) {
-  const [reload, setReload] = useState<boolean>(false);
+export function DmUsers() {
   const [me, setMe] = useState<User>(
     userStorage.getUser() || emptyUser()
   );
   const [requests, setRequests] = useState<User[]>(
     userStorage.getUser()?.friend_requests || []
   );
+
   async function updateFriends(data: any) {
     // for some reason this causes duplicate entries
     // me.friend_requests.push(data.user);
     // userStorage.saveUser(me);
 
-    // console.log('callback called: ', data.user);
     me.friend_requests.push(data.user);
     userStorage.saveUser(me);
     setMe({... me});
@@ -243,6 +247,7 @@ export function DmUsers(props: {
     ></UserDmMenu>
     );
   });
+
   const requestList = me.friend_requests.map((user: User, i: number) => {
     const tableuser = TableUser(user);
     return <PendingRequestMenu
@@ -253,6 +258,7 @@ export function DmUsers(props: {
       setMe={setMe}
     />
   })
+
   return (
     <>
       <Text as={'b'} paddingLeft={1}>Friends</Text>
@@ -264,4 +270,5 @@ export function DmUsers(props: {
       {requestList}
     </>
   );
+
 }

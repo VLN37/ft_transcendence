@@ -13,10 +13,7 @@ import { FriendService } from './friends/friends.service';
 import { JwtService } from '@nestjs/jwt';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([User]),
-    ProfileModule,
-  ],
+  imports: [TypeOrmModule.forFeature([User]), ProfileModule],
   controllers: [
     UsersController,
     FriendsController,

@@ -10,8 +10,13 @@ import { MatchManagerService } from './match-manager.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Match]), UsersModule],
-  providers: [MatchManagerService, MatchManagerGateway, MatchManager, JwtService],
-  exports: [MatchManager],
+  providers: [
+    MatchManagerService,
+    MatchManagerGateway,
+    MatchManager,
+    JwtService,
+  ],
+  exports: [MatchManager, MatchManagerService],
   controllers: [MatchManagerController],
 })
 export class MatchManagerModule {}

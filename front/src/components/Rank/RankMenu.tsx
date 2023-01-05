@@ -10,7 +10,7 @@ import {
 } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 import { emptyUser, User } from '../../models/User';
-import { api, chatApi } from '../../services/api_index';
+import { userApi } from '../../services/api_index';
 import userStorage from '../../services/userStorage';
 import { MatchHistory } from '../matchHistory/MatchHistory';
 
@@ -40,32 +40,19 @@ function CustomToastExample() {
 }
 
 export function RankMenu(props: any) {
-  const url = `${process.env.REACT_APP_BACK_HOSTNAME}/users/${props.id}/friend_requests`;
   const toast = useToast();
+  const user: User = userStorage.getUser() || emptyUser();
   let navigate = useNavigate();
   let response;
 
   async function clickCallback() {
-    const user: User = userStorage.getUser() || emptyUser();
+    response = await userApi.sendFriendRequest(user.id, props.id);
 
-    try {
-      response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/JSON',
-        },
-        body: JSON.stringify({
-          user_id: user.id,
-        }),
-      });
-    } catch (error) {
-      return;
-    }
+    const status = response?.status == 200 ? 'success' : 'error';
+    const message = response?.status == 200 ? '' : response?.data.message;
 
-    const body = await response.json();
-    const status = response.ok ? 'success' : 'error';
-    const message = response.ok ? '' : body.message;
-    if (response.ok) await userStorage.updateUser();
+    if (response?.status == 200) await userStorage.updateUser();
+
     toast({
       title: 'Friend request sent',
       status: status,
@@ -74,7 +61,6 @@ export function RankMenu(props: any) {
   }
 
   function sendUserMessage() {
-    // chatApi.setDMSocket(api);
     navigate(`/dm?user=${props.id}`);
   }
 

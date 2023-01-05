@@ -64,7 +64,7 @@ function UserComp(user: User) {
           bg={'gray.800'}
           height={'100%'}
         >
-          <DmUsers users={user.friends} requests={user.friend_requests} />
+          <DmUsers />
         </Box>
       </Flex>
       <Flex flex={5} flexDirection={'column'}>

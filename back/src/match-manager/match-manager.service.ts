@@ -1,17 +1,46 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Match } from 'src/entities/match.entity';
+import { UserDto } from 'src/users/dto/user.dto';
 import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
+import { MatchManager } from './match-manager';
+import { MemoryMatch } from './model/MemoryMatch';
 
 @Injectable()
 export class MatchManagerService {
   private readonly logger = new Logger(MatchManagerService.name);
+  private inviteNotifyService: (
+    receiver: number,
+    user: UserDto,
+  ) => void | null = null;
+  private updateNotifyService: (
+    status: string,
+    user1: UserDto,
+    user2: UserDto,
+    id: string,
+  ) => void | null = null;
+
+  setInviteNotify(callback: (receiver: number, user: UserDto) => void) {
+    this.inviteNotifyService = callback;
+  }
+
+  setUpdateNotify(
+    callback: (
+      status: string,
+      user1: UserDto,
+      user2: UserDto,
+      id: string,
+    ) => void,
+  ) {
+    this.updateNotifyService = callback;
+  }
 
   constructor(
     @InjectRepository(Match)
     private matchRepository: Repository<Match>,
     private usersService: UsersService,
+	private matchManager: MatchManager
   ) {}
 
   async getLiveMatches(qty: number): Promise<Match[]> {
@@ -63,5 +92,19 @@ export class MatchManagerService {
     });
     this.logger.debug('Returning user matches');
     return matches;
+  }
+
+  async invite(target: number, user: UserDto) {
+    this.inviteNotifyService(target, user);
+    return;
+  }
+
+  async updateInvite(status: string, user1: UserDto, user2: UserDto) {
+    const match: MemoryMatch = await this.matchManager.createMatch(
+      user1,
+      user2,
+    );
+    this.updateNotifyService(status, user1, user2, match.id);
+    return;
   }
 }

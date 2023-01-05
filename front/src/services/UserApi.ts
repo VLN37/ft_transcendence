@@ -42,6 +42,21 @@ class UserApi {
     }
   }
 
+  async sendFriendRequest(me: number, target: number) {
+    try {
+      const response = await this.client.post(
+        `/users/${target}/friend_requests`,
+        {
+          user_id: me,
+        },
+      );
+      return response;
+    } catch (err) {
+      console.log(err);
+      return (err as AxiosError).response;
+    }
+  }
+
   async updateFriendRequest(me: number, target: number, status: string) {
     try {
       const response = await this.client.put(

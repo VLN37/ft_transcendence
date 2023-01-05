@@ -131,10 +131,10 @@ export default function MatchFinder() {
           <AlertDialogCloseButton />
           <AlertDialogBody>Are you ready?</AlertDialogBody>
           <AlertDialogFooter>
-            <Button ref={cancelRef} onClick={handleDismissMatch}>
-              Dismiss
+            <Button bg={'red.500'} ref={cancelRef} onClick={handleDismissMatch}>
+              Decline
             </Button>
-            <Button onClick={handleAcceptMatch} colorScheme="red" ml={3}>
+            <Button bg={'green.500'} onClick={handleAcceptMatch} ml={3}>
               Accept
             </Button>
           </AlertDialogFooter>

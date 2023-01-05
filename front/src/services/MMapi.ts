@@ -1,5 +1,6 @@
-import { AxiosError, AxiosInstance } from "axios";
-import { Socket } from "socket.io-client";
+import { AxiosError, AxiosInstance } from 'axios';
+import { Socket } from 'socket.io-client';
+import { User } from '../models/User';
 import api from './api';
 import { Api } from './api';
 
@@ -16,11 +17,40 @@ class MMApi {
     this.matchMakingSocket = instance.getMatchMakingSocket();
   }
 
+  async sendGameRequest(user: User, recipient: number) {
+    try {
+      const response = await this.client.post(
+        `/matches/friendly/${recipient}`,
+        {
+          user: user,
+        },
+      );
+      return response;
+    } catch (err) {
+      console.log(err);
+      return (err as AxiosError).response;
+    }
+  }
+
+  async updateGameRequest(status: string, user1: User, user2: User) {
+    try {
+      const response = await this.client.put(`/matches/friendly`, {
+        status: status,
+        user1: user1,
+        user2: user2,
+      });
+      return response;
+    } catch (err) {
+      console.log(err);
+      return (err as AxiosError).response;
+    }
+  }
+
   findMatch(
     type: 'CLASSIC' | 'TURBO',
     onMatchFound: Function,
     onError?: Function,
-    ) {
+  ) {
     // console.log('match type: ' + type);
 
     const matchFound = 'match-found';
