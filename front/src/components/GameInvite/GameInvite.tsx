@@ -9,6 +9,7 @@ import {
   ModalOverlay,
   Text,
   useDisclosure,
+  useToast,
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -23,6 +24,7 @@ export default function GameInvite(props: {}) {
   const [user, setUser] = useState(emptyUser());
   const me: User = userStorage.getUser() || emptyUser();
   let navigate = useNavigate();
+  const toast = useToast();
 
   const updateGameRequest = (status: string) => {
     MMapi.updateGameRequest(status, user, me);
@@ -34,12 +36,27 @@ export default function GameInvite(props: {}) {
       onOpen();
     });
     ChatApi.subscribeGameUpdate((data: any) => {
-      if (data.status == 'DECLINED') onClose();
-      if (data.status == 'ACCEPTED') navigate(`/match/${data.id}`);
+      if (data.status == 'DECLINED') {
+        toast({
+          title: 'Friendly match invitation declined',
+          status: 'warning',
+        })
+        onClose();
+      };
+      if (data.status == 'ACCEPTED') {
+        toast({
+          title: 'Friendly match accepted',
+          status: 'success',
+          description: 'redirecting in 5 seconds',
+        });
+        setTimeout(() => {
+          navigate(`/match/${data.id}`);
+        }, 5000);
+      };
     });
     return () => {
       chatApi.unsubscribeGameInvite();
-	  chatApi.unsubscribeGameUpdate();
+      chatApi.unsubscribeGameUpdate();
     };
   });
 
@@ -50,11 +67,21 @@ export default function GameInvite(props: {}) {
         <ModalHeader>Game invitation</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <Text><b>{user.login_intra}</b> invited you to play a friendly match</Text>
+          <Text>
+            <b>{user.login_intra}</b> invited you to a friendly match
+          </Text>
         </ModalBody>
         <ModalFooter>
-          <Button bg={'red.500'} onClick={() => updateGameRequest('DECLINED')}>Decline</Button>
-          <Button bg={'green.500'} ml={3} onClick={() => updateGameRequest('ACCEPTED')}>Accept</Button>
+          <Button bg={'red.500'} onClick={() => updateGameRequest('DECLINED')}>
+            Decline
+          </Button>
+          <Button
+            bg={'green.500'}
+            ml={3}
+            onClick={() => updateGameRequest('ACCEPTED')}
+          >
+            Accept
+          </Button>
         </ModalFooter>
       </ModalContent>
     </Modal>
