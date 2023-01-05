@@ -1,4 +1,4 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Match } from 'src/entities/match.entity';
@@ -9,8 +9,13 @@ import { MatchManager } from './match-manager';
 import { MatchManagerService } from './match-manager.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Match]), forwardRef(() => UsersModule)],
-  providers: [MatchManagerService, MatchManagerGateway, MatchManager, JwtService],
+  imports: [TypeOrmModule.forFeature([Match]), UsersModule],
+  providers: [
+    MatchManagerService,
+    MatchManagerGateway,
+    MatchManager,
+    JwtService,
+  ],
   exports: [MatchManager, MatchManagerService],
   controllers: [MatchManagerController],
 })

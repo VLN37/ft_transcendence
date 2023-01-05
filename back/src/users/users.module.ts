@@ -1,4 +1,4 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -11,18 +11,14 @@ import { FriendRequestsService } from './friend_requests/friend_requests.service
 import { FriendsController } from './friends/friends.controller';
 import { FriendService } from './friends/friends.service';
 import { JwtService } from '@nestjs/jwt';
-import { GameRequestsController } from './game_requests/game_requests.controller';
-import { GameRequestsService } from './game_requests/game_requests.service';
-import { MatchManagerModule } from 'src/match-manager/match-manager.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User]), ProfileModule, forwardRef(() => MatchManagerModule)],
+  imports: [TypeOrmModule.forFeature([User]), ProfileModule],
   controllers: [
     UsersController,
     FriendsController,
     BlockedController,
     FriendRequestsController,
-    GameRequestsController,
   ],
   providers: [
     UsersService,
@@ -30,14 +26,7 @@ import { MatchManagerModule } from 'src/match-manager/match-manager.module';
     BlockedService,
     FriendRequestsService,
     JwtService,
-    GameRequestsService
   ],
-  exports: [
-    UsersService,
-    GameRequestsService,
-    ProfileModule,
-    FriendRequestsService,
-    TypeOrmModule,
-  ],
+  exports: [UsersService, ProfileModule, FriendRequestsService, TypeOrmModule],
 })
 export class UsersModule {}

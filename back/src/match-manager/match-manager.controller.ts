@@ -9,6 +9,7 @@ import {
   Post,
   UseGuards,
   Body,
+  Put,
 } from '@nestjs/common';
 import { Jwt2faAuthGuard } from 'src/auth/guard/jwt2fa.guard';
 import { UserDto } from 'src/users/dto/user.dto';
@@ -70,8 +71,18 @@ export class MatchManagerController {
   }
 
   @UseGuards(Jwt2faAuthGuard)
-  @Post('friendly/:id')
-  gameRequest(@Body('user') user: UserDto, @Param('id') recipient: number) {
-    return this.matchManagerService.sendGameRequest(user, recipient);
+  @Post('/friendly/:target')
+  async invite(@Body('user') user: UserDto, @Param('target') target: number) {
+    return this.matchManagerService.invite(target, user);
+  }
+
+  @UseGuards(Jwt2faAuthGuard)
+  @Put('/friendly')
+  async updateInvite(
+    @Body('status') status: 'ACCEPTED' | 'DECLINED',
+    @Body('user1') user1,
+    @Body('user2') user2,
+  ) {
+    return this.matchManagerService.updateInvite(status, user1, user2);
   }
 }

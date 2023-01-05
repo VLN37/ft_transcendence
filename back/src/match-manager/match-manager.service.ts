@@ -4,16 +4,43 @@ import { Match } from 'src/entities/match.entity';
 import { UserDto } from 'src/users/dto/user.dto';
 import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
+import { MatchManager } from './match-manager';
+import { MemoryMatch } from './model/MemoryMatch';
 
 @Injectable()
 export class MatchManagerService {
   private readonly logger = new Logger(MatchManagerService.name);
+  private inviteNotifyService: (
+    receiver: number,
+    user: UserDto,
+  ) => void | null = null;
+  private updateNotifyService: (
+    status: string,
+    user1: UserDto,
+    user2: UserDto,
+    id: string,
+  ) => void | null = null;
 
-  private notifyService: (userId: number, user: UserDto) => void | null = null;
+  setInviteNotify(callback: (receiver: number, user: UserDto) => void) {
+    this.inviteNotifyService = callback;
+  }
+
+  setUpdateNotify(
+    callback: (
+      status: string,
+      user1: UserDto,
+      user2: UserDto,
+      id: string,
+    ) => void,
+  ) {
+    this.updateNotifyService = callback;
+  }
+
   constructor(
     @InjectRepository(Match)
     private matchRepository: Repository<Match>,
     private usersService: UsersService,
+	private matchManager: MatchManager
   ) {}
 
   async getLiveMatches(qty: number): Promise<Match[]> {
@@ -39,10 +66,6 @@ export class MatchManagerService {
     const matches = liveMatches.concat(finishedMatches);
     this.logger.debug('Returning live matches');
     return matches;
-  }
-
-  setNotify(callback: (userId: number, user: UserDto) => void) {
-    this.notifyService = callback;
   }
 
   async getUserMatches(token: string, qty: number): Promise<Match[]> {
@@ -71,7 +94,17 @@ export class MatchManagerService {
     return matches;
   }
 
-  async sendGameRequest(user: UserDto, recipient: number) {
-    this.notifyService(recipient, user);
+  async invite(target: number, user: UserDto) {
+    this.inviteNotifyService(target, user);
+    return;
+  }
+
+  async updateInvite(status: string, user1: UserDto, user2: UserDto) {
+    const match: MemoryMatch = await this.matchManager.createMatch(
+      user1,
+      user2,
+    );
+    this.updateNotifyService(status, user1, user2, match.id);
+    return;
   }
 }

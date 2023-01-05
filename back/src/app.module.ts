@@ -26,7 +26,6 @@ import { BannedUsers } from './entities/channel.banned.entity';
 import { ChannelsController } from './channels/channels.controller';
 import { AvatarUploadModule } from './avatar-upload/avatar-upload.module';
 import { AvatarUploadController } from './avatar-upload/avatar-upload.controller';
-import { GameRequestsController } from './users/game_requests/game_requests.controller';
 
 const environment = process.env.ENVIRONMENT;
 const dbHost = process.env.DB_HOST;
@@ -95,7 +94,6 @@ export class AppModule implements NestModule {
         ChannelsController,
         AuthController,
         AvatarUploadController,
-		GameRequestsController
       );
   }
 }

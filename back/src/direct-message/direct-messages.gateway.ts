@@ -23,7 +23,6 @@ import { AvatarUploadService } from 'src/avatar-upload/avatar-upload.service';
 import { ChannelsService } from 'src/channels/channels.service';
 import { ChannelDto } from 'src/channels/dto/channel.dto';
 import { MatchManagerService } from 'src/match-manager/match-manager.service';
-import { GameRequestsService } from 'src/users/game_requests/game_requests.service';
 
 @WebSocketGateway({
   namespace: '/direct_messages',
@@ -50,7 +49,6 @@ export class DirectMessagesGateway
     private avatarUploadService: AvatarUploadService,
     private channelsService: ChannelsService,
     private matchManagerService: MatchManagerService,
-    private gameRequestsService: GameRequestsService,
   ) {}
 
   afterInit(_: Server) {
@@ -73,9 +71,8 @@ export class DirectMessagesGateway
     this.usersService.setNotify(this.pingUserUpdate.bind(this));
     this.avatarUploadService.setNotify(this.pingUserUpdate.bind(this));
     this.channelsService.setNotify(this.pingChannelUpdate.bind(this));
-    this.matchManagerService.setNotify(this.pingGameRequest.bind(this));
-    this.gameRequestsService.setInviteNotify(this.pingGameRequest.bind(this));
-    this.gameRequestsService.setUpdateNotify(
+    this.matchManagerService.setInviteNotify(this.pingGameRequest.bind(this));
+    this.matchManagerService.setUpdateNotify(
       this.pingUpdateGameRequest.bind(this),
     );
   }

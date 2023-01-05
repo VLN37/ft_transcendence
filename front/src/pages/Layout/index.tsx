@@ -12,11 +12,10 @@ import {
   MenuButton,
   MenuItem,
   MenuList,
-  useDisclosure,
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import GameInvite from '../../components/gameInvite/GameInvite';
+import GameInvite from '../../components/GameInvite/GameInvite';
 import MatchFinder from '../../components/MatchFinder';
 import NeonButton from '../../components/NeonButton';
 import { Profile } from '../../components/Profile/profile';
