@@ -86,6 +86,7 @@ function InputMessage(props: any) {
 
 function sendMessage(room_id: string) {
   const text = (document.getElementById('message') as HTMLInputElement).value;
+  if (!text) return;
   (document.getElementById('message') as HTMLInputElement).value = '';
   chatApi.sendMessage({ message: text, channel_id: room_id });
   console.log('message sent');
