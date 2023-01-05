@@ -1,5 +1,7 @@
 import {
   Button,
+  Flex,
+  Image,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -40,9 +42,9 @@ export default function GameInvite(props: {}) {
         toast({
           title: 'Friendly match invitation declined',
           status: 'warning',
-        })
+        });
         onClose();
-      };
+      }
       if (data.status == 'ACCEPTED') {
         toast({
           title: 'Friendly match accepted',
@@ -52,7 +54,7 @@ export default function GameInvite(props: {}) {
         setTimeout(() => {
           navigate(`/match/${data.id}`);
         }, 5000);
-      };
+      }
     });
     return () => {
       chatApi.unsubscribeGameInvite();
@@ -67,9 +69,17 @@ export default function GameInvite(props: {}) {
         <ModalHeader>Game invitation</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <Text>
+          <Flex>
+          <Image
+            marginRight={5}
+            borderRadius="full"
+            boxSize="65px"
+            src={process.env.REACT_APP_BACK_HOSTNAME + user.profile.avatar_path}
+          ></Image>
+          <Text alignSelf={'center'}>
             <b>{user.login_intra}</b> invited you to a friendly match
           </Text>
+          </Flex>
         </ModalBody>
         <ModalFooter>
           <Button bg={'red.500'} onClick={() => updateGameRequest('DECLINED')}>
