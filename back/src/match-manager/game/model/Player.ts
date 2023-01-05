@@ -20,4 +20,20 @@ export class Player {
     this.width = rules.player.width;
     this.height = rules.player.height;
   }
+
+  getLeftBorder() {
+    return this.x - this.width / 2;
+  }
+
+  getRightBorder() {
+    return this.x + this.width / 2;
+  }
+
+  getUpperBorder() {
+    return this.y - this.height / 2;
+  }
+
+  getLowerBorder() {
+    return this.y + this.height / 2;
+  }
 }

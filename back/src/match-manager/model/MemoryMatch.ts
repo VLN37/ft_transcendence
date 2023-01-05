@@ -1,4 +1,9 @@
 import { UserDto } from 'src/users/dto/user.dto';
+import {
+  handleBallCollision,
+  handleBallLeftPaddleCollision,
+  handleBallRightPaddleCollision,
+} from '../game/math/collision';
 import { Vector } from '../game/math/Vector';
 import { Ball } from '../game/model/Ball';
 import { Player as Paddle, PlayerSide } from '../game/model/Player';
@@ -74,7 +79,6 @@ export class MemoryMatch {
     };
   }
 
-  private increment = 1;
   update() {
     const deltaTime = this.getDeltaTime();
     this.ball.update(deltaTime);
@@ -93,43 +97,10 @@ export class MemoryMatch {
 
   private checkBallCollision() {
     const ball = this.ball;
-
-    if (
-      (ball.position.x <= rules.leftCollisionEdge && ball.velocity.x < 0) ||
-      (ball.position.x >= rules.rightCollisionEdge && ball.velocity.x > 0)
-    ) {
-      if (ball.velocity.x < 0) {
-        const overflow = rules.leftCollisionEdge - ball.position.x;
-        ball.position.x = ball.position.x + overflow * 2;
-      } else {
-        const overflow = ball.position.x - rules.rightCollisionEdge;
-        ball.position.x = ball.position.x - overflow * 2;
-      }
-      ball.velocity.x *= -1;
-      this.increaseBallSpeed();
-    }
-    this.checkBallSideCollision();
-    this.checkBallPlayerCollision();
+    handleBallCollision(ball, rules);
+    handleBallLeftPaddleCollision(ball, this.leftPaddle);
+    handleBallRightPaddleCollision(ball, this.rightPaddle);
   }
-
-  private checkBallSideCollision() {
-    const ball = this.ball;
-    if (
-      (ball.position.y <= rules.topCollisionEdge && ball.velocity.y < 0) ||
-      (ball.position.y >= rules.bottomCollisionEdge && ball.velocity.y > 0)
-    ) {
-      if (ball.velocity.y < 0) {
-        const overflow = rules.topCollisionEdge - ball.position.y;
-        ball.position.y = ball.position.y + overflow * 2;
-      } else {
-        const overflow = ball.position.y - rules.bottomCollisionEdge;
-        ball.position.y = ball.position.y - overflow * 2;
-      }
-      ball.velocity.y *= -1;
-    }
-  }
-
-  private checkBallPlayerCollision() {}
 
   private getDeltaTime(): number {
     const now = Date.now();
@@ -138,9 +109,9 @@ export class MemoryMatch {
     return deltaTime / 1000;
   }
 
-  private increaseBallSpeed() {
-    if (this.ball.speed < rules.ball.maxSpeed) {
-      this.ball.speed += 50;
-    }
-  }
+  // private increaseBallSpeed() {
+  //   if (this.ball.speed < rules.ball.maxSpeed) {
+  //     this.ball.speed += 50;
+  //   }
+  // }
 }

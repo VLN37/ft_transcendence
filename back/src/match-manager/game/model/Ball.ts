@@ -7,14 +7,14 @@ export class Ball {
   public height: number;
   public position: Point;
   public velocity: Vector;
-  public speed: number;
 
   constructor(rules: GameRules) {
+    this.width = rules.ball.size;
+    this.height = rules.ball.size;
     this.velocity = new Vector();
     this.position = new Point();
     this.position.x = rules.ball.startingPosition.x;
     this.position.y = rules.ball.startingPosition.y;
-    this.speed = rules.ball.startingSpeed;
   }
 
   update(deltaTime: number) {
@@ -23,5 +23,21 @@ export class Ball {
       this.velocity.y * deltaTime,
     );
     this.position.addVector(deltaVector);
+  }
+
+  getLeftBorder() {
+    return this.position.x - this.width / 2;
+  }
+
+  getRightBorder() {
+    return this.position.x + this.width / 2;
+  }
+
+  getUpperBorder() {
+    return this.position.y - this.height / 2;
+  }
+
+  getLowerBorder() {
+    return this.position.y + this.height / 2;
   }
 }

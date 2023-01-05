@@ -1,5 +1,5 @@
 import { Ball } from '../model/Ball';
-import { GameRules } from '../model/GameRules';
+import { GameRules } from '../rules';
 import { Player } from '../model/Player';
 
 export function handleBallCollision(ball: Ball, rules: GameRules) {
