@@ -66,26 +66,26 @@ class ChatApi {
   }
 
   subscribeGameInvite(callback: any) {
-    console.log('game request listener activated');
+    // console.log('game request listener activated');
     this.dmSocket?.on('invite', (response: any) => {
       callback(response.data);
     });
   }
 
   unsubscribeGameInvite() {
-    console.log('game request listener removed');
+    // console.log('game request listener removed');
     this.dmSocket?.off('invite');
   }
 
   subscribeGameUpdate(callback: any) {
-    console.log('game request update listener activated');
+    // console.log('game request update listener activated');
     this.dmSocket?.on('update', (response: any) => {
       callback(response.data);
     });
   }
 
   unsubscribeGameUpdate() {
-    console.log('game request update listener removed');
+    // console.log('game request update listener removed');
     this.dmSocket?.off('update');
   }
 
