@@ -147,6 +147,7 @@ export class DirectMessagesGateway
 
   pingGameRequest(receiver: number, user: UserDto) {
     const receiverSocket = this.usersSocketId[receiver];
+    if (!receiverSocket) return;
     this.server.to(receiverSocket.toString()).emit('invite', { data: user });
   }
 
@@ -158,6 +159,7 @@ export class DirectMessagesGateway
   ) {
     const receiverSocket1 = this.usersSocketId[user1.id];
     const receiverSocket2 = this.usersSocketId[user2.id];
+	if (!receiverSocket1 || !receiverSocket2) return;
     this.server
       .to([receiverSocket1.toString(), receiverSocket2.toString()])
       .emit('update', {

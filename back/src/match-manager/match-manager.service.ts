@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Match } from 'src/entities/match.entity';
 import { UserDto } from 'src/users/dto/user.dto';
@@ -40,7 +40,7 @@ export class MatchManagerService {
     @InjectRepository(Match)
     private matchRepository: Repository<Match>,
     private usersService: UsersService,
-	private matchManager: MatchManager
+    private matchManager: MatchManager,
   ) {}
 
   async getLiveMatches(qty: number): Promise<Match[]> {
@@ -95,16 +95,31 @@ export class MatchManagerService {
   }
 
   async invite(target: number, user: UserDto) {
+    await this.usersService.findUserById(target);
+    await this.usersService.findUserById(user.id);
+
+    if (target == user.id)
+      throw new BadRequestException(
+        "You can't invite yourself to play a match",
+      );
+
     this.inviteNotifyService(target, user);
-    return;
   }
 
   async updateInvite(status: string, user1: UserDto, user2: UserDto) {
+    await this.usersService.findUserById(user1.id);
+    await this.usersService.findUserById(user2.id);
+
+    if (status != 'ACCEPTED' && status != 'DECLINED')
+      throw new BadRequestException('Invalid friendly match invite status');
+
     const match: MemoryMatch = await this.matchManager.createMatch(
       user1,
       user2,
     );
+
+    if (!match || !match.id)
+      throw new BadRequestException('Failed to create friendly match');
     this.updateNotifyService(status, user1, user2, match.id);
-    return;
   }
 }
