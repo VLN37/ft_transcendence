@@ -90,6 +90,7 @@ function UserDmMenu(props: {
 
   async function gameInvite() {
     const response: any = await mmApi.sendGameRequest(props.me, props.user.id);
+	if (!response) return;
     const status = response.status == 201 ? 'success' : 'error';
     const message = response.status == 201 ? '' : response.data.message;
     toast({

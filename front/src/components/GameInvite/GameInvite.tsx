@@ -4,11 +4,11 @@ import {
   Image,
   Modal,
   ModalBody,
-  ModalCloseButton,
   ModalContent,
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Spinner,
   Text,
   useDisclosure,
   useToast,
@@ -24,6 +24,8 @@ import userStorage from '../../services/userStorage';
 export default function GameInvite(props: {}) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [user, setUser] = useState(emptyUser());
+  const [host, setHost] = useState(false);
+  const [status, setStatus] = useState('');
   const me: User = userStorage.getUser() || emptyUser();
   let navigate = useNavigate();
   const toast = useToast();
@@ -43,6 +45,7 @@ export default function GameInvite(props: {}) {
           title: 'Friendly match invitation declined',
           status: 'warning',
         });
+        setStatus('DECLINED');
         onClose();
       }
       if (data.status == 'ACCEPTED') {
@@ -51,6 +54,10 @@ export default function GameInvite(props: {}) {
           status: 'success',
           description: 'redirecting in 5 seconds',
         });
+        setStatus('ACCEPTED');
+        setUser(data.user);
+        setHost(data.host);
+        onOpen();
         setTimeout(() => {
           navigate(`/match/${data.id}`);
         }, 5000);
@@ -69,28 +76,44 @@ export default function GameInvite(props: {}) {
         <ModalHeader>Game invitation</ModalHeader>
         <ModalBody>
           <Flex>
-          <Image
-            marginRight={5}
-            borderRadius="full"
-            boxSize="65px"
-            src={process.env.REACT_APP_BACK_HOSTNAME + user.profile.avatar_path}
-          ></Image>
-          <Text alignSelf={'center'}>
-            <b>{user.login_intra}</b> invited you to a friendly match
-          </Text>
+            <Image
+              marginRight={5}
+              borderRadius="full"
+              boxSize="65px"
+              src={
+                process.env.REACT_APP_BACK_HOSTNAME + user.profile.avatar_path
+              }
+            ></Image>
+            <Text alignSelf={'center'} display={host ? 'none' : 'block'}>
+              <b>{user.login_intra}</b> invited you to a friendly match
+            </Text>
+            <Text alignSelf={'center'} display={host ? 'block' : 'none'}>
+              <b>{user.login_intra}</b> accepted your invite
+            </Text>
           </Flex>
         </ModalBody>
         <ModalFooter>
-          <Button bg={'red.500'} onClick={() => updateGameRequest('DECLINED')}>
-            Decline
-          </Button>
-          <Button
-            bg={'green.500'}
-            ml={3}
-            onClick={() => updateGameRequest('ACCEPTED')}
-          >
-            Accept
-          </Button>
+          <Flex display={status == 'ACCEPTED' ? 'none' : 'block'}>
+            <Button
+              bg={'red.500'}
+              onClick={() => updateGameRequest('DECLINED')}
+            >
+              Decline
+            </Button>
+            <Button
+              bg={'green.500'}
+              ml={3}
+              onClick={() => updateGameRequest('ACCEPTED')}
+            >
+              Accept
+            </Button>
+          </Flex>
+          <Flex mx={'auto'} display={status == 'ACCEPTED' ? 'block' : 'none'}>
+            <Spinner />
+            <Text as={'b'} ml={'3'}>
+              creating match...
+            </Text>
+          </Flex>
         </ModalFooter>
       </ModalContent>
     </Modal>

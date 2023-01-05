@@ -159,15 +159,23 @@ export class DirectMessagesGateway
   ) {
     const receiverSocket1 = this.usersSocketId[user1.id];
     const receiverSocket2 = this.usersSocketId[user2.id];
-	if (!receiverSocket1 || !receiverSocket2) return;
-    this.server
-      .to([receiverSocket1.toString(), receiverSocket2.toString()])
-      .emit('update', {
-        data: {
-          status,
-          id,
-        },
-      });
+    if (!receiverSocket1 || !receiverSocket2) return;
+    this.server.to(receiverSocket1.toString()).emit('update', {
+      data: {
+        status,
+        id,
+		host: true,
+        user: user2,
+      },
+    });
+    this.server.to(receiverSocket2.toString()).emit('update', {
+      data: {
+        status,
+        id,
+		host: false,
+        user: user1,
+      },
+    });
   }
 
   private validateConnection(client: Socket) {
