@@ -9,10 +9,6 @@ export class AvatarUploadService {
 
   constructor(private usersService: UsersService) {}
 
-  setNotify(callback: (receiver: number, user: UserDto) => void) {
-    this.usersService.setNotify(callback);
-  }
-
   async saveAvatar(token: string, image: Express.Multer.File) {
     if (!image.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
       fs.unlink(image.path, (err) => this.logger.warn(err));
