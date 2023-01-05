@@ -21,7 +21,8 @@ export function handleBallLeftPaddleCollision(
   player: Player,
   rules: GameRules,
 ) {
-  if (ball.getLeftBorder() > player.getRightBorder()) return;
+  if (ball.getLeftBorder() > player.getRightBorder() || ball.velocity.x > 0)
+    return;
 
   if (
     ball.getLowerBorder() >= player.getUpperBorder() &&
@@ -36,7 +37,8 @@ export function handleBallRightPaddleCollision(
   player: Player,
   rules: GameRules,
 ) {
-  if (ball.getRightBorder() < player.getLeftBorder()) return;
+  if (ball.getRightBorder() < player.getLeftBorder() || ball.velocity.x < 0)
+    return;
 
   if (
     ball.getLowerBorder() >= player.getUpperBorder() &&
