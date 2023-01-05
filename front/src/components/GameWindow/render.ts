@@ -1,4 +1,5 @@
 import p5Types from 'p5';
+import { Point } from '../../game/math/Point';
 import { Ball } from '../../game/model/Ball';
 import { GameRules } from '../../game/model/GameRules';
 import { Player, PlayerSide } from '../../game/model/Player';
@@ -44,9 +45,15 @@ let frameCount = 0;
 let fps = 0;
 let distanceCounter = 0;
 let deltaSpeed = 0;
+let ballLastPos: Point;
 export const printFps = (image: p5Types.Graphics, ball: Ball) => {
+  if (!ballLastPos) ballLastPos = new Point(ball.position.x, ball.position.y);
   const deltaTime = image.deltaTime / 1000;
   const ballSpeed = ball.velocity.mag();
+  const distance = Point.subtract(ball.position, ballLastPos).mag();
+  distanceCounter += distance;
+  debugger;
+  ballLastPos.moveTo(ball.position);
 
   totalTime += deltaTime;
   if (totalTime > 1) {
@@ -58,11 +65,10 @@ export const printFps = (image: p5Types.Graphics, ball: Ball) => {
     frameCount = 0;
   }
   frameCount++;
-  distanceCounter += deltaSpeed;
   image.textSize(18);
   image.fill(40, 132, 183);
   image.text('fps: ' + fps.toFixed(2), 50, 40);
-  image.text('ball speed: ' + ballSpeed, 50, 60);
+  image.text('ball target speed: ' + ballSpeed.toFixed(2), 50, 60);
   image.text('ball delta speed: ' + deltaSpeed.toFixed(2), 50, 80);
   image.text('ball distance in last 1s: ' + pxPerSecond.toFixed(2), 50, 100);
 };
