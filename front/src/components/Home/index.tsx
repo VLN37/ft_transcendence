@@ -39,7 +39,7 @@ function UserComp(user: User) {
   if (!user.login_intra) user = userFallback;
 
   useEffect(() => {
-    matchesApi.getUserMatches(10).then((matchs: Match[]) => setMatches(matchs));
+    matchesApi.getUserMatches(9).then((matchs: Match[]) => setMatches(matchs));
   }, []);
 
   return (
@@ -201,7 +201,7 @@ export function Home() {
 
   useEffect(() => {
     userApi.getMe().then((_user) => setUser(_user));
-    matchesApi.getLiveMatches(10).then((matchs: Match[]) => setMatches(matchs));
+    matchesApi.getLiveMatches(9).then((matchs: Match[]) => setMatches(matchs));
     return ChatApi.unsubscribeUserUpdated();
   }, []);
 

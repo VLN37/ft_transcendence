@@ -146,6 +146,7 @@ function UserMenu(props: {
 
   async function gameInvite() {
     const response: any = await mmApi.sendGameRequest(me, props.user.id);
+	if (!response) return;
     const status = response.status == 201 ? 'success' : 'error';
     const message = response.status == 201 ? '' : response.data.message;
     toast({

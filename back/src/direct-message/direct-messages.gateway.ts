@@ -19,7 +19,6 @@ import {
 import { UserDto } from 'src/users/dto/user.dto';
 import { FriendRequestsService } from 'src/users/friend_requests/friend_requests.service';
 import { UsersService } from 'src/users/users.service';
-import { AvatarUploadService } from 'src/avatar-upload/avatar-upload.service';
 import { ChannelsService } from 'src/channels/channels.service';
 import { ChannelDto } from 'src/channels/dto/channel.dto';
 import { MatchManagerService } from 'src/match-manager/match-manager.service';
@@ -46,7 +45,6 @@ export class DirectMessagesGateway
     private jwtService: JwtService,
     private friendRequestsService: FriendRequestsService,
     private usersService: UsersService,
-    private avatarUploadService: AvatarUploadService,
     private channelsService: ChannelsService,
     private matchManagerService: MatchManagerService,
   ) {}
@@ -69,7 +67,6 @@ export class DirectMessagesGateway
   onApplicationBootstrap() {
     this.friendRequestsService.setNotify(this.pingFriendRequest.bind(this));
     this.usersService.setNotify(this.pingUserUpdate.bind(this));
-    this.avatarUploadService.setNotify(this.pingUserUpdate.bind(this));
     this.channelsService.setNotify(this.pingChannelUpdate.bind(this));
     this.matchManagerService.setInviteNotify(this.pingGameRequest.bind(this));
     this.matchManagerService.setUpdateNotify(
@@ -150,6 +147,7 @@ export class DirectMessagesGateway
 
   pingGameRequest(receiver: number, user: UserDto) {
     const receiverSocket = this.usersSocketId[receiver];
+    if (!receiverSocket) return;
     this.server.to(receiverSocket.toString()).emit('invite', { data: user });
   }
 
@@ -161,14 +159,23 @@ export class DirectMessagesGateway
   ) {
     const receiverSocket1 = this.usersSocketId[user1.id];
     const receiverSocket2 = this.usersSocketId[user2.id];
-    this.server
-      .to([receiverSocket1.toString(), receiverSocket2.toString()])
-      .emit('update', {
-        data: {
-          status,
-          id,
-        },
-      });
+    if (!receiverSocket1 || !receiverSocket2) return;
+    this.server.to(receiverSocket1.toString()).emit('update', {
+      data: {
+        status,
+        id,
+		host: true,
+        user: user2,
+      },
+    });
+    this.server.to(receiverSocket2.toString()).emit('update', {
+      data: {
+        status,
+        id,
+		host: false,
+        user: user1,
+      },
+    });
   }
 
   private validateConnection(client: Socket) {

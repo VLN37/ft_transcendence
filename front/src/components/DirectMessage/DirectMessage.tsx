@@ -82,8 +82,8 @@ function InputMessage(props: any) {
 
 function sendMessage(to: string) {
   const text = (document.getElementById('message') as HTMLInputElement).value;
+  if (!text) return;
   (document.getElementById('message') as HTMLInputElement).value = '';
-  // chatApi.setChannelSocket(api);
   chatApi.sendDirectMessage({ message: text, user_id: to });
   console.log('message sent');
 }
@@ -105,7 +105,7 @@ export default function DirectMessage(props: any) {
 
   useEffect(() => {
     chatApi.subscribeDirectMessage(updateMessages);
-    return () => chatApi.unsubscribeDirectMessage(updateMessages);
+    return () => chatApi.unsubscribeDirectMessage();
   }, [messages]);
 
   useEffect(() => {
@@ -116,7 +116,7 @@ export default function DirectMessage(props: any) {
     chatApi.getDirectMessages(userId).then((messages: iDirectMessage[]) => {
       setMessages(messages);
     });
-  }, []);
+  }, [searchParams]);
 
   useEffect(() => {
     document.getElementById('bottom')?.scrollIntoView();
