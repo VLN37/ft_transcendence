@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import GameWindow from '../../components/GameWindow';
 import { GameRules } from '../../game/model/GameRules';
-import { MatchApi } from '../../services/matchApi';
+import { GameApi } from '../../services/gameApi';
 
 export default function MatchPage() {
   const [rules, setRules] = useState<GameRules>();
@@ -13,7 +13,7 @@ export default function MatchPage() {
     throw new Error('no match id to connect');
   }
 
-  const [matchApi] = useState(new MatchApi());
+  const [matchApi] = useState(new GameApi());
 
   // let matchApi: MatchApi = new MatchApi();
 
@@ -31,7 +31,7 @@ export default function MatchPage() {
 
   return (
     <div>
-      {(rules && <GameWindow matchApi={matchApi} rules={rules} />) || 'loading'}
+      {(rules && <GameWindow gameApi={matchApi} rules={rules} />) || 'loading'}
     </div>
   );
 }

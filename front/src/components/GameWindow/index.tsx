@@ -2,11 +2,12 @@ import Sketch from 'react-p5';
 import p5Types from 'p5';
 import { Ball } from '../../game/model/Ball';
 import { MatchState } from '../../game/model/MatchState';
-import { Player, PlayerSide } from '../../game/model/Player';
-import { MatchApi } from '../../services/matchApi';
+import { Paddle, PlayerSide } from '../../game/model/Paddle';
+import { GameApi } from '../../services/gameApi';
 import { GameRules } from '../../game/model/GameRules';
 import {
   drawBall,
+  drawBallCoords,
   drawBallVelocity,
   drawPlayer,
   drawSpeedMeter,
@@ -14,17 +15,17 @@ import {
 } from './render';
 import {
   handleBallCollision,
-  handleBallPaddleCollision,
-} from '../../game/collisions';
-import { Vector } from '../../game/math/Vector';
+  handleBallLeftPaddleCollision,
+  handleBallRightPaddleCollision,
+} from '../../game/math/collision';
 
 export type GameWindowProps = {
-  matchApi: MatchApi;
+  gameApi: GameApi;
   rules: GameRules;
 };
 
 export default (props: GameWindowProps) => {
-  const { matchApi, rules } = props;
+  const { gameApi: matchApi, rules } = props;
 
   const gameWindow = {
     width: 500,
@@ -36,12 +37,9 @@ export default (props: GameWindowProps) => {
   let image: p5Types.Graphics;
 
   let ball = new Ball(rules);
-  let leftPlayer = new Player(PlayerSide.LEFT, rules);
-  let rightPlayer = new Player(PlayerSide.RIGHT, rules);
 
-  ball.speed = 300;
-  // ball.velocity = p5Types.Vector.random2D().normalize();
-  ball.velocity = new Vector(7, 1);
+  let leftPlayer = new Paddle(PlayerSide.LEFT, rules);
+  let rightPlayer = new Paddle(PlayerSide.RIGHT, rules);
 
   const setup = (p5: p5Types, canvasParentRef: Element) => {
     updateWindowProportions();
@@ -49,19 +47,18 @@ export default (props: GameWindowProps) => {
     p5.createCanvas(gameWindow.width, gameWindow.height).parent(
       canvasParentRef,
     );
-    p5.frameRate(60);
   };
 
   const listenGameState = (state: MatchState) => {
-    ball.speed = state.ball.speed;
-
     ball.position.x = state.ball.pos.x;
     ball.position.y = state.ball.pos.y;
-    ball.velocity.x = state.ball.dir.x;
-    ball.velocity.y = state.ball.dir.y;
+    ball.velocity.x = state.ball.vel.x;
+    ball.velocity.y = state.ball.vel.y;
 
-    leftPlayer.y = state.pl;
-    rightPlayer.y = state.pr;
+    leftPlayer.y = state.pl.y;
+    rightPlayer.y = state.pr.y;
+    leftPlayer.state = state.pl.state;
+    rightPlayer.state = state.pr.state;
   };
 
   matchApi.setOnMatchTickListener(listenGameState);
@@ -96,26 +93,30 @@ export default (props: GameWindowProps) => {
   const handleInput = () => {};
 
   const updateWorld = () => {
-    ball.update(image.deltaTime);
+    const deltaTime = image.deltaTime / 1000;
+    ball.update(deltaTime);
+    leftPlayer.update(deltaTime);
+    rightPlayer.update(deltaTime);
   };
 
   const processGameLogic = () => {};
 
   const handleCollisions = () => {
     handleBallCollision(ball, rules);
-    handleBallPaddleCollision(ball, leftPlayer, rules);
-    handleBallPaddleCollision(ball, rightPlayer, rules);
+    handleBallLeftPaddleCollision(ball, leftPlayer);
+    handleBallRightPaddleCollision(ball, rightPlayer);
   };
 
   const render = (p5: p5Types) => {
     image.background(0);
     drawBall(image, ball);
-    drawBallVelocity(image, ball);
+    // drawBallVelocity(image, ball);
     drawPlayer(image, rightPlayer, rules);
     drawPlayer(image, leftPlayer, rules);
     drawSpeedMeter(image, ball, rules);
     resizeIfNecessary(p5);
     printFps(image, ball);
+    // drawBallCoords(image, ball);
     p5.image(image, 0, 0, p5.width, p5.height);
   };
 

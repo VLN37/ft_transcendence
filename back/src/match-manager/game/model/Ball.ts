@@ -1,6 +1,6 @@
 import { Point } from '../math/Point';
 import { Vector } from '../math/Vector';
-import { GameRules } from './GameRules';
+import { GameRules } from '../rules';
 
 export class Ball {
   public width: number;

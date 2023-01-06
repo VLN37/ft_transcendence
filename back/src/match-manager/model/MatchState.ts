@@ -1,3 +1,5 @@
+import { PlayerState } from '../game/model/Paddle';
+
 export class Tuple {
   x: number;
   y: number;
@@ -6,9 +8,14 @@ export class Tuple {
 export class MatchState {
   ball: {
     pos: Tuple;
-    dir: Tuple;
-    speed: number;
+    vel: Tuple;
   };
-  pl: number;
-  pr: number;
+  pl: {
+    y: number;
+    state: PlayerState;
+  };
+  pr: {
+    y: number;
+    state: PlayerState;
+  };
 }

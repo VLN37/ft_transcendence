@@ -1,7 +1,8 @@
 import p5Types from 'p5';
+import { Point } from '../../game/math/Point';
 import { Ball } from '../../game/model/Ball';
 import { GameRules } from '../../game/model/GameRules';
-import { Player, PlayerSide } from '../../game/model/Player';
+import { Paddle, PlayerSide } from '../../game/model/Paddle';
 
 const getPlayerColor = (side: PlayerSide, image: p5Types.Graphics) => {
   let color: p5Types.Color;
@@ -15,7 +16,7 @@ const getPlayerColor = (side: PlayerSide, image: p5Types.Graphics) => {
 
 export const drawPlayer = (
   image: p5Types.Graphics,
-  rPlayer: Player,
+  rPlayer: Paddle,
   rules: GameRules,
 ) => {
   image.fill(getPlayerColor(rPlayer.side, image));
@@ -30,8 +31,12 @@ export const drawPlayer = (
 export const drawBall = (image: p5Types.Graphics, ball: Ball) => {
   image.fill(100, 80, 150);
   image.colorMode(image.RGB, 255);
-  const size = ball.radius * 2;
-  image.ellipse(ball.position.x, ball.position.y, size, size);
+  image.rect(
+    ball.position.x - ball.width / 2,
+    ball.position.y - ball.height / 2,
+    ball.width,
+    ball.height,
+  );
 };
 
 let totalTime = 0;
@@ -40,22 +45,30 @@ let frameCount = 0;
 let fps = 0;
 let distanceCounter = 0;
 let deltaSpeed = 0;
+let ballLastPos: Point;
 export const printFps = (image: p5Types.Graphics, ball: Ball) => {
-  totalTime += image.deltaTime / 1000;
+  if (!ballLastPos) ballLastPos = new Point(ball.position.x, ball.position.y);
+  const deltaTime = image.deltaTime / 1000;
+  const ballSpeed = ball.velocity.mag();
+  const distance = Point.subtract(ball.position, ballLastPos).mag();
+  distanceCounter += distance;
+  debugger;
+  ballLastPos.moveTo(ball.position);
+
+  totalTime += deltaTime;
   if (totalTime > 1) {
     totalTime = 0;
-    deltaSpeed = (ball.speed * image.deltaTime) / 1000;
+    deltaSpeed = ballSpeed * deltaTime;
     fps = frameCount;
     pxPerSecond = distanceCounter;
     distanceCounter = 0;
     frameCount = 0;
   }
   frameCount++;
-  distanceCounter += deltaSpeed;
   image.textSize(18);
   image.fill(40, 132, 183);
   image.text('fps: ' + fps.toFixed(2), 50, 40);
-  image.text('ball speed: ' + ball.speed, 50, 60);
+  image.text('ball target speed: ' + ballSpeed.toFixed(2), 50, 60);
   image.text('ball delta speed: ' + deltaSpeed.toFixed(2), 50, 80);
   image.text('ball distance in last 1s: ' + pxPerSecond.toFixed(2), 50, 100);
 };
@@ -66,14 +79,14 @@ export const drawBallVelocity = (image: p5Types.Graphics, ball: Ball) => {
   image.fill('green');
   image.strokeWeight(2);
   const line = {
-    x: ball.velocity.x * ball.radius * 2,
-    y: ball.velocity.y * ball.radius * 2,
+    x: ball.velocity.x / 10,
+    y: ball.velocity.y / 10,
   };
   image.translate(ball.position.x, ball.position.y);
   image.line(0, 0, line.x, line.y);
   image.rotate(ball.velocity.heading());
   let arrowSize = 7;
-  image.translate(ball.velocity.mag() * ball.radius * 2 - arrowSize, 0);
+  image.translate(ball.velocity.mag() * ball.width * 2 - arrowSize, 0);
   image.triangle(0, arrowSize / 2, 0, -arrowSize / 2, arrowSize, 0);
   image.pop();
 };
@@ -87,15 +100,23 @@ export const drawSpeedMeter = (
   image.rectMode('corner');
   image.fill(0);
   image.stroke(230, 150, 23);
+  const ballSpeed = ball.velocity.mag();
   const posX = 250;
   const posY = 30;
   const width = 250;
   const height = 15;
-  const speedRatio = ball.speed / rules.ball.maxSpeed;
+  const speedRatio = ballSpeed / rules.ball.maxSpeed;
   image.rect(posX, posY, width, height);
   image.stroke(0);
   image.fill(speedRatio * 255, 255 - speedRatio * 200, 13);
   image.rect(posX + 1, posY + 1, speedRatio * width, height - 2);
-  image.text(ball.speed + 'px/s', posX + width + 10, posY + height);
+  image.text(ballSpeed + 'px/s', posX + width + 10, posY + height);
+  image.pop();
+};
+
+export const drawBallCoords = (image: p5Types.Graphics, ball: Ball) => {
+  image.push();
+  image.stroke(110, 150, 230);
+  image.text(`ball:\nx: ${ball.position.x}\ny:${ball.position.y}`, 30, 120);
   image.pop();
 };

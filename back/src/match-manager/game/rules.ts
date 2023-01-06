@@ -1,7 +1,10 @@
-const WIDTH = 858;
-const HEIGHT = 525;
-const BALL_RADIUS = 14;
+const PLAYER_SPEED = 200;
+const WORLD_WIDTH = 858;
+const WORLD_HEIGHT = 525;
+const BALL_SIZE = 20;
 const BALL_INITIAL_SPEED = 250; // world units per second
+const PLAYER_WIDTH = 20; // world units per second
+const PLAYER_HEIGHT = 100; // world units per second
 
 export const UPDATES_PER_SECOND = 60;
 export const NOTIFICATIONS_PER_SECOND = 20;
@@ -18,7 +21,7 @@ export type GameRules = {
   ball: {
     startingPosition: Tuple;
     startingSpeed: number;
-    radius: number;
+    size: number;
     maxSpeed: number;
   };
   player: {
@@ -27,6 +30,9 @@ export type GameRules = {
     height: number;
     leftLine: number;
     rightLine: number;
+    speed: number;
+    minY: number;
+    maxY: number;
   };
   topCollisionEdge: number;
   bottomCollisionEdge: number;
@@ -35,27 +41,30 @@ export type GameRules = {
 };
 
 export const rules: GameRules = {
-  worldWidth: WIDTH,
-  worldHeight: HEIGHT,
-  whRatio: WIDTH / HEIGHT,
+  worldWidth: WORLD_WIDTH,
+  worldHeight: WORLD_HEIGHT,
+  whRatio: WORLD_WIDTH / WORLD_HEIGHT,
   ball: {
     startingPosition: {
-      x: WIDTH / 2,
-      y: HEIGHT / 2,
+      x: WORLD_WIDTH / 2,
+      y: WORLD_HEIGHT / 2,
     },
     startingSpeed: BALL_INITIAL_SPEED,
-    radius: BALL_RADIUS,
+    size: BALL_SIZE,
     maxSpeed: 1000,
   },
   player: {
-    startingPosition: HEIGHT / 2,
-    width: 20,
-    height: 100,
+    startingPosition: WORLD_HEIGHT / 2,
+    width: PLAYER_WIDTH,
+    height: PLAYER_HEIGHT,
     leftLine: 20,
-    rightLine: WIDTH - 20,
+    rightLine: WORLD_WIDTH - 20,
+    speed: PLAYER_SPEED,
+    minY: 30 + PLAYER_HEIGHT / 2,
+    maxY: WORLD_HEIGHT - PLAYER_HEIGHT / 2 - 30,
   },
-  topCollisionEdge: BALL_RADIUS,
-  bottomCollisionEdge: HEIGHT - BALL_RADIUS,
-  leftCollisionEdge: BALL_RADIUS,
-  rightCollisionEdge: WIDTH - BALL_RADIUS,
+  topCollisionEdge: BALL_SIZE / 2,
+  bottomCollisionEdge: WORLD_HEIGHT - BALL_SIZE / 2,
+  leftCollisionEdge: BALL_SIZE / 2,
+  rightCollisionEdge: WORLD_WIDTH - BALL_SIZE / 2,
 };
