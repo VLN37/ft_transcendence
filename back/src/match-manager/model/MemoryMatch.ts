@@ -9,6 +9,7 @@ import { Ball } from '../game/model/Ball';
 import { Paddle, PlayerSide, PlayerState } from '../game/model/Paddle';
 import { rules } from '../game/rules';
 import { MatchState } from './MatchState';
+import { PlayerCommand } from './PlayerCommands';
 
 export type MatchStage =
   | 'AWAITING_PLAYERS'
@@ -88,11 +89,19 @@ export class MemoryMatch {
   update() {
     const deltaTime = this.getDeltaTime();
     this.handleInput();
-    this.processGameLogic();
+    // this.processGameLogic();
 
     this.updateWorld(deltaTime);
 
     this.handleCollisions();
+  }
+
+  handlePlayerCommand(playerId: number, command: PlayerCommand) {
+    if (playerId == this.left_player.id) {
+      this.leftPaddle.handleCommand(command);
+    } else if (playerId == this.right_player.id) {
+      this.rightPaddle.handleCommand(command);
+    }
   }
 
   private handleInput() {}

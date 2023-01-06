@@ -1,3 +1,4 @@
+import { PlayerCommand } from 'src/match-manager/model/PlayerCommands';
 import { GameRules, rules } from '../rules';
 
 export enum PlayerSide {
@@ -10,6 +11,12 @@ export enum PlayerState {
   MOVING_UP,
   MOVING_DOWN,
 }
+
+export const commandStateMap = {
+  [PlayerCommand.STOP]: PlayerState.STOPPED,
+  [PlayerCommand.MOVE_UP]: PlayerState.MOVING_UP,
+  [PlayerCommand.MOVE_DOWN]: PlayerState.MOVING_DOWN,
+};
 
 export class Paddle {
   side: PlayerSide;
@@ -49,6 +56,10 @@ export class Paddle {
       this.y = rules.player.minY;
       this.state = PlayerState.STOPPED;
     }
+  }
+
+  handleCommand(command: PlayerCommand) {
+    this.state = commandStateMap[command];
   }
 
   getLeftBorder() {

@@ -4,7 +4,7 @@ import { Ball } from '../../game/model/Ball';
 import { MatchState } from '../../game/model/MatchState';
 import { Paddle, PlayerSide } from '../../game/model/Paddle';
 import { GameApi } from '../../services/gameApi';
-import { GameRules } from '../../game/model/GameRules';
+import { GameRules, PlayerCommand } from '../../game/model/GameRules';
 import {
   drawBall,
   drawBallCoords,
@@ -25,7 +25,7 @@ export type GameWindowProps = {
 };
 
 export default (props: GameWindowProps) => {
-  const { gameApi: matchApi, rules } = props;
+  const { gameApi, rules } = props;
 
   const gameWindow = {
     width: 500,
@@ -61,7 +61,7 @@ export default (props: GameWindowProps) => {
     rightPlayer.state = state.pr.state;
   };
 
-  matchApi.setOnMatchTickListener(listenGameState);
+  gameApi.setOnMatchTickListener(listenGameState);
 
   const updateWindowProportions = () => {
     let currentWidth = window.innerWidth;
@@ -134,8 +134,10 @@ export default (props: GameWindowProps) => {
 
   const onKeyPress = (p5: p5Types) => {
     if (p5.keyCode == p5.UP_ARROW || p5.key.toLowerCase() == 'w') {
+      gameApi.issueCommand(PlayerCommand.MOVE_UP);
       console.log('key up pressed');
     } else if (p5.keyCode == p5.DOWN_ARROW || p5.key.toLowerCase() == 's') {
+      gameApi.issueCommand(PlayerCommand.MOVE_DOWN);
       console.log('key down pressed');
     }
   };
@@ -143,8 +145,10 @@ export default (props: GameWindowProps) => {
   const onKeyRelease = (p5: p5Types) => {
     if (p5.keyCode == p5.UP_ARROW || p5.key.toLowerCase() == 'w') {
       console.log('key up released');
+      gameApi.issueCommand(PlayerCommand.STOP);
     } else if (p5.keyCode == p5.DOWN_ARROW || p5.key.toLowerCase() == 's') {
       console.log('key down released');
+      gameApi.issueCommand(PlayerCommand.STOP);
     }
   };
 

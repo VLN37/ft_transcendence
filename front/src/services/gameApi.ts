@@ -1,4 +1,5 @@
 import { io, Socket } from 'socket.io-client';
+import { PlayerCommand } from '../game/model/GameRules';
 import { MatchState } from '../game/model/MatchState';
 import api from './api';
 
@@ -6,7 +7,10 @@ export class GameApi {
   private readonly MATCH_MANAGER_NAMESPACE = 'match-manager';
   private matchSocket?: Socket;
 
-  constructor() {
+  private matchId: string;
+
+  constructor(matchId: string) {
+    this.matchId = matchId;
     console.log('constructing a match api');
   }
 
@@ -33,10 +37,10 @@ export class GameApi {
     });
   }
 
-  connectAsPlayer(matchId: string) {
+  connectAsPlayer() {
     if (!this.matchSocket) throw new Error('Not connected to the server');
     this.matchSocket.emit('connect-as-player', {
-      match_id: matchId,
+      match_id: this.matchId,
     });
   }
 
@@ -46,6 +50,16 @@ export class GameApi {
     }
     this.matchSocket?.on('match-tick', (matchData) => {
       callback(matchData);
+    });
+  }
+
+  issueCommand(command: PlayerCommand) {
+    if (!this.matchSocket) {
+      throw new Error('match socket is not set');
+    }
+    this.matchSocket.emit('player-command', {
+      match_id: this.matchId,
+      command: command,
     });
   }
 
