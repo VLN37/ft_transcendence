@@ -196,7 +196,7 @@ class ChatApi {
 
   subscribeUserUpdated(callback: any) {
     this.dmSocket?.on('user_updated', (user: User) => {
-      callback(user);
+      callback({...user});
     });
   }
 
