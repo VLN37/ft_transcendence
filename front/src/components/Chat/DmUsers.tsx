@@ -153,6 +153,7 @@ function PendingRequestMenu(props: {
   // const me: User = userStorage.getUser() || emptyUser();
 
   async function updateMe() {
+    console.log(props.me);
     props.me.friend_requests.splice(
       props.me.friend_requests.findIndex(elem => elem.id == props.user.id), 1
     )
@@ -207,8 +208,8 @@ export function DmUsers() {
   );
 
   async function updateFriends(data: any) {
-    console.log(me);
-    // if (!me.friend_requests.find((elem) => elem.id == data.user.id))
+    // console.log(me);
+    if (!me.friend_requests.find((elem) => elem.id == data.user.id))
       me.friend_requests.push(data.user);
     userStorage.saveUser(me);
     setMe({... me});
