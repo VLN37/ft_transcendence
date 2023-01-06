@@ -62,7 +62,7 @@ class ChatApi {
 
   unsubscribeDirectMessage() {
     this.dmSocket?.off('chat');
-	this.dmSocket?.removeAllListeners();
+	this.dmSocket?.removeAllListeners('chat');
   }
 
   subscribeGameInvite(callback: any) {
