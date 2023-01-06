@@ -42,6 +42,13 @@ export class Player {
     }
 
     this.y += movement;
+    if (this.y > rules.player.maxY) {
+      this.y = rules.player.maxY;
+      this.state = PlayerState.STOPPED;
+    } else if (this.y < rules.player.minY) {
+      this.y = rules.player.minY;
+      this.state = PlayerState.STOPPED;
+    }
   }
 
   getLeftBorder() {

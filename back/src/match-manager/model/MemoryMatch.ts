@@ -109,8 +109,8 @@ export class MemoryMatch {
         paddle.state = PlayerState.MOVING_DOWN;
       else paddle.state = PlayerState.STOPPED;
     };
-    followBall(this.leftPaddle, this.ball);
-    followBall(this.rightPaddle, this.ball);
+    if (this.ball.velocity.x < 0) followBall(this.leftPaddle, this.ball);
+    else if (this.ball.velocity.x > 0) followBall(this.rightPaddle, this.ball);
   }
 
   private updateWorld(deltaTime: number) {
