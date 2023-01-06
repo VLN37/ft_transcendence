@@ -197,15 +197,13 @@ export function Home() {
   const [user, setUser] = useState(emptyUser());
   const [matches, setMatches] = useState<Match[]>([]);
 
-  useEffect(() => {
-    ChatApi.subscribeUserUpdated(setUser);
-    return ChatApi.unsubscribeUserUpdated();
-  }, []);
+  ChatApi.subscribeUserUpdated(setUser);
 
   useEffect(() => {
-    // userApi.getMe().then((_user) => setUser(_user));
+    userApi.getMe().then((_user) => setUser(_user));
     matchesApi.getLiveMatches(9).then((matchs: Match[]) => setMatches(matchs));
-  }, [user]);
+    return ChatApi.unsubscribeUserUpdated();
+  }, []);
 
   return (
     <Flex className="homeWrapper" height={'75vh'} gap={2} overflowY={'scroll'}>
