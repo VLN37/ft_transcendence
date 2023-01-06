@@ -54,7 +54,35 @@ export class AuthService {
     };
   }
 
+  async login_as_guest() {
+    let user = await this.usersService.findCompleteUserById(42);
+    if (!user) {
+      user = await this.usersService.create({
+        id: 42,
+        login_intra: 'marvin',
+        tfa_enabled: false,
+        tfa_secret: null,
+        profile: {
+          id: 42,
+          name: 'marvin',
+          nickname: 'marvin',
+          avatar_path: '/avatars/marvin.jpeg',
+          status: 'OFFLINE',
+          wins: 0,
+          losses: 0,
+          mmr: 0,
+        },
+      });
+    }
+    return this.makeTokenResponse({
+      sub: 42,
+      tfa_enabled: false,
+      is_authenticated_twice: false,
+    });
+  }
+
   async login(code: string) {
+    if (code === 'guest') return this.login_as_guest();
     const token = await this.intraService.getUserToken(code);
 
     const intraUser = await this.intraService.getUserInfo(token.access_token);
@@ -75,25 +103,22 @@ export class AuthService {
   validate2fa(code: string, user: Express.User) {
     if (!user.tfa_secret || user.tfa_secret == '')
       throw new InternalServerErrorException("User doesn't have a 2FA secret");
-    const isValid =  authenticator.verify({
+    const isValid = authenticator.verify({
       token: code,
       secret: user.tfa_secret,
     });
-    if (!isValid)
-      throw new UnauthorizedException('Wrong authentication code');
+    if (!isValid) throw new UnauthorizedException('Wrong authentication code');
     return isValid;
   }
 
   async generateQRCode(user: Express.User): Promise<QRCodeDto> {
     const auth = await this.generata2faSecret(user);
-    const dataURL = await this.generateDataQrCode(
-      auth.otpAuthUrl
-    );
+    const dataURL = await this.generateDataQrCode(auth.otpAuthUrl);
     return {
       qrcode_data: dataURL,
       secret: auth.secret,
       link: auth.otpAuthUrl,
-    }
+    };
   }
 
   loginWith2fa(user: Express.User) {
@@ -115,8 +140,6 @@ export class AuthService {
       otpAuthUrl,
     };
   }
-
-
 
   async toggle2fa(user: Express.User, action: 'ENABLED' | 'DISABLED') {
     const shouldEnable = action == 'ENABLED';

@@ -36,6 +36,12 @@ export default function LoginPage({ user }: any) {
           }>
             <NeonButton>login as welton</NeonButton>
           </a>
+          <br />
+          <a href={
+            process.env.REACT_APP_FRONT_HOSTNAME + "/auth-callback?code=guest"
+          }>
+            <NeonButton>LOGIN AS GUEST</NeonButton>
+          </a>
         </div>
       )}
     </Box>
