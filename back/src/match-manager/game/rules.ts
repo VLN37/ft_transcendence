@@ -1,3 +1,4 @@
+const PLAYER_SPEED = 150;
 const WIDTH = 858;
 const HEIGHT = 525;
 const BALL_SIZE = 20;
@@ -27,6 +28,7 @@ export type GameRules = {
     height: number;
     leftLine: number;
     rightLine: number;
+    speed: number;
   };
   topCollisionEdge: number;
   bottomCollisionEdge: number;
@@ -53,6 +55,7 @@ export const rules: GameRules = {
     height: 100,
     leftLine: 20,
     rightLine: WIDTH - 20,
+    speed: PLAYER_SPEED,
   },
   topCollisionEdge: BALL_SIZE / 2,
   bottomCollisionEdge: HEIGHT - BALL_SIZE / 2,

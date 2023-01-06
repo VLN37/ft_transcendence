@@ -15,6 +15,7 @@ import { UserDto } from 'src/users/dto/user.dto';
 import { UsersService } from 'src/users/users.service';
 import { validateWsJwt } from 'src/utils/functions/validateWsConnection';
 import { MatchManager } from './match-manager';
+import { PlayerCommand } from './model/PlayerCommands';
 
 @WebSocketGateway({
   namespace: '/match-manager',
@@ -68,6 +69,15 @@ export class MatchManagerGateway implements OnGatewayInit, OnGatewayDisconnect {
       this.logger.warn('error connecting player', e);
       throw new WsException(e);
     }
+  }
+
+  @SubscribeMessage('player-command')
+  async handlePlayerCommand(
+    @MessageBody('match_id') matchId: string,
+    @MessageBody('command') command: PlayerCommand,
+    @ConnectedSocket() client: Socket,
+  ) {
+    const user: UserDto = client.handshake.auth['user'];
   }
 
   handleDisconnect(client: Socket) {

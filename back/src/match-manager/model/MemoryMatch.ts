@@ -6,7 +6,11 @@ import {
 } from '../game/math/collision';
 import { Vector } from '../game/math/Vector';
 import { Ball } from '../game/model/Ball';
-import { Player as Paddle, PlayerSide } from '../game/model/Player';
+import {
+  Player as Paddle,
+  PlayerSide,
+  PlayerState,
+} from '../game/model/Player';
 import { rules } from '../game/rules';
 import { MatchState } from './MatchState';
 
@@ -74,28 +78,48 @@ export class MemoryMatch {
         pos: this.ball.position,
         vel: this.ball.velocity,
       },
-      pl: this.leftPaddle.y,
-      pr: this.rightPaddle.y,
+      pl: {
+        y: this.leftPaddle.y,
+        state: this.leftPaddle.state,
+      },
+      pr: {
+        y: this.rightPaddle.y,
+        state: this.rightPaddle.state,
+      },
     };
   }
 
   update() {
     const deltaTime = this.getDeltaTime();
-    this.ball.update(deltaTime);
+    this.handleInput();
+    this.processGameLogic();
 
-    // const ballSpeed = this.ball.velocity.mag();
-    // const deltaSpeed = ballSpeed * deltaTime;
-    // this.state.p1 += this.increment;
-    // this.state.p2 += this.increment;
-    // this.ball.position.x += this.ball.velocity.x * deltaSpeed;
-    // this.ball.position.y += this.ball.velocity.y * deltaSpeed;
-    this.leftPaddle.y = this.ball.position.y;
-    this.rightPaddle.y = this.ball.position.y;
+    this.updateWorld(deltaTime);
 
-    this.checkBallCollision();
+    this.handleCollisions();
   }
 
-  private checkBallCollision() {
+  private handleInput() {}
+
+  private processGameLogic() {
+    const followBall = (paddle: Paddle, ball: Ball) => {
+      if (ball.getUpperBorder() < paddle.getUpperBorder())
+        paddle.state = PlayerState.MOVING_UP;
+      else if (ball.getLowerBorder() > paddle.getLowerBorder())
+        paddle.state = PlayerState.MOVING_DOWN;
+      else paddle.state = PlayerState.STOPPED;
+    };
+    followBall(this.leftPaddle, this.ball);
+    followBall(this.rightPaddle, this.ball);
+  }
+
+  private updateWorld(deltaTime: number) {
+    this.ball.update(deltaTime);
+    this.rightPaddle.update(deltaTime);
+    this.leftPaddle.update(deltaTime);
+  }
+
+  private handleCollisions() {
     const ball = this.ball;
     handleBallCollision(ball, rules);
     handleBallLeftPaddleCollision(ball, this.leftPaddle);

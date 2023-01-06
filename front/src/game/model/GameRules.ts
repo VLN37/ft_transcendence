@@ -3,6 +3,12 @@ export type Tuple = {
   y: number;
 };
 
+export enum PlayerState {
+  STOPPED,
+  MOVING_UP,
+  MOVING_DOWN,
+}
+
 export type GameRules = {
   worldWidth: number;
   worldHeight: number;
@@ -19,6 +25,7 @@ export type GameRules = {
     height: number;
     leftLine: number;
     rightLine: number;
+    speed: number;
   };
   topCollisionEdge: number;
   bottomCollisionEdge: number;

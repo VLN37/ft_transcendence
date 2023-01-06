@@ -1,4 +1,4 @@
-import { GameRules } from './GameRules';
+import { GameRules, PlayerState } from './GameRules';
 
 export enum PlayerSide {
   RIGHT,
@@ -12,13 +12,33 @@ export class Player {
   width: number;
   height: number;
 
+  state: PlayerState;
+  speed: number;
+
   constructor(side: PlayerSide, rules: GameRules) {
     this.side = side;
+    this.state = PlayerState.STOPPED;
     this.y = rules.player.startingPosition;
     this.x =
       side == PlayerSide.LEFT ? rules.player.leftLine : rules.player.rightLine;
     this.width = rules.player.width;
     this.height = rules.player.height;
+    this.speed = rules.player.speed;
+  }
+
+  update(deltaTime: number) {
+    if (this.state == PlayerState.STOPPED) {
+      return;
+    }
+
+    let movement = 0;
+    if (this.state == PlayerState.MOVING_UP) {
+      movement = -(this.speed * deltaTime);
+    } else {
+      movement = this.speed * deltaTime;
+    }
+
+    this.y += movement;
   }
 
   getLeftBorder() {

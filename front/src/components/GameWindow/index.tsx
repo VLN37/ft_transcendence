@@ -37,10 +37,7 @@ export default (props: GameWindowProps) => {
   let image: p5Types.Graphics;
 
   let ball = new Ball(rules);
-  // ball.velocity = Vector.random().mult(700);
-  // ball.velocity.x = -200;
-  // ball.velocity.y = 216;
-  // ball.velocity.normalize().mult(100);
+
   let leftPlayer = new Player(PlayerSide.LEFT, rules);
   let rightPlayer = new Player(PlayerSide.RIGHT, rules);
 
@@ -58,8 +55,10 @@ export default (props: GameWindowProps) => {
     ball.velocity.x = state.ball.vel.x;
     ball.velocity.y = state.ball.vel.y;
 
-    leftPlayer.y = state.pl;
-    rightPlayer.y = state.pr;
+    leftPlayer.y = state.pl.y;
+    rightPlayer.y = state.pr.y;
+    leftPlayer.state = state.pl.state;
+    rightPlayer.state = state.pr.state;
   };
 
   matchApi.setOnMatchTickListener(listenGameState);
@@ -94,15 +93,18 @@ export default (props: GameWindowProps) => {
   const handleInput = () => {};
 
   const updateWorld = () => {
-    ball.update(image.deltaTime / 1000);
+    const deltaTime = image.deltaTime / 1000;
+    ball.update(deltaTime);
+    leftPlayer.update(deltaTime);
+    rightPlayer.update(deltaTime);
   };
 
   const processGameLogic = () => {};
 
   const handleCollisions = () => {
     handleBallCollision(ball, rules);
-    // handleBallLeftPaddleCollision(ball, leftPlayer);
-    // handleBallRightPaddleCollision(ball, rightPlayer);
+    handleBallLeftPaddleCollision(ball, leftPlayer);
+    handleBallRightPaddleCollision(ball, rightPlayer);
   };
 
   const render = (p5: p5Types) => {
