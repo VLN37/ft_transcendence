@@ -3,6 +3,12 @@ export type Tuple = {
   y: number;
 };
 
+export enum PlayerCommand {
+  STOP,
+  MOVE_UP,
+  MOVE_DOWN,
+}
+
 export enum PlayerState {
   STOPPED,
   MOVING_UP,

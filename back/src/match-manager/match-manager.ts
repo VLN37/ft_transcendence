@@ -8,6 +8,7 @@ import { Repository } from 'typeorm';
 import { NOTIFICATIONS_PER_SECOND, UPDATES_PER_SECOND } from './game/rules';
 import { MatchState } from './model/MatchState';
 import { MemoryMatch } from './model/MemoryMatch';
+import { PlayerCommand } from './model/PlayerCommands';
 
 export type ActiveMatch = {
   timers: {
@@ -111,6 +112,19 @@ export class MatchManager {
 
     if (match.match.left_player_connected && match.match.right_player_connected)
       this.onBothPlayersConnected(match);
+  }
+
+  handlePlayerCommand(
+    playerId: number,
+    command: PlayerCommand,
+    matchId: string,
+  ) {
+    const activeMatch = this.findMatchById(matchId);
+    if (!activeMatch) {
+      throw new Error('Match not active');
+    }
+
+    activeMatch.match.handlePlayerCommand(playerId, command);
   }
 
   disconnectPlayer(userId: number) {

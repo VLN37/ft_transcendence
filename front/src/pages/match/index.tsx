@@ -13,7 +13,7 @@ export default function MatchPage() {
     throw new Error('no match id to connect');
   }
 
-  const [matchApi] = useState(new GameApi());
+  const [matchApi] = useState(new GameApi(match_id));
 
   // let matchApi: MatchApi = new MatchApi();
 
@@ -23,7 +23,7 @@ export default function MatchPage() {
       console.log('rendering match page');
       matchApi.connectToServer();
       console.log('match id: ' + match_id);
-      matchApi.connectAsPlayer(match_id!);
+      matchApi.connectAsPlayer();
       setRules(currentRules.data);
     }
     loadGameRules();
