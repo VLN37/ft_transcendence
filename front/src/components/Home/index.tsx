@@ -203,7 +203,7 @@ export function Home() {
   }, []);
 
   useEffect(() => {
-    userApi.getMe().then((_user) => setUser(_user));
+    // userApi.getMe().then((_user) => setUser(_user));
     matchesApi.getLiveMatches(9).then((matchs: Match[]) => setMatches(matchs));
   }, [user]);
 
