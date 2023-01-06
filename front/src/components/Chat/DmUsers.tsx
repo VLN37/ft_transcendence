@@ -153,7 +153,7 @@ function PendingRequestMenu(props: {
   // const me: User = userStorage.getUser() || emptyUser();
 
   async function updateMe() {
-    console.log(props.me);
+    // console.log(props.me);
     props.me.friend_requests.splice(
       props.me.friend_requests.findIndex(elem => elem.id == props.user.id), 1
     )
