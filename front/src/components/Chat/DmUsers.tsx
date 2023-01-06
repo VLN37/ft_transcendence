@@ -154,11 +154,11 @@ function PendingRequestMenu(props: {
 
   async function updateMe() {
     props.me.friend_requests.splice(
-      props.me.friend_requests.findIndex(user => user.id == props.user.id), 1
+      props.me.friend_requests.findIndex(elem => elem.id == props.user.id), 1
     )
     userStorage.saveUser(props.me);
     props.setMe({... props.me})
-    // await userStorage.updateUser();
+    await userStorage.updateUser();
   }
 
   async function acceptFriend() {
@@ -205,16 +205,11 @@ export function DmUsers() {
   const [me, setMe] = useState<User>(
     userStorage.getUser() || emptyUser()
   );
-  const [requests, setRequests] = useState<User[]>(
-    userStorage.getUser()?.friend_requests || []
-  );
 
   async function updateFriends(data: any) {
-    // for some reason this causes duplicate entries
-    // me.friend_requests.push(data.user);
-    // userStorage.saveUser(me);
-
-    me.friend_requests.push(data.user);
+    console.log(me);
+    // if (!me.friend_requests.find((elem) => elem.id == data.user.id))
+      me.friend_requests.push(data.user);
     userStorage.saveUser(me);
     setMe({... me});
   }
@@ -228,6 +223,12 @@ export function DmUsers() {
   }
 
   useEffect(() => {
+    async function fetchUser() {
+      const user = await userApi.getMe();
+      userStorage.saveUser(user);
+      setMe({...user});
+    }
+    fetchUser();
     chatApi.subscribeFriendRequest(updateFriends);
     chatApi.subscribeUserStatus(updateStatus);
     return () => {

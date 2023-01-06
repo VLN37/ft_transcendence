@@ -197,9 +197,9 @@ export function Home() {
   const [user, setUser] = useState(emptyUser());
   const [matches, setMatches] = useState<Match[]>([]);
 
-  ChatApi.subscribeUserUpdated(setUser);
 
   useEffect(() => {
+    ChatApi.subscribeUserUpdated(setUser);
     userApi.getMe().then((_user) => setUser(_user));
     matchesApi.getLiveMatches(9).then((matchs: Match[]) => setMatches(matchs));
     return ChatApi.unsubscribeUserUpdated();
