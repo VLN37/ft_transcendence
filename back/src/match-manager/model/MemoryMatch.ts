@@ -6,11 +6,7 @@ import {
 } from '../game/math/collision';
 import { Vector } from '../game/math/Vector';
 import { Ball } from '../game/model/Ball';
-import {
-  Player as Paddle,
-  PlayerSide,
-  PlayerState,
-} from '../game/model/Player';
+import { Paddle, PlayerSide, PlayerState } from '../game/model/Paddle';
 import { rules } from '../game/rules';
 import { MatchState } from './MatchState';
 

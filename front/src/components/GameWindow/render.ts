@@ -2,7 +2,7 @@ import p5Types from 'p5';
 import { Point } from '../../game/math/Point';
 import { Ball } from '../../game/model/Ball';
 import { GameRules } from '../../game/model/GameRules';
-import { Player, PlayerSide } from '../../game/model/Player';
+import { Paddle, PlayerSide } from '../../game/model/Paddle';
 
 const getPlayerColor = (side: PlayerSide, image: p5Types.Graphics) => {
   let color: p5Types.Color;
@@ -16,7 +16,7 @@ const getPlayerColor = (side: PlayerSide, image: p5Types.Graphics) => {
 
 export const drawPlayer = (
   image: p5Types.Graphics,
-  rPlayer: Player,
+  rPlayer: Paddle,
   rules: GameRules,
 ) => {
   image.fill(getPlayerColor(rPlayer.side, image));

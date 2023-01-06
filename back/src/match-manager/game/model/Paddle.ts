@@ -11,7 +11,7 @@ export enum PlayerState {
   MOVING_DOWN,
 }
 
-export class Player {
+export class Paddle {
   side: PlayerSide;
   x: number;
   y: number;

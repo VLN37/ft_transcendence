@@ -5,7 +5,7 @@ export enum PlayerSide {
   LEFT,
 }
 
-export class Player {
+export class Paddle {
   side: PlayerSide;
   x: number;
   y: number;

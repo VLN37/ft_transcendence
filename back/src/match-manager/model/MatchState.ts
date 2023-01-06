@@ -1,4 +1,4 @@
-import { PlayerState } from '../game/model/Player';
+import { PlayerState } from '../game/model/Paddle';
 
 export class Tuple {
   x: number;

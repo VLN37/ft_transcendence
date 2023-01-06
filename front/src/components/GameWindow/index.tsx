@@ -2,7 +2,7 @@ import Sketch from 'react-p5';
 import p5Types from 'p5';
 import { Ball } from '../../game/model/Ball';
 import { MatchState } from '../../game/model/MatchState';
-import { Player, PlayerSide } from '../../game/model/Player';
+import { Paddle, PlayerSide } from '../../game/model/Paddle';
 import { GameApi } from '../../services/gameApi';
 import { GameRules } from '../../game/model/GameRules';
 import {
@@ -38,8 +38,8 @@ export default (props: GameWindowProps) => {
 
   let ball = new Ball(rules);
 
-  let leftPlayer = new Player(PlayerSide.LEFT, rules);
-  let rightPlayer = new Player(PlayerSide.RIGHT, rules);
+  let leftPlayer = new Paddle(PlayerSide.LEFT, rules);
+  let rightPlayer = new Paddle(PlayerSide.RIGHT, rules);
 
   const setup = (p5: p5Types, canvasParentRef: Element) => {
     updateWindowProportions();

@@ -1,6 +1,6 @@
 import { Ball } from '../model/Ball';
 import { GameRules } from '../rules';
-import { Player } from '../model/Player';
+import { Paddle } from '../model/Paddle';
 
 export function handleBallCollision(ball: Ball, rules: GameRules) {
   if (
@@ -16,7 +16,7 @@ export function handleBallCollision(ball: Ball, rules: GameRules) {
   }
 }
 
-export function handleBallLeftPaddleCollision(ball: Ball, player: Player) {
+export function handleBallLeftPaddleCollision(ball: Ball, player: Paddle) {
   if (ball.getLeftBorder() > player.getRightBorder() || ball.velocity.x > 0)
     return;
 
@@ -32,7 +32,7 @@ export function handleBallLeftPaddleCollision(ball: Ball, player: Player) {
   }
 }
 
-export function handleBallRightPaddleCollision(ball: Ball, player: Player) {
+export function handleBallRightPaddleCollision(ball: Ball, player: Paddle) {
   if (ball.getRightBorder() < player.getLeftBorder() || ball.velocity.x < 0)
     return;
 
