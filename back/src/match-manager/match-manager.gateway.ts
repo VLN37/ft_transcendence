@@ -84,7 +84,9 @@ export class MatchManagerGateway implements OnGatewayInit, OnGatewayDisconnect {
       matchId,
     );
 
-    if (!result.ok) {
+    if (result.ok) {
+      this.server.in(matchId).emit('match-tick', result.val);
+    } else {
       client.disconnect();
     }
   }

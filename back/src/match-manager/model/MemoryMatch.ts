@@ -96,12 +96,13 @@ export class MemoryMatch {
     this.handleCollisions();
   }
 
-  handlePlayerCommand(playerId: number, command: PlayerCommand) {
+  handlePlayerCommand(playerId: number, command: PlayerCommand): MatchState {
     if (playerId == this.left_player.id) {
       this.leftPaddle.handleCommand(command);
     } else if (playerId == this.right_player.id) {
       this.rightPaddle.handleCommand(command);
     }
+    return this.getCurrentState();
   }
 
   private handleInput() {}

@@ -119,18 +119,24 @@ export class MatchManager {
     playerId: number,
     command: PlayerCommand,
     matchId: string,
-  ): Result<void, string> {
+  ): Result<MatchState, string> {
     const activeMatch = this.findMatchById(matchId);
     if (!activeMatch) {
       return Err('Match not active');
     }
 
-    if (playerId != activeMatch.match.left_player.id && playerId != activeMatch.match.right_player.id) {
+    if (
+      playerId != activeMatch.match.left_player.id &&
+      playerId != activeMatch.match.right_player.id
+    ) {
       return Err('Issuer is not a player');
     }
 
-    activeMatch.match.handlePlayerCommand(playerId, command);
-    return Ok.EMPTY;
+    if (activeMatch.match.stage != 'ONGOING')
+      return Ok(activeMatch.match.getCurrentState());
+
+    const state = activeMatch.match.handlePlayerCommand(playerId, command);
+    return Ok(state);
   }
 
   disconnectPlayer(userId: number) {
