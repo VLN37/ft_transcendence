@@ -262,19 +262,23 @@ export function ChannelTable() {
   const [bkpChannels, setBkpChannels] = useState<Channel[]>([]);
   const toast = useToast();
   let navigate = useNavigate();
-  const user = userStorage.getUser();
+  const user = userStorage.getUser() || emptyUser();
   const [reload, setReload] = useState<boolean>(false);
 
   const isMember = (channel: Channel) => {
     return user?.channels.find((channel_user) => channel_user.id == channel.id);
   };
 
-  const leaveChannel = (channel_id: number) => {
-    chatApi.leave(channel_id).then(() => {
-      setReload(!reload);
-    });
-    return;
-  };
+  async function leaveChannel(channel_id: number) {
+    await chatApi.leave(channel_id);
+    setChannels((prevChannels) =>
+      prevChannels.map((chn) => {
+        if (chn.id == channel_id)
+          chn.users = chn.users.filter((prevUser) => prevUser.id != user.id);
+        return chn;
+      }),
+    );
+  }
 
   const join = (channel: Channel) => {
     api.connectToChannel({ room: channel.id }).then((res) => {
@@ -307,6 +311,7 @@ export function ChannelTable() {
 
   useEffect(() => {
     chatApi.subscribeChannelStatus((channelStatus: ChannelStatus) => {
+      console.log(channelStatus);
       if (channelStatus.event == 'created')
         setChannels((prevChannels) => [channelStatus.channel, ...prevChannels]);
       if (channelStatus.event == 'updated') {
