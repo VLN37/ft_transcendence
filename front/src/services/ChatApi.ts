@@ -1,4 +1,4 @@
-import { AxiosInstance } from 'axios';
+import { AxiosError, AxiosInstance } from 'axios';
 import { Message } from '../models/Message';
 import { Socket } from 'socket.io-client';
 import { iDirectMessage } from '../models/DirectMessage';
@@ -30,9 +30,13 @@ class ChatApi {
   }
 
   async leave(id: number) {
-    const response = await this.client.delete(`/channels/${id}/leave`, {});
-    await userStorage.updateUser();
-    return response;
+    try {
+      const response = await this.client.delete(`/channels/${id}/leave`, {});
+      await userStorage.updateUser();
+      return response;
+    } catch (error) {
+      return (error as AxiosError).response;
+    }
   }
 
   setChannelSocket(instance: Api) {
@@ -62,7 +66,7 @@ class ChatApi {
 
   unsubscribeDirectMessage() {
     this.dmSocket?.off('chat');
-	this.dmSocket?.removeAllListeners('chat');
+    this.dmSocket?.removeAllListeners('chat');
   }
 
   subscribeGameInvite(callback: any) {
@@ -196,7 +200,7 @@ class ChatApi {
 
   subscribeUserUpdated(callback: any) {
     this.dmSocket?.on('user_updated', (user: User) => {
-      callback({...user});
+      callback({ ...user });
     });
   }
 

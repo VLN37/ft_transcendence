@@ -270,7 +270,16 @@ export function ChannelTable() {
   };
 
   async function leaveChannel(channel_id: number) {
-    await chatApi.leave(channel_id);
+    const response = await chatApi.leave(channel_id);
+    if (!response || response.status != StatusCodes.OK) {
+      toast({
+        title: 'Failed to leave channel',
+        status: 'error',
+        duration: 2000,
+        isClosable: true,
+      });
+      return;
+    }
     setChannels((prevChannels) =>
       prevChannels.map((chn) => {
         if (chn.id == channel_id)
@@ -311,7 +320,6 @@ export function ChannelTable() {
 
   useEffect(() => {
     chatApi.subscribeChannelStatus((channelStatus: ChannelStatus) => {
-      console.log(channelStatus);
       if (channelStatus.event == 'created')
         setChannels((prevChannels) => [channelStatus.channel, ...prevChannels]);
       if (channelStatus.event == 'updated') {
