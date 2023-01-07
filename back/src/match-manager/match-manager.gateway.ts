@@ -77,9 +77,16 @@ export class MatchManagerGateway implements OnGatewayInit, OnGatewayDisconnect {
     @MessageBody('command') command: PlayerCommand,
     @ConnectedSocket() client: Socket,
   ) {
-    // TODO: drop commands that are not sent by a player
     const user: UserDto = client.handshake.auth['user'];
-    this.matchManager.handlePlayerCommand(user.id, command, matchId);
+    const result = this.matchManager.handlePlayerCommand(
+      user.id,
+      command,
+      matchId,
+    );
+
+    if (!result.ok) {
+      client.disconnect();
+    }
   }
 
   handleDisconnect(client: Socket) {

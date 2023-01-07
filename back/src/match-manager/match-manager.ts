@@ -4,6 +4,7 @@ import { randomInt } from 'crypto';
 import { Match } from 'src/entities/match.entity';
 import { UserDto } from 'src/users/dto/user.dto';
 import { minutes, seconds } from 'src/utils/functions/timeConvertion';
+import { Err, Ok, Result } from 'ts-results';
 import { Repository } from 'typeorm';
 import { NOTIFICATIONS_PER_SECOND, UPDATES_PER_SECOND } from './game/rules';
 import { MatchState } from './model/MatchState';
@@ -118,13 +119,18 @@ export class MatchManager {
     playerId: number,
     command: PlayerCommand,
     matchId: string,
-  ) {
+  ): Result<void, string> {
     const activeMatch = this.findMatchById(matchId);
     if (!activeMatch) {
-      throw new Error('Match not active');
+      return Err('Match not active');
+    }
+
+    if (playerId != activeMatch.match.left_player.id && playerId != activeMatch.match.right_player.id) {
+      return Err('Issuer is not a player');
     }
 
     activeMatch.match.handlePlayerCommand(playerId, command);
+    return Ok.EMPTY;
   }
 
   disconnectPlayer(userId: number) {
