@@ -13,7 +13,8 @@ export enum PlayerState {
 }
 
 export const commandStateMap = {
-  [PlayerCommand.STOP]: PlayerState.STOPPED,
+  [PlayerCommand.STOP_MOVE_UP]: PlayerState.STOPPED,
+  [PlayerCommand.STOP_MOVE_DOWN]: PlayerState.STOPPED,
   [PlayerCommand.MOVE_UP]: PlayerState.MOVING_UP,
   [PlayerCommand.MOVE_DOWN]: PlayerState.MOVING_DOWN,
 };
@@ -25,6 +26,9 @@ export class Paddle {
   width: number;
   height: number;
   state: PlayerState;
+
+  private isGoingUp = false;
+  private isGoingDown = false;
 
   constructor(side: PlayerSide, rules: GameRules) {
     this.side = side;
@@ -59,7 +63,19 @@ export class Paddle {
   }
 
   handleCommand(command: PlayerCommand) {
-    this.state = commandStateMap[command];
+    if (command === PlayerCommand.STOP_MOVE_UP) {
+      this.isGoingUp = false;
+    } else if (command === PlayerCommand.STOP_MOVE_DOWN) {
+      this.isGoingDown = false;
+    } else if (command === PlayerCommand.MOVE_UP) {
+      this.isGoingUp = true;
+    } else if (command === PlayerCommand.MOVE_DOWN) {
+      this.isGoingDown = true;
+    }
+
+    if (this.isGoingUp) this.state = PlayerState.MOVING_UP;
+    else if (this.isGoingDown) this.state = PlayerState.MOVING_DOWN;
+    else this.state = PlayerState.STOPPED;
   }
 
   getLeftBorder() {
@@ -76,5 +92,12 @@ export class Paddle {
 
   getLowerBorder() {
     return this.y + this.height / 2;
+  }
+
+  private isStopCommand(command: PlayerCommand) {
+    return (
+      command === PlayerCommand.STOP_MOVE_DOWN ||
+      command === PlayerCommand.STOP_MOVE_UP
+    );
   }
 }

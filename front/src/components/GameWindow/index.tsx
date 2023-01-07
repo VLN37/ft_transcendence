@@ -4,7 +4,7 @@ import { Ball } from '../../game/model/Ball';
 import { MatchState } from '../../game/model/MatchState';
 import { Paddle, PlayerSide } from '../../game/model/Paddle';
 import { GameApi } from '../../services/gameApi';
-import { GameRules, PlayerCommand } from '../../game/model/GameRules';
+import { GameRules } from '../../game/model/GameRules';
 import {
   drawBall,
   drawBallCoords,
@@ -18,6 +18,7 @@ import {
   handleBallLeftPaddleCollision,
   handleBallRightPaddleCollision,
 } from '../../game/math/collision';
+import { PlayerCommand } from '../../game/model/PlayerCommand';
 
 export type GameWindowProps = {
   gameApi: GameApi;
@@ -145,10 +146,10 @@ export default (props: GameWindowProps) => {
   const onKeyRelease = (p5: p5Types) => {
     if (p5.keyCode == p5.UP_ARROW || p5.key.toLowerCase() == 'w') {
       console.log('key up released');
-      gameApi.issueCommand(PlayerCommand.STOP);
+      gameApi.issueCommand(PlayerCommand.STOP_MOVE_UP);
     } else if (p5.keyCode == p5.DOWN_ARROW || p5.key.toLowerCase() == 's') {
       console.log('key down released');
-      gameApi.issueCommand(PlayerCommand.STOP);
+      gameApi.issueCommand(PlayerCommand.STOP_MOVE_DOWN);
     }
   };
 
