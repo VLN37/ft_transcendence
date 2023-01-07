@@ -52,7 +52,6 @@ export const printFps = (image: p5Types.Graphics, ball: Ball) => {
   const ballSpeed = ball.velocity.mag();
   const distance = Point.subtract(ball.position, ballLastPos).mag();
   distanceCounter += distance;
-  debugger;
   ballLastPos.moveTo(ball.position);
 
   totalTime += deltaTime;
