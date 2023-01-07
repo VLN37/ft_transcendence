@@ -199,13 +199,10 @@ export function Home() {
 
   useEffect(() => {
     ChatApi.subscribeUserUpdated(setUser);
-    return ChatApi.unsubscribeUserUpdated();
+    matchesApi.getLiveMatches(9).then((matchs: Match[]) => setMatches(matchs));
+    return () => ChatApi.unsubscribeUserUpdated();
   }, []);
 
-  useEffect(() => {
-    userApi.getMe().then((_user) => setUser(_user));
-    matchesApi.getLiveMatches(9).then((matchs: Match[]) => setMatches(matchs));
-  }, [user]);
 
   return (
     <Flex className="homeWrapper" height={'75vh'} gap={2} overflowY={'scroll'}>
