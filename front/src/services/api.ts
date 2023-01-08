@@ -16,6 +16,8 @@ export type ErrorResponse = {
   error: string;
 };
 
+export const LOCAL_STORAGE_JWT_TOKEN_KEY = 'jwt-token';
+
 export class Api {
   private readonly MATCH_MAKING_NAMESPACE = 'match-making';
   private readonly CHANNEL_NAMESPACE = 'channel';
@@ -32,10 +34,10 @@ export class Api {
 
   constructor() {
     console.log('Creating API class instance');
-    this.client.interceptors.request.use((config) => {
-      if (config.headers) config.headers['x-correlation-id'] = uuidV4();
-      return config;
-    });
+    const token = localStorage.getItem(LOCAL_STORAGE_JWT_TOKEN_KEY);
+    if (token) {
+      this.setToken(token);
+    }
   }
 
   getClient() {
@@ -83,8 +85,7 @@ export class Api {
 
   async get2faQRcode() {
     const response = await this.client.get('/auth/2fa');
-    if (response.status != 200)
-      throw new Error('2fa code generation failed');
+    if (response.status != 200) throw new Error('2fa code generation failed');
     return response.data;
   }
 
@@ -98,8 +99,7 @@ export class Api {
         },
       );
       return response;
-
-    } catch(err) {
+    } catch (err) {
       console.log(err);
       return (err as AxiosError).response;
     }
@@ -114,8 +114,7 @@ export class Api {
         },
       );
       return response;
-
-    } catch(err) {
+    } catch (err) {
       console.log(err);
       return (err as AxiosError).response;
     }
@@ -192,8 +191,8 @@ export class Api {
     this.token = undefined;
     this.channelSocket?.disconnect();
     this.dmSocket?.disconnect();
-	this.matchMakingSocket?.disconnect();
-	chatApi.disconnect();
+    this.matchMakingSocket?.disconnect();
+    chatApi.disconnect();
   }
 
   getToken() {

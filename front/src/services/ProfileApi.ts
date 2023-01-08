@@ -17,10 +17,8 @@ class ProfileApi {
         id: user.id,
         login_intra: user.login_intra,
         profile: {
-          id: user.id,
-          name: user.profile.name,
+          ...user.profile,
           nickname: name,
-          avatar_path: user.profile.avatar_path,
         },
       });
       return response;
@@ -37,11 +35,7 @@ class ProfileApi {
       },
     };
     try {
-      const response = await this.client.post<any>(
-        '/avatar',
-        body,
-        config,
-      );
+      const response = await this.client.post<any>('/avatar', body, config);
       // console.log(response);
       return response;
     } catch (err) {
