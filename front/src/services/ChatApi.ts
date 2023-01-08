@@ -60,6 +60,19 @@ class ChatApi {
     });
   }
 
+  subscribeDirectMessageNotify(callback: any) {
+    this.dmSocket?.on('chat_notify', (message: iDirectMessage) => {
+      const blocked = userStorage.getUser()?.blocked || [];
+      if (blocked.length) {
+        if (
+          blocked.find((blocked_user) => message.sender.id == blocked_user.id)
+        )
+          return;
+      }
+      callback();
+    });
+  }
+
   unsubscribeMessage() {
     this.channelSocket?.off('chat');
   }
@@ -67,6 +80,10 @@ class ChatApi {
   unsubscribeDirectMessage() {
     this.dmSocket?.off('chat');
     this.dmSocket?.removeAllListeners('chat');
+  }
+
+  unsubscribeDirectMessageNotify() {
+    this.dmSocket?.off('chat_notify');
   }
 
   subscribeGameInvite(callback: any) {

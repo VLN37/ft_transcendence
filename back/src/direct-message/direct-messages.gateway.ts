@@ -119,6 +119,7 @@ export class DirectMessagesGateway
     this.server.to(fromUser).emit('chat', newMessage);
     //receiver
     this.server.to(toUser).emit('chat', newMessage);
+    this.server.to(toUser).emit('chat_notify', newMessage);
   }
 
   async pingFriendRequest(receiver: number, data: iFriendRequestWsPayload) {
@@ -164,7 +165,7 @@ export class DirectMessagesGateway
       data: {
         status,
         id,
-		host: true,
+        host: true,
         user: user2,
       },
     });
@@ -172,7 +173,7 @@ export class DirectMessagesGateway
       data: {
         status,
         id,
-		host: false,
+        host: false,
         user: user1,
       },
     });
