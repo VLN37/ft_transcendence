@@ -116,6 +116,7 @@ export class MatchManagerService {
     const match: MemoryMatch = await this.matchManager.createMatch(
       user1,
       user2,
+      'TURBO',
     );
 
     if (!match || !match.id)

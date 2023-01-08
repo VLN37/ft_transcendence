@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { randomInt } from 'crypto';
 import { Match } from 'src/entities/match.entity';
+import { MatchType } from 'src/match-making/dto/AppendToQueueDTO';
 import { UserDto } from 'src/users/dto/user.dto';
 import { minutes, seconds } from 'src/utils/functions/timeConvertion';
 import { Err, Ok, Result } from 'ts-results';
@@ -36,11 +37,12 @@ export class MatchManager {
     private readonly matchRepository: Repository<Match>,
   ) {}
 
-  async createMatch(user1: UserDto, user2: UserDto) {
+  async createMatch(user1: UserDto, user2: UserDto, type: MatchType) {
     // TODO: check if users are already playing a match
     const match = this.matchRepository.create({
       left_player: user1,
       right_player: user2,
+      type: type,
     });
 
     await this.matchRepository.save(match);
@@ -119,18 +121,24 @@ export class MatchManager {
     playerId: number,
     command: PlayerCommand,
     matchId: string,
-  ): Result<void, string> {
+  ): Result<MatchState, string> {
     const activeMatch = this.findMatchById(matchId);
     if (!activeMatch) {
       return Err('Match not active');
     }
 
-    if (playerId != activeMatch.match.left_player.id && playerId != activeMatch.match.right_player.id) {
+    if (
+      playerId != activeMatch.match.left_player.id &&
+      playerId != activeMatch.match.right_player.id
+    ) {
       return Err('Issuer is not a player');
     }
 
-    activeMatch.match.handlePlayerCommand(playerId, command);
-    return Ok.EMPTY;
+    if (activeMatch.match.stage != 'ONGOING')
+      return Ok(activeMatch.match.getCurrentState());
+
+    const state = activeMatch.match.handlePlayerCommand(playerId, command);
+    return Ok(state);
   }
 
   disconnectPlayer(userId: number) {
@@ -205,8 +213,6 @@ export class MatchManager {
   }
 
   private startMatch(match: ActiveMatch) {
-    match.match.left_player_score = randomInt(0, 4);
-    match.match.right_player_score = randomInt(0, 4);
     match.match.updateStage('ONGOING');
     match.match.resetPositions();
 
@@ -236,8 +242,6 @@ export class MatchManager {
   private finishMatch(match: ActiveMatch) {
     clearInterval(match.timers.update);
     clearInterval(match.timers.notify);
-    match.match.left_player_score = randomInt(3, 20);
-    match.match.right_player_score = randomInt(3, 20);
     match.match.updateStage('FINISHED');
   }
 

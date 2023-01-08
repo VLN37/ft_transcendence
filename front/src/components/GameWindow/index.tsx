@@ -4,12 +4,13 @@ import { Ball } from '../../game/model/Ball';
 import { MatchState } from '../../game/model/MatchState';
 import { Paddle, PlayerSide } from '../../game/model/Paddle';
 import { GameApi } from '../../services/gameApi';
-import { GameRules, PlayerCommand } from '../../game/model/GameRules';
+import { GameRules } from '../../game/model/GameRules';
 import {
   drawBall,
   drawBallCoords,
   drawBallVelocity,
   drawPlayer,
+  drawScores,
   drawSpeedMeter,
   printFps,
 } from './render';
@@ -18,6 +19,7 @@ import {
   handleBallLeftPaddleCollision,
   handleBallRightPaddleCollision,
 } from '../../game/math/collision';
+import { PlayerCommand } from '../../game/model/PlayerCommand';
 
 export type GameWindowProps = {
   gameApi: GameApi;
@@ -39,6 +41,8 @@ export default (props: GameWindowProps) => {
   let ball = new Ball(rules);
 
   let leftPlayer = new Paddle(PlayerSide.LEFT, rules);
+  let leftPlayerScore = 0;
+  let rightPlayerScore = 0;
   let rightPlayer = new Paddle(PlayerSide.RIGHT, rules);
 
   const setup = (p5: p5Types, canvasParentRef: Element) => {
@@ -59,6 +63,8 @@ export default (props: GameWindowProps) => {
     rightPlayer.y = state.pr.y;
     leftPlayer.state = state.pl.state;
     rightPlayer.state = state.pr.state;
+    leftPlayerScore = state.pl.score;
+    rightPlayerScore = state.pr.score;
   };
 
   gameApi.setOnMatchTickListener(listenGameState);
@@ -113,6 +119,7 @@ export default (props: GameWindowProps) => {
     // drawBallVelocity(image, ball);
     drawPlayer(image, rightPlayer, rules);
     drawPlayer(image, leftPlayer, rules);
+    drawScores(image, leftPlayerScore, rightPlayerScore);
     drawSpeedMeter(image, ball, rules);
     resizeIfNecessary(p5);
     printFps(image, ball);
@@ -132,6 +139,7 @@ export default (props: GameWindowProps) => {
     render(p5);
   };
 
+  // TODO: don't send commands if the match haven't started yet
   const onKeyPress = (p5: p5Types) => {
     if (p5.keyCode == p5.UP_ARROW || p5.key.toLowerCase() == 'w') {
       gameApi.issueCommand(PlayerCommand.MOVE_UP);
@@ -145,10 +153,10 @@ export default (props: GameWindowProps) => {
   const onKeyRelease = (p5: p5Types) => {
     if (p5.keyCode == p5.UP_ARROW || p5.key.toLowerCase() == 'w') {
       console.log('key up released');
-      gameApi.issueCommand(PlayerCommand.STOP);
+      gameApi.issueCommand(PlayerCommand.STOP_MOVE_UP);
     } else if (p5.keyCode == p5.DOWN_ARROW || p5.key.toLowerCase() == 's') {
       console.log('key down released');
-      gameApi.issueCommand(PlayerCommand.STOP);
+      gameApi.issueCommand(PlayerCommand.STOP_MOVE_DOWN);
     }
   };
 

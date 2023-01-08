@@ -39,6 +39,22 @@ export const drawBall = (image: p5Types.Graphics, ball: Ball) => {
   );
 };
 
+export const drawScores = (
+  image: p5Types.Graphics,
+  leftScore: number,
+  rightScore: number,
+) => {
+  image.push();
+  image.strokeWeight(4);
+  image.textSize(32);
+  image.fill(255, 255, 255);
+  image.stroke(getPlayerColor(PlayerSide.LEFT, image));
+  image.text(leftScore.toString(), 10, 32);
+  image.stroke(getPlayerColor(PlayerSide.RIGHT, image));
+  image.text(rightScore.toString(), 10, 64);
+  image.pop();
+};
+
 let totalTime = 0;
 let pxPerSecond = 0;
 let frameCount = 0;

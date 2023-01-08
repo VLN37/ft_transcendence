@@ -34,7 +34,8 @@ export class MatchManagerController {
   async generateMatches(@Param('qty') qty: number) {
     const p1 = await this.usersService.getOne(43);
     const p2 = await this.usersService.getOne(44);
-    for (var i = 0; i < qty; i++) this.matchManager.createMatch(p1, p2);
+    for (var i = 0; i < qty; i++)
+      this.matchManager.createMatch(p1, p2, 'CLASSIC');
   }
 
   @Get()

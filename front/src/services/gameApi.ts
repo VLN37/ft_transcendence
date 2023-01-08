@@ -1,6 +1,6 @@
 import { io, Socket } from 'socket.io-client';
-import { PlayerCommand } from '../game/model/GameRules';
 import { MatchState } from '../game/model/MatchState';
+import { PlayerCommand } from '../game/model/PlayerCommand';
 import api from './api';
 
 export class GameApi {

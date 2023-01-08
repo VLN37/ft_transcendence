@@ -159,7 +159,7 @@ function PendingRequestMenu(props: {
     )
     userStorage.saveUser(props.me);
     props.setMe({... props.me})
-    await userStorage.updateUser();
+    // await userStorage.updateUser();
   }
 
   async function acceptFriend() {

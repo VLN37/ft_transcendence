@@ -12,12 +12,6 @@ export enum PlayerState {
   MOVING_DOWN,
 }
 
-export const commandStateMap = {
-  [PlayerCommand.STOP]: PlayerState.STOPPED,
-  [PlayerCommand.MOVE_UP]: PlayerState.MOVING_UP,
-  [PlayerCommand.MOVE_DOWN]: PlayerState.MOVING_DOWN,
-};
-
 export class Paddle {
   side: PlayerSide;
   x: number;
@@ -25,6 +19,9 @@ export class Paddle {
   width: number;
   height: number;
   state: PlayerState;
+
+  private isGoingUp = false;
+  private isGoingDown = false;
 
   constructor(side: PlayerSide, rules: GameRules) {
     this.side = side;
@@ -51,15 +48,27 @@ export class Paddle {
     this.y += movement;
     if (this.y > rules.player.maxY) {
       this.y = rules.player.maxY;
-      this.state = PlayerState.STOPPED;
+      this.stopMoving();
     } else if (this.y < rules.player.minY) {
       this.y = rules.player.minY;
-      this.state = PlayerState.STOPPED;
+      this.stopMoving();
     }
   }
 
   handleCommand(command: PlayerCommand) {
-    this.state = commandStateMap[command];
+    if (command === PlayerCommand.STOP_MOVE_UP) {
+      this.isGoingUp = false;
+    } else if (command === PlayerCommand.STOP_MOVE_DOWN) {
+      this.isGoingDown = false;
+    } else if (command === PlayerCommand.MOVE_UP) {
+      this.isGoingUp = true;
+    } else if (command === PlayerCommand.MOVE_DOWN) {
+      this.isGoingDown = true;
+    }
+
+    if (this.isGoingUp) this.state = PlayerState.MOVING_UP;
+    else if (this.isGoingDown) this.state = PlayerState.MOVING_DOWN;
+    else this.stopMoving();
   }
 
   getLeftBorder() {
@@ -76,5 +85,11 @@ export class Paddle {
 
   getLowerBorder() {
     return this.y + this.height / 2;
+  }
+
+  private stopMoving() {
+    this.state = PlayerState.STOPPED;
+    this.isGoingUp = false;
+    this.isGoingDown = false;
   }
 }

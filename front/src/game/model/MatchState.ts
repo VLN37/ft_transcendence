@@ -8,9 +8,11 @@ export type MatchState = {
   pl: {
     y: number;
     state: PlayerState;
+    score: number;
   };
   pr: {
     y: number;
     state: PlayerState;
+    score: number;
   };
 };

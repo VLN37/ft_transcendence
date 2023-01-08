@@ -1,5 +1,7 @@
+import { MATCH_TYPES } from 'src/match-making/dto/AppendToQueueDTO';
 import { UserDto } from 'src/users/dto/user.dto';
 import {
+  checkBallGoalCollision,
   handleBallCollision,
   handleBallLeftPaddleCollision,
   handleBallRightPaddleCollision,
@@ -11,12 +13,15 @@ import { rules } from '../game/rules';
 import { MatchState } from './MatchState';
 import { PlayerCommand } from './PlayerCommands';
 
-export type MatchStage =
-  | 'AWAITING_PLAYERS'
-  | 'PREPARATION'
-  | 'ONGOING'
-  | 'FINISHED'
-  | 'CANCELED';
+export const MATCH_STAGES = [
+  'AWAITING_PLAYERS',
+  'PREPARATION',
+  'ONGOING',
+  'FINISHED',
+  'CANCELED',
+] as const;
+type MatchStageTuple = typeof MATCH_STAGES;
+export type MatchStage = MatchStageTuple[number];
 
 export class MemoryMatch {
   id: string;
@@ -61,12 +66,15 @@ export class MemoryMatch {
   resetPositions() {
     this.leftPaddle.y = rules.player.startingPosition;
     this.rightPaddle.y = rules.player.startingPosition;
-    const vec = Vector.random().mult(rules.ball.startingSpeed);
-    // const vec = new Vector(1, 0);
     this.lastUpdate = Date.now();
     this.ball.position.x = rules.ball.startingPosition.x;
     this.ball.position.y = rules.ball.startingPosition.y;
-    this.ball.velocity = vec;
+
+    if (this.stage === 'ONGOING') {
+      const vec = Vector.random().mult(rules.ball.startingSpeed);
+      // const vec = new Vector(1, 0);
+      this.ball.velocity = vec;
+    }
   }
 
   getCurrentState(): MatchState {
@@ -78,10 +86,12 @@ export class MemoryMatch {
       pl: {
         y: this.leftPaddle.y,
         state: this.leftPaddle.state,
+        score: this.left_player_score,
       },
       pr: {
         y: this.rightPaddle.y,
         state: this.rightPaddle.state,
+        score: this.right_player_score,
       },
     };
   }
@@ -96,12 +106,13 @@ export class MemoryMatch {
     this.handleCollisions();
   }
 
-  handlePlayerCommand(playerId: number, command: PlayerCommand) {
+  handlePlayerCommand(playerId: number, command: PlayerCommand): MatchState {
     if (playerId == this.left_player.id) {
       this.leftPaddle.handleCommand(command);
     } else if (playerId == this.right_player.id) {
       this.rightPaddle.handleCommand(command);
     }
+    return this.getCurrentState();
   }
 
   private handleInput() {}
@@ -126,6 +137,15 @@ export class MemoryMatch {
 
   private handleCollisions() {
     const ball = this.ball;
+    if (checkBallGoalCollision(ball, rules)) {
+      if (ball.getRightBorder() > rules.rightCollisionEdge) {
+        this.left_player_score++;
+      } else {
+        this.right_player_score++;
+      }
+
+      this.resetPositions();
+    }
     handleBallCollision(ball, rules);
     handleBallLeftPaddleCollision(ball, this.leftPaddle);
     handleBallRightPaddleCollision(ball, this.rightPaddle);
