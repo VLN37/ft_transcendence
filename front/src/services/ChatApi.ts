@@ -60,8 +60,8 @@ class ChatApi {
     });
   }
 
-  unsubscribeMessage(callback: any) {
-    this.channelSocket?.off('chat', callback);
+  unsubscribeMessage() {
+    this.channelSocket?.off('chat');
   }
 
   unsubscribeDirectMessage() {

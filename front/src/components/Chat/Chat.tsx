@@ -157,7 +157,7 @@ export default function Chat(props: Channel) {
   useEffect(() => {
     chatApi.subscribeMessage(updateMessages);
     document.getElementById('bottom')?.scrollIntoView();
-    return () => chatApi.unsubscribeMessage(updateMessages);
+    return () => chatApi.unsubscribeMessage();
   }, [messages]);
 
   return (

@@ -79,6 +79,8 @@ export default function DirectMessagesComponent(props: any) {
         setMessages(dm_messages);
         fetchUser();
       });
+
+    return () => chatApi.unsubscribeDirectMessage();
   }, []);
 
   return (
