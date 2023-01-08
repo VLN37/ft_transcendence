@@ -280,13 +280,9 @@ export function ChannelTable() {
       });
       return;
     }
-    setChannels((prevChannels) =>
-      prevChannels.map((chn) => {
-        if (chn.id == channel_id)
-          chn.users = chn.users.filter((prevUser) => prevUser.id != user.id);
-        return chn;
-      }),
-    );
+    (
+      document.getElementById(channel_id.toString()) as HTMLButtonElement
+    ).style.visibility = 'hidden';
   }
 
   const join = (channel: Channel) => {
@@ -390,6 +386,7 @@ export function ChannelTable() {
                   <Td>{channel.owner_id}</Td>
                   <Td>
                     <Button
+                      id={channel.id.toString()}
                       onClick={() => leaveChannel(channel.id)}
                       visibility={isMember(channel) ? 'visible' : 'hidden'}
                       marginRight={'2rem'}
