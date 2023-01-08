@@ -43,6 +43,15 @@ export class MatchManagerService {
     private matchManager: MatchManager,
   ) {}
 
+  async getActiveMatchInfo(matchId: string): Promise<Match> {
+    return this.matchRepository.findOne({
+      where: {
+        id: matchId,
+      },
+      relations: ['left_player.profile', 'right_player.profile'],
+    });
+  }
+
   async getLiveMatches(qty: number): Promise<Match[]> {
     let finishedMatches = [];
     const liveMatches = await this.matchRepository.find({

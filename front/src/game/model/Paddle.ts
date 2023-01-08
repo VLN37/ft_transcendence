@@ -1,7 +1,7 @@
 import { GameRules, PlayerState } from './GameRules';
 
 export enum PlayerSide {
-  RIGHT,
+  RIGHT = 1,
   LEFT,
 }
 

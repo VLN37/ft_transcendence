@@ -71,6 +71,16 @@ export class MatchManagerGateway implements OnGatewayInit, OnGatewayDisconnect {
     }
   }
 
+  @SubscribeMessage('connect-as-spectator')
+  async connectAsSpectator(
+    @MessageBody('match_id') matchId: string,
+    @ConnectedSocket() client: Socket,
+  ) {
+    const user = client.handshake.auth.user;
+    this.logger.debug(`connecting user ${user.login_intra} as spectator`);
+    client.join(matchId);
+  }
+
   @SubscribeMessage('player-command')
   async handlePlayerCommand(
     @MessageBody('match_id') matchId: string,

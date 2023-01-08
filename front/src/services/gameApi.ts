@@ -1,6 +1,7 @@
 import { io, Socket } from 'socket.io-client';
 import { MatchState } from '../game/model/MatchState';
 import { PlayerCommand } from '../game/model/PlayerCommand';
+import { Match } from '../models/Match';
 import api from './api';
 
 export class GameApi {
@@ -44,6 +45,13 @@ export class GameApi {
     });
   }
 
+  connectAsSpectator() {
+    if (!this.matchSocket) throw new Error('Not connected to the server');
+    this.matchSocket.emit('connect-as-spectator', {
+      match_id: this.matchId,
+    });
+  }
+
   setOnMatchTickListener(callback: (state: MatchState) => void) {
     if (!this.matchSocket) {
       throw new Error('match socket is not set');
@@ -63,8 +71,12 @@ export class GameApi {
     });
   }
 
-  getGameRules() {
-    return api.getClient().get('/matches/rules');
+  async getGameRules() {
+    return (await api.getClient().get('/matches/rules')).data;
+  }
+
+  async getMatchInfo(matchId: string): Promise<Match> {
+    return (await api.getClient().get(`/matches/${matchId}`)).data;
   }
 }
 
