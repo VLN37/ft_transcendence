@@ -3,13 +3,13 @@ import { Box, Button, Flex, Icon, Image, Text } from '@chakra-ui/react';
 import { IoDiamond } from 'react-icons/io5';
 import { DmUsers } from '../Chat/DmUsers';
 import { emptyUser, User } from '../../models/User';
-import userApi from '../../services/UserApi';
 import { useEffect, useState } from 'react';
 import { Match } from '../../models/Match';
 import matchesApi from '../../services/MatchesApi';
 import ChatApi from '../../services/ChatApi';
 import userStorage from '../../services/userStorage';
 import { useNavigate } from 'react-router-dom';
+import moment from 'moment';
 
 function getUserRank(user: User) {
   return <Icon mx={'auto'} my={'auto'} fontSize={'60px'} as={IoDiamond} />;
@@ -28,10 +28,9 @@ function formatMatchName(match: Match): string {
 }
 
 function formatMatchSubTitle(match: Match): string {
-  const tmp = new Date(match.created_at);
-  const date = tmp.toLocaleDateString('pt-BR', {});
-  //   return date + ' | ' + match.type;
-  return date + ' | ' + 'TURBO';
+  const momentObj = moment(match.created_at);
+  const date = momentObj.startOf('seconds').fromNow();
+  return date + ' | ' + match.type;
 }
 
 function UserComp(user: User) {
@@ -205,7 +204,6 @@ export function Home() {
     matchesApi.getLiveMatches(9).then((matchs: Match[]) => setMatches(matchs));
     return () => ChatApi.unsubscribeUserUpdated();
   }, []);
-
 
   return (
     <Flex className="homeWrapper" height={'75vh'} gap={2} overflowY={'scroll'}>
