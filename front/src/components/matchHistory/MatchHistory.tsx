@@ -22,7 +22,7 @@ function less<T>(a: T, b: T): number {
   return a === b ? 0 : a > b ? 1 : -1;
 }
 
-function randomMatch() {
+function randomMatch(): Match {
   return {
     id: Math.floor(Math.random() * 100).toString(),
     left_player: emptyUser(),
@@ -31,7 +31,7 @@ function randomMatch() {
     right_player_score: Math.floor(Math.random() * 3),
     stage: 'FINISHED',
     created_at: new Date(),
-    type: 'NORMAL',
+    type: 'CLASSIC',
   };
 }
 

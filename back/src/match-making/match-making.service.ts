@@ -31,7 +31,7 @@ export class MatchMakingService {
     queue.push(user);
 
     if (this.isMatchAvailable(queue)) {
-      return this.createMatch(queue);
+      return this.createMatch(queue, matchType);
     }
     return null;
   }
@@ -53,7 +53,10 @@ export class MatchMakingService {
     return queue.length >= 2;
   }
 
-  private async createMatch(queue: UserDto[]): Promise<MemoryMatch> {
+  private async createMatch(
+    queue: UserDto[],
+    matchType: MatchType,
+  ): Promise<MemoryMatch> {
     this.logger.debug('match is available');
     const user1 = queue.shift();
     const user2 = queue.shift();
@@ -62,6 +65,6 @@ export class MatchMakingService {
       `Creating a match between users ${user1.login_intra} and ${user2.login_intra}`,
     );
 
-    return this.matchManager.createMatch(user1, user2);
+    return this.matchManager.createMatch(user1, user2, matchType);
   }
 }

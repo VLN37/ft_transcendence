@@ -8,5 +8,5 @@ export interface Match {
   right_player_score: number;
   stage: string;
   created_at: Date;
-  type: string;
+  type: 'CLASSIC' | 'TURBO';
 }

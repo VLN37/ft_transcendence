@@ -1,3 +1,4 @@
+import { MatchType } from 'src/match-making/dto/AppendToQueueDTO';
 import { MatchStage } from 'src/match-manager/model/MemoryMatch';
 import {
   Column,
@@ -46,6 +47,13 @@ export class Match {
     default: 'AWAITING_PLAYERS',
   })
   stage: MatchStage;
+
+  @Column({
+    type: 'enum',
+    enum: ['CLASSIC', 'TURBO'],
+    nullable: false,
+  })
+  type: MatchType;
 
   @CreateDateColumn()
   created_at: Date;

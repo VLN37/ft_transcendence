@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { randomInt } from 'crypto';
 import { Match } from 'src/entities/match.entity';
+import { MatchType } from 'src/match-making/dto/AppendToQueueDTO';
 import { UserDto } from 'src/users/dto/user.dto';
 import { minutes, seconds } from 'src/utils/functions/timeConvertion';
 import { Err, Ok, Result } from 'ts-results';
@@ -36,11 +37,12 @@ export class MatchManager {
     private readonly matchRepository: Repository<Match>,
   ) {}
 
-  async createMatch(user1: UserDto, user2: UserDto) {
+  async createMatch(user1: UserDto, user2: UserDto, type: MatchType) {
     // TODO: check if users are already playing a match
     const match = this.matchRepository.create({
       left_player: user1,
       right_player: user2,
+      type: type,
     });
 
     await this.matchRepository.save(match);
