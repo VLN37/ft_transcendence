@@ -86,10 +86,12 @@ export class MemoryMatch {
       pl: {
         y: this.leftPaddle.y,
         state: this.leftPaddle.state,
+        score: this.left_player_score,
       },
       pr: {
         y: this.rightPaddle.y,
         state: this.rightPaddle.state,
+        score: this.right_player_score,
       },
     };
   }

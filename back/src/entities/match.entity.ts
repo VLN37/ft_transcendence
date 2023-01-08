@@ -1,9 +1,5 @@
-<<<<<<< Updated upstream
 import { MatchType } from 'src/match-making/dto/AppendToQueueDTO';
-import { MatchStage } from 'src/match-manager/model/MemoryMatch';
-=======
 import { MatchStage, MATCH_STAGES } from 'src/match-manager/model/MemoryMatch';
->>>>>>> Stashed changes
 import {
   Column,
   CreateDateColumn,
