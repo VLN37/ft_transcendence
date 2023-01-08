@@ -9,6 +9,7 @@ import { Match } from '../../models/Match';
 import matchesApi from '../../services/MatchesApi';
 import ChatApi from '../../services/ChatApi';
 import userStorage from '../../services/userStorage';
+import { useNavigate } from 'react-router-dom';
 
 function getUserRank(user: User) {
   return <Icon mx={'auto'} my={'auto'} fontSize={'60px'} as={IoDiamond} />;
@@ -131,6 +132,7 @@ function UserComp(user: User) {
 
 function Matches(matches: Match[]) {
   matches = Object.values(matches);
+  const navigate = useNavigate();
 
   return (
     <Flex mx={'auto'} width={'100%'} flexDirection={'row'}>
@@ -171,6 +173,7 @@ function Matches(matches: Match[]) {
                   fontSize={'md'}
                   borderRadius={'2px'}
                   visibility={match.stage === 'ONGOING' ? 'visible' : 'hidden'}
+                  onClick={() => navigate(`match/${match.id}`)}
                 >
                   LIVE
                 </Button>

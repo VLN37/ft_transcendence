@@ -20,6 +20,8 @@ import {
   handleBallRightPaddleCollision,
 } from '../../game/math/collision';
 import { handleKeyPress, handleKeyRelease } from '../../game/controls';
+import { Box, Button } from '@chakra-ui/react';
+import { useNavigate } from 'react-router-dom';
 
 export type GameWindowProps = {
   gameApi: GameApi;
@@ -28,6 +30,7 @@ export type GameWindowProps = {
 };
 
 export default (props: GameWindowProps) => {
+  let navigate = useNavigate();
   const { gameApi, rules } = props;
 
   const gameWindow = {
@@ -154,11 +157,14 @@ export default (props: GameWindowProps) => {
   };
 
   return (
-    <Sketch
-      setup={setup}
-      draw={draw}
-      keyPressed={onKeyPress}
-      keyReleased={onKeyRelease}
-    />
+    <Box>
+      <Sketch
+        setup={setup}
+        draw={draw}
+        keyPressed={onKeyPress}
+        keyReleased={onKeyRelease}
+      />
+      <Button onClick={() => navigate('/')}>Return to home</Button>
+    </Box>
   );
 };
