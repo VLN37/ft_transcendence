@@ -13,7 +13,7 @@ import {
   MenuItem,
   MenuList,
 } from '@chakra-ui/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import GameInvite from '../../components/GameInvite/GameInvite';
 import MatchFinder from '../../components/MatchFinder';
@@ -72,6 +72,7 @@ function MobileMenu() {
 export default function Layout({ setUser }: any) {
   const navigate = useNavigate();
   const location = useLocation();
+  const [pathname, setPathname] = useState('/');
   const [notification, setNotification] = useState(0);
   const [avatar, setAvatar] = useState<string>(
     JSON.parse(localStorage.getItem('user') || '').profile.avatar_path || '',
@@ -79,10 +80,21 @@ export default function Layout({ setUser }: any) {
 
   const user = userStorage.getUser() || emptyUser();
 
-  chatApi.subscribeDirectMessage((message: iDirectMessage) => {
-    if (location.pathname == '/dm') setNotification(0);
-    else if (message.sender.id != user.id) setNotification(notification + 1);
-  });
+  useEffect(() => {
+    setPathname(location.pathname);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    chatApi.subscribeDirectMessageNotify(() => {
+      setPathname((prevPathname) => {
+        if (prevPathname == '/dm') setNotification(0);
+        else setNotification((prevNotification) => prevNotification + 1);
+        return prevPathname;
+      });
+    });
+
+    return () => chatApi.unsubscribeDirectMessageNotify();
+  }, []);
 
   return (
     <Container

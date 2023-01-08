@@ -1,4 +1,4 @@
-import { AxiosInstance } from 'axios';
+import { AxiosError, AxiosInstance } from 'axios';
 import { Message } from '../models/Message';
 import { Socket } from 'socket.io-client';
 import { iDirectMessage } from '../models/DirectMessage';
@@ -30,9 +30,13 @@ class ChatApi {
   }
 
   async leave(id: number) {
-    const response = await this.client.delete(`/channels/${id}/leave`, {});
-    await userStorage.updateUser();
-    return response;
+    try {
+      const response = await this.client.delete(`/channels/${id}/leave`, {});
+      await userStorage.updateUser();
+      return response;
+    } catch (error) {
+      return (error as AxiosError).response;
+    }
   }
 
   setChannelSocket(instance: Api) {
@@ -56,13 +60,30 @@ class ChatApi {
     });
   }
 
-  unsubscribeMessage(callback: any) {
-    this.channelSocket?.off('chat', callback);
+  subscribeDirectMessageNotify(callback: any) {
+    this.dmSocket?.on('chat_notify', (message: iDirectMessage) => {
+      const blocked = userStorage.getUser()?.blocked || [];
+      if (blocked.length) {
+        if (
+          blocked.find((blocked_user) => message.sender.id == blocked_user.id)
+        )
+          return;
+      }
+      callback();
+    });
+  }
+
+  unsubscribeMessage() {
+    this.channelSocket?.off('chat');
   }
 
   unsubscribeDirectMessage() {
     this.dmSocket?.off('chat');
-	this.dmSocket?.removeAllListeners('chat');
+    this.dmSocket?.removeAllListeners('chat');
+  }
+
+  unsubscribeDirectMessageNotify() {
+    this.dmSocket?.off('chat_notify');
   }
 
   subscribeGameInvite(callback: any) {
@@ -196,7 +217,7 @@ class ChatApi {
 
   subscribeUserUpdated(callback: any) {
     this.dmSocket?.on('user_updated', (user: User) => {
-      callback({...user});
+      callback({ ...user });
     });
   }
 

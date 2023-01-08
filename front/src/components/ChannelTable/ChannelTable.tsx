@@ -262,19 +262,28 @@ export function ChannelTable() {
   const [bkpChannels, setBkpChannels] = useState<Channel[]>([]);
   const toast = useToast();
   let navigate = useNavigate();
-  const user = userStorage.getUser();
+  const user = userStorage.getUser() || emptyUser();
   const [reload, setReload] = useState<boolean>(false);
 
   const isMember = (channel: Channel) => {
     return user?.channels.find((channel_user) => channel_user.id == channel.id);
   };
 
-  const leaveChannel = (channel_id: number) => {
-    chatApi.leave(channel_id).then(() => {
-      setReload(!reload);
-    });
-    return;
-  };
+  async function leaveChannel(channel_id: number) {
+    const response = await chatApi.leave(channel_id);
+    if (!response || response.status != StatusCodes.OK) {
+      toast({
+        title: 'Failed to leave channel',
+        status: 'error',
+        duration: 2000,
+        isClosable: true,
+      });
+      return;
+    }
+    (
+      document.getElementById(channel_id.toString()) as HTMLButtonElement
+    ).style.visibility = 'hidden';
+  }
 
   const join = (channel: Channel) => {
     api.connectToChannel({ room: channel.id }).then((res) => {
@@ -305,33 +314,27 @@ export function ChannelTable() {
     setChannels(filteredChannels);
   };
 
-  chatApi.subscribeChannelStatus((channelStatus: ChannelStatus) => {
-    if (channelStatus.event == 'created')
-      setChannels([channelStatus.channel, ...channels]);
-    if (channelStatus.event == 'updated') {
-      const index = channels
-        .map((chn) => chn.id)
-        .indexOf(channelStatus.channel.id);
-      if (index != -1) {
-        let tmpChannels = [...channels];
-        tmpChannels[index] = channelStatus.channel;
-        setChannels(tmpChannels);
-      }
-    }
-    if (channelStatus.event == 'delete') {
-      const index = channels
-        .map((chn) => chn.id)
-        .indexOf(channelStatus.channel.id);
-      if (index != -1) {
-        let tmpChannels = [...channels];
-        tmpChannels.splice(index, 1);
-        setChannels(tmpChannels);
-      }
-    }
-  });
-
   useEffect(() => {
-    return chatApi.unsubscribeChannelStatus();
+    chatApi.subscribeChannelStatus((channelStatus: ChannelStatus) => {
+      if (channelStatus.event == 'created')
+        setChannels((prevChannels) => [channelStatus.channel, ...prevChannels]);
+      if (channelStatus.event == 'updated') {
+        setChannels((prevChannels) =>
+          prevChannels.map((chn) => {
+            if (chn.id == channelStatus.channel.id)
+              chn = { ...channelStatus.channel };
+            return chn;
+          }),
+        );
+      }
+      if (channelStatus.event == 'delete') {
+        setChannels((prevChannels) =>
+          prevChannels.filter((chn) => chn.id != channelStatus.channel.id),
+        );
+      }
+    });
+
+    return () => chatApi.unsubscribeChannelStatus();
   }, []);
 
   useEffect(() => {
@@ -383,6 +386,7 @@ export function ChannelTable() {
                   <Td>{channel.owner_id}</Td>
                   <Td>
                     <Button
+                      id={channel.id.toString()}
                       onClick={() => leaveChannel(channel.id)}
                       visibility={isMember(channel) ? 'visible' : 'hidden'}
                       marginRight={'2rem'}

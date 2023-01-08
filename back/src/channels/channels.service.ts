@@ -296,7 +296,6 @@ export class ChannelsService {
         channel.admins.push(
           await this.usersService.getOne(channel.users[0].id),
         );
-        this.notifyService('updated', channel);
       } else {
         this.removeUser(user_id, channel.id.toString());
         return await this.delete(channel.id);
@@ -306,6 +305,7 @@ export class ChannelsService {
     await this.update(channel);
 
     this.removeUser(user_id, channel.id.toString());
+	this.notifyService('updated', channel);
     return channel;
   }
 
