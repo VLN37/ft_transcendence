@@ -133,6 +133,7 @@ export default (props: GameWindowProps) => {
     render(p5);
   };
 
+  // TODO: don't send commands if the match haven't started yet
   const onKeyPress = (p5: p5Types) => {
     if (p5.keyCode == p5.UP_ARROW || p5.key.toLowerCase() == 'w') {
       gameApi.issueCommand(PlayerCommand.MOVE_UP);
