@@ -1,3 +1,4 @@
+import { MATCH_TYPES } from 'src/match-making/dto/AppendToQueueDTO';
 import { UserDto } from 'src/users/dto/user.dto';
 import {
   handleBallCollision,
@@ -11,12 +12,15 @@ import { rules } from '../game/rules';
 import { MatchState } from './MatchState';
 import { PlayerCommand } from './PlayerCommands';
 
-export type MatchStage =
-  | 'AWAITING_PLAYERS'
-  | 'PREPARATION'
-  | 'ONGOING'
-  | 'FINISHED'
-  | 'CANCELED';
+export const MATCH_STAGES = [
+  'AWAITING_PLAYERS',
+  'PREPARATION',
+  'ONGOING',
+  'FINISHED',
+  'CANCELED',
+] as const;
+type MatchStageTuple = typeof MATCH_STAGES;
+export type MatchStage = MatchStageTuple[number];
 
 export class MemoryMatch {
   id: string;

@@ -8,9 +8,8 @@ import {
 } from 'typeorm';
 import { BannedUsers } from './channel.banned.entity';
 import { ChannelMessages } from './channel_messages.entity';
+import { ChannelType, CHANNEL_TYPES } from './types/channelTypes';
 import { User } from './user.entity';
-
-export type ChannelType = 'PUBLIC' | 'PRIVATE' | 'PROTECTED';
 
 @Entity({ name: 'channels' })
 export class Channel {
@@ -31,7 +30,7 @@ export class Channel {
 
   @Column({
     type: 'enum',
-    enum: ['PUBLIC', 'PRIVATE', 'PROTECTED'],
+    enum: CHANNEL_TYPES,
     default: 'PUBLIC',
   })
   type: ChannelType;
