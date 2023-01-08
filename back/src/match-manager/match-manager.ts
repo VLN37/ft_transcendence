@@ -63,6 +63,10 @@ export class MatchManager {
       }
     };
 
+    memoryMatch.onScoreUpdate = () => {
+      this.matchRepository.save(memoryMatch);
+    };
+
     const activeMatch: ActiveMatch = {
       match: memoryMatch,
       timers: {},
