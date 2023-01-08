@@ -41,6 +41,7 @@ export class MemoryMatch {
   private rightPaddle = new Paddle(PlayerSide.RIGHT, rules);
 
   onStageChange: (stage: MatchStage) => void;
+  onScoreUpdate: () => void;
 
   private lastUpdate: number; // for delta time
 
@@ -145,6 +146,7 @@ export class MemoryMatch {
       }
 
       this.resetPositions();
+      this.onScoreUpdate();
     }
     handleBallCollision(ball, rules);
     handleBallLeftPaddleCollision(ball, this.leftPaddle);
