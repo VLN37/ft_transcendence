@@ -1,6 +1,7 @@
 import { MATCH_TYPES } from 'src/match-making/dto/AppendToQueueDTO';
 import { UserDto } from 'src/users/dto/user.dto';
 import {
+  checkBallGoalCollision,
   handleBallCollision,
   handleBallLeftPaddleCollision,
   handleBallRightPaddleCollision,
@@ -134,6 +135,15 @@ export class MemoryMatch {
 
   private handleCollisions() {
     const ball = this.ball;
+    if (checkBallGoalCollision(ball, rules)) {
+      if (ball.getRightBorder() > rules.rightCollisionEdge) {
+        this.left_player_score++;
+      } else {
+        this.right_player_score++;
+      }
+
+      this.resetPositions();
+    }
     handleBallCollision(ball, rules);
     handleBallLeftPaddleCollision(ball, this.leftPaddle);
     handleBallRightPaddleCollision(ball, this.rightPaddle);
