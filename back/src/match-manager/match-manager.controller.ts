@@ -10,6 +10,7 @@ import {
   UseGuards,
   Body,
   Put,
+  NotFoundException,
 } from '@nestjs/common';
 import { Jwt2faAuthGuard } from 'src/auth/guard/jwt2fa.guard';
 import { UserDto } from 'src/users/dto/user.dto';
@@ -69,6 +70,15 @@ export class MatchManagerController {
   @Get('rules')
   getRules() {
     return rules;
+  }
+
+  @Get('/:match_id')
+  async getActiveMatchInfo(@Param('match_id') matchId: string) {
+    const match = await this.matchManagerService.getActiveMatchInfo(matchId);
+    if (!match)
+      throw new NotFoundException('Match is not active or does not exist');
+
+    return match;
   }
 
   @UseGuards(Jwt2faAuthGuard)
