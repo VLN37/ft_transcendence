@@ -19,10 +19,11 @@ import {
   handleBallLeftPaddleCollision,
   handleBallRightPaddleCollision,
 } from '../../game/math/collision';
-import { PlayerCommand } from '../../game/model/PlayerCommand';
+import { handleKeyPress, handleKeyRelease } from '../../game/controls';
 
 export type GameWindowProps = {
   gameApi: GameApi;
+  playerSide: PlayerSide | null;
   rules: GameRules;
 };
 
@@ -141,22 +142,14 @@ export default (props: GameWindowProps) => {
 
   // TODO: don't send commands if the match haven't started yet
   const onKeyPress = (p5: p5Types) => {
-    if (p5.keyCode == p5.UP_ARROW || p5.key.toLowerCase() == 'w') {
-      gameApi.issueCommand(PlayerCommand.MOVE_UP);
-      console.log('key up pressed');
-    } else if (p5.keyCode == p5.DOWN_ARROW || p5.key.toLowerCase() == 's') {
-      gameApi.issueCommand(PlayerCommand.MOVE_DOWN);
-      console.log('key down pressed');
+    if (props.playerSide) {
+      handleKeyPress(p5, gameApi);
     }
   };
 
   const onKeyRelease = (p5: p5Types) => {
-    if (p5.keyCode == p5.UP_ARROW || p5.key.toLowerCase() == 'w') {
-      console.log('key up released');
-      gameApi.issueCommand(PlayerCommand.STOP_MOVE_UP);
-    } else if (p5.keyCode == p5.DOWN_ARROW || p5.key.toLowerCase() == 's') {
-      console.log('key down released');
-      gameApi.issueCommand(PlayerCommand.STOP_MOVE_DOWN);
+    if (props.playerSide) {
+      handleKeyRelease(p5, gameApi);
     }
   };
 
