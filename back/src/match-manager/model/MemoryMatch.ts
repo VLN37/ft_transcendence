@@ -61,12 +61,15 @@ export class MemoryMatch {
   resetPositions() {
     this.leftPaddle.y = rules.player.startingPosition;
     this.rightPaddle.y = rules.player.startingPosition;
-    const vec = Vector.random().mult(rules.ball.startingSpeed);
-    // const vec = new Vector(1, 0);
     this.lastUpdate = Date.now();
     this.ball.position.x = rules.ball.startingPosition.x;
     this.ball.position.y = rules.ball.startingPosition.y;
-    this.ball.velocity = vec;
+
+    if (this.stage === 'ONGOING') {
+      const vec = Vector.random().mult(rules.ball.startingSpeed);
+      // const vec = new Vector(1, 0);
+      this.ball.velocity = vec;
+    }
   }
 
   getCurrentState(): MatchState {
