@@ -10,6 +10,7 @@ import {
   drawBallCoords,
   drawBallVelocity,
   drawPlayer,
+  drawScores,
   drawSpeedMeter,
   printFps,
 } from './render';
@@ -40,6 +41,8 @@ export default (props: GameWindowProps) => {
   let ball = new Ball(rules);
 
   let leftPlayer = new Paddle(PlayerSide.LEFT, rules);
+  let leftPlayerScore = 0;
+  let rightPlayerScore = 0;
   let rightPlayer = new Paddle(PlayerSide.RIGHT, rules);
 
   const setup = (p5: p5Types, canvasParentRef: Element) => {
@@ -60,6 +63,8 @@ export default (props: GameWindowProps) => {
     rightPlayer.y = state.pr.y;
     leftPlayer.state = state.pl.state;
     rightPlayer.state = state.pr.state;
+    leftPlayerScore = state.pl.score;
+    rightPlayerScore = state.pr.score;
   };
 
   gameApi.setOnMatchTickListener(listenGameState);
@@ -114,6 +119,7 @@ export default (props: GameWindowProps) => {
     // drawBallVelocity(image, ball);
     drawPlayer(image, rightPlayer, rules);
     drawPlayer(image, leftPlayer, rules);
+    drawScores(image, leftPlayerScore, rightPlayerScore);
     drawSpeedMeter(image, ball, rules);
     resizeIfNecessary(p5);
     printFps(image, ball);
