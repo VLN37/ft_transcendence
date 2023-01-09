@@ -14,8 +14,10 @@ import {
   Thead,
   Tr,
 } from '@chakra-ui/react';
+import { useEffect, useState } from 'react';
 import { Match } from '../../models/Match';
 import { emptyUser } from '../../models/User';
+import MatchesApi from '../../services/MatchesApi';
 import userStorage from '../../services/userStorage';
 
 function less<T>(a: T, b: T): number {
@@ -33,6 +35,19 @@ function randomMatch(): Match {
     created_at: new Date(),
     type: 'CLASSIC',
   };
+}
+
+function emptyMatch(): Match {
+  return {
+    id: '',
+    left_player: emptyUser(),
+    right_player: emptyUser(),
+    left_player_score: 0,
+    right_player_score: 0,
+    stage: 'FINISHED',
+    created_at: new Date(),
+    type: 'CLASSIC',
+  }
 }
 
 function MatchBlock(props: { match: Match }) {
@@ -59,7 +74,7 @@ function MatchBlock(props: { match: Match }) {
   }
   return (
     <Tr>
-      <Td>{props.match.id}</Td>
+      <Td>{props.match.type}</Td>
       <Td>{props.match.left_player.profile.nickname}</Td>
       <Td>{`${match.left_player_score} - ${match.right_player_score}`}</Td>
       <Td>{props.match.right_player.profile.nickname}</Td>
@@ -78,10 +93,17 @@ function MatchBlock(props: { match: Match }) {
 }
 
 function MatchTable(props: any) {
-  const vector: Match[] = [];
-  for (let i = 0; i < 10; i++) vector.push(randomMatch());
+  const [matchesList, setMatchList] = useState<Match[]>([emptyMatch()]);
+  const me = userStorage.getUser() || emptyUser();
 
-  const matchList = vector.map((elem, index) => {
+  useEffect(() => {
+    async function fetchMatches() {
+      setMatchList(await MatchesApi.getUserMatches(me.id, 10));
+    }
+    fetchMatches();
+  }, []);
+
+  const matchList = matchesList.map((elem, index) => {
     return <MatchBlock match={elem} key={index}></MatchBlock>;
   });
   return (
@@ -89,7 +111,7 @@ function MatchTable(props: any) {
       <Table>
         <Thead>
           <Tr>
-            <Th>Match ID</Th>
+            <Th>Match Type</Th>
             <Th>PLAYER 1</Th>
             <Th>score</Th>
             <Th>PLAYER 2</Th>
