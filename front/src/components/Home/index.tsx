@@ -39,7 +39,9 @@ function UserComp(user: User) {
   if (!user.login_intra) user = userFallback;
 
   useEffect(() => {
-    matchesApi.getUserMatches(9).then((matchs: Match[]) => setMatches(matchs));
+    matchesApi
+      .getUserMatches(userFallback.id, 9)
+      .then((matchs: Match[]) => setMatches(matchs));
   }, []);
 
   return (

@@ -65,20 +65,18 @@ export class MatchManagerService {
     return matches;
   }
 
-  async getUserMatches(token: string, qty: number): Promise<Match[]> {
-    const myId = await this.usersService.getUserId(token);
-    // this.logger.error(myId);
+  async getUserMatches(id: number, qty: number): Promise<Match[]> {
     const matches = await this.matchRepository.find({
       where: [
         {
           left_player: {
-            id: myId,
+            id: id,
           },
           stage: 'FINISHED',
         },
         {
           right_player: {
-            id: myId,
+            id: id,
           },
           stage: 'FINISHED',
         },

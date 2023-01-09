@@ -58,13 +58,13 @@ export class MatchManagerController {
     return this.matchManagerService.getLiveMatches(qty);
   }
 
-  @Get('/user/:qty')
+  @Get('/user/:id')
   @UseInterceptors(MatchManagerInterceptor)
   getUserMatches(
-    @Headers('Authorization') token: string,
-    @Param('qty') qty: number,
+    @Param('id') id: number,
+    @Query('qty') qty: number = 10,
   ) {
-    return this.matchManagerService.getUserMatches(token, qty);
+    return this.matchManagerService.getUserMatches(id, qty);
   }
 
   @Get('rules')

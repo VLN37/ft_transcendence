@@ -19,9 +19,11 @@ class MatchesApi {
     }
   }
 
-  async getUserMatches(qty: number): Promise<Match[]> {
+  async getUserMatches(id: number, qty: number = 0): Promise<Match[]> {
+    const query =
+      qty ? `/matches/user/${id}?qty=${qty}` : `/matches/user/${id}`;
     try {
-      const response = await this.client.get(`/matches/user/${qty}`, {});
+      const response = await this.client.get(query, {});
       return response.data;
     } catch (error) {
       return [];
