@@ -6,7 +6,7 @@ import { emptyUser, User } from '../../models/User';
 import { useEffect, useState } from 'react';
 import { Match } from '../../models/Match';
 import matchesApi from '../../services/MatchesApi';
-import ChatApi from '../../services/ChatApi';
+import ChatApi, { MatchStatus } from '../../services/ChatApi';
 import userStorage from '../../services/userStorage';
 import { useNavigate } from 'react-router-dom';
 import moment from 'moment';
@@ -202,7 +202,35 @@ export function Home() {
   useEffect(() => {
     ChatApi.subscribeUserUpdated(setUser);
     matchesApi.getLiveMatches(9).then((matchs: Match[]) => setMatches(matchs));
-    return () => ChatApi.unsubscribeUserUpdated();
+    ChatApi.subscribeMatchStatus((matchStatus: MatchStatus) => {
+      if (matchStatus.event == 'created')
+        setMatches((prevMatches) =>
+          [matchStatus.match, ...prevMatches].slice(0, 9),
+        );
+      if (matchStatus.event == 'updated') {
+        setMatches((prevMatches) =>
+          prevMatches
+            .map((mth) => {
+              if (mth.id == matchStatus.match.id)
+                mth = { ...matchStatus.match };
+              return mth;
+            })
+            .sort((a: Match, b: Match) => {
+              if (a.stage == b.stage) {
+                const dateA = new Date(a.created_at);
+                const dateB = new Date(b.created_at);
+                return dateA < dateB ? 1 : -1;
+              } else {
+                return a.stage < b.stage ? 1 : -1;
+              }
+            }),
+        );
+      }
+    });
+    return () => {
+      ChatApi.unsubscribeUserUpdated();
+      ChatApi.unsubscribeMatchStatus();
+    };
   }, []);
 
   return (

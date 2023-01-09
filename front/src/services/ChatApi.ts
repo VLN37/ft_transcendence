@@ -8,10 +8,16 @@ import { Api } from './api';
 import userStorage from './userStorage';
 import { Channel } from '../models/Channel';
 import { iDirectLastMessage } from '../models/DirectMessages';
+import { Match } from '../models/Match';
 
 export interface ChannelStatus {
   event: string;
   channel: Channel;
+}
+
+export interface MatchStatus {
+  event: string;
+  match: Match;
 }
 
 class ChatApi {
@@ -233,6 +239,16 @@ class ChatApi {
 
   unsubscribeChannelStatus() {
     this.dmSocket?.off('channel_status');
+  }
+
+  subscribeMatchStatus(callback: any) {
+    this.dmSocket?.on('match_status', (matchStatus: MatchStatus) => {
+      callback(matchStatus);
+    });
+  }
+
+  unsubscribeMatchStatus() {
+    this.dmSocket?.off('match_status');
   }
 
   subscribeMessage(callback: any) {

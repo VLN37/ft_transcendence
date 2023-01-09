@@ -1,4 +1,4 @@
-import { MATCH_TYPES } from 'src/match-making/dto/AppendToQueueDTO';
+import { MatchType } from 'src/match-making/dto/AppendToQueueDTO';
 import { UserDto } from 'src/users/dto/user.dto';
 import {
   checkBallGoalCollision,
@@ -33,6 +33,7 @@ export class MemoryMatch {
   right_player_connected: boolean = false;
   starts_at?: Date;
   ends_at?: Date;
+  type: MatchType;
 
   stage: MatchStage;
 
@@ -45,13 +46,14 @@ export class MemoryMatch {
 
   private lastUpdate: number; // for delta time
 
-  constructor(id: string, leftPlayer: UserDto, rightPlayer: UserDto) {
+  constructor(id: string, leftPlayer: UserDto, rightPlayer: UserDto, type: MatchType) {
     this.id = id;
     this.left_player = leftPlayer;
     this.right_player = rightPlayer;
     this.left_player_score = 0;
     this.right_player_score = 0;
     this.stage = 'AWAITING_PLAYERS';
+	this.type = type;
     this.init();
   }
 

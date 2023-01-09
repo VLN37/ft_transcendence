@@ -22,6 +22,8 @@ import { UsersService } from 'src/users/users.service';
 import { ChannelsService } from 'src/channels/channels.service';
 import { ChannelDto } from 'src/channels/dto/channel.dto';
 import { MatchManagerService } from 'src/match-manager/match-manager.service';
+import { Match } from 'src/entities/match.entity';
+import { MatchManager } from 'src/match-manager/match-manager';
 
 @WebSocketGateway({
   namespace: '/direct_messages',
@@ -47,6 +49,7 @@ export class DirectMessagesGateway
     private usersService: UsersService,
     private channelsService: ChannelsService,
     private matchManagerService: MatchManagerService,
+    private matchManager: MatchManager,
   ) {}
 
   afterInit(_: Server) {
@@ -72,6 +75,7 @@ export class DirectMessagesGateway
     this.matchManagerService.setUpdateNotify(
       this.pingUpdateGameRequest.bind(this),
     );
+    this.matchManager.setNotify(this.pingMatchUpdate.bind(this));
   }
 
   async handleConnection(client: Socket) {
@@ -143,6 +147,13 @@ export class DirectMessagesGateway
     this.server.emit('channel_status', {
       event,
       channel,
+    });
+  }
+
+  pingMatchUpdate(event: string, match: Match) {
+    this.server.emit('match_status', {
+      event,
+      match,
     });
   }
 

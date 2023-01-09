@@ -1,6 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { randomInt } from 'crypto';
 import { Match } from 'src/entities/match.entity';
 import { MatchType } from 'src/match-making/dto/AppendToQueueDTO';
 import { UserDto } from 'src/users/dto/user.dto';
@@ -31,11 +30,16 @@ export class MatchManager {
 
   private activeMatches: ActiveMatch[] = [];
   private connectedPlayers = {};
+  private notifyService: (event: string, match: Match) => void | null = null;
 
   constructor(
     @InjectRepository(Match)
     private readonly matchRepository: Repository<Match>,
   ) {}
+
+  setNotify(callback: (event: string, match: Match) => void) {
+    this.notifyService = callback;
+  }
 
   async createMatch(user1: UserDto, user2: UserDto, type: MatchType) {
     // TODO: check if users are already playing a match
@@ -47,11 +51,15 @@ export class MatchManager {
 
     await this.matchRepository.save(match);
 
-    const memoryMatch = new MemoryMatch(match.id, user1, user2);
+    const memoryMatch = new MemoryMatch(match.id, user1, user2, type);
 
     memoryMatch.onStageChange = (stage) => {
       this.logger.log('match entering the stage ' + stage);
-      this.matchRepository.save(memoryMatch);
+      this.matchRepository.save(memoryMatch).then((retMatch: Match) => {
+        retMatch.created_at = match.created_at;
+        if (stage == 'ONGOING') this.notifyService('created', retMatch);
+        if (stage == 'FINISHED') this.notifyService('updated', retMatch);
+      });
       if (stage == 'FINISHED' || stage == 'CANCELED') {
         const index = this.activeMatches.findIndex(
           (active) => active.match.id === memoryMatch.id,
@@ -64,7 +72,10 @@ export class MatchManager {
     };
 
     memoryMatch.onScoreUpdate = () => {
-      this.matchRepository.save(memoryMatch);
+      this.matchRepository.save(memoryMatch).then((retMatch: Match) => {
+        retMatch.created_at = match.created_at;
+        this.notifyService('updated', retMatch);
+      });
     };
 
     const activeMatch: ActiveMatch = {
