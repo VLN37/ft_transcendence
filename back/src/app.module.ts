@@ -29,6 +29,9 @@ import { AvatarUploadController } from './avatar-upload/avatar-upload.controller
 
 const environment = process.env.ENVIRONMENT;
 const dbHost = process.env.DB_HOST;
+const user = process.env.POSTGRES_USER;
+const pass = process.env.POSTGRES_PASSWORD;
+const db = process.env.POSTGRES_DB;
 
 declare global {
   namespace Express {
@@ -47,9 +50,9 @@ declare global {
       type: 'postgres',
       host: dbHost ?? 'localhost',
       port: 5432,
-      username: 'user',
-      password: 'pass',
-      database: 'transcendence',
+      username: user,
+      password: pass,
+      database: db,
       entities: [
         User,
         Profile,
