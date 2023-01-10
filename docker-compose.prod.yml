@@ -2,22 +2,36 @@ services:
   front-end:
     image: transcendence_front
     build: ./front/
+    container_name: front
     ports:
       - 80:80
+    env_file:
+      - ./front/.env
+    environment:
+      - ENVIRONMENT=prod
+      - PORT=80
 
   database:
     image: postgres:14
+    container_name: database
     ports:
       - 5432:5432
-    environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: pass
-      POSTGRES_DB: transcendence
+    env_file:
+      - .env
 
   back-end:
     depends_on:
       - database
     image: transcendence_back
     build: ./back/
+    container_name: back
     ports:
       - 3000:3000
+    env_file:
+      - ./back/.env
+    environment:
+      DB_HOST: database
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      # ENVIRONMENT: prod
