@@ -1,9 +1,13 @@
 FROM node:18-alpine
 
+ENV NODE_ENV production
 WORKDIR /front
 
-COPY ./package.json .
+COPY --chown=node:node package*.json .
+RUN npm ci --only=production
+COPY --chown=node:node . .
+RUN chown -R node node_modules
 
-RUN npm install
+USER node
 
 ENTRYPOINT [ "npm", "start" ]
