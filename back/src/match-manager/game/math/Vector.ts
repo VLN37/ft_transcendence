@@ -35,6 +35,7 @@ export class Vector {
     return this;
   }
 
+  // returns the angle relative to a Vector(0, 1)
   heading(): number {
     return Math.atan2(this.y, this.x);
   }

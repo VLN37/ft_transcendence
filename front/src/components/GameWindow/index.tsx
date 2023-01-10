@@ -9,6 +9,7 @@ import {
   drawBall,
   drawBallCoords,
   drawBallVelocity,
+  drawMiddleNet,
   drawPlayer,
   drawScores,
   drawSpeedMeter,
@@ -119,6 +120,7 @@ export default (props: GameWindowProps) => {
 
   const render = (p5: p5Types) => {
     image.background(0);
+    drawMiddleNet(image, rules);
     drawBall(image, ball);
     // drawBallVelocity(image, ball);
     drawPlayer(image, rightPlayer, rules);

@@ -14,7 +14,7 @@ import {
 import { Server, Socket } from 'socket.io';
 import { UsersService } from 'src/users/users.service';
 import { validateWsJwt } from 'src/utils/functions/validateWsConnection';
-import { MatchType } from './dto/AppendToQueueDTO';
+import { MatchType } from './dto/MatchType';
 import { MatchMakingService } from './match-making.service';
 
 @WebSocketGateway({

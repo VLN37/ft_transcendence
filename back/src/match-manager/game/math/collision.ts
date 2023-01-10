@@ -34,6 +34,7 @@ export function handleBallLeftPaddleCollision(ball: Ball, player: Paddle) {
       return;
     }
     ball.velocity.x *= -1;
+    increaseBallSpeed(ball);
   }
 }
 
@@ -51,5 +52,15 @@ export function handleBallRightPaddleCollision(ball: Ball, player: Paddle) {
     }
     ball.position.x -= penetrationDepth;
     ball.velocity.x *= -1;
+    increaseBallSpeed(ball);
+  }
+}
+
+function increaseBallSpeed(ball: Ball) {
+  const speed = ball.velocity.mag();
+  if (speed < ball.maxSpeed) {
+    ball.velocity.mult(1.2);
+  } else {
+    ball.velocity.normalize().mult(ball.maxSpeed);
   }
 }

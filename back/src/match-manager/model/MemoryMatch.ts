@@ -1,4 +1,4 @@
-import { MatchType } from 'src/match-making/dto/AppendToQueueDTO';
+import { MatchType } from 'src/match-making/dto/MatchType';
 import { UserDto } from 'src/users/dto/user.dto';
 import {
   checkBallGoalCollision,
@@ -8,7 +8,7 @@ import {
 } from '../game/math/collision';
 import { Vector } from '../game/math/Vector';
 import { Ball } from '../game/model/Ball';
-import { Paddle, PlayerSide, PlayerState } from '../game/model/Paddle';
+import { Paddle, PlayerSide } from '../game/model/Paddle';
 import { rules } from '../game/rules';
 import { MatchState } from './MatchState';
 import { PlayerCommand } from './PlayerCommands';
@@ -46,14 +46,19 @@ export class MemoryMatch {
 
   private lastUpdate: number; // for delta time
 
-  constructor(id: string, leftPlayer: UserDto, rightPlayer: UserDto, type: MatchType) {
+  constructor(
+    id: string,
+    leftPlayer: UserDto,
+    rightPlayer: UserDto,
+    type: MatchType,
+  ) {
     this.id = id;
     this.left_player = leftPlayer;
     this.right_player = rightPlayer;
     this.left_player_score = 0;
     this.right_player_score = 0;
     this.stage = 'AWAITING_PLAYERS';
-	this.type = type;
+    this.type = type;
     this.init();
   }
 
@@ -74,7 +79,7 @@ export class MemoryMatch {
     this.ball.position.y = rules.ball.startingPosition.y;
 
     if (this.stage === 'ONGOING') {
-      const vec = Vector.random().mult(rules.ball.startingSpeed);
+      const vec = this.getRandomStartingBallVelocity();
       // const vec = new Vector(1, 0);
       this.ball.velocity = vec;
     }
@@ -120,18 +125,6 @@ export class MemoryMatch {
 
   private handleInput() {}
 
-  private processGameLogic() {
-    const followBall = (paddle: Paddle, ball: Ball) => {
-      if (ball.getUpperBorder() < paddle.getUpperBorder())
-        paddle.state = PlayerState.MOVING_UP;
-      else if (ball.getLowerBorder() > paddle.getLowerBorder())
-        paddle.state = PlayerState.MOVING_DOWN;
-      else paddle.state = PlayerState.STOPPED;
-    };
-    if (this.ball.velocity.x < 0) followBall(this.leftPaddle, this.ball);
-    else if (this.ball.velocity.x > 0) followBall(this.rightPaddle, this.ball);
-  }
-
   private updateWorld(deltaTime: number) {
     this.ball.update(deltaTime);
     this.rightPaddle.update(deltaTime);
@@ -162,9 +155,10 @@ export class MemoryMatch {
     return deltaTime / 1000;
   }
 
-  // private increaseBallSpeed() {
-  //   if (this.ball.speed < rules.ball.maxSpeed) {
-  //     this.ball.speed += 50;
-  //   }
-  // }
+  private getRandomStartingBallVelocity(): Vector {
+    const sideChooser = Math.random() < 0.5 ? -1 : 1;
+    const x = 150 * sideChooser;
+    const y = (Math.random() - 0.5) * rules.worldHeight;
+    return new Vector(x, y).normalize().mult(rules.ball.startingSpeed);
+  }
 }

@@ -1,4 +1,4 @@
-const PLAYER_SPEED = 200;
+const PLAYER_SPEED = 300;
 const WORLD_WIDTH = 858;
 const WORLD_HEIGHT = 525;
 const BALL_SIZE = 20;
@@ -51,7 +51,7 @@ export const rules: GameRules = {
     },
     startingSpeed: BALL_INITIAL_SPEED,
     size: BALL_SIZE,
-    maxSpeed: 1000,
+    maxSpeed: 750,
   },
   player: {
     startingPosition: WORLD_HEIGHT / 2,

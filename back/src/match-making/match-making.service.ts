@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { MatchManager } from 'src/match-manager/match-manager';
 import { MemoryMatch } from 'src/match-manager/model/MemoryMatch';
 import { UserDto } from 'src/users/dto/user.dto';
-import { MatchType, MATCH_TYPES } from './dto/AppendToQueueDTO';
+import { MatchType, MATCH_TYPES } from './dto/MatchType';
 
 class MemoryQueue {
   CLASSIC: UserDto[] = [];

@@ -7,6 +7,7 @@ export class Ball {
   public height: number;
   public position: Point;
   public velocity: Vector;
+  public maxSpeed: number;
 
   constructor(rules: GameRules) {
     this.width = rules.ball.size;
@@ -15,6 +16,7 @@ export class Ball {
     this.position = new Point();
     this.position.x = rules.ball.startingPosition.x;
     this.position.y = rules.ball.startingPosition.y;
+    this.maxSpeed = rules.ball.maxSpeed;
   }
 
   update(deltaTime: number) {

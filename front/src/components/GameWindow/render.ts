@@ -135,3 +135,15 @@ export const drawBallCoords = (image: p5Types.Graphics, ball: Ball) => {
   image.text(`ball:\nx: ${ball.position.x}\ny:${ball.position.y}`, 30, 120);
   image.pop();
 };
+
+export const drawMiddleNet = (image: p5Types.Graphics, rules: GameRules) => {
+  image.push();
+  const middle = rules.worldWidth / 2;
+  image.stroke(255);
+  image.line(middle, 0, middle, rules.worldHeight);
+  const size = 150;
+  image.line(middle - size, 0, middle + size, 0);
+  image.line(middle - size, 0, middle + size, rules.worldHeight);
+  image.line(middle + size, 0, middle - size, rules.worldHeight);
+  image.pop();
+};
