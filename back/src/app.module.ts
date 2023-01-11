@@ -63,6 +63,9 @@ declare global {
         BannedUsers,
       ],
       synchronize: environment != 'prod',
+      migrationsRun: true,
+      logging: true,
+      logger: 'file',
     }),
     ConfigModule.forRoot({
       isGlobal: true,
