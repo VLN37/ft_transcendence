@@ -66,6 +66,7 @@ declare global {
       migrationsRun: true,
       logging: true,
       logger: 'file',
+      autoLoadEntities: true,
     }),
     ConfigModule.forRoot({
       isGlobal: true,
