@@ -7,7 +7,9 @@ COPY --chown=node:node package*.json .
 RUN npm ci --only=production
 COPY --chown=node:node . .
 RUN chown -R node node_modules
+RUN chmod a+x ./scripts/init.sh
 
 USER node
 
-ENTRYPOINT [ "npm", "start" ]
+ENTRYPOINT [ "./scripts/init.sh" ]
+CMD [ "npm", "start" ]
