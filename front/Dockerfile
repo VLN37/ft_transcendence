@@ -4,9 +4,9 @@ ENV NODE_ENV production
 WORKDIR /front
 
 COPY --chown=node:node package*.json .
+RUN mkdir -p node_modules && chown -R node node_modules
 RUN npm ci --only=production
 COPY --chown=node:node . .
-RUN chown -R node node_modules
 
 USER node
 
