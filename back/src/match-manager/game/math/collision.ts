@@ -61,11 +61,6 @@ export function handleBallRightPaddleCollision(ball: Ball, player: Paddle) {
   }
 }
 
-const needsClamping = (angle: number): boolean => {
-  angle = radToDeg(angle);
-  return (angle > 60 && angle < 120) || (angle > 240 && angle < 300);
-};
-
 const getAngle = (ball: Ball, paddle: Paddle): number => {
   const { y: ballY } = ball.position;
 
