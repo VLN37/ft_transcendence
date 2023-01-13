@@ -53,6 +53,12 @@ export class Vector {
     return this;
   }
 
+  rotateTo(angle: number) {
+    const difference = angle - this.heading();
+    this.rotate(difference);
+    return this;
+  }
+
   static random(): Vector {
     const x = Math.random() * 2 - 1;
     const y = Math.random() * 2 - 1;

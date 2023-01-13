@@ -42,4 +42,12 @@ export class Ball {
   getLowerBorder() {
     return this.position.y + this.height / 2;
   }
+
+  isGoingLeft() {
+    return this.velocity.x < 0;
+  }
+
+  isGoingRight() {
+    return !this.isGoingLeft();
+  }
 }

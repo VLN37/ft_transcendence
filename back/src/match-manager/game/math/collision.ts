@@ -1,7 +1,7 @@
 import { Ball } from '../model/Ball';
-import { GameRules } from '../rules';
+import { GameRules, rules } from '../rules';
 import { Paddle } from '../model/Paddle';
-import { radToDeg } from 'src/utils/functions/math';
+import { degToRad, radToDeg } from 'src/utils/functions/math';
 
 export function checkBallGoalCollision(ball: Ball, rules: GameRules): boolean {
   if (
@@ -35,6 +35,8 @@ export function handleBallLeftPaddleCollision(ball: Ball, player: Paddle) {
       return;
     }
     ball.velocity.x *= -1;
+    const newAngle = getAngle(ball, player);
+    ball.velocity.rotateTo(newAngle);
     increaseBallSpeed(ball);
   }
 }
@@ -49,14 +51,12 @@ export function handleBallRightPaddleCollision(ball: Ball, player: Paddle) {
   ) {
     const penetrationDepth = ball.getRightBorder() - player.getLeftBorder();
     if (penetrationDepth > player.width) {
-      return;
+      return; // player won't save the ball if it's past him
     }
     ball.position.x -= penetrationDepth;
     ball.velocity.x *= -1;
-    const perturbation = ((Math.random() * 30 - 15) * Math.PI) / 180;
-    if (!needsClamping(ball.velocity.heading() + perturbation))
-      ball.velocity.rotate(perturbation);
-
+    const newAngle = getAngle(ball, player);
+    ball.velocity.rotateTo(newAngle);
     increaseBallSpeed(ball);
   }
 }
@@ -66,10 +66,25 @@ const needsClamping = (angle: number): boolean => {
   return (angle > 60 && angle < 120) || (angle > 240 && angle < 300);
 };
 
+const getAngle = (ball: Ball, paddle: Paddle): number => {
+  const { y: ballY } = ball.position;
+
+  const length = paddle.height + ball.height;
+  const angleRangeLength = rules.ball.maxAngle - -rules.ball.maxAngle;
+
+  debugger;
+  let result = (ballY - paddle.y) * (angleRangeLength / length); // - rules.ball.maxAngle;
+
+  if (ball.isGoingLeft()) result = 180 - result;
+  else if (result < 0) result += 360;
+  const newAngle = degToRad(result);
+  return newAngle;
+};
+
 function increaseBallSpeed(ball: Ball) {
   const speed = ball.velocity.mag();
   if (speed < ball.maxSpeed) {
-    ball.velocity.mult(1.2);
+    ball.velocity.mult(1.02);
   } else {
     ball.velocity.normalize().mult(ball.maxSpeed);
   }

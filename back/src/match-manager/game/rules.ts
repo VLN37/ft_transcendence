@@ -23,6 +23,7 @@ export type GameRules = {
     startingSpeed: number;
     size: number;
     maxSpeed: number;
+    maxAngle: number;
   };
   player: {
     startingPosition: number;
@@ -52,6 +53,7 @@ export const rules: GameRules = {
     startingSpeed: BALL_INITIAL_SPEED,
     size: BALL_SIZE,
     maxSpeed: 750,
+    maxAngle: 60,
   },
   player: {
     startingPosition: WORLD_HEIGHT / 2,
