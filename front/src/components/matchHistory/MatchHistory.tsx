@@ -92,13 +92,14 @@ function MatchBlock(props: { match: Match }) {
   );
 }
 
-function MatchTable(props: any) {
+function MatchTable(props: {
+  userId: number,
+}) {
   const [matchesList, setMatchList] = useState<Match[]>([emptyMatch()]);
-  const me = userStorage.getUser() || emptyUser();
 
   useEffect(() => {
     async function fetchMatches() {
-      setMatchList(await MatchesApi.getUserMatches(me.id, 10));
+      setMatchList(await MatchesApi.getUserMatches(props.userId, 10));
     }
     fetchMatches();
   }, []);
@@ -128,6 +129,7 @@ export function MatchHistory(props: {
   isOpen: any;
   onClose: any;
   username: string;
+  id: number,
 }) {
   return (
     <Modal isOpen={props.isOpen} onClose={props.onClose} size={'3xl'}>
@@ -138,7 +140,7 @@ export function MatchHistory(props: {
         </ModalHeader>
         <ModalCloseButton></ModalCloseButton>
         <ModalBody>
-          <MatchTable />
+          <MatchTable userId={props.id}/>
         </ModalBody>
       </ModalContent>
     </Modal>

@@ -19,7 +19,7 @@ function UserBlock(props: any) {
         />
         <PublicProfile isOpen={isOpen} onClose={onClose} user={props.user} />
       </Td>
-      <Td>{<RankMenu input={props.user.nickname} id={props.user.id} />}</Td>
+      <Td>{<RankMenu username={props.user.nickname} id={props.user.id} />}</Td>
       <Td>{props.user.id}</Td>
       <Td>{props.user.wins}</Td>
       <Td>{props.user.losses}</Td>

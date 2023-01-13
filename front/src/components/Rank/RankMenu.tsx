@@ -39,7 +39,10 @@ function CustomToastExample() {
   );
 }
 
-export function RankMenu(props: any) {
+export function RankMenu(props: {
+  username: string,
+  id: number,
+}) {
   const toast = useToast();
   const user: User = userStorage.getUser() || emptyUser();
   let navigate = useNavigate();
@@ -67,7 +70,7 @@ export function RankMenu(props: any) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (
     <Menu>
-      <MenuButton>{props.input}</MenuButton>
+      <MenuButton>{props.username}</MenuButton>
       <MenuList>
         {/* MenuItems are not rendered unless Menu is open */}
         <MenuItem onClick={clickCallback}>add friend</MenuItem>
@@ -76,7 +79,8 @@ export function RankMenu(props: any) {
         <MatchHistory
           isOpen={isOpen}
           onClose={onClose}
-          username={props.input}
+          username={props.username}
+          id={props.id}
         ></MatchHistory>
         {/* <MenuItem>Open Closed Tab</MenuItem> */}
         {/* <MenuItem>Open File</MenuItem> */}
