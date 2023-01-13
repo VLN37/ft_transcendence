@@ -34,6 +34,8 @@ export function handleBallLeftPaddleCollision(
       return;
     }
     ball.velocity.x *= -1;
+    const newAngle = getAngle(ball, player, rules);
+    ball.velocity.rotateTo(newAngle);
   }
 }
 
