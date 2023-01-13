@@ -1,4 +1,4 @@
-FROM node:18-alpine
+FROM node:18.9.1-alpine
 
 ENV NODE_ENV production
 WORKDIR /back

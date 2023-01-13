@@ -1,10 +1,10 @@
 all: up
 
 up:
-	docker-compose -f docker-compose.yml up -d
+	docker-compose -f docker-compose.yml up -d --build
 
 prod_up:
-	docker-compose -f docker-compose.prod.yml up -d
+	docker-compose -f docker-compose.prod.yml up -d --build
 
 install:
 	npm --prefix ./back install
