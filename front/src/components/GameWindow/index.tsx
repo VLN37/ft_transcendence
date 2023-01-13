@@ -114,8 +114,8 @@ export default (props: GameWindowProps) => {
 
   const handleCollisions = () => {
     handleBallCollision(ball, rules);
-    handleBallLeftPaddleCollision(ball, leftPlayer);
-    handleBallRightPaddleCollision(ball, rightPlayer);
+    handleBallLeftPaddleCollision(ball, leftPlayer, rules);
+    handleBallRightPaddleCollision(ball, rightPlayer, rules);
   };
 
   const render = (p5: p5Types) => {

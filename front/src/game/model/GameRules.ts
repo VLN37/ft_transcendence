@@ -18,6 +18,7 @@ export type GameRules = {
     startingSpeed: number;
     size: number;
     maxSpeed: number;
+    maxAngle: number;
   };
   player: {
     startingPosition: number;
