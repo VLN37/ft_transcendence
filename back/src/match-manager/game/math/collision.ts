@@ -84,7 +84,7 @@ const getAngle = (ball: Ball, paddle: Paddle): number => {
 function increaseBallSpeed(ball: Ball) {
   const speed = ball.velocity.mag();
   if (speed < ball.maxSpeed) {
-    ball.velocity.mult(1.02);
+    ball.velocity.mult(1.1);
   } else {
     ball.velocity.normalize().mult(ball.maxSpeed);
   }
