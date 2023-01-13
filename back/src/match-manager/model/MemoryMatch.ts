@@ -10,18 +10,9 @@ import { Vector } from '../game/math/Vector';
 import { Ball } from '../game/model/Ball';
 import { Paddle, PlayerSide } from '../game/model/Paddle';
 import { rules } from '../game/rules';
+import { MatchStage } from './MatchStage';
 import { MatchState } from './MatchState';
 import { PlayerCommand } from './PlayerCommands';
-
-export const MATCH_STAGES = [
-  'AWAITING_PLAYERS',
-  'PREPARATION',
-  'ONGOING',
-  'FINISHED',
-  'CANCELED',
-] as const;
-type MatchStageTuple = typeof MATCH_STAGES;
-export type MatchStage = MatchStageTuple[number];
 
 export class MemoryMatch {
   id: string;
