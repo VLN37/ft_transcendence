@@ -25,7 +25,6 @@ export class Paddle {
   private isGoingUp = false;
   private isGoingDown = false;
   private readonly player: UserDto;
-  private enemy?: Paddle;
 
   constructor(player: UserDto, side: PlayerSide, rules: GameRules) {
     this.side = side;
