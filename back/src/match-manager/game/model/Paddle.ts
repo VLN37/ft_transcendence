@@ -37,6 +37,7 @@ export class Paddle {
     this.height = rules.player.height;
     this.player = player;
     this.speed = rules.player.speed;
+    this.setCommandHandlerToDefault();
   }
 
   update(deltaTime: number) {
@@ -61,7 +62,7 @@ export class Paddle {
     }
   }
 
-  handleCommand(command: PlayerCommand) {
+  private defaultCommandHandler(command: PlayerCommand) {
     if (command === PlayerCommand.STOP_MOVE_UP) {
       this.isGoingUp = false;
     } else if (command === PlayerCommand.STOP_MOVE_DOWN) {
@@ -75,6 +76,36 @@ export class Paddle {
     if (this.isGoingUp) this.state = PlayerState.MOVING_UP;
     else if (this.isGoingDown) this.state = PlayerState.MOVING_DOWN;
     else this.stopMoving();
+  }
+
+  private invertedCommandHandler(command: PlayerCommand) {
+    if (command === PlayerCommand.STOP_MOVE_UP) {
+      this.isGoingDown = false;
+    } else if (command === PlayerCommand.STOP_MOVE_DOWN) {
+      this.isGoingUp = false;
+    } else if (command === PlayerCommand.MOVE_UP) {
+      this.isGoingDown = true;
+    } else if (command === PlayerCommand.MOVE_DOWN) {
+      this.isGoingUp = true;
+    }
+
+    if (this.isGoingUp) this.state = PlayerState.MOVING_UP;
+    else if (this.isGoingDown) this.state = PlayerState.MOVING_DOWN;
+    else this.stopMoving();
+  }
+
+  private currentCommandHandler?: (command: PlayerCommand) => void;
+
+  setCommandHandlerToDefault() {
+    this.currentCommandHandler = this.defaultCommandHandler;
+  }
+
+  setCommandHandlerToInverted() {
+    this.currentCommandHandler = this.invertedCommandHandler;
+  }
+
+  handleCommand(command: PlayerCommand) {
+    this.currentCommandHandler(command);
   }
 
   getLeftBorder() {
