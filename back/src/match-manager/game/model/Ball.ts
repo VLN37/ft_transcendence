@@ -1,6 +1,7 @@
 import { Point } from '../math/Point';
 import { Vector } from '../math/Vector';
 import { GameRules } from '../rules';
+import { Paddle } from './Paddle';
 
 export class Ball {
   public width: number;
@@ -8,6 +9,7 @@ export class Ball {
   public position: Point;
   public velocity: Vector;
   public maxSpeed: number;
+  public lastTouch: Paddle;
 
   constructor(rules: GameRules) {
     this.width = rules.ball.size;

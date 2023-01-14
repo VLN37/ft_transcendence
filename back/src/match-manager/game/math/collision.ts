@@ -2,6 +2,7 @@ import { Ball } from '../model/Ball';
 import { GameRules, rules } from '../rules';
 import { Paddle } from '../model/Paddle';
 import { degToRad, radToDeg } from 'src/utils/functions/math';
+import { PowerUp } from 'src/match-manager/model/PowerUps/PowerUp';
 
 export function checkBallGoalCollision(ball: Ball, rules: GameRules): boolean {
   if (
@@ -22,42 +23,56 @@ export function handleBallCollision(ball: Ball, rules: GameRules) {
   }
 }
 
-export function handleBallLeftPaddleCollision(ball: Ball, player: Paddle) {
-  if (ball.getLeftBorder() > player.getRightBorder() || ball.velocity.x > 0)
+export function isBallCollidingPowerUp(ball: Ball, powerup: PowerUp) {
+  if (
+    ball.position.x < powerup.x + rules.powerUpCollisionRange &&
+    ball.position.x > powerup.x - rules.powerUpCollisionRange &&
+    ball.position.y < powerup.y + rules.powerUpCollisionRange &&
+    ball.position.y > powerup.y - rules.powerUpCollisionRange
+  ) {
+    return true;
+  }
+  return false;
+}
+
+export function handleBallLeftPaddleCollision(ball: Ball, paddle: Paddle) {
+  if (ball.getLeftBorder() > paddle.getRightBorder() || ball.velocity.x > 0)
     return;
 
   if (
-    ball.getLowerBorder() >= player.getUpperBorder() &&
-    ball.getUpperBorder() <= player.getLowerBorder()
+    ball.getLowerBorder() >= paddle.getUpperBorder() &&
+    ball.getUpperBorder() <= paddle.getLowerBorder()
   ) {
-    const penetrationDepth = player.getRightBorder() - ball.getLeftBorder();
-    if (penetrationDepth > player.width) {
+    const penetrationDepth = paddle.getRightBorder() - ball.getLeftBorder();
+    if (penetrationDepth > paddle.width) {
       return;
     }
     ball.velocity.x *= -1;
-    const newAngle = getAngle(ball, player);
+    const newAngle = getAngle(ball, paddle);
     ball.velocity.rotateTo(newAngle);
     increaseBallSpeed(ball);
+    ball.lastTouch = paddle;
   }
 }
 
-export function handleBallRightPaddleCollision(ball: Ball, player: Paddle) {
-  if (ball.getRightBorder() < player.getLeftBorder() || ball.velocity.x < 0)
+export function handleBallRightPaddleCollision(ball: Ball, paddle: Paddle) {
+  if (ball.getRightBorder() < paddle.getLeftBorder() || ball.velocity.x < 0)
     return;
 
   if (
-    ball.getLowerBorder() >= player.getUpperBorder() &&
-    ball.getUpperBorder() <= player.getLowerBorder()
+    ball.getLowerBorder() >= paddle.getUpperBorder() &&
+    ball.getUpperBorder() <= paddle.getLowerBorder()
   ) {
-    const penetrationDepth = ball.getRightBorder() - player.getLeftBorder();
-    if (penetrationDepth > player.width) {
+    const penetrationDepth = ball.getRightBorder() - paddle.getLeftBorder();
+    if (penetrationDepth > paddle.width) {
       return; // player won't save the ball if it's past him
     }
     ball.position.x -= penetrationDepth;
     ball.velocity.x *= -1;
-    const newAngle = getAngle(ball, player);
+    const newAngle = getAngle(ball, paddle);
     ball.velocity.rotateTo(newAngle);
     increaseBallSpeed(ball);
+    ball.lastTouch = paddle;
   }
 }
 
