@@ -15,14 +15,39 @@ const getPlayerColor = (side: PlayerSide, image: p5Types.Graphics) => {
   return color;
 };
 
+const getPaddleQuadCoordinates = (paddle: Paddle) => {
+  const halfWidth = paddle.width / 2;
+  const halfHeight = paddle.height / 2;
+
+  if (paddle.side === PlayerSide.LEFT) {
+    return {
+      x1: paddle.x - halfWidth,
+      y1: paddle.y - halfHeight + paddle.width,
+      x2: paddle.x + halfWidth,
+      y2: paddle.y - halfHeight,
+      x3: paddle.x + halfWidth,
+      y3: paddle.y + halfHeight,
+      x4: paddle.x - halfWidth,
+      y4: paddle.y + halfHeight - paddle.width,
+    };
+  } else {
+    return {
+      x1: paddle.x - halfWidth,
+      y1: paddle.y - halfHeight,
+      x2: paddle.x + halfWidth,
+      y2: paddle.y - halfHeight + paddle.width,
+      x3: paddle.x + halfWidth,
+      y3: paddle.y + halfHeight - paddle.width,
+      x4: paddle.x - halfWidth,
+      y4: paddle.y + halfHeight,
+    };
+  }
+};
+
 export const drawPlayer = (image: p5Types.Graphics, rPlayer: Paddle) => {
   image.fill(getPlayerColor(rPlayer.side, image));
-  image.rect(
-    rPlayer.x - rPlayer.width / 2,
-    rPlayer.y - rPlayer.height / 2,
-    rPlayer.width,
-    rPlayer.height,
-  );
+  const c = getPaddleQuadCoordinates(rPlayer);
+  image.quad(c.x1, c.y1, c.x2, c.y2, c.x3, c.y3, c.x4, c.y4);
 };
 
 export const drawBall = (image: p5Types.Graphics, ball: Ball) => {
