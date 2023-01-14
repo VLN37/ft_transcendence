@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class stuff1673488810911 implements MigrationInterface {
-    name = 'stuff1673488810911'
+export class stuff1673574409147 implements MigrationInterface {
+    name = 'stuff1673574409147'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`CREATE TYPE "public"."profiles_status_enum" AS ENUM('OFFLINE', 'ONLINE', 'PLAYING')`);
