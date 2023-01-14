@@ -14,6 +14,7 @@ import { Server, Socket } from 'socket.io';
 import { UserDto } from 'src/users/dto/user.dto';
 import { UsersService } from 'src/users/users.service';
 import { validateWsJwt } from 'src/utils/functions/validateWsConnection';
+import { PlayerSide } from './game/model/Paddle';
 import { MatchManager } from './match-manager';
 import { PlayerCommand } from './model/PlayerCommands';
 import { PowerUp } from './model/PowerUps/PowerUp';
@@ -117,10 +118,19 @@ export class MatchManagerGateway implements OnGatewayInit, OnGatewayDisconnect {
       this.server.in(matchId).emit('powerup-spawn', powerup);
     });
 
+    type PowerUpCollectedPayload = {
+      powerup: PowerUp;
+      playerSide: PlayerSide;
+    };
+
     this.matchManager.setPowerUpCollectedSubscriber(
       matchId,
-      (player, powerup) => {
-        this.server.in(matchId).emit('powerup-collected', { powerup, player });
+      (side, powerup) => {
+        const payload: PowerUpCollectedPayload = {
+          powerup,
+          playerSide: side,
+        };
+        this.server.in(matchId).emit('powerup-collected', payload);
       },
     );
   }

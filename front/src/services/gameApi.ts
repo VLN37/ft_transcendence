@@ -73,10 +73,14 @@ export class GameApi {
   setOnPowerUpCollectedListener(
     callback: (powerup: PowerUp, side: PlayerSide) => void,
   ) {
+    type PowerUpCollectedPayload = {
+      powerup: PowerUp;
+      playerSide: PlayerSide;
+    };
     this.matchSocket?.on(
       'powerup-collected',
-      (data: { powerup: PowerUp; side: PlayerSide }) => {
-        callback(data.powerup, data.side);
+      (data: PowerUpCollectedPayload) => {
+        callback(data.powerup, data.playerSide);
       },
     );
   }
