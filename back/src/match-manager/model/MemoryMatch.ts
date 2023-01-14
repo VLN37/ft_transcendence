@@ -17,6 +17,7 @@ import { MatchStage } from './MatchStage';
 import { MatchState } from './MatchState';
 import { PlayerCommand } from './PlayerCommands';
 import { GrowPlayerSize } from './PowerUps/GrowPlayerSize';
+import { InvertEnemy } from './PowerUps/InvertEnemy';
 import { PowerUp } from './PowerUps/PowerUp';
 import { SlowEnemy } from './PowerUps/SlowEnemy';
 
@@ -70,7 +71,11 @@ export class MemoryMatch {
 
   init() {
     if (this.type === 'TURBO') {
-      this.availabePowerups = [new GrowPlayerSize(), new SlowEnemy()];
+      this.availabePowerups = [
+        new GrowPlayerSize(),
+        new SlowEnemy(),
+        new InvertEnemy(),
+      ];
     }
     this.resetPositions();
   }
@@ -187,7 +192,7 @@ export class MemoryMatch {
   private getRandomAvailablePowerUp() {
     const size = this.availabePowerups.length;
     const index = Math.floor(Math.random() * size);
-    return this.availabePowerups[1];
+    return this.availabePowerups[2];
   }
 
   private spawnPowerUp(powerup: PowerUp) {

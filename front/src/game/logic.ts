@@ -28,6 +28,12 @@ export const applyPowerUp = (
       }, _powerup.duration);
 
       break;
+
+    case 'invert-enemy':
+    /* as the back sends commands immediately to everyone in the match,
+     * there's no need for the front-end to handle this logic
+     * as updates will be already synchronized
+     * */
     default:
       break;
   }

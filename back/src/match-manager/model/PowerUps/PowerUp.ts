@@ -1,7 +1,7 @@
 import { Ball } from '../../game/model/Ball';
 import { Paddle } from '../../game/model/Paddle';
 
-export type PowerUpName = 'grow-player-size' | 'slow-enemy';
+export type PowerUpName = 'grow-player-size' | 'slow-enemy' | 'invert-enemy';
 
 export interface PowerUp {
   name: PowerUpName;

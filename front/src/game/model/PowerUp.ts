@@ -1,4 +1,4 @@
-export type PowerUpName = 'grow-player-size' | 'slow-enemy';
+export type PowerUpName = 'grow-player-size' | 'slow-enemy' | 'invert-enemy';
 
 export interface PowerUp {
   name: PowerUpName;
