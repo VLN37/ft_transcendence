@@ -15,17 +15,13 @@ const getPlayerColor = (side: PlayerSide, image: p5Types.Graphics) => {
   return color;
 };
 
-export const drawPlayer = (
-  image: p5Types.Graphics,
-  rPlayer: Paddle,
-  rules: GameRules,
-) => {
+export const drawPlayer = (image: p5Types.Graphics, rPlayer: Paddle) => {
   image.fill(getPlayerColor(rPlayer.side, image));
   image.rect(
     rPlayer.x - rPlayer.width / 2,
     rPlayer.y - rPlayer.height / 2,
-    rules.player.width,
-    rules.player.height,
+    rPlayer.width,
+    rPlayer.height,
   );
 };
 

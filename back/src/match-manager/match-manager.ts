@@ -6,6 +6,7 @@ import { UserDto } from 'src/users/dto/user.dto';
 import { minutes, seconds } from 'src/utils/functions/timeConvertion';
 import { Err, Ok, Result } from 'ts-results';
 import { Repository } from 'typeorm';
+import { PlayerSide } from './game/model/Paddle';
 import { NOTIFICATIONS_PER_SECOND, UPDATES_PER_SECOND } from './game/rules';
 import { MatchState } from './model/MatchState';
 import { MemoryMatch } from './model/MemoryMatch';
@@ -198,11 +199,11 @@ export class MatchManager {
 
   setPowerUpCollectedSubscriber(
     matchId: string,
-    notifyPowerUpCollected: (player: UserDto, powerup: PowerUp) => void,
+    notifyPowerUpCollected: (playerSide: PlayerSide, powerup: PowerUp) => void,
   ) {
     const activeMatch = this.findMatchById(matchId);
-    activeMatch.match.onPowerUpCollected = (player, powerup) => {
-      notifyPowerUpCollected(player, powerup);
+    activeMatch.match.onPowerUpCollected = (playerSide, powerup) => {
+      notifyPowerUpCollected(playerSide, powerup);
     };
   }
 

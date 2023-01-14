@@ -1,8 +1,10 @@
 import { io, Socket } from 'socket.io-client';
 import { MatchState } from '../game/model/MatchState';
+import { PlayerSide } from '../game/model/Paddle';
 import { PlayerCommand } from '../game/model/PlayerCommand';
 import { PowerUp } from '../game/model/PowerUp';
 import { Match } from '../models/Match';
+import { User } from '../models/User';
 import api from './api';
 
 export class GameApi {
@@ -66,6 +68,17 @@ export class GameApi {
     this.matchSocket?.on('powerup-spawn', (powerup) => {
       callback(powerup);
     });
+  }
+
+  setOnPowerUpCollectedListener(
+    callback: (powerup: PowerUp, side: PlayerSide) => void,
+  ) {
+    this.matchSocket?.on(
+      'powerup-collected',
+      (data: { powerup: PowerUp; side: PlayerSide }) => {
+        callback(data.powerup, data.side);
+      },
+    );
   }
 
   issueCommand(command: PlayerCommand) {
