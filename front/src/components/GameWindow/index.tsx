@@ -53,7 +53,7 @@ export default (props: GameWindowProps) => {
   let leftPlayerScore = 0;
   let rightPlayerScore = 0;
 
-  let powerup: PowerUp;
+  let currentPowerup: PowerUp | null;
 
   const setup = (p5: p5Types, canvasParentRef: Element) => {
     updateWindowProportions();
@@ -78,7 +78,7 @@ export default (props: GameWindowProps) => {
   };
 
   const placePowerUp = (_powerup: PowerUp) => {
-    powerup = _powerup;
+    currentPowerup = _powerup;
   };
 
   const getPlayerPaddle = (side: PlayerSide): Paddle => {
@@ -90,6 +90,7 @@ export default (props: GameWindowProps) => {
     const paddle = getPlayerPaddle(side);
     console.log(`paddle ${paddle.side} collected powerup ${_powerup.name}`);
     applyPowerUp(paddle, _powerup, rules);
+    currentPowerup = null;
   };
 
   gameApi.setOnMatchTickListener(listenGameState);
@@ -151,7 +152,7 @@ export default (props: GameWindowProps) => {
     drawSpeedMeter(image, ball, rules);
     resizeIfNecessary(p5);
     printFps(image, ball);
-    if (powerup) drawPowerUp(image, powerup);
+    if (currentPowerup) drawPowerUp(image, currentPowerup);
     // drawBallCoords(image, ball);
     p5.image(image, 0, 0, p5.width, p5.height);
   };
