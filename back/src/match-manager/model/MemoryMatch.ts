@@ -155,10 +155,12 @@ export class MemoryMatch {
     handleBallCollision(ball, rules);
     handleBallLeftPaddleCollision(ball, this.leftPaddle);
     handleBallRightPaddleCollision(ball, this.rightPaddle);
+
     if (this.currentPowerUp && this.currentPowerUp.canActivate) {
       if (isBallCollidingPowerUp(ball, this.currentPowerUp)) {
         this.currentPowerUp.activate(ball, ball.lastTouch);
         const player = ball.lastTouch;
+        console.log('ball last touch: ' + player.side.toString());
         this.onPowerUpCollected(player.side, this.currentPowerUp);
       }
     }

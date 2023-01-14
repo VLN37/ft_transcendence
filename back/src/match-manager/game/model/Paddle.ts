@@ -3,7 +3,7 @@ import { UserDto } from 'src/users/dto/user.dto';
 import { GameRules, rules } from '../rules';
 
 export enum PlayerSide {
-  RIGHT,
+  RIGHT = 1,
   LEFT,
 }
 
