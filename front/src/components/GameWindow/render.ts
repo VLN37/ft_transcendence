@@ -3,6 +3,7 @@ import { Point } from '../../game/math/Point';
 import { Ball } from '../../game/model/Ball';
 import { GameRules } from '../../game/model/GameRules';
 import { Paddle, PlayerSide } from '../../game/model/Paddle';
+import { PowerUp } from '../../game/model/PowerUp';
 
 const getPlayerColor = (side: PlayerSide, image: p5Types.Graphics) => {
   let color: p5Types.Color;
@@ -145,5 +146,12 @@ export const drawMiddleNet = (image: p5Types.Graphics, rules: GameRules) => {
   image.line(middle - size, 0, middle + size, 0);
   image.line(middle - size, 0, middle + size, rules.worldHeight);
   image.line(middle + size, 0, middle - size, rules.worldHeight);
+  image.pop();
+};
+
+export const drawPowerUp = (image: p5Types.Graphics, powerup: PowerUp) => {
+  image.push();
+  image.fill(50, 255, 50);
+  image.circle(powerup.x, powerup.y, 20);
   image.pop();
 };

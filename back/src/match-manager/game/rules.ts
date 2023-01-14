@@ -35,6 +35,12 @@ export type GameRules = {
     minY: number;
     maxY: number;
   };
+  powerUpSpawnArea: {
+    minX: number;
+    maxX: number;
+    minY: number;
+    maxY: number;
+  };
   topCollisionEdge: number;
   bottomCollisionEdge: number;
   leftCollisionEdge: number;
@@ -64,6 +70,12 @@ export const rules: GameRules = {
     speed: PLAYER_SPEED,
     minY: 30 + PLAYER_HEIGHT / 2,
     maxY: WORLD_HEIGHT - PLAYER_HEIGHT / 2 - 30,
+  },
+  powerUpSpawnArea: {
+    minX: 250,
+    maxX: WORLD_WIDTH - 250,
+    minY: 50,
+    maxY: WORLD_HEIGHT - 50,
   },
   topCollisionEdge: BALL_SIZE / 2,
   bottomCollisionEdge: WORLD_HEIGHT - BALL_SIZE / 2,

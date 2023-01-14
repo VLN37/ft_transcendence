@@ -1,5 +1,7 @@
-import { MatchType } from 'src/match-making/dto/MatchType';
+import { MatchType, MATCH_TYPES } from 'src/match-making/dto/MatchType';
 import { UserDto } from 'src/users/dto/user.dto';
+import { randomBetween } from 'src/utils/functions/math';
+import { seconds } from 'src/utils/functions/timeConvertion';
 import {
   checkBallGoalCollision,
   handleBallCollision,
@@ -13,6 +15,8 @@ import { rules } from '../game/rules';
 import { MatchStage } from './MatchStage';
 import { MatchState } from './MatchState';
 import { PlayerCommand } from './PlayerCommands';
+import { GrowPlayerSize } from './PowerUps/GrowPlayerSize';
+import { PowerUp } from './PowerUps/PowerUp';
 
 export class MemoryMatch {
   id: string;
@@ -32,8 +36,13 @@ export class MemoryMatch {
   private leftPaddle = new Paddle(PlayerSide.LEFT, rules);
   private rightPaddle = new Paddle(PlayerSide.RIGHT, rules);
 
+  private availabePowerups: PowerUp[];
+  private currentPowerUp?: PowerUp;
+
   onStageChange: (stage: MatchStage) => void;
   onScoreUpdate: () => void;
+  onPowerUpSpawn: (powerUp: PowerUp) => void;
+  onPowerUpCollected: (player: UserDto, powerUp: PowerUp) => void;
 
   private lastUpdate: number; // for delta time
 
@@ -53,13 +62,19 @@ export class MemoryMatch {
     this.init();
   }
 
-  updateStage(stage: MatchStage) {
-    this.stage = stage;
-    this.onStageChange?.call(this, stage);
+  init() {
+    if (this.type === 'TURBO') {
+      this.availabePowerups = [new GrowPlayerSize()];
+    }
+    this.resetPositions();
   }
 
-  init() {
-    this.resetPositions();
+  updateStage(stage: MatchStage) {
+    this.stage = stage;
+    if (stage === 'ONGOING') {
+      this.setupPowerUps();
+    }
+    this.onStageChange?.call(this, stage);
   }
 
   resetPositions() {
@@ -151,5 +166,30 @@ export class MemoryMatch {
     const x = 150 * sideChooser;
     const y = (Math.random() - 0.5) * rules.worldHeight;
     return new Vector(x, y).normalize().mult(rules.ball.startingSpeed);
+  }
+
+  private getRandomAvailablePowerUp() {
+    const size = this.availabePowerups.length;
+    const index = Math.floor(Math.random() * size);
+    return this.availabePowerups[index];
+  }
+
+  private spawnPowerUp(powerup: PowerUp) {
+    const { minX, maxX, minY, maxY } = rules.powerUpSpawnArea;
+
+    const x = randomBetween(minX, maxX);
+    const y = randomBetween(minY, maxY);
+
+    powerup.x = x;
+    powerup.y = y;
+    this.currentPowerUp = powerup;
+    this.onPowerUpSpawn(powerup);
+  }
+
+  private setupPowerUps() {
+    setTimeout(() => {
+      const powerup = this.getRandomAvailablePowerUp();
+      this.spawnPowerUp(powerup);
+    }, seconds(randomBetween(15, 30)));
   }
 }

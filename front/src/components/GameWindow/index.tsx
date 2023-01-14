@@ -11,6 +11,7 @@ import {
   drawBallVelocity,
   drawMiddleNet,
   drawPlayer,
+  drawPowerUp,
   drawScores,
   drawSpeedMeter,
   printFps,
@@ -23,6 +24,7 @@ import {
 import { handleKeyPress, handleKeyRelease } from '../../game/controls';
 import { Box, Button } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
+import { PowerUp } from '../../game/model/PowerUp';
 
 export type GameWindowProps = {
   gameApi: GameApi;
@@ -50,6 +52,8 @@ export default (props: GameWindowProps) => {
   let rightPlayerScore = 0;
   let rightPlayer = new Paddle(PlayerSide.RIGHT, rules);
 
+  let powerup: PowerUp;
+
   const setup = (p5: p5Types, canvasParentRef: Element) => {
     updateWindowProportions();
     image = p5.createGraphics(rules.worldWidth, rules.worldHeight);
@@ -72,7 +76,12 @@ export default (props: GameWindowProps) => {
     rightPlayerScore = state.pr.score;
   };
 
+  const placePowerUp = (_powerup: PowerUp) => {
+    powerup = _powerup;
+  };
+
   gameApi.setOnMatchTickListener(listenGameState);
+  gameApi.setOnPowerUpSpawnListener(placePowerUp);
 
   const updateWindowProportions = () => {
     let currentWidth = window.innerWidth;
@@ -129,6 +138,7 @@ export default (props: GameWindowProps) => {
     drawSpeedMeter(image, ball, rules);
     resizeIfNecessary(p5);
     printFps(image, ball);
+    if (powerup) drawPowerUp(image, powerup);
     // drawBallCoords(image, ball);
     p5.image(image, 0, 0, p5.width, p5.height);
   };
