@@ -6,6 +6,7 @@ import {
   checkBallGoalCollision,
   handleBallCollision,
   handleBallLeftPaddleCollision,
+  isBallCollidingPowerUp,
   handleBallRightPaddleCollision,
 } from '../game/math/collision';
 import { Vector } from '../game/math/Vector';
@@ -33,8 +34,8 @@ export class MemoryMatch {
   stage: MatchStage;
 
   private ball = new Ball(rules);
-  private leftPaddle = new Paddle(PlayerSide.LEFT, rules);
-  private rightPaddle = new Paddle(PlayerSide.RIGHT, rules);
+  private leftPaddle: Paddle;
+  private rightPaddle: Paddle;
 
   private availabePowerups: PowerUp[];
   private currentPowerUp?: PowerUp;
@@ -53,6 +54,8 @@ export class MemoryMatch {
     type: MatchType,
   ) {
     this.id = id;
+    this.leftPaddle = new Paddle(leftPlayer, PlayerSide.LEFT, rules);
+    this.rightPaddle = new Paddle(rightPlayer, PlayerSide.RIGHT, rules);
     this.left_player = leftPlayer;
     this.right_player = rightPlayer;
     this.left_player_score = 0;
@@ -152,6 +155,13 @@ export class MemoryMatch {
     handleBallCollision(ball, rules);
     handleBallLeftPaddleCollision(ball, this.leftPaddle);
     handleBallRightPaddleCollision(ball, this.rightPaddle);
+    if (this.currentPowerUp) {
+      if (isBallCollidingPowerUp(ball, this.currentPowerUp)) {
+        this.currentPowerUp.activate(ball, ball.lastTouch);
+        const player = ball.lastTouch.getPlayer();
+        this.onPowerUpCollected(player, this.currentPowerUp);
+      }
+    }
   }
 
   private getDeltaTime(): number {
@@ -190,6 +200,6 @@ export class MemoryMatch {
     setTimeout(() => {
       const powerup = this.getRandomAvailablePowerUp();
       this.spawnPowerUp(powerup);
-    }, seconds(randomBetween(15, 30)));
+    }, seconds(randomBetween(0, 5)));
   }
 }

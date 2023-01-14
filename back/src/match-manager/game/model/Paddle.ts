@@ -1,4 +1,5 @@
 import { PlayerCommand } from 'src/match-manager/model/PlayerCommands';
+import { UserDto } from 'src/users/dto/user.dto';
 import { GameRules, rules } from '../rules';
 
 export enum PlayerSide {
@@ -22,8 +23,9 @@ export class Paddle {
 
   private isGoingUp = false;
   private isGoingDown = false;
+  private readonly player: UserDto;
 
-  constructor(side: PlayerSide, rules: GameRules) {
+  constructor(player: UserDto, side: PlayerSide, rules: GameRules) {
     this.side = side;
     this.state = PlayerState.STOPPED;
     this.y = rules.player.startingPosition;
@@ -31,6 +33,7 @@ export class Paddle {
       side == PlayerSide.LEFT ? rules.player.leftLine : rules.player.rightLine;
     this.width = rules.player.width;
     this.height = rules.player.height;
+    this.player = player;
   }
 
   update(deltaTime: number) {
@@ -85,6 +88,10 @@ export class Paddle {
 
   getLowerBorder() {
     return this.y + this.height / 2;
+  }
+
+  getPlayer() {
+    return this.player;
   }
 
   private stopMoving() {
