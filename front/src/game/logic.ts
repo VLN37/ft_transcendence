@@ -7,6 +7,7 @@ export const applyPowerUp = (
   _powerup: PowerUp,
   rules: GameRules,
 ) => {
+  console.log(`activating powerup ${_powerup.name}`);
   switch (_powerup.name) {
     case 'grow-player-size':
       const defaultHeight = rules.player.height;
@@ -17,6 +18,16 @@ export const applyPowerUp = (
       }, _powerup.duration);
       break;
 
+    case 'slow-enemy':
+      const defaultSpeed = rules.player.speed;
+      const enemy = paddle.getEnemy!();
+      enemy.speed = defaultSpeed / 2;
+
+      setTimeout(() => {
+        enemy.speed = defaultSpeed;
+      }, _powerup.duration);
+
+      break;
     default:
       break;
   }

@@ -14,10 +14,12 @@ export class MatchState {
     y: number;
     state: PlayerState;
     score: number;
+    speed: number;
   };
   pr: {
     y: number;
     state: PlayerState;
     score: number;
+    speed: number;
   };
 }

@@ -50,6 +50,8 @@ export default (props: GameWindowProps) => {
 
   let leftPlayer = new Paddle(PlayerSide.LEFT, rules);
   let rightPlayer = new Paddle(PlayerSide.RIGHT, rules);
+  leftPlayer.setEnemy(rightPlayer);
+  rightPlayer.setEnemy(leftPlayer);
   let leftPlayerScore = 0;
   let rightPlayerScore = 0;
 
