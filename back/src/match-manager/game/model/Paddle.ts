@@ -96,10 +96,12 @@ export class Paddle {
   private currentCommandHandler?: (command: PlayerCommand) => void;
 
   setCommandHandlerToDefault() {
+    this.stopMoving();
     this.currentCommandHandler = this.defaultCommandHandler;
   }
 
   setCommandHandlerToInverted() {
+    this.stopMoving();
     this.currentCommandHandler = this.invertedCommandHandler;
   }
 
