@@ -16,6 +16,7 @@ import { UsersService } from 'src/users/users.service';
 import { validateWsJwt } from 'src/utils/functions/validateWsConnection';
 import { MatchManager } from './match-manager';
 import { PlayerCommand } from './model/PlayerCommands';
+import { PowerUp } from './model/PowerUps/PowerUp';
 
 @WebSocketGateway({
   namespace: '/match-manager',
@@ -61,9 +62,7 @@ export class MatchManagerGateway implements OnGatewayInit, OnGatewayDisconnect {
     try {
       this.logger.debug('match id: ', matchId);
       this.matchManager.connectPlayer(matchId, playerId);
-      this.matchManager.setMatchTickHandler(matchId, (matchState) => {
-        this.server.in(matchId).emit('match-tick', matchState);
-      });
+      this.setupMatchListeners(matchId);
       client.join(matchId);
     } catch (e) {
       this.logger.warn('error connecting player', e);
@@ -108,5 +107,21 @@ export class MatchManagerGateway implements OnGatewayInit, OnGatewayDisconnect {
     } catch (e) {
       this.logger.warn('error disconnecting player', e);
     }
+  }
+
+  private setupMatchListeners(matchId: string) {
+    this.matchManager.setMatchTickHandler(matchId, (matchState) => {
+      this.server.in(matchId).emit('match-tick', matchState);
+    });
+    this.matchManager.setPowerUpSpawnSubscriber(matchId, (powerup: PowerUp) => {
+      this.server.in(matchId).emit('powerup-spawn', powerup);
+    });
+
+    this.matchManager.setPowerUpCollectedSubscriber(
+      matchId,
+      (player, powerup) => {
+        this.server.in(matchId).emit('powerup-collected', { powerup, player });
+      },
+    );
   }
 }

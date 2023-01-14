@@ -68,7 +68,6 @@ const getAngle = (ball: Ball, paddle: Paddle, rules: GameRules): number => {
   const length = paddle.height + ball.height;
   const angleRangeLength = rules.ball.maxAngle - -rules.ball.maxAngle;
 
-  debugger;
   let result = (ballY - paddle.y) * (angleRangeLength / length); // - rules.ball.maxAngle;
 
   if (ball.isGoingLeft()) result = 180 - result;

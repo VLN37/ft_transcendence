@@ -1,5 +1,5 @@
 import { MatchType } from 'src/match-making/dto/MatchType';
-import { MatchStage, MATCH_STAGES } from 'src/match-manager/model/MemoryMatch';
+import { MatchStage, MATCH_STAGES } from 'src/match-manager/model/MatchStage';
 import {
   Column,
   CreateDateColumn,

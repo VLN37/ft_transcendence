@@ -1,6 +1,7 @@
 import { io, Socket } from 'socket.io-client';
 import { MatchState } from '../game/model/MatchState';
 import { PlayerCommand } from '../game/model/PlayerCommand';
+import { PowerUp } from '../game/model/PowerUp';
 import { Match } from '../models/Match';
 import api from './api';
 
@@ -58,6 +59,12 @@ export class GameApi {
     }
     this.matchSocket?.on('match-tick', (matchData) => {
       callback(matchData);
+    });
+  }
+
+  setOnPowerUpSpawnListener(callback: (powerup: PowerUp) => void) {
+    this.matchSocket?.on('powerup-spawn', (powerup) => {
+      callback(powerup);
     });
   }
 

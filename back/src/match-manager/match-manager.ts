@@ -10,6 +10,7 @@ import { NOTIFICATIONS_PER_SECOND, UPDATES_PER_SECOND } from './game/rules';
 import { MatchState } from './model/MatchState';
 import { MemoryMatch } from './model/MemoryMatch';
 import { PlayerCommand } from './model/PlayerCommands';
+import { PowerUp } from './model/PowerUps/PowerUp';
 
 export type ActiveMatch = {
   timers: {
@@ -182,6 +183,26 @@ export class MatchManager {
 
     activeMatch.onMatchUpdate = () => {
       activeMatch.match.update();
+    };
+  }
+
+  setPowerUpSpawnSubscriber(
+    matchId: string,
+    notifyPowerUpSpawned: (powerup: PowerUp) => void,
+  ) {
+    const activeMatch = this.findMatchById(matchId);
+    activeMatch.match.onPowerUpSpawn = (powerup) => {
+      notifyPowerUpSpawned(powerup);
+    };
+  }
+
+  setPowerUpCollectedSubscriber(
+    matchId: string,
+    notifyPowerUpCollected: (player: UserDto, powerup: PowerUp) => void,
+  ) {
+    const activeMatch = this.findMatchById(matchId);
+    activeMatch.match.onPowerUpCollected = (player, powerup) => {
+      notifyPowerUpCollected(player, powerup);
     };
   }
 

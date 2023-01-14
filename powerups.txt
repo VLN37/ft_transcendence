@@ -1,0 +1,31 @@
+powerups
+
+- grow paddle size
+- invert enemy's controls
+- shrink enemy's size
+- make enemy slower
+
+
+----- change ball direction
+
+-- utopia
+- wind to slow ball on your direction
+
+debuffs
+
+- grow enemy size
+- invert player controls
+- shrink player size
+- make player slower
+
+========================
+
+
+when a player hit the ball, it will save who was the last to touch it,
+so the powerup will act in applying a buff to that player,
+or a debuff to the enemy
+
+when the ball hits a powerup, it will either activate a buff for a fixed time to
+the last player to touch it, or activate a debuff for his enemy
+
+

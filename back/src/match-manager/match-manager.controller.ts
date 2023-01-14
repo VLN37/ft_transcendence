@@ -19,7 +19,7 @@ import { rules } from './game/rules';
 import { MatchManager } from './match-manager';
 import { MatchManagerInterceptor } from './match-manager.interceptor';
 import { MatchManagerService } from './match-manager.service';
-import { MatchStage } from './model/MemoryMatch';
+import { MatchStage } from './model/MatchStage';
 
 @Controller('/matches')
 export class MatchManagerController {
@@ -60,10 +60,7 @@ export class MatchManagerController {
 
   @Get('/user/:id')
   @UseInterceptors(MatchManagerInterceptor)
-  getUserMatches(
-    @Param('id') id: number,
-    @Query('qty') qty: number = 10,
-  ) {
+  getUserMatches(@Param('id') id: number, @Query('qty') qty: number = 10) {
     return this.matchManagerService.getUserMatches(id, qty);
   }
 

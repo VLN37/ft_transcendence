@@ -7,3 +7,7 @@ export const degToRad = (degrees: number): number => {
 export const radToDeg = (radians: number): number => {
   return radians / ratio;
 };
+
+export const randomBetween = (min: number, max: number) => {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+};
