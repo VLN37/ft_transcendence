@@ -53,6 +53,13 @@ export class Paddle {
     return this.y - this.height / 2;
   }
 
+  getEnemy?: () => Paddle;
+
+  setEnemy(enemy: Paddle) {
+    if (this.getEnemy) throw new Error('Enemy already set');
+    this.getEnemy = () => enemy;
+  }
+
   getLowerBorder() {
     return this.y + this.height / 2;
   }
