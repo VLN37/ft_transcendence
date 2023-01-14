@@ -160,7 +160,6 @@ export class MemoryMatch {
       if (isBallCollidingPowerUp(ball, this.currentPowerUp)) {
         this.currentPowerUp.activate(ball, ball.lastTouch);
         const player = ball.lastTouch;
-        console.log('ball last touch: ' + player.side.toString());
         this.onPowerUpCollected(player.side, this.currentPowerUp);
       }
     }
