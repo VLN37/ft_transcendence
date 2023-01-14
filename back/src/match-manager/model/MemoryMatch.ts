@@ -82,7 +82,7 @@ export class MemoryMatch {
 
   updateStage(stage: MatchStage) {
     this.stage = stage;
-    if (stage === 'ONGOING') {
+    if (stage === 'ONGOING' && this.type === 'TURBO') {
       this.setupPowerUps();
     }
     this.onStageChange?.call(this, stage);
