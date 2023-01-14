@@ -18,6 +18,7 @@ import { MatchState } from './MatchState';
 import { PlayerCommand } from './PlayerCommands';
 import { GrowPlayerSize } from './PowerUps/GrowPlayerSize';
 import { PowerUp } from './PowerUps/PowerUp';
+import { SlowEnemy } from './PowerUps/SlowEnemy';
 
 export class MemoryMatch {
   id: string;
@@ -56,6 +57,8 @@ export class MemoryMatch {
     this.id = id;
     this.leftPaddle = new Paddle(leftPlayer, PlayerSide.LEFT, rules);
     this.rightPaddle = new Paddle(rightPlayer, PlayerSide.RIGHT, rules);
+    this.leftPaddle.setEnemy(this.rightPaddle);
+    this.rightPaddle.setEnemy(this.leftPaddle);
     this.left_player = leftPlayer;
     this.right_player = rightPlayer;
     this.left_player_score = 0;
@@ -67,7 +70,7 @@ export class MemoryMatch {
 
   init() {
     if (this.type === 'TURBO') {
-      this.availabePowerups = [new GrowPlayerSize()];
+      this.availabePowerups = [new GrowPlayerSize(), new SlowEnemy()];
     }
     this.resetPositions();
   }
@@ -104,11 +107,13 @@ export class MemoryMatch {
         y: this.leftPaddle.y,
         state: this.leftPaddle.state,
         score: this.left_player_score,
+        speed: this.leftPaddle.speed,
       },
       pr: {
         y: this.rightPaddle.y,
         state: this.rightPaddle.state,
         score: this.right_player_score,
+        speed: this.rightPaddle.speed,
       },
     };
   }
@@ -182,7 +187,7 @@ export class MemoryMatch {
   private getRandomAvailablePowerUp() {
     const size = this.availabePowerups.length;
     const index = Math.floor(Math.random() * size);
-    return this.availabePowerups[index];
+    return this.availabePowerups[1];
   }
 
   private spawnPowerUp(powerup: PowerUp) {

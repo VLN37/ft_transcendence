@@ -19,11 +19,13 @@ export class Paddle {
   y: number;
   width: number;
   height: number;
+  speed: number;
   state: PlayerState;
 
   private isGoingUp = false;
   private isGoingDown = false;
   private readonly player: UserDto;
+  private enemy?: Paddle;
 
   constructor(player: UserDto, side: PlayerSide, rules: GameRules) {
     this.side = side;
@@ -34,6 +36,7 @@ export class Paddle {
     this.width = rules.player.width;
     this.height = rules.player.height;
     this.player = player;
+    this.speed = rules.player.speed;
   }
 
   update(deltaTime: number) {
@@ -43,9 +46,9 @@ export class Paddle {
 
     let movement = 0;
     if (this.state == PlayerState.MOVING_UP) {
-      movement = -(rules.player.speed * deltaTime);
+      movement = -(this.speed * deltaTime);
     } else {
-      movement = rules.player.speed * deltaTime;
+      movement = this.speed * deltaTime;
     }
 
     this.y += movement;
@@ -92,6 +95,13 @@ export class Paddle {
 
   getPlayer() {
     return this.player;
+  }
+
+  getEnemy?: () => Paddle;
+
+  setEnemy(enemy: Paddle) {
+    if (this.getEnemy) throw new Error('Enemy already set');
+    this.getEnemy = () => enemy;
   }
 
   private stopMoving() {
