@@ -43,7 +43,7 @@ export class MemoryMatch {
   onStageChange: (stage: MatchStage) => void;
   onScoreUpdate: () => void;
   onPowerUpSpawn: (powerUp: PowerUp) => void;
-  onPowerUpCollected: (player: UserDto, powerUp: PowerUp) => void;
+  onPowerUpCollected: (side: PlayerSide, powerUp: PowerUp) => void;
 
   private lastUpdate: number; // for delta time
 
@@ -155,11 +155,11 @@ export class MemoryMatch {
     handleBallCollision(ball, rules);
     handleBallLeftPaddleCollision(ball, this.leftPaddle);
     handleBallRightPaddleCollision(ball, this.rightPaddle);
-    if (this.currentPowerUp) {
+    if (this.currentPowerUp && this.currentPowerUp.canActivate) {
       if (isBallCollidingPowerUp(ball, this.currentPowerUp)) {
         this.currentPowerUp.activate(ball, ball.lastTouch);
-        const player = ball.lastTouch.getPlayer();
-        this.onPowerUpCollected(player, this.currentPowerUp);
+        const player = ball.lastTouch;
+        this.onPowerUpCollected(player.side, this.currentPowerUp);
       }
     }
   }

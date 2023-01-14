@@ -25,6 +25,7 @@ import { handleKeyPress, handleKeyRelease } from '../../game/controls';
 import { Box, Button } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 import { PowerUp } from '../../game/model/PowerUp';
+import { applyPowerUp } from '../../game/logic';
 
 export type GameWindowProps = {
   gameApi: GameApi;
@@ -48,9 +49,9 @@ export default (props: GameWindowProps) => {
   let ball = new Ball(rules);
 
   let leftPlayer = new Paddle(PlayerSide.LEFT, rules);
+  let rightPlayer = new Paddle(PlayerSide.RIGHT, rules);
   let leftPlayerScore = 0;
   let rightPlayerScore = 0;
-  let rightPlayer = new Paddle(PlayerSide.RIGHT, rules);
 
   let powerup: PowerUp;
 
@@ -80,8 +81,20 @@ export default (props: GameWindowProps) => {
     powerup = _powerup;
   };
 
+  const getPlayerPaddle = (side: PlayerSide): Paddle => {
+    if (side === leftPlayer.side) return leftPlayer;
+    else return rightPlayer;
+  };
+
+  const handlePowerupCollected = (_powerup: PowerUp, side: PlayerSide) => {
+    const paddle = getPlayerPaddle(side);
+    console.log(`paddle ${paddle.side} collected powerup ${_powerup.name}`);
+    applyPowerUp(paddle, _powerup, rules);
+  };
+
   gameApi.setOnMatchTickListener(listenGameState);
   gameApi.setOnPowerUpSpawnListener(placePowerUp);
+  gameApi.setOnPowerUpCollectedListener(handlePowerupCollected);
 
   const updateWindowProportions = () => {
     let currentWidth = window.innerWidth;
@@ -132,8 +145,8 @@ export default (props: GameWindowProps) => {
     drawMiddleNet(image, rules);
     drawBall(image, ball);
     // drawBallVelocity(image, ball);
-    drawPlayer(image, rightPlayer, rules);
-    drawPlayer(image, leftPlayer, rules);
+    drawPlayer(image, rightPlayer);
+    drawPlayer(image, leftPlayer);
     drawScores(image, leftPlayerScore, rightPlayerScore);
     drawSpeedMeter(image, ball, rules);
     resizeIfNecessary(p5);
