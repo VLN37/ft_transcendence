@@ -85,6 +85,13 @@ export class GameApi {
     );
   }
 
+  unsubscribeAllListeners() {
+    console.log('unsubscribing from match');
+
+    this.matchSocket?.removeAllListeners();
+    this.matchSocket?.disconnect();
+  }
+
   issueCommand(command: PlayerCommand) {
     if (!this.matchSocket) {
       throw new Error('match socket is not set');

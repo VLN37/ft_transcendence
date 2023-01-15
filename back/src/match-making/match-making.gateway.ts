@@ -81,8 +81,6 @@ export class MatchMakingGateway
         };
 
         setTimeout(notifyPlayers, 200);
-      } else {
-        this.logger.error('no match was created');
       }
     } catch (e) {
       throw new WsException(e);

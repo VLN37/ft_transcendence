@@ -26,6 +26,7 @@ import { Box, Button } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 import { PowerUp } from '../../game/model/PowerUp';
 import { applyPowerUp } from '../../game/logic';
+import { useEffect } from 'react';
 
 export type GameWindowProps = {
   gameApi: GameApi;
@@ -90,14 +91,15 @@ export default (props: GameWindowProps) => {
 
   const handlePowerupCollected = (_powerup: PowerUp, side: PlayerSide) => {
     const paddle = getPaddle(side);
-    console.log(`paddle ${paddle.side} collected powerup ${_powerup.name}`);
     applyPowerUp(paddle, _powerup, rules);
     currentPowerup = null;
   };
-
-  gameApi.setOnMatchTickListener(listenGameState);
-  gameApi.setOnPowerUpSpawnListener(placePowerUp);
-  gameApi.setOnPowerUpCollectedListener(handlePowerupCollected);
+  useEffect(() => {
+    gameApi.setOnMatchTickListener(listenGameState);
+    gameApi.setOnPowerUpSpawnListener(placePowerUp);
+    gameApi.setOnPowerUpCollectedListener(handlePowerupCollected);
+    return () => gameApi.unsubscribeAllListeners();
+  }, []);
 
   const updateWindowProportions = () => {
     let currentWidth = window.innerWidth;
@@ -120,7 +122,6 @@ export default (props: GameWindowProps) => {
       window.innerHeight == lastWindowHeight
     )
       return;
-    console.log(`resizing window to ${p5.windowWidth}x${p5.windowHeight}`);
 
     updateWindowProportions();
     p5.resizeCanvas(gameWindow.width, gameWindow.height);
