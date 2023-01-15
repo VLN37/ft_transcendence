@@ -15,6 +15,8 @@ export class Paddle {
   state: PlayerState;
   speed: number;
 
+  isInverted: boolean = false;
+
   constructor(side: PlayerSide, rules: GameRules) {
     this.side = side;
     this.state = PlayerState.STOPPED;

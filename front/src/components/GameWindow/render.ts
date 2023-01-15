@@ -45,9 +45,11 @@ const getPaddleQuadCoordinates = (paddle: Paddle) => {
 };
 
 export const drawPlayer = (image: p5Types.Graphics, rPlayer: Paddle) => {
+  if (rPlayer.isInverted) image.filter(image.INVERT);
   image.fill(getPlayerColor(rPlayer.side, image));
   const c = getPaddleQuadCoordinates(rPlayer);
   image.quad(c.x1, c.y1, c.x2, c.y2, c.x3, c.y3, c.x4, c.y4);
+  if (rPlayer.isInverted) image.filter(image.INVERT);
 };
 
 export const drawBall = (image: p5Types.Graphics, ball: Ball) => {
