@@ -71,6 +71,26 @@ export class MatchManagerGateway implements OnGatewayInit, OnGatewayDisconnect {
     }
   }
 
+  @SubscribeMessage('refuse-match')
+  async refuseMatch(
+    @MessageBody('match_id') matchId: string,
+    @ConnectedSocket() client: Socket,
+  ) {
+    const user: UserDto = client.handshake.auth.user;
+    const playerId = user.id;
+    try {
+      this.logger.debug(
+        `player ${user.login_intra} is refusing to play match ${matchId}}`,
+      );
+      this.matchManager.connectPlayer(matchId, playerId);
+      this.setupMatchListeners(matchId);
+      client.join(matchId);
+    } catch (e) {
+      this.logger.warn('error connecting player', e);
+      throw new WsException(e);
+    }
+  }
+
   @SubscribeMessage('connect-as-spectator')
   async connectAsSpectator(
     @MessageBody('match_id') matchId: string,

@@ -77,8 +77,8 @@ export class MemoryMatch {
     this.stage = stage;
     if (stage === 'ONGOING' && this.type === 'TURBO') {
       this.setupNextPowerup();
-    } else if (stage === 'FINISHED') {
-      clearTimeout(this.getTimeoutReference());
+    } else if (stage === 'FINISHED' || stage === 'CANCELED') {
+      clearTimeout(this.getTimeoutReference?.call(this));
     }
     this.onStageChange?.call(this, stage);
   }

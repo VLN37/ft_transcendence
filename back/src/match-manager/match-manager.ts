@@ -106,14 +106,34 @@ export class MatchManager {
     });
   }
 
+  refuseMatch(matchId: string, playerId: number) {
+    const activeMatch = this.findMatchById(matchId);
+    if (!activeMatch) throw new Error('Match not found');
+
+    if (!this.isAPlayer(playerId, activeMatch.match))
+      throw new Error('User is not a player');
+
+    this.cancelMatch(activeMatch);
+  }
+
+  cancelMatch(match: ActiveMatch) {
+    this.clearTimers(match);
+    match.match.updateStage('CANCELED');
+  }
+
+  clearTimers(match: ActiveMatch) {
+    clearInterval(match.timers.notify);
+    clearInterval(match.timers.update);
+    clearTimeout(match.timers.ongoing);
+    clearTimeout(match.timers.preparation);
+    clearTimeout(match.timers.waiting_timeout);
+  }
+
   connectPlayer(matchId: string, playerId: number) {
     const match = this.findMatchById(matchId);
     if (!match) throw new Error('Match not found');
 
-    if (
-      playerId !== match.match.left_player.id &&
-      playerId !== match.match.right_player.id
-    )
+    if (!this.isAPlayer(playerId, match.match))
       throw new Error('User is not a player');
 
     if (playerId === match.match.left_player.id) {
@@ -285,6 +305,12 @@ export class MatchManager {
   private findMatchById(matchId: string): ActiveMatch {
     return this.activeMatches.find(
       (activeMatch) => activeMatch.match.id === matchId,
+    );
+  }
+
+  private isAPlayer(playerId: number, match: MemoryMatch) {
+    return (
+      playerId === match.left_player.id || playerId === match.right_player.id
     );
   }
 }
