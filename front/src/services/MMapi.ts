@@ -80,10 +80,20 @@ class MMApi {
     this.matchMakingSocket?.emit('decline');
   }
 
+  setMatchCreatedSubscriber(callback: (matchId: string) => void) {
+    this.matchMakingSocket?.on('match-created', (data) => {
+      callback(data.id);
+    });
+  }
+
   setMatchMakingUpdateSubscriber(callback: (state: string) => void) {
     this.matchMakingSocket?.on('match-making-update', (state) => {
       callback(state);
     });
+  }
+
+  unsubscribeMatchCreated() {
+    this.matchMakingSocket?.removeAllListeners('match-created');
   }
 
   unsubscribeMatchMakingUpdate() {

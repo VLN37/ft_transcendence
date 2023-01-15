@@ -62,7 +62,9 @@ export class MatchMakingService {
   async acceptMatch(user: UserDto): Promise<MemoryMatch | UserDto> {
     if (!this.assignedPlayers[user.login_intra])
       throw new Error('user is not assigned to any match');
-    const otherUser = this.assignedPlayers[user.login_intra].user;
+    const info = this.assignedPlayers[user.login_intra];
+    info.accepted = true;
+    const otherUser = info.user;
 
     if (this.bothPlayersAccepted(user, otherUser)) {
       const matchType = this.assignedPlayers[user.login_intra].matchType;

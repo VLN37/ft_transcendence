@@ -34,6 +34,8 @@ import './style.css';
 
 type MatchType = 'CLASSIC' | 'TURBO';
 
+type MatchConvocationState = 'ACCEPTED' | 'DECLINED' | undefined;
+
 export default function MatchFinder() {
   const toastId = 'match-finder-error-toast';
   const toast = useToast();
@@ -43,7 +45,7 @@ export default function MatchFinder() {
   const [matchType, setMatchType] = useState<MatchType>('TURBO');
   const [isSearching, setIsSearching] = useState(false);
   const [matchId, setMatchId] = useState<string | null>(null);
-  type MatchConvocationState = 'ACCEPTED' | 'DECLINED' | undefined;
+
   const [convocationState, setConvocationState] =
     useState<MatchConvocationState>();
   const [otherUserConvocationState, setOtherUserConvocationState] =
@@ -115,10 +117,20 @@ export default function MatchFinder() {
   };
 
   useEffect(() => {
+    mmApi.setMatchCreatedSubscriber((id: string) => {
+      setMatchId(id);
+      console.log(`match id: ${id}`);
+      setTimeout(() => {
+        navigate(`/match/${id}`);
+      }, 1000);
+    });
     mmApi.setMatchMakingUpdateSubscriber((state: string) => {
       onMatchMakingUpdate(state);
     });
-    return () => mmApi.unsubscribeMatchMakingUpdate();
+    return () => {
+      mmApi.unsubscribeMatchCreated();
+      mmApi.unsubscribeMatchMakingUpdate();
+    };
   }, []);
 
   const handleAcceptMatch = () => {
