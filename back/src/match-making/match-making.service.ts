@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { MatchManager } from 'src/match-manager/match-manager';
 import { MemoryMatch } from 'src/match-manager/model/MemoryMatch';
 import { UserDto } from 'src/users/dto/user.dto';
+import { AlreadyHasActiveConnectionError } from 'typeorm';
 import { MatchType, MATCH_TYPES } from './dto/MatchType';
 
 class MemoryQueue {
@@ -9,16 +10,26 @@ class MemoryQueue {
   TURBO: UserDto[] = [];
 }
 
+type MatchInformation = {
+  accepted: boolean;
+  user: UserDto;
+  matchType: MatchType;
+};
+
 @Injectable()
 export class MatchMakingService {
   private readonly logger = new Logger(MatchMakingService.name);
 
   private memoryQueue = new MemoryQueue();
 
+  private assignedPlayers: {
+    [key: string]: MatchInformation;
+  } = {};
+
   constructor(private matchManager: MatchManager) {}
 
   // PERF: we could save the queue the user is on in the database for better dequeueing
-  async enqueue(user: UserDto, matchType: MatchType): Promise<MemoryMatch> {
+  enqueue(user: UserDto, matchType: MatchType) {
     const queue = this.memoryQueue[matchType];
 
     if (queue.some((enqueuedUser) => enqueuedUser.id === user.id)) {
@@ -31,9 +42,8 @@ export class MatchMakingService {
     queue.push(user);
 
     if (this.isMatchAvailable(queue)) {
-      return this.createMatch(queue, matchType);
+      return this.startMatchCreation(queue, matchType);
     }
-    return null;
   }
 
   dequeueUser(userId: number) {
@@ -49,22 +59,57 @@ export class MatchMakingService {
     });
   }
 
+  async acceptMatch(user: UserDto): Promise<MemoryMatch | UserDto> {
+    if (!this.assignedPlayers[user.login_intra])
+      throw new Error('user is not assigned to any match');
+    const otherUser = this.assignedPlayers[user.login_intra].user;
+
+    if (this.bothPlayersAccepted(user, otherUser)) {
+      const matchType = this.assignedPlayers[user.login_intra].matchType;
+      delete this.assignedPlayers[user.login_intra];
+      delete this.assignedPlayers[otherUser.login_intra];
+
+      return this.matchManager.createMatch(user, otherUser, matchType);
+    }
+    return otherUser;
+  }
+
+  private bothPlayersAccepted(user1: UserDto, user2: UserDto) {
+    return (
+      this.assignedPlayers[user1.login_intra].accepted &&
+      this.assignedPlayers[user2.login_intra].accepted
+    );
+  }
+
+  declineMatch(user: UserDto): UserDto {
+    if (!this.assignedPlayers[user.login_intra])
+      throw new Error('user is not assigned to any match');
+    const otherUser = this.assignedPlayers[user.login_intra].user;
+    delete this.assignedPlayers[user.login_intra];
+    delete this.assignedPlayers[otherUser.login_intra];
+    return otherUser;
+  }
+
   private isMatchAvailable(queue: UserDto[]): boolean {
     return queue.length >= 2;
   }
 
-  private async createMatch(
-    queue: UserDto[],
-    matchType: MatchType,
-  ): Promise<MemoryMatch> {
+  private startMatchCreation(queue: UserDto[], type: MatchType) {
     this.logger.debug('match is available');
     const user1 = queue.shift();
     const user2 = queue.shift();
 
-    this.logger.debug(
-      `Creating a match between users ${user1.login_intra} and ${user2.login_intra}`,
-    );
+    this.assignedPlayers[user1.login_intra] = {
+      accepted: false,
+      user: user2,
+      matchType: type,
+    };
+    this.assignedPlayers[user2.login_intra] = {
+      accepted: false,
+      user: user1,
+      matchType: type,
+    };
 
-    return this.matchManager.createMatch(user1, user2, matchType);
+    return { user1, user2 };
   }
 }

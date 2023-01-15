@@ -27,7 +27,7 @@ class MMApi {
       );
       return response;
     } catch (err) {
-    //   console.log(err);
+      //   console.log(err);
       return (err as AxiosError).response;
     }
   }
@@ -55,11 +55,11 @@ class MMApi {
 
     const matchFound = 'match-found';
     const error = 'match-error';
-    this.matchMakingSocket?.once(matchFound, (matchData) => {
-      console.log('match found', matchData);
+    this.matchMakingSocket?.once(matchFound, () => {
+      console.log('match found');
       this.matchMakingSocket?.removeAllListeners(matchFound);
       this.matchMakingSocket?.removeAllListeners(error);
-      onMatchFound(matchData);
+      onMatchFound();
     });
 
     this.matchMakingSocket?.once(error, (matchData) => {
@@ -70,6 +70,24 @@ class MMApi {
     });
 
     this.matchMakingSocket?.emit('enqueue', { type });
+  }
+
+  acceptMatch() {
+    this.matchMakingSocket?.emit('accept');
+  }
+
+  declineMatch() {
+    this.matchMakingSocket?.emit('decline');
+  }
+
+  setMatchMakingUpdateSubscriber(callback: (state: string) => void) {
+    this.matchMakingSocket?.on('match-making-update', (state) => {
+      callback(state);
+    });
+  }
+
+  unsubscribeMatchMakingUpdate() {
+    this.matchMakingSocket?.removeAllListeners('match-making-update');
   }
 
   stopFindingMatch() {

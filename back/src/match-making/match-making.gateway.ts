@@ -1,4 +1,4 @@
-import { Logger } from '@nestjs/common';
+import { Logger, NotImplementedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import {
   ConnectedSocket,
@@ -12,6 +12,8 @@ import {
   WsException,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
+import { MemoryMatch } from 'src/match-manager/model/MemoryMatch';
+import { UserDto } from 'src/users/dto/user.dto';
 import { UsersService } from 'src/users/users.service';
 import { validateWsJwt } from 'src/utils/functions/validateWsConnection';
 import { MatchType } from './dto/MatchType';
@@ -66,22 +68,19 @@ export class MatchMakingGateway
   ) {
     try {
       const user = await this.getUser(client);
-      const createdMatch = await this.matchMakingService.enqueue(user, type);
+      const matchAvailable = this.matchMakingService.enqueue(user, type);
       client.join(user.login_intra); // only the user
-      if (createdMatch) {
+
+      if (matchAvailable) {
         this.logger.debug('match created, notifying players');
         const notifyPlayers = () => {
-          const matchData = {
-            id: createdMatch.id,
-          };
           this.server
-            .in(createdMatch.left_player.login_intra)
-            .in(createdMatch.right_player.login_intra)
-            .emit('match-found', {
-              matchData,
-            });
+            .to(matchAvailable.user1.login_intra)
+            .to(matchAvailable.user2.login_intra)
+            .emit('match-found');
         };
-        setTimeout(notifyPlayers, 1000);
+
+        setTimeout(notifyPlayers, 200);
       } else {
         this.logger.error('no match was created');
       }
@@ -104,9 +103,38 @@ export class MatchMakingGateway
     this.dequeueUser(client);
   }
 
+  @SubscribeMessage('accept')
+  async accept(@ConnectedSocket() client: Socket) {
+    const user: UserDto = client.handshake.auth['user'];
+    const result = await this.matchMakingService.acceptMatch(user);
+    if ('login_intra' in result) {
+      this.notifyMatchMakingUpdate(result.login_intra, 'ACCEPTED');
+    } else {
+      this.notifyMatchCreated(result);
+    }
+  }
+
+  @SubscribeMessage('decline')
+  decline(@ConnectedSocket() client: Socket) {
+    const user: UserDto = client.handshake.auth['user'];
+    const otherUser = this.matchMakingService.declineMatch(user);
+    this.notifyMatchMakingUpdate(otherUser.login_intra, 'DECLINED');
+  }
+
   handleDisconnect(client: Socket) {
     this.dequeueUser(client);
     this.logger.debug(`client ${client.id} disconnected`);
+  }
+
+  notifyMatchMakingUpdate(user: string, state: string) {
+    this.server.to(user).emit('match-making-update', state);
+  }
+
+  notifyMatchCreated(match: MemoryMatch) {
+    this.server
+      .to(match.left_player.login_intra)
+      .to(match.right_player.login_intra)
+      .emit('match-created', { id: match.id });
   }
 
   private async getUser(client: Socket) {

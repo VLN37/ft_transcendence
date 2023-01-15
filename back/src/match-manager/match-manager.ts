@@ -43,7 +43,11 @@ export class MatchManager {
     this.notifyService = callback;
   }
 
-  async createMatch(user1: UserDto, user2: UserDto, type: MatchType) {
+  async createMatch(
+    user1: UserDto,
+    user2: UserDto,
+    type: MatchType,
+  ): Promise<MemoryMatch> {
     // TODO: check if users are already playing a match
     const match = this.matchRepository.create({
       left_player: user1,

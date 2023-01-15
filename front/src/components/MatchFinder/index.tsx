@@ -21,8 +21,10 @@ import {
   AlertDialogBody,
   AlertDialogFooter,
   Button,
+  Tag,
+  TagLabel,
 } from '@chakra-ui/react';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { mmApi } from '../../services/api_index';
@@ -41,6 +43,11 @@ export default function MatchFinder() {
   const [matchType, setMatchType] = useState<MatchType>('TURBO');
   const [isSearching, setIsSearching] = useState(false);
   const [matchId, setMatchId] = useState<string | null>(null);
+  type MatchConvocationState = 'ACCEPTED' | 'DECLINED' | undefined;
+  const [convocationState, setConvocationState] =
+    useState<MatchConvocationState>();
+  const [otherUserConvocationState, setOtherUserConvocationState] =
+    useState<MatchConvocationState>();
 
   const cancelRef = React.useRef(null);
   const {
@@ -54,16 +61,12 @@ export default function MatchFinder() {
     onClose: closeAlert,
   } = useDisclosure();
 
-  const stopFinding = () => {
-    mmApi.stopFindingMatch();
-    setIsSearching(false);
-  };
-
   const handleMatchFinderClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
     if (isSearching) {
-      stopFinding();
+      mmApi.stopFindingMatch();
+      setIsSearching(false);
     } else {
       openDrawer();
     }
@@ -76,9 +79,9 @@ export default function MatchFinder() {
     setMatchType(nextValue as MatchType);
   };
 
-  const onMatchFindResponse = (data: any) => {
-    console.log('server responded via ws: ', { data });
-    setMatchId(data.matchData.id);
+  const onMatchFindResponse = () => {
+    setConvocationState(undefined);
+    setOtherUserConvocationState(undefined);
     openAlert();
   };
 
@@ -102,14 +105,30 @@ export default function MatchFinder() {
     closeDrawer();
   };
 
+  const onMatchMakingUpdate = (status: string) => {
+    if (status === 'ACCEPTED') {
+      setOtherUserConvocationState('ACCEPTED');
+      // navigate(`/match/${matchId}`);
+    } else {
+      setOtherUserConvocationState('DECLINED');
+    }
+  };
+
+  useEffect(() => {
+    mmApi.setMatchMakingUpdateSubscriber((state: string) => {
+      onMatchMakingUpdate(state);
+    });
+    return () => mmApi.unsubscribeMatchMakingUpdate();
+  }, []);
+
   const handleAcceptMatch = () => {
-    stopFinding();
-    closeAlert();
-    navigate(`/match/${matchId}`);
+    mmApi.acceptMatch();
+    setConvocationState('ACCEPTED');
   };
 
   const handleDismissMatch = () => {
-    stopFinding();
+    if (otherUserConvocationState != 'DECLINED') mmApi.declineMatch();
+    setIsSearching(false);
     closeAlert();
   };
 
@@ -129,12 +148,36 @@ export default function MatchFinder() {
         <AlertDialogContent>
           <AlertDialogHeader>Match found!</AlertDialogHeader>
           <AlertDialogCloseButton />
-          <AlertDialogBody>Are you ready?</AlertDialogBody>
+          <AlertDialogBody>
+            Are you ready?
+            <Box>
+              {(otherUserConvocationState === 'DECLINED' && (
+                <Tag borderRadius="full" variant="solid" colorScheme="red">
+                  <TagLabel>The other user declined this match</TagLabel>
+                </Tag>
+              )) ||
+                (otherUserConvocationState === 'ACCEPTED' && (
+                  <Tag borderRadius="full" variant="solid" colorScheme="green">
+                    <TagLabel>The other user accepted</TagLabel>
+                  </Tag>
+                ))}
+            </Box>
+          </AlertDialogBody>
           <AlertDialogFooter>
             <Button bg={'red.500'} ref={cancelRef} onClick={handleDismissMatch}>
-              Decline
+              {(otherUserConvocationState === 'ACCEPTED' && 'Decline') ||
+                (otherUserConvocationState === 'DECLINED' && 'Close') ||
+                'Decline'}
             </Button>
-            <Button bg={'green.500'} onClick={handleAcceptMatch} ml={3}>
+            <Button
+              bg={'green.500'}
+              onClick={handleAcceptMatch}
+              ml={3}
+              disabled={
+                convocationState === 'ACCEPTED' ||
+                otherUserConvocationState === 'DECLINED'
+              }
+            >
               Accept
             </Button>
           </AlertDialogFooter>

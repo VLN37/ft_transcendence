@@ -88,8 +88,8 @@ export class MatchManagerController {
   @Put('/friendly')
   async updateInvite(
     @Body('status') status: 'ACCEPTED' | 'DECLINED',
-    @Body('user1') user1,
-    @Body('user2') user2,
+    @Body('user1') user1: UserDto,
+    @Body('user2') user2: UserDto,
   ) {
     return this.matchManagerService.updateInvite(status, user1, user2);
   }
