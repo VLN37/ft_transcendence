@@ -83,13 +83,13 @@ export default (props: GameWindowProps) => {
     currentPowerup = _powerup;
   };
 
-  const getPlayerPaddle = (side: PlayerSide): Paddle => {
+  const getPaddle = (side: PlayerSide): Paddle => {
     if (side === leftPlayer.side) return leftPlayer;
     else return rightPlayer;
   };
 
   const handlePowerupCollected = (_powerup: PowerUp, side: PlayerSide) => {
-    const paddle = getPlayerPaddle(side);
+    const paddle = getPaddle(side);
     console.log(`paddle ${paddle.side} collected powerup ${_powerup.name}`);
     applyPowerUp(paddle, _powerup, rules);
     currentPowerup = null;

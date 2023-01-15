@@ -1,4 +1,4 @@
-import { MatchType, MATCH_TYPES } from 'src/match-making/dto/MatchType';
+import { MatchType } from 'src/match-making/dto/MatchType';
 import { UserDto } from 'src/users/dto/user.dto';
 import { randomBetween } from 'src/utils/functions/math';
 import { seconds } from 'src/utils/functions/timeConvertion';
@@ -39,8 +39,8 @@ export class MemoryMatch {
   private leftPaddle: Paddle;
   private rightPaddle: Paddle;
 
-  private availabePowerups: PowerUp[];
   private currentPowerUp?: PowerUp;
+  private getTimeoutReference?: () => NodeJS.Timeout;
 
   onStageChange: (stage: MatchStage) => void;
   onScoreUpdate: () => void;
@@ -70,20 +70,15 @@ export class MemoryMatch {
   }
 
   init() {
-    if (this.type === 'TURBO') {
-      this.availabePowerups = [
-        new GrowPlayerSize(),
-        new SlowEnemy(),
-        new InvertEnemy(),
-      ];
-    }
     this.resetPositions();
   }
 
   updateStage(stage: MatchStage) {
     this.stage = stage;
     if (stage === 'ONGOING' && this.type === 'TURBO') {
-      this.setupPowerUps();
+      this.setupNextPowerup();
+    } else if (stage === 'FINISHED') {
+      clearTimeout(this.getTimeoutReference());
     }
     this.onStageChange?.call(this, stage);
   }
@@ -171,6 +166,7 @@ export class MemoryMatch {
         this.currentPowerUp.activate(ball, ball.lastTouch);
         const player = ball.lastTouch;
         this.onPowerUpCollected(player.side, this.currentPowerUp);
+        this.setupNextPowerup();
       }
     }
   }
@@ -189,10 +185,11 @@ export class MemoryMatch {
     return new Vector(x, y).normalize().mult(rules.ball.startingSpeed);
   }
 
-  private getRandomAvailablePowerUp() {
-    const size = this.availabePowerups.length;
-    const index = Math.floor(Math.random() * size);
-    return this.availabePowerups[2];
+  private getRandomAvailablePowerUp(powerups: PowerUp[]) {
+    const size = powerups.length * 10;
+    const index = ~~((Math.random() * size) / 10);
+    console.log('returning powerup ' + index);
+    return powerups[index];
   }
 
   private spawnPowerUp(powerup: PowerUp) {
@@ -207,10 +204,16 @@ export class MemoryMatch {
     this.onPowerUpSpawn(powerup);
   }
 
-  private setupPowerUps() {
-    setTimeout(() => {
-      const powerup = this.getRandomAvailablePowerUp();
+  private setupNextPowerup() {
+    const availabePowerups = [
+      new GrowPlayerSize(),
+      new SlowEnemy(),
+      new InvertEnemy(),
+    ];
+    const timeoutReference = setTimeout(() => {
+      const powerup = this.getRandomAvailablePowerUp(availabePowerups);
       this.spawnPowerUp(powerup);
-    }, seconds(randomBetween(0, 5)));
+    }, seconds(randomBetween(20, 50)));
+    this.getTimeoutReference = () => timeoutReference;
   }
 }

@@ -5,7 +5,7 @@ import { seconds } from 'src/utils/functions/timeConvertion';
 import { PowerUp, PowerUpName } from './PowerUp';
 
 export class GrowPlayerSize implements PowerUp {
-  public duration: number = seconds(30);
+  public duration: number = seconds(20);
   public name: PowerUpName = 'grow-player-size';
   public canActivate = true;
 
