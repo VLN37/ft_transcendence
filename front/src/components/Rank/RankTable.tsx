@@ -12,6 +12,7 @@ import {
 import { TableUser } from '../../models/TableUser';
 import { User } from '../../models/User';
 import { userApi } from '../../services/api_index';
+import { less } from '../matchHistory/MatchHistory';
 
 function ListUsers(props: { users: TableUser[]; query: string }) {
   if (!props.users[0].login_intra) return <></>;
@@ -36,8 +37,11 @@ export function RankTable(props: any) {
     async function queryDatabase() {
       const result: User[] = await userApi.getRankedUsers();
       if (!result.length) return;
-      const restructure: TableUser[] = result.map((user) => {
-        return TableUser(user);
+      result.sort((a, b) => less(b.profile.wins, a.profile.wins));
+      const restructure: TableUser[] = result.map((user, i) => {
+        let tableuser = TableUser(user);
+        tableuser.rank = i + 1;
+        return tableuser;
       });
       setUserList(restructure);
     }
@@ -89,7 +93,7 @@ export function RankTable(props: any) {
         <Table variant="striped">
           <Thead>
             <Tr>
-              <Th>Rank</Th>
+              <Th onClick={() => tableOrdering('rank')}>Rank</Th>
               <Th>Avatar</Th>
               <Th onClick={() => tableOrdering('login_intra')}>Login</Th>
               <Th onClick={() => tableOrdering('id')}>ID</Th>

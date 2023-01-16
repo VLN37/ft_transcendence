@@ -20,7 +20,7 @@ import { emptyUser } from '../../models/User';
 import MatchesApi from '../../services/MatchesApi';
 import userStorage from '../../services/userStorage';
 
-function less<T>(a: T, b: T): number {
+export function less<T>(a: T, b: T): number {
   return a === b ? 0 : a > b ? 1 : -1;
 }
 

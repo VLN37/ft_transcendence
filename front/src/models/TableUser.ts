@@ -1,6 +1,7 @@
 import { User } from './User';
 
 export interface TableUser {
+  rank: number;
   login_intra: string;
   id: number;
   tfa_enabled: boolean;
@@ -17,6 +18,7 @@ export function TableUser(user: User): TableUser;
 export function TableUser(user: User | void) {
   return user
     ? {
+        rank: 1,
         login_intra: user.login_intra,
         id: user.id,
         tfa_enabled: user.tfa_enabled,
@@ -28,6 +30,7 @@ export function TableUser(user: User | void) {
         status: user.profile.status,
       }
     : {
+        rank: 1,
         login_intra: '',
         id: 0,
         tfa_enabled: false,
