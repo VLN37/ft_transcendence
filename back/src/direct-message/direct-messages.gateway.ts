@@ -40,7 +40,9 @@ export class DirectMessagesGateway
 {
   @WebSocketServer() server: Server;
   private readonly logger = new Logger(DirectMessagesGateway.name);
-  private usersSocketId = [];
+  private usersSocketId: {
+    [key: string]: string;
+  } = {};
 
   constructor(
     private dmService: DirectMessagesService,

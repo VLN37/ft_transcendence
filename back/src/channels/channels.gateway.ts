@@ -33,7 +33,9 @@ export class ChannelsSocketGateway
 {
   @WebSocketServer() server: Server;
   private readonly logger = new Logger(ChannelsSocketGateway.name);
-  private usersSocketId = [];
+  private usersSocketId: {
+    [key: string]: Socket;
+  } = {};
 
   constructor(
     private jwtService: JwtService,
@@ -60,7 +62,7 @@ export class ChannelsSocketGateway
     });
   }
 
-  async handleConnection(client: any) {
+  async handleConnection(client: Socket) {
     const token = client.handshake.auth.token;
     const userId = (await this.usersService.getUserId(token)).toString();
     this.usersSocketId[userId] = client;
