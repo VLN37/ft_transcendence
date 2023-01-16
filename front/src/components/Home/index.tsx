@@ -1,6 +1,5 @@
 import './style.css';
-import { Box, Button, Flex, Icon, Image, Text } from '@chakra-ui/react';
-import { IoDiamond } from 'react-icons/io5';
+import { Box, Button, Flex, Image, Text } from '@chakra-ui/react';
 import { DmUsers } from '../Chat/DmUsers';
 import { emptyUser, User } from '../../models/User';
 import { useEffect, useState } from 'react';
@@ -10,10 +9,7 @@ import ChatApi, { MatchStatus } from '../../services/ChatApi';
 import userStorage from '../../services/userStorage';
 import { useNavigate } from 'react-router-dom';
 import moment from 'moment';
-
-function getUserRank(user: User) {
-  return <Icon mx={'auto'} my={'auto'} fontSize={'60px'} as={IoDiamond} />;
-}
+import { userApi } from '../../services/api_index';
 
 function formatMatchName(match: Match): string {
   return (
@@ -35,13 +31,20 @@ function formatMatchSubTitle(match: Match): string {
 
 function UserComp(user: User) {
   const [matches, setMatches] = useState<Match[]>([]);
+  const [rank, setRank] = useState(0);
   const userFallback = userStorage.getUser() || emptyUser();
   if (!user.login_intra) user = userFallback;
 
   useEffect(() => {
-    matchesApi
-      .getUserMatches(userFallback.id, 9)
-      .then((matchs: Match[]) => setMatches(matchs));
+    async function getData() {
+      const matchs = await matchesApi.getUserMatches(userFallback.id, 9);
+      setMatches(matchs);
+
+      const users = await userApi.getRankedUsers();
+      setRank(users.findIndex((user: User) => user.id == userFallback.id) + 1);
+    }
+
+    getData();
   }, []);
 
   return (
@@ -80,7 +83,7 @@ function UserComp(user: User) {
         >
           <Flex flexDirection={'column'} padding={'1rem'} gap={1}>
             <Text as={'b'} size={'lg'}>
-              Rank: 12
+              Rank: {rank}
             </Text>
             <Text as={'b'} size={'lg'}>
               Victories: {user.profile.wins}
@@ -89,7 +92,6 @@ function UserComp(user: User) {
               Losses: {user.profile.losses}
             </Text>
           </Flex>
-          {getUserRank(user)}
         </Box>
         <Flex my={'0.5rem'} direction={'column'} gap={'0.5rem'}>
           <Text textAlign={'center'} fontSize={'xl'}>

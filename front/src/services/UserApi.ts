@@ -32,7 +32,7 @@ class UserApi {
     try {
       const response = await this.client.get<User[]>('/users', {
         params: {
-          sort: 'mmr',
+          sort: 'wins',
           order: 'DESC',
         },
       });
