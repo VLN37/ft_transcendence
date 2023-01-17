@@ -70,25 +70,27 @@ export class IntraServiceMock {
   ) {}
 
   async getUserToken(code: string) {
-    let users: UserDto[] = await this.usersService.getAll();
 
     this.logger.debug('code: ' + code);
-    if (!users.length) {
-      await this.usersService.generateUsers(20);
-      await this.usersService.create(this.specificUsers['abcd']);
-      await this.usersService.create(this.specificUsers['1234']);
-      await this.usersService.create(this.specificUsers['noob']);
-      users = await this.usersService.getAll();
-    }
     let id: number;
 
-    if (this.specificUsers[code]) {
-      id = this.specificUsers[code].id;
-    } else {
-      const i = faker.datatype.number({ max: 19 });
-      id = users[i].id;
-    }
+    if (process.env.ENVIRONMENT != 'prod') {
+      let users: UserDto[] = await this.usersService.getAll();
+      if (!users.length) {
+        await this.usersService.generateUsers(20);
+        await this.usersService.create(this.specificUsers['abcd']);
+        await this.usersService.create(this.specificUsers['1234']);
+        await this.usersService.create(this.specificUsers['noob']);
+        users = await this.usersService.getAll();
+      }
 
+      if (this.specificUsers[code]) {
+        id = this.specificUsers[code].id;
+      } else {
+        const i = faker.datatype.number({ max: 19 });
+        id = users[i].id;
+      }
+    }
     const payload: TokenPayload = {
       sub: id,
       tfa_enabled: false,

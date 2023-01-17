@@ -5,12 +5,14 @@ import { UsersModule } from 'src/users/users.module';
 import { JwtModule } from '@nestjs/jwt';
 // import { IntraService } from './intra.service';
 
+const prod = process.env.ENVIRONMENT == 'prod';
+
 @Module({
   imports: [JwtModule.register({}), UsersModule],
   providers: [
     {
       provide: IntraService,
-      useClass: IntraServiceMock,
+      useClass: prod ? IntraService : IntraServiceMock,
     },
   ],
   exports: [IntraService],
