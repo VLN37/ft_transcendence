@@ -20,7 +20,7 @@ import { PlayerCommand } from './model/PlayerCommands';
 import { PowerUp } from './model/PowerUps/PowerUp';
 
 @WebSocketGateway({
-  namespace: '/match-manager',
+  namespace: 'back/match-manager',
   cors: {
     origin: '*',
   },

@@ -18,7 +18,7 @@ import * as bcrypt from 'bcrypt';
 import { validateWsJwt } from 'src/utils/functions/validateWsConnection';
 
 @WebSocketGateway({
-  namespace: '/channel',
+  namespace: 'back/channel',
   cors: {
     origin: '*',
   },

@@ -20,7 +20,7 @@ import { MatchType } from './dto/MatchType';
 import { MatchMakingService } from './match-making.service';
 
 @WebSocketGateway({
-  namespace: '/match-making',
+  namespace: 'back/match-making',
   cors: {
     origin: '*',
   },

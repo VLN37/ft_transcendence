@@ -26,7 +26,7 @@ import { Match } from 'src/entities/match.entity';
 import { MatchManager } from 'src/match-manager/match-manager';
 
 @WebSocketGateway({
-  namespace: '/direct_messages',
+  namespace: 'back/direct_messages',
   cors: {
     origin: '*',
   },
