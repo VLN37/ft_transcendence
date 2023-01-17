@@ -1,31 +1,9 @@
 services:
-  ngrok:
-      depends_on:
-        - nginx
-      image: ngrok/ngrok:alpine
-      command: http --region=sa --hostname=turbo.sa.ngrok.io nginx:7000
-      container_name: ngrok
-      environment:
-        NGROK_AUTHTOKEN: ${NGROK_AUTH}
-      ports:
-        - 4040:4040
-        - 80:80
-      restart: always
-
-  nginx:
-    image: nginx:1.0
-    container_name: nginx
-    build:
-      context: ./nginx/
-    ports:
-      - 7000:7000
-    restart: always
-
   front-end:
     image: node:18-alpine
     container_name: front-end
     ports:
-      - 8080:8080
+      - 80:80
     volumes:
       - ./front:/front
     command: npm run start
@@ -33,7 +11,7 @@ services:
     env_file:
       - ./front/.env
     environment:
-      - PORT=8080
+      - PORT=80
 
   database:
     image: postgres:14-alpine
