@@ -6,7 +6,7 @@ export default function LoginPage({ user }: any) {
 
   const link = process.env.REACT_APP_FRONT_HOSTNAME + '/auth-callback?';
   return (
-    <VStack marginTop={"15%"}justifyItems={'center'} spacing={'24px'}>
+    <VStack marginTop={'15%'} justifyItems={'center'} spacing={'24px'}>
       {/* <Box>
         <p >Welcome to PONG Transcendence</p>
         <p >Log in on 42 Intranet to access the game</p>
@@ -26,21 +26,25 @@ export default function LoginPage({ user }: any) {
           <NeonButton>LOGIN AS GUEST</NeonButton>
         </Link>
       </Box>
-      <Box>
-        <Link href={link + 'code=abcd'}>
-          <NeonButton>PAULO</NeonButton>
-        </Link>
-      </Box>
-      <Box>
-        <Link href={link + 'code=1234'}>
-          <NeonButton>JOAO</NeonButton>
-        </Link>
-      </Box>
-      <Box>
-        <Link href={link + 'code=noob'}>
-          <NeonButton>WELTON</NeonButton>
-        </Link>
-      </Box>
+      {process.env.ENVIRONMENT == 'prod' && (
+        <>
+          <Box>
+            <Link href={link + 'code=abcd'}>
+              <NeonButton>PAULO</NeonButton>
+            </Link>
+          </Box>
+          <Box>
+            <Link href={link + 'code=1234'}>
+              <NeonButton>JOAO</NeonButton>
+            </Link>
+          </Box>
+          <Box>
+            <Link href={link + 'code=noob'}>
+              <NeonButton>WELTON</NeonButton>
+            </Link>
+          </Box>
+        </>
+      )}
     </VStack>
   );
 }
