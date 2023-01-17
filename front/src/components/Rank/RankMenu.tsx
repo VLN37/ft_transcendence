@@ -70,7 +70,7 @@ export function RankMenu(props: {
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (
     <Menu>
-      <MenuButton>{props.username}</MenuButton>
+      <MenuButton><Button>{props.username}</Button></MenuButton>
       <MenuList>
         {/* MenuItems are not rendered unless Menu is open */}
         <MenuItem onClick={clickCallback}>add friend</MenuItem>

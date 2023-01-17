@@ -134,6 +134,8 @@ export function Profile() {
         borderRadius="full"
         boxSize="65px"
         src={avatar}
+        border={'2px'}
+        boxShadow={'dark-lg'}
       />
       <Modal isOpen={isOpen} onClose={onClose} size={'3xl'}>
         <ModalOverlay />

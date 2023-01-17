@@ -16,6 +16,8 @@ function UserBlock(props: any) {
           borderRadius="full"
           boxSize="65px"
           src={link}
+		  border={'2px'}
+		  boxShadow={'dark-lg'}
         />
         <PublicProfile isOpen={isOpen} onClose={onClose} user={props.user} />
       </Td>
