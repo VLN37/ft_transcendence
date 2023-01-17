@@ -12,6 +12,10 @@ import { editFileName } from 'src/middlewares/EditFileName';
   imports: [
     UsersModule,
     MulterModule.register({
+      limits: {
+        fileSize: 1024 * 1024 * 2,
+        fieldSize: 1024 * 1024 * 2,
+      },
       storage: diskStorage({
         destination: './uploads',
         filename: editFileName,
