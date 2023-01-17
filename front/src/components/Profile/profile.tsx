@@ -43,9 +43,9 @@ function InputFileUpload(props: any) {
     formdata.append('avatar', value);
 
     const response: any = await profileApi.uploadAvatar(formdata);
-    if (!response) return;
     const status = response.status == 201 ? 'success' : 'error';
-    const message = response.status == 201 ? '' : response.data.message;
+    let message = response.status == 201 ? '' : response.data.message;
+    if (!message) message = 'File too large';
     if (response.status == 201) {
       userApi.getUser('v2/me').then((user) => {
         const link =
