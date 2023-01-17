@@ -25,8 +25,10 @@ import { MatchManagerService } from 'src/match-manager/match-manager.service';
 import { Match } from 'src/entities/match.entity';
 import { MatchManager } from 'src/match-manager/match-manager';
 
+const prod = process.env.ENVIRONMENT == 'prod';
+
 @WebSocketGateway({
-  namespace: 'back/direct_messages',
+  namespace: prod ? 'back/direct_messages' : 'direct_messages',
   cors: {
     origin: '*',
   },

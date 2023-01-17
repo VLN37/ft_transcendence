@@ -19,8 +19,10 @@ import { MatchManager } from './match-manager';
 import { PlayerCommand } from './model/PlayerCommands';
 import { PowerUp } from './model/PowerUps/PowerUp';
 
+const prod = process.env.ENVIRONMENT == 'prod';
+
 @WebSocketGateway({
-  namespace: 'back/match-manager',
+  namespace: prod ? 'back/match-manager' : 'match-manager',
   cors: {
     origin: '*',
   },

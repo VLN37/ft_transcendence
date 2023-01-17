@@ -17,8 +17,10 @@ import { ChannelDto } from './dto/channel.dto';
 import * as bcrypt from 'bcrypt';
 import { validateWsJwt } from 'src/utils/functions/validateWsConnection';
 
+const prod = process.env.ENVIRONMENT == 'prod';
+
 @WebSocketGateway({
-  namespace: 'back/channel',
+  namespace: prod ? 'back/channel' : 'channel',
   cors: {
     origin: '*',
   },
