@@ -49,6 +49,8 @@ services:
     image: transcendence_back
     build: ./back/
     container_name: back
+    volumes:
+      - avatars:/back/uploads
     ports:
       - 3000:3000
     env_file:
@@ -62,4 +64,5 @@ services:
 
 volumes:
   db_data:
+  avatars:
 
