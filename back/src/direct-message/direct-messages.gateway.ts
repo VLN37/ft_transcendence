@@ -132,7 +132,6 @@ export class DirectMessagesGateway
 
   async pingFriendRequest(receiver: number, data: iFriendRequestWsPayload) {
     const receiverSocket = this.usersSocketId[receiver];
-    // this.logger.error('socket: ', receiverSocket);
     if (!receiverSocket) return;
     this.server.to(receiverSocket).emit('friend_request', data);
   }
@@ -144,6 +143,7 @@ export class DirectMessagesGateway
 
   async pingUserUpdate(receiver: number, user: UserDto) {
     const receiverSocket = this.usersSocketId[receiver];
+    if (!receiverSocket) return;
     return this.server.to(receiverSocket.toString()).emit('user_updated', user);
   }
 

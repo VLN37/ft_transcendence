@@ -47,7 +47,7 @@ fclean: clean
 	docker system prune --volumes --all --force
 
 rebuild:
-	sudo docker-compose -f docker-compose.yml build --no-cache
+	docker-compose -f docker-compose.yml build --no-cache
 
 re: fclean all
 
