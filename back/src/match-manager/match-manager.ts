@@ -61,6 +61,12 @@ export class MatchManager {
 
     memoryMatch.onStageChange = (stage) => {
       this.logger.log('match entering the stage ' + stage);
+      if (stage == 'FINISHED') {
+        const result = memoryMatch.getResult();
+        if (result.draw) return;
+        result.winner.profile.wins++;
+        result.loser.profile.losses++;
+      }
       this.matchRepository.save(memoryMatch).then((retMatch: Match) => {
         retMatch.created_at = match.created_at;
         if (stage == 'ONGOING') this.notifyService('created', retMatch);

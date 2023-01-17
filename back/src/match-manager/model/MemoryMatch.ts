@@ -21,6 +21,12 @@ import { InvertEnemy } from './PowerUps/InvertEnemy';
 import { PowerUp } from './PowerUps/PowerUp';
 import { SlowEnemy } from './PowerUps/SlowEnemy';
 
+export type MatchResult = {
+  draw: boolean = false;
+  winner?: UserDto;
+  loser?: UserDto;
+};
+
 export class MemoryMatch {
   id: string;
   left_player: UserDto;
@@ -135,6 +141,27 @@ export class MemoryMatch {
       this.rightPaddle.handleCommand(command);
     }
     return this.getCurrentState();
+  }
+
+  getResult(): MatchResult {
+    if (this.left_player_score === this.right_player_score)
+      return {
+        draw: true,
+      };
+
+    if (this.left_player_score > this.right_player_score) {
+      return {
+        draw: false,
+        winner: this.left_player,
+        loser: this.right_player,
+      };
+    } else {
+      return {
+        draw: false,
+        winner: this.right_player,
+        loser: this.left_player,
+      };
+    }
   }
 
   private handleInput() {}
