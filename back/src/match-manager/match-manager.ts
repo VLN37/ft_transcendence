@@ -7,7 +7,11 @@ import { minutes, seconds } from 'src/utils/functions/timeConvertion';
 import { Err, Ok, Result } from 'ts-results';
 import { Repository } from 'typeorm';
 import { PlayerSide } from './game/model/Paddle';
-import { NOTIFICATIONS_PER_SECOND, UPDATES_PER_SECOND } from './game/rules';
+import {
+  NOTIFICATIONS_PER_SECOND,
+  rules,
+  UPDATES_PER_SECOND,
+} from './game/rules';
 import { MatchState } from './model/MatchState';
 import { MemoryMatch } from './model/MemoryMatch';
 import { PlayerCommand } from './model/PlayerCommands';
@@ -20,6 +24,10 @@ export type ActiveMatch = {
     ongoing?: NodeJS.Timeout;
     update?: NodeJS.Timer;
     notify?: NodeJS.Timer;
+    disconnect_tolerance: {
+      left_player?: NodeJS.Timeout;
+      right_player?: NodeJS.Timeout;
+    };
   };
   onMatchUpdate?: () => void;
   onServerNotify?: () => void;
@@ -92,7 +100,9 @@ export class MatchManager {
 
     const activeMatch: ActiveMatch = {
       match: memoryMatch,
-      timers: {},
+      timers: {
+        disconnect_tolerance: {},
+      },
     };
 
     this.startWaitingTime(activeMatch);
@@ -196,9 +206,15 @@ export class MatchManager {
 
     if (userId === activeMatch.match.left_player.id) {
       activeMatch.match.left_player_connected = false;
+      activeMatch.timers.disconnect_tolerance.left_player = setTimeout(() => {
+        this.finishMatchByWalkOver(activeMatch, activeMatch.match.left_player);
+      }, seconds(rules.disconnectTolerance));
     }
     if (userId === activeMatch.match.right_player.id) {
       activeMatch.match.right_player_connected = false;
+      activeMatch.timers.disconnect_tolerance.right_player = setTimeout(() => {
+        this.finishMatchByWalkOver(activeMatch, activeMatch.match.right_player);
+      }, seconds(rules.disconnectTolerance));
     }
   }
 
@@ -248,13 +264,14 @@ export class MatchManager {
   }
 
   private onBothPlayersConnected(match: ActiveMatch) {
-    // TODO: check if match was paused
     if (match.match.stage == 'AWAITING_PLAYERS') {
       this.logger.debug('both players connected');
       clearTimeout(match.timers.waiting_timeout); // so we don't cancel the match
       this.startPreparationTime(match);
     } else {
-      this.logger.debug('pretend we are resuming the match');
+      this.logger.log('player reconnected, resetting the tolerance');
+      clearTimeout(match.timers.disconnect_tolerance.right_player);
+      clearTimeout(match.timers.disconnect_tolerance.left_player);
     }
   }
 
@@ -309,6 +326,19 @@ export class MatchManager {
   private finishMatch(match: ActiveMatch) {
     clearInterval(match.timers.update);
     clearInterval(match.timers.notify);
+    match.match.updateStage('FINISHED');
+  }
+
+  private finishMatchByWalkOver(match: ActiveMatch, woUser: UserDto) {
+    this.clearTimers(match);
+    if (match.match.right_player.id == woUser.id) {
+      match.match.right_player_score = 0;
+      match.match.left_player_score = 3;
+    } else {
+      match.match.right_player_score = 3;
+      match.match.left_player_score = 0;
+    }
+    this.logger.warn(`finishing match ${match.match.id} by WO`);
     match.match.updateStage('FINISHED');
   }
 

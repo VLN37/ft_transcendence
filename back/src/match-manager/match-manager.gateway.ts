@@ -112,9 +112,10 @@ export class MatchManagerGateway implements OnGatewayInit, OnGatewayDisconnect {
   handleDisconnect(client: Socket) {
     try {
       const user: UserDto = client.handshake.auth['user'];
+      this.logger.warn(`player ${user.login_intra} disconnected`);
       this.matchManager.disconnectPlayer(user.id);
     } catch (e) {
-      this.logger.warn('error disconnecting player', e);
+      this.logger.error('error disconnecting player', e);
     }
   }
 

@@ -46,6 +46,7 @@ export type GameRules = {
   bottomCollisionEdge: number;
   leftCollisionEdge: number;
   rightCollisionEdge: number;
+  disconnectTolerance: number;
 };
 
 export const rules: GameRules = {
@@ -83,4 +84,5 @@ export const rules: GameRules = {
   bottomCollisionEdge: WORLD_HEIGHT - BALL_SIZE / 2,
   leftCollisionEdge: BALL_SIZE / 2,
   rightCollisionEdge: WORLD_WIDTH - BALL_SIZE / 2,
+  disconnectTolerance: 10,
 };
