@@ -1,9 +1,10 @@
 import { Box, VStack, Link } from '@chakra-ui/react';
 import NeonButton from '../../components/NeonButton';
 
+const prod = process.env.ENVIRONMENT;
+
 export default function LoginPage({ user }: any) {
   const authorizationUrl = process.env.REACT_APP_INTRA_AUTHORIZATION_URL;
-
   const link = process.env.REACT_APP_FRONT_HOSTNAME + '/auth-callback?';
   return (
     <VStack marginTop={'15%'} justifyItems={'center'} spacing={'24px'}>
@@ -26,7 +27,7 @@ export default function LoginPage({ user }: any) {
           <NeonButton>LOGIN AS GUEST</NeonButton>
         </Link>
       </Box>
-      {process.env.ENVIRONMENT == 'prod' && (
+      {prod != 'prod' && (
         <>
           <Box>
             <Link href={link + 'code=abcd'}>
