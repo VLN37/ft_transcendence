@@ -1,3 +1,4 @@
+import { useToast } from '@chakra-ui/react';
 import jwtDecode from 'jwt-decode';
 import { useEffect, useState } from 'react';
 import { Navigate, useSearchParams } from 'react-router-dom';
@@ -47,10 +48,21 @@ const AuthCallback = () => {
     validateCode(code);
   }, []);
 
+  const toast = useToast();
   const handleSendClick = async (tfaCode: string) => {
     setIsSending2fa(true);
     try {
-      const token = (await api.authenticate2fa(tfaCode)).data.access_token;
+      const response = await api.authenticate2fa(tfaCode);
+      if (response.status != 201 || !response.data.access_token) {
+        toast({
+          title: 'Authentication failed',
+          status: 'error',
+          description: response.data.messsage,
+        });
+        setIsSending2fa(false);
+        return;
+      }
+      const token = response.data.access_token;
       api.setToken(token);
       const payload = jwtDecode<TokenPayload>(token);
       finishLogin(payload);
