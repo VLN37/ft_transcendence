@@ -30,8 +30,8 @@ services:
     env_file:
       - ./front/.env
     environment:
-      - ENVIRONMENT=prod
-      - PORT=8080
+      REACT_APP_ENVIRONMENT: prod
+      PORT: 8080
 
   database:
     image: postgres:14-alpine
