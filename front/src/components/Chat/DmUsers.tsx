@@ -222,6 +222,8 @@ function PendingRequestMenu(props: {
 export function DmUsers() {
   const [me, setMe] = useState<User>(emptyUser());
 
+  const toast = useToast();
+  const navigate = useNavigate();
   async function updateFriends(data: any) {
     // console.log(me);
     if (!me.friend_requests.find((elem) => elem.id == data.user.id))
@@ -241,6 +243,14 @@ export function DmUsers() {
   useEffect(() => {
     async function fetchUser() {
       const user = await userApi.getMe();
+      if (!user.id) {
+        toast ({
+          title: 'Authentication invalid',
+          status: 'warning',
+          description: 'please relog',
+        });
+        navigate('/login');
+      }
       userStorage.saveUser(user);
       setMe({...user});
     }
