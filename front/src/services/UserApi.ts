@@ -52,7 +52,7 @@ class UserApi {
       );
       return response;
     } catch (err) {
-      console.log(err);
+      // console.log(err);
       return (err as AxiosError).response;
     }
   }
@@ -74,7 +74,10 @@ class UserApi {
 
   async removeFriend(me: number, target: number) {
     try {
-      return this.client.delete(`/users/${me}/friends/${target}`);
+      const response = await this.client.delete(
+        `/users/${me}/friends/${target}`,
+      );
+      return response;
     } catch (err) {
       return (err as AxiosError).response;
     }
