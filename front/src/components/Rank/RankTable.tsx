@@ -88,25 +88,22 @@ export function RankTable(props: any) {
   }
 
   return (
-    <>
-      <TableContainer overflowY={'scroll'} h={'100%'} maxHeight={'100%'}>
-        <Table variant="striped">
-          <Thead>
-            <Tr>
-              <Th onClick={() => tableOrdering('rank')}>Rank</Th>
-              <Th>Avatar</Th>
-              <Th onClick={() => tableOrdering('login_intra')}>Login</Th>
-              <Th onClick={() => tableOrdering('nickname')}>Nickname</Th>
-              <Th onClick={() => tableOrdering('wins')}>Wins</Th>
-              <Th onClick={() => tableOrdering('losses')}>Losses</Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            <ListUsers users={userList} query={props.query}></ListUsers>
-          </Tbody>
-        </Table>
-      </TableContainer>
-      <Box bg={'gray.800'} padding={'1rem'} />
-    </>
+    <TableContainer overflowY={'scroll'} h={'100%'} maxHeight={'100%'}>
+      <Table variant="striped">
+        <Thead>
+          <Tr>
+            <Th onClick={() => tableOrdering('rank')}>Rank</Th>
+            <Th>Avatar</Th>
+            <Th onClick={() => tableOrdering('login_intra')}>Login</Th>
+            <Th onClick={() => tableOrdering('nickname')}>Nickname</Th>
+            <Th onClick={() => tableOrdering('wins')}>Wins</Th>
+            <Th onClick={() => tableOrdering('losses')}>Losses</Th>
+          </Tr>
+        </Thead>
+        <Tbody>
+          <ListUsers users={userList} query={props.query}></ListUsers>
+        </Tbody>
+      </Table>
+    </TableContainer>
   );
 }
