@@ -22,7 +22,7 @@ import { PowerUp } from './PowerUps/PowerUp';
 import { SlowEnemy } from './PowerUps/SlowEnemy';
 
 export type MatchResult = {
-  draw: boolean = false;
+  draw: boolean;
   winner?: UserDto;
   loser?: UserDto;
 };
