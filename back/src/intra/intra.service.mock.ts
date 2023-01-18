@@ -76,7 +76,7 @@ export class IntraServiceMock {
 
     if (process.env.ENVIRONMENT != 'prod') {
       let users: UserDto[] = await this.usersService.getAll();
-      if (!users.length) {
+      if (users.length < 20) {
         await this.usersService.generateUsers(20);
         await this.usersService.create(this.specificUsers['abcd']);
         await this.usersService.create(this.specificUsers['1234']);
