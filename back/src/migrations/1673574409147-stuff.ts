@@ -53,6 +53,9 @@ export class stuff1673574409147 implements MigrationInterface {
         await queryRunner.query(`ALTER TABLE "friend_requests" ADD CONSTRAINT "FK_08a93c90f45e7d7103554f0208f" FOREIGN KEY ("usersId_2") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE`);
         await queryRunner.query(`ALTER TABLE "friendships" ADD CONSTRAINT "FK_cf91c526fd5896f37f9320b55e9" FOREIGN KEY ("usersId_1") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE`);
         await queryRunner.query(`ALTER TABLE "friendships" ADD CONSTRAINT "FK_2e01dc7535d12a75f27a827194b" FOREIGN KEY ("usersId_2") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE`);
+        await queryRunner.query(`INSERT into "channels" (name, owner_id, type) values ('feedback', 42, 'PUBLIC')`);
+        await queryRunner.query(`INSERT into "channels" (name, owner_id, type) values ('zuera', 42, 'PUBLIC')`);
+
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
