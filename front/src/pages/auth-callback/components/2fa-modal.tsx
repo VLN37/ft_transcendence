@@ -11,6 +11,7 @@ import {
   Button,
 } from '@chakra-ui/react';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export interface TFAModalProps {
   isOpen: boolean;
@@ -26,6 +27,7 @@ export const TFAModal = ({
   onClose,
 }: TFAModalProps) => {
   const [tfaCode, setTkaCode] = useState('');
+  const navigate = useNavigate();
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTkaCode(event.target.value);
@@ -59,7 +61,7 @@ export const TFAModal = ({
           >
             Send
           </Button>
-          <Button onClick={onClose}>Cancel</Button>
+          <Button onClick={() => navigate('/login')}>Cancel</Button>
         </ModalFooter>
       </ModalContent>
     </Modal>
