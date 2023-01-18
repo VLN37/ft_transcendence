@@ -16,13 +16,13 @@ function UserBlock(props: any) {
           borderRadius="full"
           boxSize="65px"
           src={link}
-		  border={'2px'}
-		  boxShadow={'dark-lg'}
+          border={'2px'}
+          boxShadow={'dark-lg'}
         />
         <PublicProfile isOpen={isOpen} onClose={onClose} user={props.user} />
       </Td>
       <Td>{<RankMenu username={props.user.nickname} id={props.user.id} />}</Td>
-      <Td>{props.user.id}</Td>
+      <Td>{props.user.nickname}</Td>
       <Td>{props.user.wins}</Td>
       <Td>{props.user.losses}</Td>
     </Tr>

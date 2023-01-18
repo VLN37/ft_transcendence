@@ -96,7 +96,7 @@ export function RankTable(props: any) {
               <Th onClick={() => tableOrdering('rank')}>Rank</Th>
               <Th>Avatar</Th>
               <Th onClick={() => tableOrdering('login_intra')}>Login</Th>
-              <Th onClick={() => tableOrdering('id')}>ID</Th>
+              <Th onClick={() => tableOrdering('nickname')}>Nickname</Th>
               <Th onClick={() => tableOrdering('wins')}>Wins</Th>
               <Th onClick={() => tableOrdering('losses')}>Losses</Th>
             </Tr>
