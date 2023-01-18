@@ -3,7 +3,7 @@ FROM node:18.9.1-alpine
 ENV NODE_ENV production
 WORKDIR /front
 
-COPY --chown=node:node package*.json .
+COPY --chown=node:node package*.json /front/
 RUN mkdir -p node_modules && chown -R node node_modules
 RUN npm ci --only=production
 COPY --chown=node:node . .
