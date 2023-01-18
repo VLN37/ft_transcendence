@@ -21,7 +21,7 @@ export default function RankPage() {
     <>
       <InputGroup>
         <Input
-          placeholder="Search by login name"
+          placeholder="Search by intra login or nickname"
           value={searchValue}
           onChange={handleChange}
           size="md"

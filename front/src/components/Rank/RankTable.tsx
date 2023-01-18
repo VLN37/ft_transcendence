@@ -17,7 +17,12 @@ import { less } from '../matchHistory/MatchHistory';
 function ListUsers(props: { users: TableUser[]; query: string }) {
   if (!props.users[0].login_intra) return <></>;
   const users = props.users
-    .filter((user) => user.login_intra.includes(props.query))
+    .filter((user) => {
+      return (
+        user.login_intra.includes(props.query) ||
+        user.nickname.includes(props.query)
+      );
+    })
     .map((user, i) => (
       <UserBlock
         key={i}
@@ -94,8 +99,8 @@ export function RankTable(props: any) {
           <Tr>
             <Th onClick={() => tableOrdering('rank')}>Rank</Th>
             <Th>Avatar</Th>
-            <Th onClick={() => tableOrdering('login_intra')}>Login</Th>
             <Th onClick={() => tableOrdering('nickname')}>Nickname</Th>
+            <Th onClick={() => tableOrdering('login_intra')}>Login</Th>
             <Th onClick={() => tableOrdering('wins')}>Wins</Th>
             <Th onClick={() => tableOrdering('losses')}>Losses</Th>
           </Tr>
