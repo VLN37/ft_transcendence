@@ -17,6 +17,7 @@ import { TableUser } from '../../models/TableUser';
 import { emptyUser, User } from '../../models/User';
 import { channelApi, chatApi, mmApi, userApi } from '../../services/api_index';
 import userStorage from '../../services/userStorage';
+import { MatchHistory } from '../matchHistory/MatchHistory';
 import { PublicProfile } from '../Profile/profile.public';
 
 const CircleIcon = (props: any) => (
@@ -34,7 +35,16 @@ function UserDmMenu(props: {
   me: User,
   setMe: any
 }) {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isProfileOpen,
+    onOpen: openProfile,
+    onClose: closeProfile,
+  } = useDisclosure();
+  const {
+    isOpen: isHistoryOpen,
+    onOpen: openHistory,
+    onClose: closeHistory,
+  } = useDisclosure();
   const toast = useToast();
   let navigate = useNavigate();
 
@@ -113,9 +123,15 @@ function UserDmMenu(props: {
     <Box padding={1}>
       <PublicProfile
         user={props.user}
-        isOpen={isOpen}
-        onClose={onClose}
+        isOpen={isProfileOpen}
+        onClose={closeProfile}
       ></PublicProfile>
+      <MatchHistory
+        isOpen={isHistoryOpen}
+        onClose={closeHistory}
+        id={props.user.id}
+        username={props.user.nickname}
+      ></MatchHistory>
       <Menu isLazy>
         <CircleIcon color={color}></CircleIcon>
         {isBlocked ? <ViewOffIcon></ViewOffIcon> : null}
@@ -123,7 +139,8 @@ function UserDmMenu(props: {
           {props.user.nickname}
         </MenuButton>
         <MenuList>
-          <MenuItem onClick={onOpen}>view profile</MenuItem>
+          <MenuItem onClick={openProfile}>view profile</MenuItem>
+          <MenuItem onClick={openHistory}>view match history</MenuItem>
           <MenuItem onClick={() => navigate(`/dm?user=${props.user.id}`)}>
             send message
           </MenuItem>
@@ -203,9 +220,7 @@ function PendingRequestMenu(props: {
 }
 
 export function DmUsers() {
-  const [me, setMe] = useState<User>(
-    userStorage.getUser() || emptyUser()
-  );
+  const [me, setMe] = useState<User>(emptyUser());
 
   async function updateFriends(data: any) {
     // console.log(me);
