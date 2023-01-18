@@ -39,7 +39,7 @@ services:
     env_file:
       - ./back/.env
     environment:
-      DB_HOST: database
+      DB_HOST: database-dev
       POSTGRES_USER:
       POSTGRES_PASSWORD:
       POSTGRES_DB:
