@@ -19,10 +19,8 @@ import { validateWsJwt } from 'src/utils/functions/validateWsConnection';
 import { MatchType } from './dto/MatchType';
 import { MatchMakingService } from './match-making.service';
 
-const prod = process.env.ENVIRONMENT == 'prod';
-
 @WebSocketGateway({
-  namespace: prod ? 'back/match-making' : 'match-making',
+  namespace: 'match-making',
   cors: {
     origin: '*',
   },

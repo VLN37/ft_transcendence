@@ -132,7 +132,7 @@ export class Api {
   connectToChannel(data: ChannelRoomAuth): Promise<ChannelSocketResponse> {
     return new Promise((resolve) => {
       this.channelSocket = io(
-        `${process.env.REACT_APP_BACK_HOSTNAME}/${this.CHANNEL_NAMESPACE}`,
+        `${process.env.REACT_APP_GATEWAY_HOSTNAME}/${this.CHANNEL_NAMESPACE}`,
         {
           auth: { token: this.token },
         },
@@ -149,7 +149,7 @@ export class Api {
 
   connectToDM() {
     this.dmSocket = io(
-      `${process.env.REACT_APP_BACK_HOSTNAME}/${this.DM_NAMESPACE}`,
+      `${process.env.REACT_APP_GATEWAY_HOSTNAME}/${this.DM_NAMESPACE}`,
       {
         auth: { token: this.token },
       },
@@ -157,7 +157,7 @@ export class Api {
   }
 
   private connectToMatchMakingCoordinator() {
-    const url = `${process.env.REACT_APP_BACK_HOSTNAME}/${this.MATCH_MAKING_NAMESPACE}`;
+    const url = `${process.env.REACT_APP_GATEWAY_HOSTNAME}/${this.MATCH_MAKING_NAMESPACE}`;
     const options = {
       auth: {
         token: this.token,

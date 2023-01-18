@@ -4,7 +4,6 @@ import { PlayerSide } from '../game/model/Paddle';
 import { PlayerCommand } from '../game/model/PlayerCommand';
 import { PowerUp } from '../game/model/PowerUp';
 import { Match } from '../models/Match';
-import { User } from '../models/User';
 import api from './api';
 
 export class GameApi {
@@ -19,7 +18,10 @@ export class GameApi {
   }
 
   connectToServer() {
-    const url = `${process.env.REACT_APP_BACK_HOSTNAME}/${this.MATCH_MANAGER_NAMESPACE}`;
+    const url =
+      process.env.REACT_APP_GATEWAY_HOSTNAME +
+      '/' +
+      this.MATCH_MANAGER_NAMESPACE;
     const options = {
       auth: {
         token: api.getToken(),
