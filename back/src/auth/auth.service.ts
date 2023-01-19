@@ -67,7 +67,7 @@ export class AuthService {
           name: 'marvin',
           nickname: 'marvin',
           avatar_path: '/avatars/marvin.jpeg',
-          status: 'OFFLINE',
+          status: 'ONLINE',
           wins: 0,
           losses: 0,
           mmr: 0,
