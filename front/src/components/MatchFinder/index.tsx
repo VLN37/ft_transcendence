@@ -30,6 +30,7 @@ import { useNavigate } from 'react-router-dom';
 import { mmApi } from '../../services/api_index';
 
 import NeonButton from '../NeonButton';
+import Instructions from './gameInstructions';
 import './style.css';
 
 type MatchType = 'CLASSIC' | 'TURBO';
@@ -156,7 +157,6 @@ export default function MatchFinder() {
         closeOnOverlayClick={false}
       >
         <AlertDialogOverlay />
-
         <AlertDialogContent>
           <AlertDialogHeader>Match found!</AlertDialogHeader>
           <AlertDialogCloseButton />
@@ -212,6 +212,7 @@ export default function MatchFinder() {
               <Stack mb="4">
                 <Radio value={'TURBO'}>TURBO PONG 2.0</Radio>
                 <Radio value={'CLASSIC'}>Classic</Radio>
+                <Instructions />
               </Stack>
             </RadioGroup>
           </DrawerBody>
