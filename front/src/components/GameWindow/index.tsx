@@ -21,7 +21,7 @@ import {
   handleBallRightPaddleCollision,
 } from '../../game/math/collision';
 import { handleKeyPress, handleKeyRelease } from '../../game/controls';
-import { Box, Button } from '@chakra-ui/react';
+import { Box, Button, Flex } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 import { PowerUp } from '../../game/model/PowerUp';
 import { applyPowerUp } from '../../game/logic';
@@ -205,7 +205,12 @@ export default (props: GameWindowProps) => {
   };
 
   return (
-    <Box>
+    <Flex
+      direction={'column'}
+      alignItems={'center'}
+      height={'100vh'}
+      justifyContent={'center'}
+    >
       <Sketch
         preload={preload}
         setup={setup}
@@ -213,7 +218,9 @@ export default (props: GameWindowProps) => {
         keyPressed={onKeyPress}
         keyReleased={onKeyRelease}
       />
-      <Button onClick={() => navigate('/')}>Return to home</Button>
-    </Box>
+      <Button mt={4} onClick={() => navigate('/')}>
+        Return to home
+      </Button>
+    </Flex>
   );
 };
