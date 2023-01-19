@@ -183,8 +183,8 @@ export const drawTimer = (
 
   image.stroke(200, 42, 10);
   image.strokeWeight(4);
-  image.textSize(54);
-  const timeStr = remaining.toFixed(0).padStart(3, '0');
+  image.textSize(62);
+  const timeStr = remaining.toFixed(0).padStart(2, '0');
   const width = image.textWidth(timeStr);
   image.text(timeStr, rules.worldWidth / 2 - width / 2, 50);
   image.pop();

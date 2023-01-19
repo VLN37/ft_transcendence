@@ -12,7 +12,7 @@ export const NOTIFICATIONS_PER_SECOND = 20;
 // times in seconds
 export const WAIT_CONNECTION_DURATION = 30;
 export const PREPARATION_TIME_DURATION = 5;
-export const MATCH_DURATION = 130;
+export const MATCH_DURATION = 99;
 
 export type Tuple = {
   x: number;
@@ -25,7 +25,8 @@ export type GameRules = {
   whRatio: number;
   ball: {
     startingPosition: Tuple;
-    startingSpeed: number;
+    classicStartingSpeed: number;
+    turboStartingSpeed: number;
     size: number;
     maxSpeed: number;
     maxAngle: number;
@@ -63,10 +64,11 @@ export const rules: GameRules = {
       x: WORLD_WIDTH / 2,
       y: WORLD_HEIGHT / 2,
     },
-    startingSpeed: BALL_INITIAL_SPEED,
     size: BALL_SIZE,
     maxSpeed: 750,
     maxAngle: 60,
+    classicStartingSpeed: 300,
+    turboStartingSpeed: 380,
   },
   player: {
     startingPosition: WORLD_HEIGHT / 2,

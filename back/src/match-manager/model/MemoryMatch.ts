@@ -217,7 +217,11 @@ export class MemoryMatch {
     const sideChooser = Math.random() < 0.5 ? -1 : 1;
     const x = 150 * sideChooser;
     const y = (Math.random() - 0.5) * rules.worldHeight;
-    return new Vector(x, y).normalize().mult(rules.ball.startingSpeed);
+    const startingSpeed =
+      this.type == 'TURBO'
+        ? rules.ball.turboStartingSpeed
+        : rules.ball.classicStartingSpeed;
+    return new Vector(x, y).normalize().mult(startingSpeed);
   }
 
   private getRandomAvailablePowerUp(powerups: PowerUp[]) {
