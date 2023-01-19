@@ -116,7 +116,7 @@ export default (props: GameWindowProps) => {
 
   const updateWindowProportions = () => {
     let currentWidth = window.innerWidth;
-    let currentHeight = window.innerHeight;
+    let currentHeight = window.innerHeight * 0.85;
     lastWindowWidth = currentWidth;
     lastWindowHeight = currentHeight;
 
