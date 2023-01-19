@@ -7,7 +7,6 @@ import {
   Tr,
   Th,
   TableContainer,
-  Box,
 } from '@chakra-ui/react';
 import { TableUser } from '../../models/TableUser';
 import { User } from '../../models/User';
@@ -34,15 +33,15 @@ function ListUsers(props: { users: TableUser[]; query: string }) {
 }
 
 export function RankTable(props: any) {
-  const [type, setType] = useState<keyof TableUser>('wins');
-  const [order, setOrder] = useState<'ASC' | 'DESC'>('ASC');
+  const [type, setType] = useState<keyof TableUser>('mmr');
+  const [order, setOrder] = useState<'ASC' | 'DESC'>('DESC');
   const [userList, setUserList] = useState([TableUser()]);
 
   useEffect(() => {
     async function queryDatabase() {
       const result: User[] = await userApi.getRankedUsers();
       if (!result.length) return;
-      result.sort((a, b) => less(b.profile.wins, a.profile.wins));
+      result.sort((a, b) => less(b.profile.mmr, a.profile.mmr));
       const restructure: TableUser[] = result.map((user, i) => {
         let tableuser = TableUser(user);
         tableuser.rank = i + 1;
@@ -103,6 +102,7 @@ export function RankTable(props: any) {
             <Th onClick={() => tableOrdering('login_intra')}>Login</Th>
             <Th onClick={() => tableOrdering('wins')}>Wins</Th>
             <Th onClick={() => tableOrdering('losses')}>Losses</Th>
+            <Th onClick={() => tableOrdering('mmr')}>Rating</Th>
           </Tr>
         </Thead>
         <Tbody>

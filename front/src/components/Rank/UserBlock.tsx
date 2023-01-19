@@ -25,6 +25,7 @@ function UserBlock(props: any) {
       <Td>{props.user.login_intra}</Td>
       <Td>{props.user.wins}</Td>
       <Td>{props.user.losses}</Td>
+      <Td>{props.user.mmr}</Td>
     </Tr>
   );
 }
