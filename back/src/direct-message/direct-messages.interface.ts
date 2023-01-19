@@ -7,6 +7,7 @@ export interface UserMessage {
 
 export interface iFriendRequestWsPayload {
   user: UserDto;
+  status: 'REQUEST' | 'ACCEPTED' | 'REMOVED'
 }
 
 export interface iDirectMessage {

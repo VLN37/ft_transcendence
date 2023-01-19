@@ -104,10 +104,9 @@ export class FriendRequestsService {
     );
 
     await this.usersService.update(userToAdd);
-    // this.dmGateway.pingFriendRequest(target, {user});
     if (this.notifyService) {
-      // console.log('params', me, target);
-      this.notifyService(target, { user });
+      console.log('params', me, target);
+      this.notifyService(target, { user, status: 'REQUEST' });
     }
     return await this.userSentPendingFriendRequests(me);
   }
@@ -164,6 +163,7 @@ export class FriendRequestsService {
     user.friends.push(await this.usersService.findUserById(target));
     userToAccept.friends.push(await this.usersService.findUserById(me));
 
+    this.notifyService(target, { user, status: 'ACCEPTED' });
     this.logger.debug(
       'User ' +
         user.login_intra +
