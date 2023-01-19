@@ -2,7 +2,6 @@ import { Injectable, Logger } from '@nestjs/common';
 import { MatchManager } from 'src/match-manager/match-manager';
 import { MemoryMatch } from 'src/match-manager/model/MemoryMatch';
 import { UserDto } from 'src/users/dto/user.dto';
-import { AlreadyHasActiveConnectionError } from 'typeorm';
 import { MatchType, MATCH_TYPES } from './dto/MatchType';
 
 class MemoryQueue {
@@ -49,7 +48,7 @@ export class MatchMakingService {
   dequeueUser(userId: number) {
     MATCH_TYPES.forEach((type) => {
       const queue = this.memoryQueue[type];
-      const i = queue.findIndex((queuedUser) => (queuedUser.id = userId));
+      const i = queue.findIndex((queuedUser) => queuedUser.id === userId);
       if (i >= 0) {
         const user = queue.splice(i, 1);
         this.logger.debug(
