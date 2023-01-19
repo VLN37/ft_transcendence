@@ -135,7 +135,14 @@ function UserDmMenu(props: {
       <Menu isLazy>
         <CircleIcon color={color}></CircleIcon>
         {isBlocked ? <ViewOffIcon></ViewOffIcon> : null}
-        <MenuButton>
+        <MenuButton
+          transition="all 0.2s"
+          borderRadius="md"
+          borderWidth="1px"
+          _hover={{ bg: 'blue.700' }}
+          _expanded={{ bg: 'blue.400' }}
+          _focus={{ boxShadow: 'outline' }}
+        >
           {props.user.nickname}
         </MenuButton>
         <MenuList>
@@ -146,15 +153,11 @@ function UserDmMenu(props: {
           </MenuItem>
           <MenuItem onClick={gameInvite}>invite to game</MenuItem>
           <MenuItem onClick={removeFriend}>remove friend</MenuItem>
-          {
-            isMyself
-              ? null
-              : (
-                isBlocked
-                  ? <MenuItem onClick={unblockUser}>unblock user</MenuItem>
-                  : <MenuItem onClick={blockUser}>block user</MenuItem>
-              )
-          }
+          {isMyself ? null : isBlocked ? (
+            <MenuItem onClick={unblockUser}>unblock user</MenuItem>
+          ) : (
+            <MenuItem onClick={blockUser}>block user</MenuItem>
+          )}
         </MenuList>
       </Menu>
     </Box>
