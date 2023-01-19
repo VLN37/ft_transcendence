@@ -196,8 +196,9 @@ function UserMenu(props: {
       <Menu isLazy>
         <MenuButton
           transition="all 0.2s"
-          borderRadius="md"
+          borderRadius='base'
           borderWidth="1px"
+          borderColor={'gray.500'}
           _hover={{ bg: 'blue.700' }}
           _expanded={{ bg: 'blue.400' }}
           _focus={{ boxShadow: 'outline' }}

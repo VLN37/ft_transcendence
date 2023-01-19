@@ -133,16 +133,17 @@ function UserDmMenu(props: {
         username={props.user.nickname}
       ></MatchHistory>
       <Menu isLazy>
-        <CircleIcon color={color}></CircleIcon>
         {isBlocked ? <ViewOffIcon></ViewOffIcon> : null}
         <MenuButton
           transition="all 0.2s"
-          borderRadius="md"
+          borderRadius='base'
           borderWidth="1px"
+          borderColor={'gray.500'}
           _hover={{ bg: 'blue.700' }}
           _expanded={{ bg: 'blue.400' }}
           _focus={{ boxShadow: 'outline' }}
         >
+          <CircleIcon color={color}></CircleIcon>
           {props.user.nickname}
         </MenuButton>
         <MenuList>

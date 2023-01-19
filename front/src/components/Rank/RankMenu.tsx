@@ -10,7 +10,7 @@ import {
 } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 import { emptyUser, User } from '../../models/User';
-import { userApi } from '../../services/api_index';
+import { mmApi, userApi } from '../../services/api_index';
 import userStorage from '../../services/userStorage';
 import { MatchHistory } from '../matchHistory/MatchHistory';
 
@@ -64,6 +64,18 @@ export function RankMenu(props: { username: string; id: number }) {
     navigate(`/dm?user=${props.id}`);
   }
 
+  async function gameInvite() {
+    const response: any = await mmApi.sendGameRequest(user, props.id);
+	if (!response) return;
+    const status = response.status == 201 ? 'success' : 'error';
+    const message = response.status == 201 ? '' : response.data.message;
+    toast({
+      title: 'Game request sent',
+      status: status,
+      description: message,
+    });
+  }
+
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (
     <Menu>
@@ -84,6 +96,7 @@ export function RankMenu(props: { username: string; id: number }) {
         <MenuItem onClick={clickCallback}>add friend</MenuItem>
         <MenuItem onClick={sendUserMessage}>send a message</MenuItem>
         <MenuItem onClick={onOpen}>match history</MenuItem>
+        <MenuItem onClick={gameInvite}>invite to game</MenuItem>
         <MatchHistory
           isOpen={isOpen}
           onClose={onClose}
