@@ -45,7 +45,7 @@ export class IntraService {
     });
 
     if (!response.ok) {
-      this.handleIntraError(response);
+      this.handleIntraError(response.clone());
     }
 
     const result = await response.json();
