@@ -202,8 +202,14 @@ class ChatApi {
   }
 
   subscribeFriendRequest(callback: any) {
-    this.dmSocket?.on('friend_request', (user: User) => {
-      callback(user);
+    this.dmSocket?.on('friend_request', ({
+      user: User,
+      status: string
+    }) => {
+      callback({
+        user: User,
+        status: string
+      });
     });
   }
 

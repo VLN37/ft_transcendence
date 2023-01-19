@@ -105,7 +105,7 @@ export class FriendRequestsService {
 
     await this.usersService.update(userToAdd);
     if (this.notifyService) {
-      console.log('params', me, target);
+      // console.log('params', me, target);
       this.notifyService(target, { user, status: 'REQUEST' });
     }
     return await this.userSentPendingFriendRequests(me);
