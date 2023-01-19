@@ -307,7 +307,7 @@ export class MatchManager {
     match.match.resetPositions();
 
     const end_at = new Date();
-    end_at.setSeconds(end_at.getSeconds() + 120);
+    end_at.setSeconds(end_at.getSeconds() + 130);
     this.logger.debug('match finishes at ' + end_at.toISOString());
     match.match.ends_at = end_at;
 
@@ -326,7 +326,7 @@ export class MatchManager {
       this.finishMatch(match);
     };
 
-    match.timers.ongoing = setTimeout(onMatchFinished, seconds(120));
+    match.timers.ongoing = setTimeout(onMatchFinished, seconds(130));
   }
 
   private finishMatch(match: ActiveMatch) {

@@ -8,10 +8,12 @@ import {
   Grid,
   GridItem,
   IconButton,
+  Image,
   Menu,
   MenuButton,
   MenuItem,
   MenuList,
+  useDisclosure,
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
@@ -19,7 +21,6 @@ import GameInvite from '../../components/GameInvite/GameInvite';
 import MatchFinder from '../../components/MatchFinder';
 import NeonButton from '../../components/NeonButton';
 import { Profile } from '../../components/Profile/profile';
-import { iDirectMessage } from '../../models/DirectMessage';
 import { emptyUser } from '../../models/User';
 import { api, chatApi } from '../../services/api_index';
 import userStorage from '../../services/userStorage';
@@ -75,10 +76,11 @@ export default function Layout({ setUser }: any) {
   const [pathname, setPathname] = useState('/');
   const [notification, setNotification] = useState(0);
   const [avatar, setAvatar] = useState<string>(
-    JSON.parse(localStorage.getItem('user') || '').profile.avatar_path || '',
+    localStorage.getItem('avatar') || '',
   );
 
   const user = userStorage.getUser() || emptyUser();
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   useEffect(() => {
     setPathname(location.pathname);
@@ -138,7 +140,16 @@ export default function Layout({ setUser }: any) {
                 </Link>
               </Box>
               <GameInvite />
-              <Profile />
+              <Image
+                onClick={onOpen}
+                marginTop={'15px'}
+                borderRadius="full"
+                boxSize="65px"
+                src={avatar}
+                border={'2px'}
+                boxShadow={'dark-lg'}
+              />
+              <Profile isOpen={isOpen} onClose={onClose} setAvatar={setAvatar}/>
               <Button
                 marginY={'auto'}
                 onClick={() => {

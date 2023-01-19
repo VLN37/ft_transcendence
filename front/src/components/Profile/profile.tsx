@@ -118,8 +118,11 @@ function NicknameUpdate(props: { user: User; setNickname: any }) {
   );
 }
 
-export function Profile() {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+export function Profile(props: {
+  isOpen: any,
+  onClose: any,
+  setAvatar: any
+}) {
   const user: User = userStorage.getUser() || emptyUser();
   const [nickname, setNickname] = useState<string>(user.profile.nickname);
   const [avatar, setAvatar] = useState<string>(
@@ -128,16 +131,7 @@ export function Profile() {
 
   return (
     <Box marginY={'auto'}>
-      <Image
-        onClick={onOpen}
-        marginTop={'15px'}
-        borderRadius="full"
-        boxSize="65px"
-        src={avatar}
-        border={'2px'}
-        boxShadow={'dark-lg'}
-      />
-      <Modal isOpen={isOpen} onClose={onClose} size={'3xl'}>
+      <Modal isOpen={props.isOpen} onClose={props.onClose} size={'3xl'}>
         <ModalOverlay />
         <ModalContent>
           <ModalCloseButton></ModalCloseButton>
@@ -173,7 +167,7 @@ export function Profile() {
                 <GridItem colStart={1}>
                   <Stack spacing={4}>
                     <NicknameUpdate user={user} setNickname={setNickname} />
-                    <InputFileUpload setAvatar={setAvatar} />
+                    <InputFileUpload setAvatar={props.setAvatar} />
                   </Stack>
                 </GridItem>
                 <TwoFA></TwoFA>
@@ -181,7 +175,7 @@ export function Profile() {
             </Stack>
           </ModalBody>
           <ModalFooter>
-            <Button onClick={onClose}>close</Button>
+            <Button onClick={props.onClose}>close</Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
