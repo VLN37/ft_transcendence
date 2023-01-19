@@ -1,9 +1,18 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { iFriendRequestWsPayload } from 'src/direct-message/direct-messages.interface';
 import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class FriendService {
+  private notifyService: (
+    target: number,
+    data: iFriendRequestWsPayload
+  ) => void | null = null;
   constructor(private usersService: UsersService) {}
+
+  setNotify(callback: typeof this.notifyService) {
+    this.notifyService = callback;
+  }
 
   async get(from: number) {
     const user = await this.usersService.findUserById(from);
@@ -35,6 +44,7 @@ export class FriendService {
       delete user.tfa_enabled;
       delete user.tfa_secret;
     });
+    this.notifyService(to, {user, status: 'REMOVED'});
     return user.friends;
   }
 }

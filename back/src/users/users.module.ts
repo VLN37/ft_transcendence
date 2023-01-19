@@ -27,6 +27,12 @@ import { JwtService } from '@nestjs/jwt';
     FriendRequestsService,
     JwtService,
   ],
-  exports: [UsersService, ProfileModule, FriendRequestsService, TypeOrmModule],
+  exports: [
+    UsersService,
+    ProfileModule,
+    FriendService,
+    FriendRequestsService,
+    TypeOrmModule,
+  ],
 })
 export class UsersModule {}
