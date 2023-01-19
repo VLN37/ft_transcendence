@@ -193,27 +193,32 @@ function UserMenu(props: {
           {props.user.nickname}
         </MenuButton>
         <MenuList>
-          <MenuItem onClick={onOpen}>view profile</MenuItem>
-          <MenuItem onClick={gameInvite}>invite to game</MenuItem>
-          {isMyself ? null : isBlocked ? (
-            <MenuItem onClick={unblockUser}>unblock user</MenuItem>
-          ) : (
-            <MenuItem onClick={blockUser}>block user</MenuItem>
-          )}
-          {amOwner && !isMyself ? (
-            isAdmin ? (
-              <MenuItem onClick={delAdmin}>remove admin</MenuItem>
-            ) : (
-              <MenuItem onClick={addAdmin}>give admin</MenuItem>
+        {
+          isMyself
+            ? null
+            : (
+            isBlocked
+              ? <MenuItem onClick={unblockUser}>unblock user</MenuItem>
+              : <MenuItem onClick={blockUser}>block user</MenuItem>
             )
-          ) : null}
-          {amAdmin && !isMyself ? (
-            isBan ? (
-              <MenuItem onClick={unbanUser}>unban user</MenuItem>
-            ) : (
-              <MenuItem onClick={banUser}>ban user</MenuItem>
-            )
-          ) : null}
+        }
+        {
+          amOwner && !isMyself
+            ? (
+          isAdmin
+            ? <MenuItem onClick={delAdmin}>remove admin</MenuItem>
+            : <MenuItem onClick={addAdmin}>give admin</MenuItem>
+        ) : null
+        }
+        {
+          amAdmin && !isMyself
+            ? (
+            isBan
+              ? <MenuItem onClick={unbanUser}>unban user</MenuItem>
+              : <MenuItem onClick={banUser}>ban user</MenuItem>
+          )
+            : null
+        }
         </MenuList>
       </Menu>
     </Box>
