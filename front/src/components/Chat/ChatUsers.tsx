@@ -16,6 +16,7 @@ import { TableUser } from '../../models/TableUser';
 import { emptyUser, User } from '../../models/User';
 import { channelApi, mmApi } from '../../services/api_index';
 import userStorage from '../../services/userStorage';
+import { MatchHistory } from '../matchHistory/MatchHistory';
 import { PublicProfile } from '../Profile/profile.public';
 
 const CircleIcon = (props: any) => (
@@ -33,9 +34,19 @@ function UserMenu(props: {
   user2: User,
 }) {
   const [reload, setReload] = useState<boolean>(false);
-  const { isOpen, onOpen, onClose } = useDisclosure();
   const me: User = userStorage.getUser() || emptyUser();
   const toast = useToast();
+
+  const {
+    isOpen: isProfileOpen,
+    onOpen: openProfile,
+    onClose: closeProfile,
+  } = useDisclosure();
+  const {
+    isOpen: isHistoryOpen,
+    onOpen: openHistory,
+    onClose: closeHistory,
+  } = useDisclosure();
 
   async function blockUser() {
     const response: any = await channelApi.blockUser(
@@ -154,7 +165,6 @@ function UserMenu(props: {
       status: status,
       description: message,
     });
-    // setReload(!reload);
   }
 
   const isMyself = me.id == props.user.id;
@@ -174,9 +184,15 @@ function UserMenu(props: {
     <Box padding={1}>
       <PublicProfile
         user={props.user}
-        isOpen={isOpen}
-        onClose={onClose}
+        isOpen={isProfileOpen}
+        onClose={closeProfile}
       ></PublicProfile>
+      <MatchHistory
+        isOpen={isHistoryOpen}
+        onClose={closeHistory}
+        id={props.user.id}
+        username={props.user.nickname}
+      ></MatchHistory>
       <Menu isLazy>
         <MenuButton
           transition="all 0.2s"
@@ -193,32 +209,35 @@ function UserMenu(props: {
           {props.user.nickname}
         </MenuButton>
         <MenuList>
-        {
-          isMyself
-            ? null
-            : (
-            isBlocked
-              ? <MenuItem onClick={unblockUser}>unblock user</MenuItem>
-              : <MenuItem onClick={blockUser}>block user</MenuItem>
+          {
+            isMyself
+              ? null
+              : (
+              isBlocked
+                ? <MenuItem onClick={unblockUser}>unblock user</MenuItem>
+                : <MenuItem onClick={blockUser}>block user</MenuItem>
+              )
+          }
+          {
+            amOwner && !isMyself
+              ? (
+            isAdmin
+              ? <MenuItem onClick={delAdmin}>remove admin</MenuItem>
+              : <MenuItem onClick={addAdmin}>give admin</MenuItem>
+          ) : null
+          }
+          {
+            amAdmin && !isMyself
+              ? (
+              isBan
+                ? <MenuItem onClick={unbanUser}>unban user</MenuItem>
+                : <MenuItem onClick={banUser}>ban user</MenuItem>
             )
-        }
-        {
-          amOwner && !isMyself
-            ? (
-          isAdmin
-            ? <MenuItem onClick={delAdmin}>remove admin</MenuItem>
-            : <MenuItem onClick={addAdmin}>give admin</MenuItem>
-        ) : null
-        }
-        {
-          amAdmin && !isMyself
-            ? (
-            isBan
-              ? <MenuItem onClick={unbanUser}>unban user</MenuItem>
-              : <MenuItem onClick={banUser}>ban user</MenuItem>
-          )
-            : null
-        }
+              : null
+          }
+          <MenuItem onClick={openProfile}>view profile</MenuItem>
+          <MenuItem onClick={openHistory}>view match history</MenuItem>
+          <MenuItem onClick={gameInvite}>invite to game</MenuItem>
         </MenuList>
       </Menu>
     </Box>
