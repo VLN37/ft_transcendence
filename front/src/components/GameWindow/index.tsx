@@ -7,14 +7,12 @@ import { GameApi } from '../../services/gameApi';
 import { GameRules } from '../../game/model/GameRules';
 import {
   drawBall,
-  drawBallCoords,
-  drawBallVelocity,
   drawMiddleNet,
-  drawPlayer as drawPaddle,
+  drawPaddle,
+  drawPlayer,
   drawPowerUp,
   drawScores,
   drawSpeedMeter,
-  printFps,
 } from './render';
 import {
   handleBallCollision,
@@ -27,9 +25,11 @@ import { useNavigate } from 'react-router-dom';
 import { PowerUp } from '../../game/model/PowerUp';
 import { applyPowerUp } from '../../game/logic';
 import { useEffect } from 'react';
+import { Match } from '../../models/Match';
 
 export type GameWindowProps = {
   gameApi: GameApi;
+  matchInfo: Match;
   playerSide: PlayerSide | null;
   rules: GameRules;
 };
@@ -56,7 +56,19 @@ export default (props: GameWindowProps) => {
   let leftPlayerScore = 0;
   let rightPlayerScore = 0;
 
+  let leftPic: p5Types.Image;
+  let rightPic: p5Types.Image;
+
   let currentPowerup: PowerUp | null;
+
+  const preload = (p5: p5Types) => {
+    const baseUrl = process.env.REACT_APP_BACK_HOSTNAME;
+    let avatarPath = baseUrl + props.matchInfo.left_player.profile.avatar_path;
+    leftPic = p5.loadImage(avatarPath);
+
+    avatarPath = baseUrl + props.matchInfo.right_player.profile.avatar_path;
+    rightPic = p5.loadImage(avatarPath);
+  };
 
   const setup = (p5: p5Types, canvasParentRef: Element) => {
     updateWindowProportions();
@@ -154,7 +166,12 @@ export default (props: GameWindowProps) => {
     drawScores(image, leftPlayerScore, rightPlayerScore, rules);
     drawSpeedMeter(image, ball, rules);
     resizeIfNecessary(p5);
-    // printFps(image, ball);
+
+    const leftNick = props.matchInfo.left_player.profile.nickname;
+    const rightNick = props.matchInfo.right_player.profile.nickname;
+    drawPlayer(image, leftPic, leftNick, PlayerSide.LEFT, rules);
+    drawPlayer(image, rightPic, rightNick, PlayerSide.RIGHT, rules);
+    // drawPlayer(image, props.matchInfo.right_player, PlayerSide.RIGHT);
     if (currentPowerup) drawPowerUp(image, currentPowerup);
     // drawBallCoords(image, ball);
     p5.image(image, 0, 0, p5.width, p5.height);
@@ -188,6 +205,7 @@ export default (props: GameWindowProps) => {
   return (
     <Box>
       <Sketch
+        preload={preload}
         setup={setup}
         draw={draw}
         keyPressed={onKeyPress}

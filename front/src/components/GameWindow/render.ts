@@ -4,6 +4,7 @@ import { Ball } from '../../game/model/Ball';
 import { GameRules } from '../../game/model/GameRules';
 import { Paddle, PlayerSide } from '../../game/model/Paddle';
 import { PowerUp } from '../../game/model/PowerUp';
+import { User } from '../../models/User';
 
 const getPlayerColor = (side: PlayerSide, image: p5Types.Graphics) => {
   let color: p5Types.Color;
@@ -44,7 +45,7 @@ const getPaddleQuadCoordinates = (paddle: Paddle) => {
   }
 };
 
-export const drawPlayer = (image: p5Types.Graphics, rPlayer: Paddle) => {
+export const drawPaddle = (image: p5Types.Graphics, rPlayer: Paddle) => {
   if (rPlayer.isInverted) image.filter(image.INVERT);
   image.fill(getPlayerColor(rPlayer.side, image));
   const c = getPaddleQuadCoordinates(rPlayer);
@@ -76,9 +77,9 @@ export const drawScores = (
   image.textSize(32);
   image.fill(255, 255, 255);
   image.stroke(getPlayerColor(PlayerSide.LEFT, image));
-  image.text(leftScore.toString(), middle - offset, 40);
+  image.text(leftScore.toString(), middle - offset - 10, 40);
   image.stroke(getPlayerColor(PlayerSide.RIGHT, image));
-  image.text(rightScore.toString(), middle + offset, 40);
+  image.text(rightScore.toString(), middle + offset - 10, 40);
   image.pop();
 };
 
@@ -130,6 +131,26 @@ export const drawBallVelocity = (image: p5Types.Graphics, ball: Ball) => {
   let arrowSize = 7;
   image.translate(ball.velocity.mag() * ball.width * 2 - arrowSize, 0);
   image.triangle(0, arrowSize / 2, 0, -arrowSize / 2, arrowSize, 0);
+  image.pop();
+};
+
+export const drawPlayer = (
+  image: p5Types.Graphics,
+  playerPic: p5Types.Image,
+  playerNickname: string,
+  side: PlayerSide,
+  rules: GameRules,
+) => {
+  if (!playerPic) return;
+  image.push();
+  const middle = rules.worldWidth / 2;
+  let xPosition: number;
+  if (side === PlayerSide.LEFT) {
+    xPosition = middle - 200;
+  } else {
+    xPosition = middle + 200;
+  }
+  image.image(playerPic, xPosition - 15, 15, 30, 30);
   image.pop();
 };
 

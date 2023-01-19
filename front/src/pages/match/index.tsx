@@ -1,4 +1,3 @@
-import { match } from 'assert';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import GameWindow from '../../components/GameWindow';
@@ -26,6 +25,7 @@ export default function MatchPage() {
 
   const [gameApi] = useState(new GameApi(matchId));
   const [playerSide, setPlayerSide] = useState<PlayerSide | null>(null);
+  const [matchInfo, setMatchInfo] = useState<Match>();
   // let playerSide: PlayerSide | null = null;
 
   // let matchApi: MatchApi = new MatchApi();
@@ -35,6 +35,7 @@ export default function MatchPage() {
       const currentRules = await gameApi.getGameRules();
       gameApi.connectToServer();
       const matchInfo = await gameApi.getMatchInfo(matchId);
+      setMatchInfo(matchInfo);
       const user = userStorage.getUser()!;
       if (isPlayer(user, matchInfo)) {
         gameApi.connectAsPlayer();
@@ -53,8 +54,13 @@ export default function MatchPage() {
 
   return (
     <div>
-      {(rules && gameApi && (
-        <GameWindow gameApi={gameApi} rules={rules} playerSide={playerSide} />
+      {(rules && gameApi && matchInfo && (
+        <GameWindow
+          gameApi={gameApi}
+          matchInfo={matchInfo}
+          rules={rules}
+          playerSide={playerSide}
+        />
       )) ||
         'loading'}
     </div>
