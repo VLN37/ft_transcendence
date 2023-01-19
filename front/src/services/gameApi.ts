@@ -14,7 +14,6 @@ export class GameApi {
 
   constructor(matchId: string) {
     this.matchId = matchId;
-    console.log('constructing a match api');
   }
 
   connectToServer() {
@@ -89,20 +88,16 @@ export class GameApi {
 
   setOnMatchStartListener(callback: (match: Match) => void) {
     this.matchSocket?.on('match-started', (match: Match) => {
-      console.log('match started', match);
       callback(match);
     });
   }
   setOnMatchFinishListener(callback: Function) {
     this.matchSocket?.on('match-finished', () => {
-      console.log('match finished');
       callback();
     });
   }
 
   unsubscribeAllListeners() {
-    // console.log('unsubscribing from match');
-
     this.matchSocket?.removeAllListeners();
     this.matchSocket?.disconnect();
   }

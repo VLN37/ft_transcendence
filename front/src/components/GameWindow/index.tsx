@@ -22,13 +22,12 @@ import {
   handleBallRightPaddleCollision,
 } from '../../game/math/collision';
 import { handleKeyPress, handleKeyRelease } from '../../game/controls';
-import { Box, Button, Flex } from '@chakra-ui/react';
+import { Button, Flex } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 import { PowerUp } from '../../game/model/PowerUp';
 import { applyPowerUp } from '../../game/logic';
 import { useEffect } from 'react';
 import { Match } from '../../models/Match';
-import { match } from 'assert';
 
 export type GameWindowProps = {
   gameApi: GameApi;
@@ -112,6 +111,7 @@ export default (props: GameWindowProps) => {
 
   const handleMatchStart = (match: Match) => {
     props.matchInfo.ends_at = match.ends_at;
+    props.matchInfo.stage = 'ONGOING';
     console.log('handling match start');
   };
   const handleMatchEnd = () => {
