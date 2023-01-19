@@ -178,7 +178,15 @@ function UserMenu(props: {
         onClose={onClose}
       ></PublicProfile>
       <Menu isLazy>
-        <MenuButton color={isBan ? 'red' : 'white'}>
+        <MenuButton
+          transition="all 0.2s"
+          borderRadius="md"
+          borderWidth="1px"
+          _hover={{ bg: 'blue.700' }}
+          _expanded={{ bg: 'blue.400' }}
+          _focus={{ boxShadow: 'outline' }}
+          color={isBan ? 'red' : 'white'}
+        >
           <CircleIcon color={color}></CircleIcon>
           {isBlocked ? <ViewOffIcon></ViewOffIcon> : null}
           {isAdmin ? <StarIcon></StarIcon> : null}
@@ -187,32 +195,25 @@ function UserMenu(props: {
         <MenuList>
           <MenuItem onClick={onOpen}>view profile</MenuItem>
           <MenuItem onClick={gameInvite}>invite to game</MenuItem>
-          {
-            isMyself
-              ? null
-              : (
-              isBlocked
-                ? <MenuItem onClick={unblockUser}>unblock user</MenuItem>
-                : <MenuItem onClick={blockUser}>block user</MenuItem>
-              )
-          }
-          {
-            amOwner && !isMyself
-              ? (
-            isAdmin
-              ? <MenuItem onClick={delAdmin}>remove admin</MenuItem>
-              : <MenuItem onClick={addAdmin}>give admin</MenuItem>
-          ) : null
-          }
-          {
-            amAdmin && !isMyself
-              ? (
-              isBan
-                ? <MenuItem onClick={unbanUser}>unban user</MenuItem>
-                : <MenuItem onClick={banUser}>ban user</MenuItem>
+          {isMyself ? null : isBlocked ? (
+            <MenuItem onClick={unblockUser}>unblock user</MenuItem>
+          ) : (
+            <MenuItem onClick={blockUser}>block user</MenuItem>
+          )}
+          {amOwner && !isMyself ? (
+            isAdmin ? (
+              <MenuItem onClick={delAdmin}>remove admin</MenuItem>
+            ) : (
+              <MenuItem onClick={addAdmin}>give admin</MenuItem>
             )
-              : null
-          }
+          ) : null}
+          {amAdmin && !isMyself ? (
+            isBan ? (
+              <MenuItem onClick={unbanUser}>unban user</MenuItem>
+            ) : (
+              <MenuItem onClick={banUser}>ban user</MenuItem>
+            )
+          ) : null}
         </MenuList>
       </Menu>
     </Box>
