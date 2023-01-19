@@ -1,0 +1,46 @@
+services:
+  frontend-dev:
+    image: node:18-alpine
+    container_name: front-dev
+    ports:
+      - 80:80
+    volumes:
+      - ./front:/front
+    command: npm run start
+    working_dir: /front
+    env_file:
+      - ./front/.env
+    environment:
+      - PORT=80
+
+  database-dev:
+    image: postgres:14-alpine
+    container_name: database-dev
+    ports:
+      - 5432:5432
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+
+  backend-dev:
+    depends_on:
+      - database-dev
+    image: node:18-alpine
+    container_name: back-dev
+    ports:
+      - 3000:3000
+    volumes:
+      - ./back:/back
+    command: npm run start:dev
+    working_dir: /back
+    env_file:
+      - ./back/.env
+    environment:
+      DB_HOST: database-dev
+      POSTGRES_USER:
+      POSTGRES_PASSWORD:
+      POSTGRES_DB:
+      # ENVIRONMENT: prod

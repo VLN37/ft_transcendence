@@ -1,20 +1,21 @@
 all: up
 
-up:
+prod_up:
 	docker-compose -f docker-compose.yml up -d --build
 
-prod_up:
-	docker-compose -f docker-compose.prod.yml up -d --build
+up:
+	docker-compose -f docker-compose.dev.yml up -d --build
+
 
 install:
 	npm --prefix ./back install
 	npm --prefix ./front install
 
 down:
-	docker-compose -f docker-compose.yml down
+	docker-compose -f docker-compose.dev.yml down
 
 prod_down:
-	docker-compose -f docker-compose.prod.yml down
+	docker-compose -f docker-compose.yml down
 
 test:
 	docker-compose -f docker-compose.test.yml up -d
@@ -25,7 +26,7 @@ restart:
 	make down
 	rm -rf ./back/dist
 	rm -rf ./front/dist
-	docker-compose -f docker-compose.yml up -d
+	docker-compose -f docker-compose.dev.yml up -d
 
 seed:
 	npm --prefix ./back run db:seed
@@ -36,18 +37,18 @@ pauloburro:
 	rm -rf ./package-lock.json
 
 clean:
-	docker-compose -f docker-compose.yml down -v --rmi all --remove-orphans
+	docker-compose -f docker-compose.dev.yml down -v --rmi all --remove-orphans
 	rm -rf ./back/node_modules ./back/dist
 	rm -rf ./front/node_modules ./front/dist
 
 prod_clean:
-	docker-compose -f docker-compose.prod.yml down -v --rmi all --remove-orphans
+	docker-compose -f docker-compose.yml down -v --rmi all --remove-orphans
 
 fclean: clean
 	docker system prune --volumes --all --force
 
 rebuild:
-	docker-compose -f docker-compose.yml build --no-cache
+	docker-compose -f docker-compose.dev.yml build --no-cache
 
 re: fclean all
 
