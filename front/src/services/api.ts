@@ -55,7 +55,7 @@ export class Api {
       );
       return response;
     } catch (err) {
-      console.log('catch', err);
+      // console.log('catch', err);
       return (err as AxiosError).response;
     }
   }
@@ -100,7 +100,7 @@ export class Api {
       );
       return response;
     } catch (err) {
-      console.log(err);
+      // console.log(err);
       return (err as AxiosError).response;
     }
   }
@@ -115,7 +115,7 @@ export class Api {
       );
       return response;
     } catch (err) {
-      console.log(err);
+      // console.log(err);
       return (err as AxiosError).response;
     }
   }

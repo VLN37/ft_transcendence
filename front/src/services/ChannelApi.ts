@@ -23,7 +23,7 @@ class ChannelApi {
       });
       return response;
     } catch (err) {
-      console.log('catch', err);
+      // console.log('catch', err);
       return (err as AxiosError).response;
     }
   }
@@ -56,7 +56,7 @@ class ChannelApi {
       );
       return response;
     } catch (err) {
-      console.log(err);
+      // console.log(err);
       return (err as AxiosError).response;
     }
   }
@@ -68,7 +68,7 @@ class ChannelApi {
       );
       return response;
     } catch (err) {
-      console.log(err);
+      // console.log(err);
       return (err as AxiosError).response;
     }
   }
@@ -83,7 +83,7 @@ class ChannelApi {
       );
       return response;
     } catch (err) {
-      console.log('catch', err);
+      // console.log('catch', err);
       return (err as AxiosError).response;
     }
   }
@@ -95,7 +95,7 @@ class ChannelApi {
       );
       return response;
     } catch (err) {
-      console.log('catch', err);
+      // console.log('catch', err);
       return (err as AxiosError).response;
     }
   }
@@ -107,7 +107,7 @@ class ChannelApi {
       );
       return response;
     } catch (err) {
-      console.log('catch', err);
+      // console.log('catch', err);
       return (err as AxiosError).response;
     }
   }
@@ -122,7 +122,7 @@ class ChannelApi {
       );
       return response;
     } catch (err) {
-      console.log('catch', err);
+      // console.log('catch', err);
       return (err as AxiosError).response;
     }
   }
@@ -137,7 +137,7 @@ class ChannelApi {
       );
       return response;
     } catch (err) {
-      console.log('catch', err);
+      // console.log('catch', err);
       return (err as AxiosError).response;
     }
   }

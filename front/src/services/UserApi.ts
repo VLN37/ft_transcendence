@@ -67,7 +67,7 @@ class UserApi {
       );
       return response;
     } catch (err) {
-      console.log(err);
+      // console.log(err);
       return (err as AxiosError).response;
     }
   }
@@ -93,7 +93,7 @@ class UserApi {
       );
       return response;
     } catch (err) {
-      console.log(err);
+      // console.log(err);
       return (err as AxiosError).response;
     }
   }
@@ -108,7 +108,7 @@ class UserApi {
       );
       return response;
     } catch (err) {
-      console.log(err);
+      // console.log(err);
       return (err as AxiosError).response;
     }
   }
