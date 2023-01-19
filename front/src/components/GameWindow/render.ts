@@ -164,3 +164,28 @@ export const drawPowerUp = (image: p5Types.Graphics, powerup: PowerUp) => {
   image.circle(powerup.x, powerup.y, 20);
   image.pop();
 };
+
+export const drawTimer = (
+  image: p5Types.Graphics,
+  finish: Date,
+  rules: GameRules,
+) => {
+  const now = Date.now();
+
+  const end = finish.getTime();
+
+  let remaining = 0;
+  if (now < end) remaining = (end - now) / 1000;
+  image.push();
+
+  if (remaining < 7) image.fill(250, 0, 0);
+  else image.fill(255, 150, 30);
+
+  image.stroke(200, 42, 10);
+  image.strokeWeight(4);
+  image.textSize(54);
+  const timeStr = remaining.toFixed(0).padStart(3, '0');
+  const width = image.textWidth(timeStr);
+  image.text(timeStr, rules.worldWidth / 2 - width / 2, 50);
+  image.pop();
+};
