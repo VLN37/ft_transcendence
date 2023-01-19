@@ -225,7 +225,6 @@ export function DmUsers() {
   const toast = useToast();
   const navigate = useNavigate();
   async function updateFriends(data: any) {
-    console.log(data);
     if (data.status == 'REQUEST') {
       if (!me.friend_requests.find((elem) => elem.id == data.user.id))
       me.friend_requests.push(data.user);
@@ -236,11 +235,13 @@ export function DmUsers() {
       me.friends.push(data.user);
     }
     else if (data.status == 'REMOVED') {
-      const index = me.friends.findIndex(e => e == data.user.id);
+      const index = me.friends.findIndex(e => e.id == data.user.id);
       if (index != -1) me.friends.splice(index, 1);
-    }
-    else {
-      console.log('unexpected outcome on updatefriends socket');
+      toast({
+        title: `${data.user.login_intra} removed you from his friend list`,
+        status: 'info',
+        description: ':(',
+      })
     }
     userStorage.saveUser(me);
     setMe({... me});
