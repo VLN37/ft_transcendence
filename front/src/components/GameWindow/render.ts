@@ -67,15 +67,18 @@ export const drawScores = (
   image: p5Types.Graphics,
   leftScore: number,
   rightScore: number,
+  rules: GameRules,
 ) => {
+  const middle = rules.worldWidth / 2;
+  const offset = 150;
   image.push();
   image.strokeWeight(4);
   image.textSize(32);
   image.fill(255, 255, 255);
   image.stroke(getPlayerColor(PlayerSide.LEFT, image));
-  image.text(leftScore.toString(), 10, 32);
+  image.text(leftScore.toString(), middle - offset, 40);
   image.stroke(getPlayerColor(PlayerSide.RIGHT, image));
-  image.text(rightScore.toString(), 10, 64);
+  image.text(rightScore.toString(), middle + offset, 40);
   image.pop();
 };
 
@@ -140,16 +143,18 @@ export const drawSpeedMeter = (
   image.fill(0);
   image.stroke(230, 150, 23);
   const ballSpeed = ball.velocity.mag();
-  const posX = 250;
-  const posY = 30;
-  const width = 250;
-  const height = 15;
+  const middle = rules.worldWidth / 2;
+  const posX = middle - 85;
+  const posY = 25;
+  const width = 170;
+  const height = 10;
   const speedRatio = ballSpeed / rules.ball.maxSpeed;
   image.rect(posX, posY, width, height);
   image.stroke(0);
+  // red-shift color when the ball has higher speeds
   image.fill(speedRatio * 255, 255 - speedRatio * 200, 13);
   image.rect(posX + 1, posY + 1, speedRatio * width, height - 2);
-  image.text(ballSpeed + 'px/s', posX + width + 10, posY + height);
+  image.text(ballSpeed.toFixed(2) + 'u/s', posX + width + 10, posY + height);
   image.pop();
 };
 
@@ -163,12 +168,13 @@ export const drawBallCoords = (image: p5Types.Graphics, ball: Ball) => {
 export const drawMiddleNet = (image: p5Types.Graphics, rules: GameRules) => {
   image.push();
   const middle = rules.worldWidth / 2;
-  image.stroke(255);
+  image.stroke(180);
+  image.strokeWeight(7);
   image.line(middle, 0, middle, rules.worldHeight);
-  const size = 150;
-  image.line(middle - size, 0, middle + size, 0);
-  image.line(middle - size, 0, middle + size, rules.worldHeight);
-  image.line(middle + size, 0, middle - size, rules.worldHeight);
+  // const size = 150;
+  // image.line(middle - size, 0, middle + size, 0);
+  // image.line(middle - size, 0, middle + size, rules.worldHeight);
+  // image.line(middle + size, 0, middle - size, rules.worldHeight);
   image.pop();
 };
 

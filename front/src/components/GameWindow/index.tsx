@@ -10,7 +10,7 @@ import {
   drawBallCoords,
   drawBallVelocity,
   drawMiddleNet,
-  drawPlayer,
+  drawPlayer as drawPaddle,
   drawPowerUp,
   drawScores,
   drawSpeedMeter,
@@ -49,10 +49,10 @@ export default (props: GameWindowProps) => {
 
   let ball = new Ball(rules);
 
-  let leftPlayer = new Paddle(PlayerSide.LEFT, rules);
-  let rightPlayer = new Paddle(PlayerSide.RIGHT, rules);
-  leftPlayer.setEnemy(rightPlayer);
-  rightPlayer.setEnemy(leftPlayer);
+  let leftPaddle = new Paddle(PlayerSide.LEFT, rules);
+  let rightPaddle = new Paddle(PlayerSide.RIGHT, rules);
+  leftPaddle.setEnemy(rightPaddle);
+  rightPaddle.setEnemy(leftPaddle);
   let leftPlayerScore = 0;
   let rightPlayerScore = 0;
 
@@ -72,10 +72,10 @@ export default (props: GameWindowProps) => {
     ball.velocity.x = state.ball.vel.x;
     ball.velocity.y = state.ball.vel.y;
 
-    leftPlayer.y = state.pl.y;
-    rightPlayer.y = state.pr.y;
-    leftPlayer.state = state.pl.state;
-    rightPlayer.state = state.pr.state;
+    leftPaddle.y = state.pl.y;
+    rightPaddle.y = state.pr.y;
+    leftPaddle.state = state.pl.state;
+    rightPaddle.state = state.pr.state;
     leftPlayerScore = state.pl.score;
     rightPlayerScore = state.pr.score;
   };
@@ -85,8 +85,8 @@ export default (props: GameWindowProps) => {
   };
 
   const getPaddle = (side: PlayerSide): Paddle => {
-    if (side === leftPlayer.side) return leftPlayer;
-    else return rightPlayer;
+    if (side === leftPaddle.side) return leftPaddle;
+    else return rightPaddle;
   };
 
   const handlePowerupCollected = (_powerup: PowerUp, side: PlayerSide) => {
@@ -132,16 +132,16 @@ export default (props: GameWindowProps) => {
   const updateWorld = () => {
     const deltaTime = image.deltaTime / 1000;
     ball.update(deltaTime);
-    leftPlayer.update(deltaTime);
-    rightPlayer.update(deltaTime);
+    leftPaddle.update(deltaTime);
+    rightPaddle.update(deltaTime);
   };
 
   const processGameLogic = () => {};
 
   const handleCollisions = () => {
     handleBallCollision(ball, rules);
-    handleBallLeftPaddleCollision(ball, leftPlayer, rules);
-    handleBallRightPaddleCollision(ball, rightPlayer, rules);
+    handleBallLeftPaddleCollision(ball, leftPaddle, rules);
+    handleBallRightPaddleCollision(ball, rightPaddle, rules);
   };
 
   const render = (p5: p5Types) => {
@@ -149,12 +149,12 @@ export default (props: GameWindowProps) => {
     drawMiddleNet(image, rules);
     drawBall(image, ball);
     // drawBallVelocity(image, ball);
-    drawPlayer(image, rightPlayer);
-    drawPlayer(image, leftPlayer);
-    drawScores(image, leftPlayerScore, rightPlayerScore);
+    drawPaddle(image, rightPaddle);
+    drawPaddle(image, leftPaddle);
+    drawScores(image, leftPlayerScore, rightPlayerScore, rules);
     drawSpeedMeter(image, ball, rules);
     resizeIfNecessary(p5);
-    printFps(image, ball);
+    // printFps(image, ball);
     if (currentPowerup) drawPowerUp(image, currentPowerup);
     // drawBallCoords(image, ball);
     p5.image(image, 0, 0, p5.width, p5.height);
