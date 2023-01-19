@@ -9,7 +9,8 @@ import {
   drawBall,
   drawMiddleNet,
   drawPaddle,
-  drawPlayer,
+  drawPlayerNickname,
+  drawPlayerProfilePicture,
   drawPowerUp,
   drawScores,
   drawSpeedMeter,
@@ -169,11 +170,12 @@ export default (props: GameWindowProps) => {
 
     const leftNick = props.matchInfo.left_player.profile.nickname;
     const rightNick = props.matchInfo.right_player.profile.nickname;
-    drawPlayer(image, leftPic, leftNick, PlayerSide.LEFT, rules);
-    drawPlayer(image, rightPic, rightNick, PlayerSide.RIGHT, rules);
-    // drawPlayer(image, props.matchInfo.right_player, PlayerSide.RIGHT);
+    drawPlayerProfilePicture(image, leftPic, PlayerSide.LEFT, rules);
+    drawPlayerProfilePicture(image, rightPic, PlayerSide.RIGHT, rules);
+
+    drawPlayerNickname(image, leftNick, PlayerSide.LEFT, rules);
+    drawPlayerNickname(image, rightNick, PlayerSide.RIGHT, rules);
     if (currentPowerup) drawPowerUp(image, currentPowerup);
-    // drawBallCoords(image, ball);
     p5.image(image, 0, 0, p5.width, p5.height);
   };
 
