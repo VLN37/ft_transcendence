@@ -16,6 +16,7 @@ import { UsersService } from 'src/users/users.service';
 import { validateWsJwt } from 'src/utils/functions/validateWsConnection';
 import { PlayerSide } from './game/model/Paddle';
 import { MatchManager } from './match-manager';
+import { MemoryMatch } from './model/MemoryMatch';
 import { PlayerCommand } from './model/PlayerCommands';
 import { PowerUp } from './model/PowerUps/PowerUp';
 
@@ -140,5 +141,13 @@ export class MatchManagerGateway implements OnGatewayInit, OnGatewayDisconnect {
         this.server.in(matchId).emit('powerup-collected', payload);
       },
     );
+
+    this.matchManager.setMatchStartSubscriber(matchId, (match: MemoryMatch) => {
+      this.server.in(matchId).emit('match-started', match);
+    });
+
+    this.matchManager.setMatchEndSubscriber(matchId, () => {
+      this.server.in(matchId).emit('match-finished');
+    });
   }
 }

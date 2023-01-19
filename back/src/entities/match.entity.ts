@@ -51,4 +51,16 @@ export class MatchEntity {
 
   @CreateDateColumn()
   created_at: Date;
+
+  @Column({
+    type: 'timestamp',
+    nullable: true,
+  })
+  starts_at: Date;
+
+  @Column({
+    type: 'timestamp',
+    nullable: true,
+  })
+  ends_at: Date;
 }

@@ -52,6 +52,8 @@ export class MemoryMatch {
   onScoreUpdate: () => void;
   onPowerUpSpawn: (powerUp: PowerUp) => void;
   onPowerUpCollected: (side: PlayerSide, powerUp: PowerUp) => void;
+  onMatchStart: (match: MemoryMatch) => void;
+  onMatchEnd: () => void;
 
   private lastUpdate: number; // for delta time
 
@@ -81,9 +83,15 @@ export class MemoryMatch {
 
   updateStage(stage: MatchStage) {
     this.stage = stage;
-    if (stage === 'ONGOING' && this.type === 'TURBO') {
-      this.setupNextPowerup();
-    } else if (stage === 'FINISHED' || stage === 'CANCELED') {
+    if (stage === 'ONGOING') {
+      if (this.type === 'TURBO') {
+        this.setupNextPowerup();
+      }
+      this.onMatchStart(this);
+    } else if (stage === 'FINISHED') {
+      this.onMatchEnd();
+      clearTimeout(this.getTimeoutReference?.call(this));
+    } else if (stage === 'CANCELED') {
       clearTimeout(this.getTimeoutReference?.call(this));
     }
     this.onStageChange?.call(this, stage);

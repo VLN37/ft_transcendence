@@ -9,6 +9,11 @@ const PLAYER_HEIGHT = 100; // world units per second
 export const UPDATES_PER_SECOND = 60;
 export const NOTIFICATIONS_PER_SECOND = 20;
 
+// times in seconds
+export const WAIT_CONNECTION_DURATION = 30;
+export const PREPARATION_TIME_DURATION = 5;
+export const MATCH_DURATION = 130;
+
 export type Tuple = {
   x: number;
   y: number;

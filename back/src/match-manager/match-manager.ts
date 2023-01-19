@@ -4,14 +4,17 @@ import { MatchEntity } from 'src/entities/match.entity';
 import { MatchType } from 'src/match-making/dto/MatchType';
 import { UserDto } from 'src/users/dto/user.dto';
 import { mmr } from 'src/utils/functions/mmr';
-import { minutes, seconds } from 'src/utils/functions/timeConvertion';
+import { seconds } from 'src/utils/functions/timeConvertion';
 import { Err, Ok, Result } from 'ts-results';
 import { Repository } from 'typeorm';
 import { PlayerSide } from './game/model/Paddle';
 import {
+  MATCH_DURATION,
   NOTIFICATIONS_PER_SECOND,
+  PREPARATION_TIME_DURATION,
   rules,
   UPDATES_PER_SECOND,
+  WAIT_CONNECTION_DURATION,
 } from './game/rules';
 import { MatchState } from './model/MatchState';
 import { MemoryMatch } from './model/MemoryMatch';
@@ -260,6 +263,18 @@ export class MatchManager {
     };
   }
 
+  setMatchStartSubscriber(
+    matchId: string,
+    callback: (match: MemoryMatch) => void,
+  ) {
+    const activeMatch = this.findMatchById(matchId);
+    activeMatch.match.onMatchStart = callback;
+  }
+  setMatchEndSubscriber(matchId: string, callback: () => void) {
+    const activeMatch = this.findMatchById(matchId);
+    activeMatch.match.onMatchEnd = callback;
+  }
+
   private startWaitingTime(activeMatch: ActiveMatch) {
     const onDoneWaiting = () => {
       this.logger.warn("canceling match: players didn't connect");
@@ -267,7 +282,10 @@ export class MatchManager {
     };
 
     // cancel match after 30 seconds if players don't connect
-    activeMatch.timers.waiting_timeout = setTimeout(onDoneWaiting, seconds(30));
+    activeMatch.timers.waiting_timeout = setTimeout(
+      onDoneWaiting,
+      seconds(WAIT_CONNECTION_DURATION),
+    );
   }
 
   private onBothPlayersConnected(match: ActiveMatch) {
@@ -286,8 +304,12 @@ export class MatchManager {
     activeMatch.match.updateStage('PREPARATION');
 
     const start_at = new Date();
-    start_at.setSeconds(start_at.getSeconds() + 15);
+    start_at.setSeconds(start_at.getSeconds() + PREPARATION_TIME_DURATION);
     activeMatch.match.starts_at = start_at;
+
+    const ends_at = new Date(start_at);
+    ends_at.setSeconds(ends_at.getSeconds() + MATCH_DURATION);
+    activeMatch.match.ends_at = ends_at;
 
     this.logger.debug('starting preparation time');
     this.logger.debug('match starts at ' + start_at.toISOString());
@@ -299,18 +321,13 @@ export class MatchManager {
     // start match in 15 seconds after both players connected
     activeMatch.timers.preparation = setTimeout(
       onPreparationTimeEnd,
-      seconds(5),
+      seconds(PREPARATION_TIME_DURATION),
     );
   }
 
   private startMatch(match: ActiveMatch) {
     match.match.updateStage('ONGOING');
     match.match.resetPositions();
-
-    const end_at = new Date();
-    end_at.setSeconds(end_at.getSeconds() + 130);
-    this.logger.debug('match finishes at ' + end_at.toISOString());
-    match.match.ends_at = end_at;
 
     match.timers.update = setInterval(() => {
       match.onMatchUpdate();
@@ -327,7 +344,7 @@ export class MatchManager {
       this.finishMatch(match);
     };
 
-    match.timers.ongoing = setTimeout(onMatchFinished, seconds(130));
+    match.timers.ongoing = setTimeout(onMatchFinished, seconds(MATCH_DURATION));
   }
 
   private finishMatch(match: ActiveMatch) {
