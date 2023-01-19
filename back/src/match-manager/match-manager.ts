@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Match } from 'src/entities/match.entity';
 import { MatchType } from 'src/match-making/dto/MatchType';
 import { UserDto } from 'src/users/dto/user.dto';
+import { mmr } from 'src/utils/functions/mmr';
 import { minutes, seconds } from 'src/utils/functions/timeConvertion';
 import { Err, Ok, Result } from 'ts-results';
 import { Repository } from 'typeorm';
@@ -71,9 +72,14 @@ export class MatchManager {
       this.logger.log('match entering the stage ' + stage);
       if (stage == 'FINISHED') {
         const result = memoryMatch.getResult();
-        if (result.draw) return;
-        result.winner.profile.wins++;
-        result.loser.profile.losses++;
+        if (!result.draw) {
+          result.winner.profile.wins++;
+          result.loser.profile.losses++;
+          const winnermmr = result.winner.profile.mmr;
+          const losermmr = result.loser.profile.mmr;
+          result.winner.profile.mmr = mmr(winnermmr, losermmr, 'WIN');
+          result.loser.profile.mmr = mmr(losermmr, winnermmr, 'LOSS');
+        }
       }
       this.matchRepository.save(memoryMatch).then((retMatch: Match) => {
         retMatch.created_at = match.created_at;
@@ -301,7 +307,7 @@ export class MatchManager {
     match.match.resetPositions();
 
     const end_at = new Date();
-    end_at.setSeconds(end_at.getSeconds() + 150);
+    end_at.setSeconds(end_at.getSeconds() + 120);
     this.logger.debug('match finishes at ' + end_at.toISOString());
     match.match.ends_at = end_at;
 
@@ -320,7 +326,7 @@ export class MatchManager {
       this.finishMatch(match);
     };
 
-    match.timers.ongoing = setTimeout(onMatchFinished, seconds(150));
+    match.timers.ongoing = setTimeout(onMatchFinished, seconds(120));
   }
 
   private finishMatch(match: ActiveMatch) {

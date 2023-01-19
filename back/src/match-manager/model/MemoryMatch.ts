@@ -147,6 +147,8 @@ export class MemoryMatch {
     if (this.left_player_score === this.right_player_score)
       return {
         draw: true,
+        winner: this.left_player,
+        loser: this.right_player,
       };
 
     if (this.left_player_score > this.right_player_score) {

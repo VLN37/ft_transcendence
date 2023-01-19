@@ -51,7 +51,7 @@ export class Profile {
   losses: number;
 
   @Column({
-    default: 0,
+    default: 1000,
   })
   mmr: number;
 }
