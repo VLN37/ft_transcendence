@@ -52,8 +52,18 @@ export default function MatchPage() {
     loadGameRules();
   }, []);
 
+  const images = [
+    '/backgrounds/car-on-rain.jpg',
+    '/backgrounds/bappie-L_rNhnpWkD0-unsplash.jpg',
+  ];
+  const rand = Math.floor(Math.random() * 2);
+
   return (
-    <div>
+    <div
+      style={{
+        backgroundImage: `url(${images[rand]})`,
+      }}
+    >
       {(rules && gameApi && matchInfo && (
         <GameWindow
           gameApi={gameApi}
