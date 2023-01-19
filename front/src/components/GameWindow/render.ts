@@ -172,7 +172,7 @@ export const drawTimer = (
 ) => {
   const now = Date.now();
 
-  const end = finish.getTime();
+  const end = new Date(finish).getTime();
 
   let remaining = 0;
   if (now < end) remaining = (end - now) / 1000;
