@@ -14,6 +14,7 @@ import {
   drawPowerUp,
   drawScores,
   drawSpeedMeter,
+  drawTimer,
 } from './render';
 import {
   handleBallCollision,
@@ -27,6 +28,7 @@ import { PowerUp } from '../../game/model/PowerUp';
 import { applyPowerUp } from '../../game/logic';
 import { useEffect } from 'react';
 import { Match } from '../../models/Match';
+import { match } from 'assert';
 
 export type GameWindowProps = {
   gameApi: GameApi;
@@ -107,10 +109,21 @@ export default (props: GameWindowProps) => {
     applyPowerUp(paddle, _powerup, rules);
     currentPowerup = null;
   };
+
+  const handleMatchStart = (match: Match) => {
+    props.matchInfo.ends_at = match.ends_at;
+    console.log('handling match start');
+  };
+  const handleMatchEnd = () => {
+    console.log('handling match finish');
+  };
+
   useEffect(() => {
     gameApi.setOnMatchTickListener(listenGameState);
     gameApi.setOnPowerUpSpawnListener(placePowerUp);
     gameApi.setOnPowerUpCollectedListener(handlePowerupCollected);
+    gameApi.setOnMatchStartListener(handleMatchStart);
+    gameApi.setOnMatchFinishListener(handlePowerupCollected);
     return () => gameApi.unsubscribeAllListeners();
   }, []);
 
@@ -157,6 +170,9 @@ export default (props: GameWindowProps) => {
     handleBallRightPaddleCollision(ball, rightPaddle, rules);
   };
 
+  const finish = new Date();
+  finish.setSeconds(finish.getSeconds() + 150);
+
   const render = (p5: p5Types) => {
     image.background(0);
     drawMiddleNet(image, rules);
@@ -175,6 +191,8 @@ export default (props: GameWindowProps) => {
 
     drawPlayerNickname(image, leftNick, PlayerSide.LEFT, rules);
     drawPlayerNickname(image, rightNick, PlayerSide.RIGHT, rules);
+    if (props.matchInfo.ends_at)
+      drawTimer(image, props.matchInfo.ends_at, rules);
     if (currentPowerup) drawPowerUp(image, currentPowerup);
     p5.image(image, 0, 0, p5.width, p5.height);
   };

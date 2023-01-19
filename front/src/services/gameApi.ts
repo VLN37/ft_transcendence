@@ -87,6 +87,19 @@ export class GameApi {
     );
   }
 
+  setOnMatchStartListener(callback: (match: Match) => void) {
+    this.matchSocket?.on('match-started', (match: Match) => {
+      console.log('match started', match);
+      callback(match);
+    });
+  }
+  setOnMatchFinishListener(callback: Function) {
+    this.matchSocket?.on('match-finished', () => {
+      console.log('match finished');
+      callback();
+    });
+  }
+
   unsubscribeAllListeners() {
     // console.log('unsubscribing from match');
 
