@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Match } from 'src/entities/match.entity';
+import { MatchEntity } from 'src/entities/match.entity';
 import { UserDto } from 'src/users/dto/user.dto';
 import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
@@ -37,13 +37,13 @@ export class MatchManagerService {
   }
 
   constructor(
-    @InjectRepository(Match)
-    private matchRepository: Repository<Match>,
+    @InjectRepository(MatchEntity)
+    private matchRepository: Repository<MatchEntity>,
     private usersService: UsersService,
     private matchManager: MatchManager,
   ) {}
 
-  async getActiveMatchInfo(matchId: string): Promise<Match> {
+  async getActiveMatchInfo(matchId: string): Promise<MatchEntity> {
     return this.matchRepository.findOne({
       where: {
         id: matchId,
@@ -52,7 +52,7 @@ export class MatchManagerService {
     });
   }
 
-  async getLiveMatches(qty: number): Promise<Match[]> {
+  async getLiveMatches(qty: number): Promise<MatchEntity[]> {
     let finishedMatches = [];
     const liveMatches = await this.matchRepository.find({
       where: [{ stage: 'ONGOING' }, { stage: 'FINISHED' }],
@@ -65,7 +65,7 @@ export class MatchManagerService {
     return matches;
   }
 
-  async getUserMatches(id: number, qty: number): Promise<Match[]> {
+  async getUserMatches(id: number, qty: number): Promise<MatchEntity[]> {
     const matches = await this.matchRepository.find({
       where: [
         {

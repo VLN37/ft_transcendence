@@ -1,11 +1,11 @@
 import { Profile } from './src/entities/profile.entity';
 import { User } from './src/entities/user.entity';
-import { DataSource } from 'typeorm'
+import { DataSource } from 'typeorm';
 import { Channel } from './src/entities/channel.entity';
 import { BannedUsers } from './src/entities/channel.banned.entity';
 import { ChannelMessages } from './src/entities/channel_messages.entity';
 import { DirectMessages } from './src/entities/direct_messages.entity';
-import { Match } from './src/entities/match.entity';
+import { MatchEntity } from './src/entities/match.entity';
 
 const dbHost = process.env.DB_HOST;
 const user = process.env.POSTGRES_USER;
@@ -27,6 +27,6 @@ export default new DataSource({
     BannedUsers,
     ChannelMessages,
     DirectMessages,
-    Match,
+    MatchEntity,
   ],
 });

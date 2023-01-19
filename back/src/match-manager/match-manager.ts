@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Match } from 'src/entities/match.entity';
+import { MatchEntity } from 'src/entities/match.entity';
 import { MatchType } from 'src/match-making/dto/MatchType';
 import { UserDto } from 'src/users/dto/user.dto';
 import { mmr } from 'src/utils/functions/mmr';
@@ -41,14 +41,15 @@ export class MatchManager {
 
   private activeMatches: ActiveMatch[] = [];
   private connectedPlayers = {};
-  private notifyService: (event: string, match: Match) => void | null = null;
+  private notifyService: (event: string, match: MatchEntity) => void | null =
+    null;
 
   constructor(
-    @InjectRepository(Match)
-    private readonly matchRepository: Repository<Match>,
+    @InjectRepository(MatchEntity)
+    private readonly matchRepository: Repository<MatchEntity>,
   ) {}
 
-  setNotify(callback: (event: string, match: Match) => void) {
+  setNotify(callback: (event: string, match: MatchEntity) => void) {
     this.notifyService = callback;
   }
 
@@ -81,7 +82,7 @@ export class MatchManager {
           result.loser.profile.mmr = mmr(losermmr, winnermmr, 'LOSS');
         }
       }
-      this.matchRepository.save(memoryMatch).then((retMatch: Match) => {
+      this.matchRepository.save(memoryMatch).then((retMatch: MatchEntity) => {
         retMatch.created_at = match.created_at;
         if (stage == 'ONGOING') this.notifyService('created', retMatch);
         if (stage == 'FINISHED') this.notifyService('updated', retMatch);
@@ -98,7 +99,7 @@ export class MatchManager {
     };
 
     memoryMatch.onScoreUpdate = () => {
-      this.matchRepository.save(memoryMatch).then((retMatch: Match) => {
+      this.matchRepository.save(memoryMatch).then((retMatch: MatchEntity) => {
         retMatch.created_at = match.created_at;
         this.notifyService('updated', retMatch);
       });

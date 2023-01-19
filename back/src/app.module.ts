@@ -17,7 +17,7 @@ import { Channel } from './entities/channel.entity';
 import { ChannelsModule } from './channels/channels.module';
 import { MatchMakingModule } from './match-making/match-making.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
-import { Match } from './entities/match.entity';
+import { MatchEntity } from './entities/match.entity';
 import { ChannelMessages } from './entities/channel_messages.entity';
 import { DirectMessagesController } from './direct-message/direct-messages.controller';
 import { DirectMessagesModule } from './direct-message/direct-messages.module';
@@ -58,7 +58,7 @@ declare global {
         Profile,
         Channel,
         ChannelMessages,
-        Match,
+        MatchEntity,
         DirectMessages,
         BannedUsers,
       ],

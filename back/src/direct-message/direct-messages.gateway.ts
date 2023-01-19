@@ -22,7 +22,7 @@ import { UsersService } from 'src/users/users.service';
 import { ChannelsService } from 'src/channels/channels.service';
 import { ChannelDto } from 'src/channels/dto/channel.dto';
 import { MatchManagerService } from 'src/match-manager/match-manager.service';
-import { Match } from 'src/entities/match.entity';
+import { MatchEntity } from 'src/entities/match.entity';
 import { MatchManager } from 'src/match-manager/match-manager';
 import { FriendService } from 'src/users/friends/friends.service';
 
@@ -155,7 +155,7 @@ export class DirectMessagesGateway
     });
   }
 
-  pingMatchUpdate(event: string, match: Match) {
+  pingMatchUpdate(event: string, match: MatchEntity) {
     this.server.emit('match_status', {
       event,
       match,

@@ -11,7 +11,7 @@ import {
 import { User } from './user.entity';
 
 @Entity({ name: 'matches' })
-export class Match {
+export class MatchEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
