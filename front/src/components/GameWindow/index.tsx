@@ -67,6 +67,8 @@ export default (props: GameWindowProps) => {
   let leftPic: p5Types.Image;
   let rightPic: p5Types.Image;
 
+  let finishedBecause: string | undefined;
+
   let currentPowerup: PowerUp | null;
 
   const preload = (p5: p5Types) => {
@@ -128,12 +130,16 @@ export default (props: GameWindowProps) => {
     console.log('handling match start');
   };
 
-  const handleMatchEnd = () => {
+  const handleMatchEnd = (match: Match, reason: string) => {
     gameApi.unsubscribeAllListeners();
     ball = new Ball(rules);
 
     leftPaddle = new Paddle(PlayerSide.LEFT, rules);
     rightPaddle = new Paddle(PlayerSide.RIGHT, rules);
+    props.matchInfo.stage = 'FINISHED';
+    leftPlayerScore = match.left_player_score;
+    rightPlayerScore = match.right_player_score;
+    finishedBecause = reason;
     console.log('handling match finish');
   };
 
@@ -219,10 +225,13 @@ export default (props: GameWindowProps) => {
 
     drawPlayerNickname(image, leftNick, PlayerSide.LEFT, rules);
     drawPlayerNickname(image, rightNick, PlayerSide.RIGHT, rules);
-    if (props.matchInfo.ends_at) {
+    if (props.matchInfo.stage == 'FINISHED') {
+      if (finishedBecause === 'abandon')
+        drawCallToAction(image, 'Oponent left!', rules);
+      else drawCallToAction(image, 'Game Over!', rules);
+    } else if (props.matchInfo.ends_at) {
       const finish = new Date(props.matchInfo.ends_at);
       if (new Date() < finish) drawTimer(image, props.matchInfo.ends_at, rules);
-      else drawCallToAction(image, 'Game Over!', rules);
     } else {
       drawCallToAction(image, 'Get ready!', rules);
     }

@@ -37,6 +37,7 @@ export default function MatchPage() {
         toast({
           title: "Couldn't find match",
           status: 'warning',
+          duration: 3000,
           description: 'Maybe it never happened',
         });
         navigate('/');

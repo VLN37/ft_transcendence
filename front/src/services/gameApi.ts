@@ -99,8 +99,8 @@ export class GameApi {
   }
 
   setOnMatchFinishListener(callback: Function) {
-    this.matchSocket?.on('match-finished', () => {
-      callback();
+    this.matchSocket?.on('match-finished', (match: Match, reason: string) => {
+      callback(match, reason);
     });
   }
 
