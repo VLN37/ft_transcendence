@@ -83,6 +83,11 @@ export class MatchMakingGateway
         setTimeout(notifyPlayers, 200);
       }
     } catch (e) {
+      this.logger.error('socket exception caught', {e});
+      this.server.to(e.response.recipient).emit('mm-failed', {
+        message: e.response.message,
+        match: e.response.match,
+      });
       throw new WsException(e);
     }
   }

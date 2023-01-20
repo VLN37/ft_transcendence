@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { MatchManager } from 'src/match-manager/match-manager';
 import { MemoryMatch } from 'src/match-manager/model/MemoryMatch';
 import { UserDto } from 'src/users/dto/user.dto';
@@ -30,8 +30,14 @@ export class MatchMakingService {
   // PERF: we could save the queue the user is on in the database for better dequeueing
   enqueue(user: UserDto, matchType: MatchType) {
     if (this.matchManager.isPlayerPlaying(user)) {
-      this.logger.log('User is already playing!');
-      throw new Error('User is already playing!');
+      const match = this.matchManager.getActiveMatches().find((i) => {
+        return (i.left_player.id == user.id || i.right_player.id == user.id)
+      }).id;
+      throw new BadRequestException({
+        message: 'You are already playing!',
+        match: match,
+        recipient: user.login_intra,
+      });
     }
     const queue = this.memoryQueue[matchType];
 
@@ -39,7 +45,7 @@ export class MatchMakingService {
       throw new Error('User is already in a queue');
     }
     this.logger.log(
-      `user ${user.login_intra} is entering the ${matchType} match-making queue`,
+      `user ${user.login_intra} entered the ${matchType} match-making queue`,
     );
 
     queue.push(user);
