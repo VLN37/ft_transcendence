@@ -20,6 +20,7 @@ export class ProfileService {
   async create(profile: ProfileDto) {
     if (!profile) return null;
     if (!profile.avatar_path) profile.avatar_path = '/avatars/gatinho.jpeg';
+    profile.mmr = 1000;
     const newProfile = await this.profileRepository
       .save(profile)
       .catch((err: any) => {
