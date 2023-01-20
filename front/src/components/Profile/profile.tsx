@@ -46,13 +46,14 @@ function InputFileUpload(props: any) {
     const status = response.status == 201 ? 'success' : 'error';
     let message = response.status == 201 ? '' : response.data.message;
     if (!message) message = 'File too large';
-    if (response.status == 201) {
+    if (response.status != 201) {
       userApi.getUser('v2/me').then((user) => {
         const link =
           process.env.REACT_APP_BACK_HOSTNAME + user.profile.avatar_path;
         userStorage.saveUser(user);
         localStorage.setItem('avatar', link);
         props.setAvatar(link);
+        props.setAvatarProfile(link);
       });
     }
     toast({
@@ -125,7 +126,7 @@ export function Profile(props: {
 }) {
   const user: User = userStorage.getUser() || emptyUser();
   const [nickname, setNickname] = useState<string>(user.profile.nickname);
-  const [avatar, setAvatar] = useState<string>(
+  const [avatar, setAvatarProfile] = useState<string>(
     localStorage.getItem('avatar') || '',
   );
 
@@ -167,7 +168,10 @@ export function Profile(props: {
                 <GridItem colStart={1}>
                   <Stack spacing={4}>
                     <NicknameUpdate user={user} setNickname={setNickname} />
-                    <InputFileUpload setAvatar={props.setAvatar} />
+                    <InputFileUpload
+                      setAvatar={props.setAvatar}
+                      setAvatarProfile={setAvatarProfile}
+                    />
                   </Stack>
                 </GridItem>
                 <TwoFA></TwoFA>
