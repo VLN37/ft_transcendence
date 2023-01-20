@@ -20,7 +20,7 @@ export class Profile {
 
   @Column({
     type: 'varchar',
-    length: 50,
+    length: 10,
     nullable: false,
   })
   nickname: string;
