@@ -7,6 +7,7 @@ import { GameApi } from '../../services/gameApi';
 import { GameRules } from '../../game/model/GameRules';
 import {
   drawBall,
+  drawCallToAction,
   drawMiddleNet,
   drawPaddle,
   drawPlayerNickname,
@@ -28,12 +29,17 @@ import { PowerUp } from '../../game/model/PowerUp';
 import { applyPowerUp } from '../../game/logic';
 import { useEffect } from 'react';
 import { Match } from '../../models/Match';
+import userStorage from '../../services/userStorage';
+import { User } from '../../models/User';
 
 export type GameWindowProps = {
   gameApi: GameApi;
   matchInfo: Match;
-  playerSide: PlayerSide | null;
   rules: GameRules;
+};
+
+const isPlayer = (user: User, match: Match) => {
+  return user.id === match.left_player.id || user.id === match.right_player.id;
 };
 
 export default (props: GameWindowProps) => {
@@ -109,21 +115,38 @@ export default (props: GameWindowProps) => {
     currentPowerup = null;
   };
 
+  const handleMatchPreparation = (match: Match) => {
+    console.log('match starts at: ', match.starts_at);
+    props.matchInfo.starts_at = match.starts_at;
+    props.matchInfo.stage = 'PREPARATION';
+    console.log('handling match preparation');
+  };
+
   const handleMatchStart = (match: Match) => {
     props.matchInfo.ends_at = match.ends_at;
     props.matchInfo.stage = 'ONGOING';
     console.log('handling match start');
   };
+
   const handleMatchEnd = () => {
     console.log('handling match finish');
   };
+
+  const user = userStorage.getUser()!;
 
   useEffect(() => {
     gameApi.setOnMatchTickListener(listenGameState);
     gameApi.setOnPowerUpSpawnListener(placePowerUp);
     gameApi.setOnPowerUpCollectedListener(handlePowerupCollected);
     gameApi.setOnMatchStartListener(handleMatchStart);
-    gameApi.setOnMatchFinishListener(handlePowerupCollected);
+    gameApi.setOnMatchFinishListener(handleMatchEnd);
+    gameApi.setOnMatchPreparationTimeListener(handleMatchPreparation);
+
+    if (isPlayer(user, props.matchInfo)) {
+      gameApi.connectAsPlayer();
+    } else {
+      gameApi.connectAsSpectator();
+    }
     return () => gameApi.unsubscribeAllListeners();
   }, []);
 
@@ -191,8 +214,11 @@ export default (props: GameWindowProps) => {
 
     drawPlayerNickname(image, leftNick, PlayerSide.LEFT, rules);
     drawPlayerNickname(image, rightNick, PlayerSide.RIGHT, rules);
-    if (props.matchInfo.ends_at)
+    if (props.matchInfo.ends_at) {
       drawTimer(image, props.matchInfo.ends_at, rules);
+    } else {
+      drawCallToAction(image, 'Get ready!', rules);
+    }
     if (currentPowerup) drawPowerUp(image, currentPowerup);
     p5.image(image, 0, 0, p5.width, p5.height);
   };
@@ -211,13 +237,13 @@ export default (props: GameWindowProps) => {
 
   // TODO: don't send commands if the match haven't started yet
   const onKeyPress = (p5: p5Types) => {
-    if (props.playerSide) {
+    if (isPlayer(user, props.matchInfo)) {
       handleKeyPress(p5, gameApi);
     }
   };
 
   const onKeyRelease = (p5: p5Types) => {
-    if (props.playerSide) {
+    if (isPlayer(user, props.matchInfo)) {
       handleKeyRelease(p5, gameApi);
     }
   };

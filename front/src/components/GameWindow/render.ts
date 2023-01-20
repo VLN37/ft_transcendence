@@ -189,3 +189,18 @@ export const drawTimer = (
   image.text(timeStr, rules.worldWidth / 2 - width / 2, 50);
   image.pop();
 };
+
+export const drawCallToAction = (
+  image: p5Types.Graphics,
+  text: string,
+  rules: GameRules,
+) => {
+  image.push();
+  image.textSize(80);
+  const centerX = rules.worldWidth / 2;
+  const centerY = rules.worldHeight / 2;
+  const sizeX = image.textWidth(text);
+  const sizeY = image.textSize();
+  image.text(text, centerX - sizeX / 2, centerY - sizeY / 2);
+  image.pop();
+};

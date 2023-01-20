@@ -86,11 +86,18 @@ export class GameApi {
     );
   }
 
+  setOnMatchPreparationTimeListener(callback: (match: Match) => void) {
+    this.matchSocket?.on('match-preparation', (match: Match) => {
+      callback(match);
+    });
+  }
+
   setOnMatchStartListener(callback: (match: Match) => void) {
     this.matchSocket?.on('match-started', (match: Match) => {
       callback(match);
     });
   }
+
   setOnMatchFinishListener(callback: Function) {
     this.matchSocket?.on('match-finished', () => {
       callback();

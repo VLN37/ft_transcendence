@@ -301,8 +301,6 @@ export class MatchManager {
   }
 
   private startPreparationTime(activeMatch: ActiveMatch) {
-    activeMatch.match.updateStage('PREPARATION');
-
     const start_at = new Date();
     start_at.setSeconds(start_at.getSeconds() + PREPARATION_TIME_DURATION);
     activeMatch.match.starts_at = start_at;
@@ -310,6 +308,8 @@ export class MatchManager {
     const ends_at = new Date(start_at);
     ends_at.setSeconds(ends_at.getSeconds() + MATCH_DURATION);
     activeMatch.match.ends_at = ends_at;
+
+    activeMatch.match.updateStage('PREPARATION');
 
     this.logger.debug('starting preparation time');
     this.logger.debug('match starts at ' + start_at.toISOString());
