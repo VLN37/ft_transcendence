@@ -63,16 +63,16 @@ export class ChannelsGetAllInterceptor implements NestInterceptor {
       .id;
     return next.handle().pipe(
       map((data) => {
-        //   data.some((channel, i) => {
-        //     if (
-        //       channel.owner_id != id &&
-        //       channel.type == 'PRIVATE' &&
-        //       !channel.allowed_users.find((user) => user.id == id)
-        //     )
-        //       delete data[i];
-        //   });
+        data.some((channel, i) => {
+          if (
+            channel.owner_id != id &&
+            channel.type == 'PRIVATE' &&
+            !channel.allowed_users.find((user) => user.id == id)
+          )
+            delete data[i];
+        });
 
-        //   data = data.filter((channel) => channel);
+        data = data.filter((channel) => channel);
 
         data.map((channel) => {
           delete channel.password;
