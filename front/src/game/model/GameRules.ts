@@ -28,6 +28,7 @@ export type GameRules = {
     rightLine: number;
     speed: number;
   };
+  matchDuration: number;
   topCollisionEdge: number;
   bottomCollisionEdge: number;
   leftCollisionEdge: number;

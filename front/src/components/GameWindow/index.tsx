@@ -125,7 +125,9 @@ export default (props: GameWindowProps) => {
   };
 
   const handleMatchStart = (match: Match) => {
-    props.matchInfo.ends_at = match.ends_at;
+    const ends_at = new Date();
+    ends_at.setSeconds(ends_at.getSeconds() + rules.matchDuration);
+    props.matchInfo.ends_at = ends_at;
     props.matchInfo.stage = 'ONGOING';
     // console.log('handling match start');
   };

@@ -47,6 +47,7 @@ export type GameRules = {
     minY: number;
     maxY: number;
   };
+  matchDuration: number;
   powerUpCollisionRange: number;
   topCollisionEdge: number;
   bottomCollisionEdge: number;
@@ -86,6 +87,7 @@ export const rules: GameRules = {
     minY: 50,
     maxY: WORLD_HEIGHT - 50,
   },
+  matchDuration: MATCH_DURATION,
   powerUpCollisionRange: BALL_SIZE,
   topCollisionEdge: BALL_SIZE / 2,
   bottomCollisionEdge: WORLD_HEIGHT - BALL_SIZE / 2,
