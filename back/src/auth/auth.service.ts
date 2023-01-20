@@ -70,7 +70,7 @@ export class AuthService {
           status: 'ONLINE',
           wins: 0,
           losses: 0,
-          mmr: 0,
+          mmr: 1000,
         },
       });
     }
