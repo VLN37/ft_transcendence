@@ -231,7 +231,7 @@ export class MemoryMatch {
   private getRandomAvailablePowerUp(powerups: PowerUp[]) {
     const size = powerups.length * 10;
     const index = ~~((Math.random() * size) / 10);
-    console.log('returning powerup ' + index);
+    // console.log('returning powerup ' + index);
     return powerups[index];
   }
 
