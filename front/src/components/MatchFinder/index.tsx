@@ -28,6 +28,7 @@ import React, { useEffect } from 'react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { mmApi } from '../../services/api_index';
+import MMapi from '../../services/MMapi';
 
 import NeonButton from '../NeonButton';
 import Instructions from './gameInstructions';
@@ -39,8 +40,8 @@ type MatchConvocationState = 'ACCEPTED' | 'DECLINED' | undefined;
 
 export default function MatchFinder() {
   const toastId = 'match-finder-error-toast';
-  const toast = useToast();
 
+  const toast = useToast();
   const navigate = useNavigate();
 
   const [matchType, setMatchType] = useState<MatchType>('TURBO');
@@ -63,6 +64,19 @@ export default function MatchFinder() {
     onOpen: openAlert,
     onClose: closeAlert,
   } = useDisclosure();
+
+  useEffect(() => {
+    MMapi.subscribeMatchMakingError((data: any) => {
+      toast({
+        title: data.message,
+        status: 'warning',
+        description: 'redirecting you now',
+        duration: 1000
+      })
+      navigate(`/match/${data.match}`);
+    });
+    return () => MMapi.unsubscribeMatchMakingError();
+  })
 
   const handleMatchFinderClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();

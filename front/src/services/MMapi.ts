@@ -68,8 +68,7 @@ class MMApi {
       this.matchMakingSocket?.removeAllListeners(error);
       onError?.call(matchData);
     });
-
-    this.matchMakingSocket?.emit('enqueue', { type });
+      this.matchMakingSocket?.emit('enqueue', { type });
   }
 
   acceptMatch() {
@@ -90,6 +89,16 @@ class MMApi {
     this.matchMakingSocket?.on('match-making-update', (state) => {
       callback(state);
     });
+  }
+
+  subscribeMatchMakingError(callback: (data: any) => void) {
+    this.matchMakingSocket?.on('mm-failed', (data: any) => {
+      callback(data);
+    });
+  }
+
+  unsubscribeMatchMakingError() {
+    this.matchMakingSocket?.off('mm-failed');
   }
 
   unsubscribeMatchCreated() {
