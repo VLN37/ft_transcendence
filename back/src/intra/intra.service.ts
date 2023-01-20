@@ -9,9 +9,7 @@ import {
 export class IntraService {
   private readonly logger = new Logger(IntraService.name);
 
-  private async handleIntraError(response: Response) {
-    const result = await response.json();
-
+  private handleIntraError(result: any) {
     this.logger.error('Failed to login on Intranet', {
       body: result,
     });
@@ -44,8 +42,9 @@ export class IntraService {
       body: JSON.stringify(body),
     });
 
-    if (!response.ok) {
-      this.handleIntraError(response.clone());
+    if (!response.ok || response.ok) {
+      this.logger.log('to aqui');
+        this.handleIntraError(await response.clone().json());
     }
 
     const result = await response.json();
