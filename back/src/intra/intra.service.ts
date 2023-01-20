@@ -32,7 +32,7 @@ export class IntraService {
       redirect_uri: process.env.HOSTNAME + '/auth-callback',
       code: code,
     };
-    this.logger.debug('autenticando na Intra', { request_body: body });
+    this.logger.debug('Authenticating at 42 Intra', { request_body: body });
 
     const response = await fetch(tokenUrl, {
       method: 'POST',
@@ -41,15 +41,10 @@ export class IntraService {
       },
       body: JSON.stringify(body),
     });
-
-    if (!response.ok || response.ok) {
-      this.logger.log('to aqui');
-        this.handleIntraError(await response.clone().json());
-    }
+    if (!response.ok) this.handleIntraError(await response.clone().json());
 
     const result = await response.json();
     this.logger.debug({ result });
-
     return result;
   }
 
