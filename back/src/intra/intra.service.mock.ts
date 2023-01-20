@@ -56,7 +56,7 @@ export class IntraServiceMock {
         avatar_path: '/avatars/wleite.jpeg',
         losses: 40,
         wins: 0,
-        mmr: 0,
+        mmr: 1000,
         status: 'ONLINE',
         name: 'Welton',
         nickname: 'wleite',

@@ -40,5 +40,5 @@ export class ProfileDto {
 
   @IsNumber()
   @IsOptional()
-  mmr: number = 0;
+  mmr: number = 1000;
 }

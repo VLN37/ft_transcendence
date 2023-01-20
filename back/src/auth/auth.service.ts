@@ -38,7 +38,7 @@ export class AuthService {
         status: 'OFFLINE',
         wins: 0,
         losses: 0,
-        mmr: 0,
+        mmr: 1000,
       },
     };
     return newUser;
