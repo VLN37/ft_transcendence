@@ -149,9 +149,11 @@ function UserDmMenu(props: {
         <MenuList>
           <MenuItem onClick={openProfile}>view profile</MenuItem>
           <MenuItem onClick={openHistory}>view match history</MenuItem>
-          <MenuItem onClick={() => navigate(`/dm?user=${props.user.id}`)}>
-            send message
-          </MenuItem>
+          {isMyself ? null : (
+            <MenuItem onClick={() => navigate(`/dm?user=${props.user.id}`)}>
+              send message
+            </MenuItem>
+          )}
           <MenuItem onClick={gameInvite}>invite to game</MenuItem>
           <MenuItem onClick={removeFriend}>remove friend</MenuItem>
           {isMyself ? null : isBlocked ? (
