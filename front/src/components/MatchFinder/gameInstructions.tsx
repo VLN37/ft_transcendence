@@ -1,3 +1,4 @@
+import { ArrowDownIcon, ArrowUpIcon } from '@chakra-ui/icons';
 import { Text, UnorderedList, ListItem } from '@chakra-ui/react';
 
 export default function Instructions() {
@@ -8,7 +9,10 @@ export default function Instructions() {
       <Text align={'center'} as="b">
         Commands
       </Text>
-      <Text>Control pong with W and S</Text>
+      <Text>
+        Control pong with W and S or <ArrowUpIcon></ArrowUpIcon>
+        and <ArrowDownIcon></ArrowDownIcon>
+      </Text>
       <br />
       <Text align={'center'} as="b">
         Game types
@@ -17,7 +21,7 @@ export default function Instructions() {
       <Text>Turbo - faster, extra power-ups</Text>
       <br />
       <Text align={'center'} as="b">
-        Power-ups:
+        Power-ups
       </Text>
       <UnorderedList>
         <ListItem marginLeft={'1rem'}>inverted opponent controls</ListItem>

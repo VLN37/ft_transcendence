@@ -83,7 +83,7 @@ function UserComp(user: User) {
         >
           <Flex flexDirection={'column'} padding={'1rem'} gap={1}>
             <Text as={'b'} size={'lg'}>
-              Rank: {rank}
+              Rating: {user.profile.mmr}
             </Text>
             <Text as={'b'} size={'lg'}>
               Victories: {user.profile.wins}
