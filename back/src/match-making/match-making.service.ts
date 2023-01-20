@@ -29,6 +29,10 @@ export class MatchMakingService {
 
   // PERF: we could save the queue the user is on in the database for better dequeueing
   enqueue(user: UserDto, matchType: MatchType) {
+    if (this.matchManager.isPlayerPlaying(user)) {
+      this.logger.log('User is already playing!');
+      throw new Error('User is already playing!');
+    }
     const queue = this.memoryQueue[matchType];
 
     if (queue.some((enqueuedUser) => enqueuedUser.id === user.id)) {

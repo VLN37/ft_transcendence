@@ -43,7 +43,9 @@ export class MatchManager {
   private readonly logger = new Logger('Match Manager');
 
   private activeMatches: ActiveMatch[] = [];
-  private connectedPlayers = {};
+  private connectedPlayers: {
+    [key: number]: string;
+  } = {};
   private notifyService: (event: string, match: MatchEntity) => void | null =
     null;
 
@@ -54,6 +56,10 @@ export class MatchManager {
 
   setNotify(callback: (event: string, match: MatchEntity) => void) {
     this.notifyService = callback;
+  }
+
+  isPlayerPlaying(user: UserDto): boolean {
+    return !!this.connectedPlayers[user.id];
   }
 
   async createMatch(
@@ -91,6 +97,8 @@ export class MatchManager {
         if (stage == 'FINISHED') this.notifyService('updated', retMatch);
       });
       if (stage == 'FINISHED' || stage == 'CANCELED') {
+        delete this.connectedPlayers[memoryMatch.left_player.id];
+        delete this.connectedPlayers[memoryMatch.right_player.id];
         const index = this.activeMatches.findIndex(
           (active) => active.match.id === memoryMatch.id,
         );
