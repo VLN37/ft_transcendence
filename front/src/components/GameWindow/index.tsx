@@ -129,6 +129,11 @@ export default (props: GameWindowProps) => {
   };
 
   const handleMatchEnd = () => {
+    gameApi.unsubscribeAllListeners();
+    ball = new Ball(rules);
+
+    leftPaddle = new Paddle(PlayerSide.LEFT, rules);
+    rightPaddle = new Paddle(PlayerSide.RIGHT, rules);
     console.log('handling match finish');
   };
 
@@ -215,7 +220,9 @@ export default (props: GameWindowProps) => {
     drawPlayerNickname(image, leftNick, PlayerSide.LEFT, rules);
     drawPlayerNickname(image, rightNick, PlayerSide.RIGHT, rules);
     if (props.matchInfo.ends_at) {
-      drawTimer(image, props.matchInfo.ends_at, rules);
+      const finish = new Date(props.matchInfo.ends_at);
+      if (new Date() < finish) drawTimer(image, props.matchInfo.ends_at, rules);
+      else drawCallToAction(image, 'Game Over!', rules);
     } else {
       drawCallToAction(image, 'Get ready!', rules);
     }

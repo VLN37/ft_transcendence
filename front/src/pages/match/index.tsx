@@ -1,5 +1,6 @@
+import { useToast } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import GameWindow from '../../components/GameWindow';
 import { GameRules } from '../../game/model/GameRules';
 import { Match } from '../../models/Match';
@@ -7,6 +8,8 @@ import { GameApi } from '../../services/gameApi';
 
 export default function MatchPage() {
   const [rules, setRules] = useState<GameRules>();
+  const toast = useToast();
+  const navigate = useNavigate();
 
   const { match_id: _match_id } = useParams();
 
@@ -18,6 +21,7 @@ export default function MatchPage() {
 
   const [gameApi] = useState(new GameApi(matchId));
   const [matchInfo, setMatchInfo] = useState<Match>();
+  const [error, setError] = useState<string>();
   // let playerSide: PlayerSide | null = null;
 
   // let matchApi: MatchApi = new MatchApi();
@@ -27,7 +31,16 @@ export default function MatchPage() {
       const currentRules = await gameApi.getGameRules();
       gameApi.connectToServer();
       const matchInfo = await gameApi.getMatchInfo(matchId);
-      setMatchInfo(matchInfo);
+      if (matchInfo) {
+        setMatchInfo(matchInfo);
+      } else {
+        toast({
+          title: "Couldn't find match",
+          status: 'warning',
+          description: 'Maybe it never happened',
+        });
+        navigate('/');
+      }
       setRules(currentRules);
     }
     loadGameRules();
@@ -48,6 +61,7 @@ export default function MatchPage() {
       {(rules && gameApi && matchInfo && (
         <GameWindow gameApi={gameApi} matchInfo={matchInfo} rules={rules} />
       )) ||
+        error ||
         'loading'}
     </div>
   );

@@ -11,7 +11,9 @@ import {
   Body,
   Put,
   NotFoundException,
+  BadRequestException,
 } from '@nestjs/common';
+import { isUUID } from 'class-validator';
 import { Jwt2faAuthGuard } from 'src/auth/guard/jwt2fa.guard';
 import { UserDto } from 'src/users/dto/user.dto';
 import { UsersService } from 'src/users/users.service';
@@ -71,6 +73,9 @@ export class MatchManagerController {
 
   @Get('/:match_id')
   async getActiveMatchInfo(@Param('match_id') matchId: string) {
+    if (!isUUID(matchId)) {
+      throw new BadRequestException('Invalid uuid');
+    }
     const match = await this.matchManagerService.getActiveMatchInfo(matchId);
     if (!match)
       throw new NotFoundException('Match is not active or does not exist');
