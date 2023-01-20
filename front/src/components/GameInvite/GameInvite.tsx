@@ -36,6 +36,7 @@ export default function GameInvite(props: {}) {
 
   useEffect(() => {
     ChatApi.subscribeGameInvite((user: any) => {
+      MMapi.stopFindingMatch();
       setUser({ ...user });
       onOpen();
     });
