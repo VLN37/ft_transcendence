@@ -45,26 +45,6 @@ export class ChannelsService {
     this.notifyService = callback;
   }
 
-  async generateChannels(amount: number) {
-    const statusArr = ['PUBLIC', 'PRIVATE', 'PROTECTED'];
-    let users = await this.usersService.getAll();
-    users = users.filter((user, i) => {
-      if (i < 4) return user;
-    });
-
-    for (let i = 0; i < amount; i++) {
-      const status: any = statusArr[faker.datatype.number({ min: 0, max: 2 })];
-      await this.channelsRepository.save({
-        name: faker.name.jobArea().toLocaleLowerCase(),
-        owner_id: i,
-        type: status,
-        password: await this.hashPass('12345678'),
-        allowed_users: users,
-      });
-    }
-    return this.getAll();
-  }
-
   async banUser(token: Express.User, chId: number, ban: number, time: number) {
     const channel: ChannelDto = await this.getOne(chId);
     if (!time) throw new BadRequestException('missing time parameter');

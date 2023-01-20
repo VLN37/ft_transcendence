@@ -3,7 +3,6 @@ import {
   Get,
   Logger,
   Param,
-  Headers,
   Query,
   UseInterceptors,
   Post,
@@ -14,7 +13,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { isUUID } from 'class-validator';
-import { Jwt2faAuthGuard } from 'src/auth/guard/jwt2fa.guard';
+import { JwtAuthGuard } from 'src/auth/guard/jwt.guard';
 import { UserDto } from 'src/users/dto/user.dto';
 import { UsersService } from 'src/users/users.service';
 import { rules } from './game/rules';
@@ -23,6 +22,7 @@ import { MatchManagerInterceptor } from './match-manager.interceptor';
 import { MatchManagerService } from './match-manager.service';
 import { MatchStage } from './model/MatchStage';
 
+@UseGuards(JwtAuthGuard)
 @Controller('/matches')
 export class MatchManagerController {
   private readonly logger = new Logger(MatchManagerController.name);
@@ -83,13 +83,11 @@ export class MatchManagerController {
     return match;
   }
 
-  @UseGuards(Jwt2faAuthGuard)
   @Post('/friendly/:target')
   async invite(@Body('user') user: UserDto, @Param('target') target: number) {
     return this.matchManagerService.invite(target, user);
   }
 
-  @UseGuards(Jwt2faAuthGuard)
   @Put('/friendly')
   async updateInvite(
     @Body('status') status: 'ACCEPTED' | 'DECLINED',

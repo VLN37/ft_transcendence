@@ -13,11 +13,11 @@ import {
 } from './direct-message.interceptor';
 import { DirectMessagesService } from './direct-messages.service';
 
+@UseGuards(JwtAuthGuard)
 @Controller('direct_messages')
 export class DirectMessagesController {
   constructor(private readonly dmService: DirectMessagesService) {}
 
-  @UseGuards(JwtAuthGuard)
   @Get(':id')
   @UseInterceptors(DirectMessagesGetInterceptor)
   getMessages(
@@ -27,7 +27,6 @@ export class DirectMessagesController {
     return this.dmService.getMessages(token, id);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get('v2/last')
   @UseInterceptors(DirectMessagesGetLastInterceptor)
   getLastMessages(@Headers('Authorization') token: string) {
@@ -35,7 +34,6 @@ export class DirectMessagesController {
   }
 
 
-  @UseGuards(JwtAuthGuard)
   @Get()
   @UseInterceptors(DirectMessagesGetInterceptor)
   getAllMessages(@Headers('Authorization') token: string) {
