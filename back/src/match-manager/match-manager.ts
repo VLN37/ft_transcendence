@@ -270,7 +270,11 @@ export class MatchManager {
     const activeMatch = this.findMatchById(matchId);
     activeMatch.match.onMatchStart = callback;
   }
-  setMatchEndSubscriber(matchId: string, callback: () => void) {
+
+  setMatchEndSubscriber(
+    matchId: string,
+    callback: (match: MemoryMatch, reason: string) => void,
+  ) {
     const activeMatch = this.findMatchById(matchId);
     activeMatch.match.onMatchEnd = callback;
   }

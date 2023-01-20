@@ -53,7 +53,7 @@ export class MemoryMatch {
   onPowerUpSpawn: (powerUp: PowerUp) => void;
   onPowerUpCollected: (side: PlayerSide, powerUp: PowerUp) => void;
   onMatchStart: (match: MemoryMatch) => void;
-  onMatchEnd: () => void;
+  onMatchEnd: (match: MemoryMatch, reason: string) => void;
 
   private lastUpdate: number; // for delta time
 
@@ -89,7 +89,11 @@ export class MemoryMatch {
       }
       this.onMatchStart(this);
     } else if (stage === 'FINISHED') {
-      this.onMatchEnd();
+      const finishedBecause =
+        !this.left_player_connected || !this.right_player_connected
+          ? 'abandon'
+          : 'timeout';
+      this.onMatchEnd(this, finishedBecause);
       clearTimeout(this.getTimeoutReference?.call(this));
     } else if (stage === 'CANCELED') {
       clearTimeout(this.getTimeoutReference?.call(this));

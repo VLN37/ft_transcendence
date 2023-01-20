@@ -146,8 +146,11 @@ export class MatchManagerGateway implements OnGatewayInit, OnGatewayDisconnect {
       this.server.in(matchId).emit('match-started', match);
     });
 
-    this.matchManager.setMatchEndSubscriber(matchId, () => {
-      this.server.in(matchId).emit('match-finished');
-    });
+    this.matchManager.setMatchEndSubscriber(
+      matchId,
+      (match: MemoryMatch, reason: string) => {
+        this.server.in(matchId).emit('match-finished', match, reason);
+      },
+    );
   }
 }
