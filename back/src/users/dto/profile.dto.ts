@@ -19,7 +19,7 @@ export class ProfileDto {
 
   @IsString()
   @IsNotEmpty()
-  @MaxLength(50)
+  @MaxLength(10)
   nickname: string;
 
   @IsString()
@@ -28,7 +28,7 @@ export class ProfileDto {
   avatar_path: string = null;
 
   @IsOptional()
-  status: UserStatus = 'OFFLINE';
+  status: UserStatus = 'ONLINE';
 
   @IsNumber()
   @IsOptional()
