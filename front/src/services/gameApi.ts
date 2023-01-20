@@ -123,8 +123,12 @@ export class GameApi {
     return (await api.getClient().get('/matches/rules')).data;
   }
 
-  async getMatchInfo(matchId: string): Promise<Match> {
-    return (await api.getClient().get(`/matches/${matchId}`)).data;
+  async getMatchInfo(matchId: string): Promise<Match | null> {
+    try {
+      return (await api.getClient().get(`/matches/${matchId}`)).data;
+    } catch (e) {
+      return null;
+    }
   }
 }
 
