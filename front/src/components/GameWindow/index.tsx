@@ -118,16 +118,16 @@ export default (props: GameWindowProps) => {
   };
 
   const handleMatchPreparation = (match: Match) => {
-    console.log('match starts at: ', match.starts_at);
+    // console.log('match starts at: ', match.starts_at);
     props.matchInfo.starts_at = match.starts_at;
     props.matchInfo.stage = 'PREPARATION';
-    console.log('handling match preparation');
+    // console.log('handling match preparation');
   };
 
   const handleMatchStart = (match: Match) => {
     props.matchInfo.ends_at = match.ends_at;
     props.matchInfo.stage = 'ONGOING';
-    console.log('handling match start');
+    // console.log('handling match start');
   };
 
   const handleMatchEnd = (match: Match, reason: string) => {
@@ -140,7 +140,7 @@ export default (props: GameWindowProps) => {
     leftPlayerScore = match.left_player_score;
     rightPlayerScore = match.right_player_score;
     finishedBecause = reason;
-    console.log('handling match finish');
+    // console.log('handling match finish');
   };
 
   const user = userStorage.getUser()!;

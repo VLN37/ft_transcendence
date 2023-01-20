@@ -28,13 +28,13 @@ export class GameApi {
     };
     this.matchSocket = io(url, options);
     this.matchSocket.on('connect', () => {
-      console.log(
-        `${this.MATCH_MANAGER_NAMESPACE} socket connected to the server`,
-      );
+      // console.log(
+      //   `${this.MATCH_MANAGER_NAMESPACE} socket connected to the server`,
+      // );
     });
 
     this.matchSocket.on('disconnect', () => {
-      console.log(`connection for socket ${this.MATCH_MANAGER_NAMESPACE} lost`);
+      // console.log(`connection for socket ${this.MATCH_MANAGER_NAMESPACE} lost`);
     });
 
     this.matchSocket.on('connect_error', (err) => {

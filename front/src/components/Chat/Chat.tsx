@@ -89,7 +89,7 @@ function sendMessage(room_id: string) {
   if (!text) return;
   (document.getElementById('message') as HTMLInputElement).value = '';
   chatApi.sendMessage({ message: text, channel_id: room_id });
-  console.log('message sent');
+  // console.log('message sent');
 }
 
 export default function Chat(props: Channel) {
@@ -105,7 +105,7 @@ export default function Chat(props: Channel) {
 
   const addUserChannelList = (data: any) => {
     if (!channel.users.find((elem) => elem.id == data.user.id)) {
-      console.log('user joined');
+      // console.log('user joined');
       channel.users.push(data.user);
       setChannel({ ...channel });
     }
@@ -113,7 +113,7 @@ export default function Chat(props: Channel) {
 
   const delUserChannelList = (data: any) => {
     if (channel.users.find((elem) => elem.id == data.user.id)) {
-      console.log('user leave');
+      // console.log('user leave');
       const index = channel.users.findIndex((elem) => elem.id == data.user.id);
       channel.users.splice(index, 1);
       setChannel({ ...channel });

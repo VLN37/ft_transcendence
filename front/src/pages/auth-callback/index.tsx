@@ -74,7 +74,7 @@ const AuthCallback = () => {
   };
 
   const finishLogin = (payload: TokenPayload) => {
-    console.log({ payload });
+    // console.log({ payload });
 
     userApi.getUser('v2/me').then((user) => {
       const link =

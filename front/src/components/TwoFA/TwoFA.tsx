@@ -22,7 +22,7 @@ function Disable2FA(props: {
     if (response.status == 200) {
       message = '2FA authentication removed';
       status = 'success';
-      console.log('new token', response.data);
+      // console.log('new token', response.data);
       api.setToken(response.data.access_token);
       await userStorage.updateUser();
       props.setInProgress(false);

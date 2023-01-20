@@ -8,7 +8,7 @@ class MMApi {
   private matchMakingSocket?: Socket;
   private client: AxiosInstance;
   constructor(public _client: Api) {
-    console.log('Creating matchmaking api class instance');
+    // console.log('Creating matchmaking api class instance');
     this.matchMakingSocket = _client.getMatchMakingSocket();
     this.client = _client.getClient();
   }
@@ -56,14 +56,14 @@ class MMApi {
     const matchFound = 'match-found';
     const error = 'match-error';
     this.matchMakingSocket?.once(matchFound, () => {
-      console.log('match found');
+      // console.log('match found');
       this.matchMakingSocket?.removeAllListeners(matchFound);
       this.matchMakingSocket?.removeAllListeners(error);
       onMatchFound();
     });
 
     this.matchMakingSocket?.once(error, (matchData) => {
-      console.log('match error', matchData);
+      // console.log('match error', matchData);
       this.matchMakingSocket?.removeAllListeners(matchFound);
       this.matchMakingSocket?.removeAllListeners(error);
       onError?.call(matchData);
@@ -102,7 +102,7 @@ class MMApi {
 
   stopFindingMatch() {
     if (this.matchMakingSocket?.connected) {
-      console.log('dequeueing user');
+      // console.log('dequeueing user');
       this.matchMakingSocket.emit('dequeue');
     }
   }

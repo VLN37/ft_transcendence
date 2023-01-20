@@ -33,7 +33,7 @@ export class Api {
   private token?: string;
 
   constructor() {
-    console.log('Creating API class instance');
+    // console.log('Creating API class instance');
     const token = localStorage.getItem(LOCAL_STORAGE_JWT_TOKEN_KEY);
     if (token) {
       this.setToken(token);
@@ -167,9 +167,9 @@ export class Api {
     this.matchMakingSocket = io(url, options);
 
     this.matchMakingSocket.on('connect', () => {
-      console.log(
-        `${this.MATCH_MAKING_NAMESPACE} socket connected to the server`,
-      );
+      // console.log(
+      //   `${this.MATCH_MAKING_NAMESPACE} socket connected to the server`,
+      // );
     });
 
     this.matchMakingSocket.on('disconnect', () => {

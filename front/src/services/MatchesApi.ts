@@ -6,7 +6,7 @@ import { Api } from './api';
 class MatchesApi {
   private client: AxiosInstance;
   constructor(public _client: Api) {
-    console.log('Creating MatchesApi api class instance');
+    // console.log('Creating MatchesApi api class instance');
     this.client = _client.getClient();
   }
 

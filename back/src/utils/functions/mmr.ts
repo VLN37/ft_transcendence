@@ -11,7 +11,7 @@ export function mmr(
   result: 'WIN' | 'LOSS',
 ): number {
   const possibility = expected(target, opponent);
-  console.log(possibility);
+  // console.log(possibility);
   let difference;
   if (result == 'WIN')
     difference = KFACTOR * (1 - possibility);

@@ -69,7 +69,7 @@ describe('user api endpoints', () => {
       user.tfa_enabled = false;
       let userid = user.id;
       delete user.id;
-      console.log('sent user: ', user);
+      // console.log('sent user: ', user);
       const response = await req
         .patch(`/users/${userid}?${user.id}`)
         .send(user);

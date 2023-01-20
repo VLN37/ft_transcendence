@@ -120,7 +120,7 @@ export default function MatchFinder() {
   useEffect(() => {
     mmApi.setMatchCreatedSubscriber((id: string) => {
       setMatchId(id);
-      console.log(`match id: ${id}`);
+      // console.log(`match id: ${id}`);
       setTimeout(() => {
         navigate(`/match/${id}`);
       }, 1000);

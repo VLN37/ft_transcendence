@@ -6,7 +6,7 @@ import { Api } from './api';
 class ProfileApi {
   private client: AxiosInstance;
   constructor(public _client: Api) {
-    console.log('Creating profile api class instance');
+    // console.log('Creating profile api class instance');
     this.client = _client.getClient();
   }
 
@@ -23,7 +23,7 @@ class ProfileApi {
       });
       return response;
     } catch (err) {
-      console.log('catch', err);
+      // console.log('catch', err);
       return (err as AxiosError).response;
     }
   }
@@ -67,7 +67,7 @@ class ProfileApi {
       );
       return response;
     } catch (err) {
-      console.log('catch', err);
+      // console.log('catch', err);
       return (err as AxiosError).response;
     }
   }

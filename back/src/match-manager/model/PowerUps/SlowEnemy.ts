@@ -15,11 +15,11 @@ export class SlowEnemy implements PowerUp {
     const defaultSpeed = rules.player.speed;
     const enemy = lastTouch.getEnemy();
     enemy.speed = defaultSpeed / 2;
-    console.log(`slowing for ${this.duration / 1000} seconds`);
+    // console.log(`slowing for ${this.duration / 1000} seconds`);
 
     setTimeout(() => {
       enemy.speed = defaultSpeed;
-      console.log('reseting enemy speed to ' + defaultSpeed);
+      // console.log('reseting enemy speed to ' + defaultSpeed);
     }, this.duration);
   };
 }

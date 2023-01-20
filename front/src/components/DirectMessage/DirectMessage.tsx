@@ -85,7 +85,7 @@ function sendMessage(to: string) {
   if (!text) return;
   (document.getElementById('message') as HTMLInputElement).value = '';
   chatApi.sendDirectMessage({ message: text, user_id: to });
-  console.log('message sent');
+  // console.log('message sent');
 }
 
 export default function DirectMessage(props: any) {

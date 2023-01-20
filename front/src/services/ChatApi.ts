@@ -25,7 +25,7 @@ class ChatApi {
   private channelSocket?: Socket;
   private dmSocket?: Socket;
   constructor(public _client: Api) {
-    console.log('Creating chat api class instance');
+    // console.log('Creating chat api class instance');
     this.client = _client.getClient();
     this.channelSocket = _client.getChannelSocket();
     this.dmSocket = _client.getDirectMessageSocket();

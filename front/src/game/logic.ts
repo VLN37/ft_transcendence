@@ -7,7 +7,7 @@ export const applyPowerUp = (
   _powerup: PowerUp,
   rules: GameRules,
 ) => {
-  console.log(`activating powerup ${_powerup.name}`);
+  // console.log(`activating powerup ${_powerup.name}`);
   switch (_powerup.name) {
     case 'grow-player-size':
       const defaultHeight = rules.player.height;
