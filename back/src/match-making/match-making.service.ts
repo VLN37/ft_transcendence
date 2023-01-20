@@ -61,7 +61,7 @@ export class MatchMakingService {
       const i = queue.findIndex((queuedUser) => queuedUser.id === userId);
       if (i >= 0) {
         const user = queue.splice(i, 1);
-        this.logger.debug(
+        this.logger.log(
           `removing user ${user[0].login_intra} from the ${type} queue`,
         );
       }
