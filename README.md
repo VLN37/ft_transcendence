@@ -2,18 +2,20 @@
 This project is about creating a website for the mighty [Pong](https://en.wikipedia.org/wiki/Pong) contest!
 
 ### What is ft_transcendence?
-Inception is an individual project at [42](42sp.org.br) which requires that we build an online platform to play [Pong.](https://en.wikipedia.org/wiki/Pong)
+ft_transcendence is an individual project at [42](42sp.org.br) which requires that we build an online platform to play [Pong.](https://en.wikipedia.org/wiki/Pong)
 
-The backend must be built using [NestJS](https://nestjs.com/), the [frontend](https://en.wikipedia.org/wiki/Frontend_and_backend) in some [TypeScript](https://www.typescriptlang.org/) framework of your choice and the database must be [PostgreSQL.](https://www.postgresql.org/) For the [frontend](https://en.wikipedia.org/wiki/Frontend_and_backend), the chosen option was [React](https://reactjs.org/), due to its popularity and extensive documentation.
+The backend must be built using [NestJS](https://nestjs.com/), the [frontend](https://en.wikipedia.org/wiki/Frontend_and_backend) in any [TypeScript](https://www.typescriptlang.org/) framework of your choice and the database must be [PostgreSQL.](https://www.postgresql.org/) For the [frontend](https://en.wikipedia.org/wiki/Frontend_and_backend), the chosen option was [React](https://reactjs.org/), due to its popularity and extensive documentation.
 
-The project can be done with the help of any external library and the website needs to be a [single-page application.](https://en.wikipedia.org/wiki/Single-page_application) It should still be compatible with [Google Chrome](https://www.google.com/intl/en-US/chrome/) and the other optional browser.
+There are no restraints in regards to external libraries and the website but it needs to be a [single-page application.](https://en.wikipedia.org/wiki/Single-page_application) It should be compatible with [Google Chrome](https://www.google.com/intl/en-US/chrome/) and the other optional browser.
 
-The user must log in using the OAuth system of [42 intranet](https://intra.42.fr/) and be able to enable a [two-factor authentication](https://authy.com/what-is-2fa/) method, the strategy chosen was the [Google Authenticator App.](https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&hl=en_US&gl=US)
+The user must log in using the OAuth system of [42 intranet](https://intra.42.fr/) and be able to enable a [two-factor authentication](https://authy.com/what-is-2fa/) method, for which we chose the [Google Authenticator App.](https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&hl=en_US&gl=US)
 
 Overall, the platform should have a ranking system, chat channels, private messages, profile editing, view users status and add other members as friends.
 
-As main objective we have the game, a [Pong](https://en.wikipedia.org/wiki/Pong) with the original characteristics of [1972.](https://www.youtube.com/watch?v=fiShX2pTz9A) There should be some customizations such as powers, the user being able to switch to classic or custom version.
-A spectator system must be implemented, spectators will be able to watch the match without being able to send commands.
+The platform should have a ranking system, chat channels, direct messaging and allow, user status changes, friend features and some profile customization options.
+
+The main purpose is to play an implementation of [Pong](https://en.wikipedia.org/wiki/Pong), as if it was [1972.] all over again(https://www.youtube.com/watch?v=fiShX2pTz9A) There should be a few customization options such as custom maps or power-ups but the user should still be able to play the original version.
+A spectator system must be implemented, spectators are able to watch the match without interfering with it.
 
 Finally, the server structure must be containerized using [docker](https://www.docker.com/) and available with a single call of: **docker-compose up --build**.
 
@@ -44,7 +46,7 @@ Click [here](./images/database2.png) to view full image.
 **Follow the steps below**
 ```bash
 # Clone the project and access the folder
-git clone https://github.com/paulo-santana/ft_transcendence && cd ft_transcendence/
+git clone https://github.com/paulo-santana/ft_transcendence ft_transcendence && cd ft_transcendence/
 
 # Register a new application in 42 intra
 # create a .env file with your app info into the back, front and project root folder
