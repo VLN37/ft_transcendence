@@ -46,7 +46,7 @@ Click [here](./images/database2.png) to view full image.
 **Follow the steps below**
 ```bash
 # Clone the project and access the folder
-git clone https://github.com/paulo-santana/ft_transcendence ft_transcendence && cd ft_transcendence/
+git clone https://github.com/VLN37/ft_transcendence ft_transcendence && cd ft_transcendence/
 
 # Register a new application in 42 intra
 # create a .env file with your app info into the back, front and project root folder
